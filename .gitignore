@@ -1,0 +1,11 @@
+.hg
+MANIFEST
+python/build
+python/dist
+python/doc/_build
+*.pyc
+*.pyo
+__pycache__
+*.egg-info
+*~
+*.bak

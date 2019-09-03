@@ -1,0 +1,11 @@
+include setup.py
+include README.md
+include LICENSE.txt
+include test_all.py
+include test_performance.py
+include lib/recordclass/*.py
+include lib/recordclass/*.c
+include lib/recordclass/*.h
+include lib/recordclass/typing/*.py
+include lib/recordclass/test/*.py
+include lib/recordclass/test/typing/*.py

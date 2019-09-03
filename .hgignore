@@ -1,0 +1,14 @@
+syntax: glob
+.git
+*.pyc
+*.pyo
+.DS_Store
+docs/_build
+build
+dist
+.ipynb_checkpoints
+MANIFEST
+__pycache__
+*.egg-info
+*~
+*.bak
