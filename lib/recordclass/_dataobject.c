@@ -103,10 +103,10 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t n_items)
     memset(op, '\0', size);
 
     Py_TYPE(op) = type;
-    _Py_NewReference(op);
-
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_INCREF(type);
+
+    _Py_NewReference(op);
     
     if (is_gc)
         PyObject_GC_Track(op);
@@ -123,18 +123,18 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     Py_ssize_t n_args;
     PyObject **items, **pp;
     PyObject *v;
-    int is_tuple = 0;
+//     int is_tuple = 0;
 
     if (Py_TYPE(args) == &PyTuple_Type) {
         tmp = args;
         Py_INCREF(args);
-        is_tuple = 1;
+//         is_tuple = 1;
     } else {
         tmp = PySequence_Tuple(args);
         if (tmp == NULL) {
             return NULL;
         }
-        is_tuple = 1;
+//         is_tuple = 1;
     }
     
     n_args = PyTuple_GET_SIZE(tmp);
@@ -150,7 +150,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     op = type->tp_alloc(type, 0);
 
     items = dataobject_slots(op);
-    if (is_tuple) {
+//     if (is_tuple) {
         pp = ((PyTupleObject*)tmp)->ob_item;
         while (n_args--) {
             v = *(pp++);
@@ -158,21 +158,21 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             *(items++) = v;
             n_slots--;
         }
-    } else {
-        int i;
+//     } else {
+//         int i;
 
-        for (i=0; i < n_args; i++) {
-            v = PySequence_ITEM(tmp, i);
-            if (v == NULL) {
-                PyErr_SetString(PyExc_ValueError,
-                                "Can't get an argument from args");
-                Py_DECREF(tmp);
-                return NULL;                            
-            }
-            *(items++) = v;
-            n_slots--;
-        }
-    }
+//         for (i=0; i < n_args; i++) {
+//             v = PySequence_ITEM(tmp, i);
+//             if (v == NULL) {
+//                 PyErr_SetString(PyExc_ValueError,
+//                                 "Can't get an argument from args");
+//                 Py_DECREF(tmp);
+//                 return NULL;                            
+//             }
+//             *(items++) = v;
+//             n_slots--;
+//         }
+//     }
 
     while (n_slots--) {
         Py_INCREF(Py_None);
@@ -197,7 +197,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 return NULL;            
             }
         } else {
-            PyErr_SetString(PyExc_TypeError, "class hasn't __dict__");
+            PyErr_SetString(PyExc_TypeError, "instance hasn't __dict__");
             return NULL;            
         }        
     }
