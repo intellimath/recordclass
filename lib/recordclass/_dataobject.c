@@ -305,11 +305,13 @@ dataobject_item(PyObject *op, Py_ssize_t i)
 {
     PyObject **items;
     PyObject *v;
-    PyTypeObject *type = Py_TYPE(op);
+//     PyTypeObject *type = Py_TYPE(op);
     
-    Py_ssize_t n_slots = dataobject_numslots(type);
+    Py_ssize_t n = dataobject_numslots(Py_TYPE(op));
 
-    if (i < 0 || i >= n_slots) {
+    if (i < 0)
+        i += n;
+    if (i < 0 || i >= n) {
         PyErr_SetString(PyExc_IndexError, "index out of range");
         return NULL;
     }
@@ -324,10 +326,10 @@ static int
 dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
     PyObject **items;
-    PyTypeObject *type = Py_TYPE(op);
+//     PyTypeObject *type = Py_TYPE(op);
     PyObject* old_val;
         
-    Py_ssize_t n = dataobject_numslots(type);
+    Py_ssize_t n = dataobject_numslots(Py_TYPE(op));
 
     if (i < 0)
         i += n;
@@ -378,7 +380,7 @@ dataobject_subscript2(PyObject* op, PyObject* item)
     if (PyIndex_Check(item)) {
         Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
         if (i == -1 && PyErr_Occurred())
-            return NULL;        
+            return NULL;
         return dataobject_item(op, i);
     } else
         return PyObject_GetAttr(op, item);
@@ -424,7 +426,7 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
     PyObject *ww;
     PyObject *ret;
 
-    if (!(Py_TYPE(v) == Py_TYPE(w)) || (!PyType_IsSubtype(Py_TYPE(w), Py_TYPE(v))))
+    if (!(Py_TYPE(v) == Py_TYPE(w)) || (!PyObject_IsSubclass((PyObject*)Py_TYPE(w), (PyObject*)Py_TYPE(v))))
         Py_RETURN_NOTIMPLEMENTED;
 
     vlen = do_getlen(v);
@@ -605,7 +607,7 @@ dataobject_copy(PyObject* op)
         PyObject **new_dictptr = dataobject_dictptr(type, new_op);
         PyObject *new_dict = *new_dictptr;
         
-        if (!new_dict) {
+        if (dict && !new_dict) {
             new_dict = PyDict_New();
             if (!new_dict) {
                 PyErr_SetString(PyExc_TypeError, "failed to create new dict");
@@ -1556,7 +1558,7 @@ datatuple_copy(PyObject* op)
         PyObject **new_dictptr = dataobject_dictptr(type, new_op);
         PyObject *new_dict = *new_dictptr;
         
-        if (!new_dict) {
+        if (dict && !new_dict) {
             new_dict = PyDict_New();
             if (!new_dict) {
                 PyErr_SetString(PyExc_TypeError, "failed to create new dict");
