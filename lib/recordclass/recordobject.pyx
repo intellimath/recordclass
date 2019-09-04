@@ -724,38 +724,6 @@ class structclasstype(type):
 
         return cls
 
-class arrayclasstype(type):
-    #
-    def __new__(tp, name, bases, ns):
-        cdef object options "options"
-        cdef bint readonly "readonly"
-        cdef bint usedict "usedict"
-        cdef bint hashable "hashable"
-        cdef bint gc "gc"
-        cdef object weakref "weakref"
-        cdef object cls "cls"
-        cdef object n "n"
-
-        n = ns.pop('__size__')
-        options = ns.pop('__options__')
-        readonly = options.get('readonly', False)
-        usedict = options.get('usedict', False)
-        if 'gc' in options:
-            gc = options.get('gc')
-        else:
-            gc = 0
-        weakref = options.get('weakref', False)
-        hashable = options.get('hashable', False)
-        if readonly and not hashable:
-            hashable = 1
-
-        cls = type.__new__(tp, name, bases, ns)
-
-        _type_configure_basic(cls, n, usedict, gc, weakref, hashable)
-        _type_configure_getsetitem(cls, readonly)
-
-        return cls
-
 @cython.final
 cdef public class recordobjectiter[object recordobjectIter, type recordobjectIterType]:
     cdef PyObject *op "op"

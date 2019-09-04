@@ -305,7 +305,6 @@ dataobject_item(PyObject *op, Py_ssize_t i)
 {
     PyObject **items;
     PyObject *v;
-//     PyTypeObject *type = Py_TYPE(op);
     
     Py_ssize_t n = dataobject_numslots(Py_TYPE(op));
 
@@ -326,7 +325,6 @@ static int
 dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
     PyObject **items;
-//     PyTypeObject *type = Py_TYPE(op);
     PyObject* old_val;
         
     Py_ssize_t n = dataobject_numslots(Py_TYPE(op));

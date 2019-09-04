@@ -33,7 +33,6 @@ from .recordclass import recordclass, RecordclassStorage
 
 from .recordobject import sequenceproxy, recordobject
 from .structclass import structclass, join_classes
-from .arrayclass import arrayclass
 
 from .datatype import make_class, make_dataclass, make_arrayclass, datatype
 from .datatype import asdict, DataclassStorage
