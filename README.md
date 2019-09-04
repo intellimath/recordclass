@@ -10,23 +10,17 @@ with the same API. Later more memory saving variants are added.
 * **mutabletuple** is mutable variant of the `tuple`, which supports assignment operations. 
 * **recordclass** is a factory function that create a "mutable" analog of 
   `collection.namedtuple`. It produces a subclass of `mutabletuple` with namedtuple-like API.
+* **dataobject** is new base class for creating subclasses, which are support the following
+  properties by default 1) no `__dict__` and `__weakref__`; 2) cyclic GC support is disabled by default; 
+  3) instances have less memory size than class instances with `__slots__`.
+* **make_dataclass** is a factory function for creation of `dataobject` subclasses described above.
+* **make_arrayclass** is a factory function for creation of array-like subclasses of `dataobject`. 
 * **structclass** is an analog of `recordclass`. 
   It produces a class with less memory footprint (less than both recordclass-based class instances 
   and instances of class with `__slots__`) and
   `namedtuple`-like API. It's instances has no `__dict__`,
   `__weakref__` and don't support cyclic garbage collection by default (only reference counting).
   But `structclass`-created classes can support any of them.
-* **arrayclass** is factory function.
-  It also produces a class with same memory footprint as `structclass`-created class instances. 
-  It implements an array of object. By default created class has no `__dict__`,
-  `__weakref__` and don't support cyclic garbage collection. But it can add support any of them.
-  
-#### Since 0.10
-
-* **dataobject** is new base class for creating subclasses, which are support the following
-  properties by default 1) no `__dict__` and `__weakref__`; 2) cyclic GC support is disabled by default; 
-  3) instances have less memory size than class instances with `__slots__`.
-* **make_class** is a factory function for creation of `dataobject` subclasses described above.
 
 The `dataobject`-based classes are not following `namedtuple`-like API, but `attrs`/`dataclasses`-like API.
 By default, subclasses of `dataobject` doesn't support cyclic GC, but only reference counting.
@@ -262,6 +256,11 @@ Here are also table with some performance counters:
 
 
 ### Changes:
+
+#### 0.13
+
+* Remove arrayclass.py in favor of `dataobject`-based array-like subclasses.
+* Move repository to git instead of mercurial since bitbucket will drop support of the last.
 
 #### 0.12.0.1
 
