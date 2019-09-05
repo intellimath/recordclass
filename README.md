@@ -47,7 +47,7 @@ Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/i
 
 First load inventory:
 
-    >>> from recordclass import recordclass, RecordClass
+    >>> from recordclass import recordclass
 
 Example with `recordclass`:
 
@@ -63,6 +63,8 @@ Example with `recordclass`:
     
 Example with `RecordClass` and typehints::
 
+    >>> from recordclass import RecordClass
+
     class Point(RecordClass):
        x: int
        y: int
@@ -77,6 +79,8 @@ Example with `RecordClass` and typehints::
     >>> p.x, p.y = 10, 20
     >>> print(p)
     Point(10, 20)
+    >>> sys.getsizeof() # the output below is for 64bit python
+    40
     
 ### Quick start with dataobject
 
@@ -97,18 +101,19 @@ First load inventory::
     
     >>> sys.getsizeof() # the output below is for 64bit python
     32
-    >>> p.__sizeof__() == sys.getsizeof(p) # no additional space used by GC
+    >>> p.__sizeof__() == sys.getsizeof(p) # no additional space for cyclic GC support
     True    
 
     >>> p.x, p.y = 10, 20
     >>> print(p)
     Point(x=10, y=20)
-
-    >>> print(iter(p))
-    [1, 2]
-        
+    >>> for x in p: print(x)
+    1
+    2
     >>> asdict(p)
     {'x':1, 'y':2}
+    >>> tuple(p)
+    (1, 2)
     
 Another way &ndash; factory function `make_dataclass`:
 
@@ -157,7 +162,7 @@ Recordclass was created as answer to [question](https://stackoverflow.com/questi
 
 `Recordclass` was designed and implemented as a type that, by api, memory footprint, and speed, would be almost identical to` namedtuple`, except that it would support assignments that could replace any element without creating a new instance, as in ` namedtuple` (support assignments ` __setitem__` / `setslice__`).
 
-The effectiveness of a namedtuple is based on the effectiveness of the `tuple` type in python. In order to achieve the same efficiency, it was created the type `mutabletuple`. The structure (`PymutabletupleObject`) is identical to the structure of the `tuple` (`PyTupleObject`) and therefore occupies the same amount of memory as` tuple`.
+The effectiveness of a namedtuple is based on the effectiveness of the `tuple` type in python. In order to achieve the same efficiency, it was created the type `mutabletuple`. The structure (`PyMutableTupleObject`) is identical to the structure of the `tuple` (`PyTupleObject`) and therefore occupies the same amount of memory as` tuple`. 
 
 `Recordclass` is defined on top of `mutabletuple` in the same way as `namedtuple` defined on top of `tuple`. Attributes are accessed via a descriptor (`itemgetset`), which provides quick access and assignment by attribute index.
 
