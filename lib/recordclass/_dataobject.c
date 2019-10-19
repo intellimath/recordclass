@@ -77,6 +77,7 @@ _PyObject_GetObject(const char *modname, const char *name)
         return NULL;
     attr = PyDict_GetItemString(mod_dict, name);
     Py_DECREF(mod);
+    Py_DECREF(mod_dict);
     return attr;
 }
 
@@ -2401,25 +2402,6 @@ _set_iterable(PyObject *cls, PyObject *iterable) {
     Py_RETURN_NONE;
 }
 
-static PyObject*
-_fix_type(PyObject *module, PyObject *args) {
-    PyObject *tp;
-    PyTypeObject *meta;
-    PyObject *val;
-    
-    tp = PyTuple_GET_ITEM(args, 0);
-    meta = (PyTypeObject*)PyTuple_GET_ITEM(args, 1);
-    
-    if (tp->ob_type != meta) {
-        val = (PyObject*)tp->ob_type;
-        Py_XDECREF(val);
-        tp->ob_type = meta;
-        Py_INCREF(meta);
-        PyType_Modified((PyTypeObject*)tp);
-    }     
-    Py_RETURN_NONE;
-}
-
 static void
 __fix_type(PyObject *tp, PyTypeObject *meta) {
     PyObject *val;
@@ -2692,7 +2674,6 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"enable_gc", dataobject_enable_gc, METH_VARARGS, enable_gc_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
-    {"_fix_type", _fix_type, METH_VARARGS, ""},    
     {0, 0, 0, 0}
 };
 
