@@ -2661,6 +2661,13 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     _set_weaklistoffset(cls, use_weakref);
     _set_hashable(cls, hashable);
     _set_iterable(cls, iterable);
+    Py_XDECREF(sequence);
+    Py_XDECREF(mapping);
+    Py_XDECREF(readonly);
+    Py_XDECREF(use_dict);
+    Py_XDECREF(use_weakref);
+    Py_XDECREF(iterable);
+    Py_XDECREF(hashable);
     return cls;
 }
 
