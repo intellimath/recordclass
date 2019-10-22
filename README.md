@@ -45,9 +45,9 @@ Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/i
 
 ### Installation
 
-#### Install from directory with sources
+#### Installation from directory with sources
 
-Installation:
+Install:
 
     >>> python setup.py install
 
@@ -55,9 +55,9 @@ Run tests:
 
     >>> python test_all.py
 
-#### Install from PyPI
+#### Installation from PyPI
 
-Installation:
+Install:
 
     >>> pip install recordclass
     
