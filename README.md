@@ -42,7 +42,29 @@ is on [bitbucket](https://bitbucket.org/intellimath/recordclass).
 Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/intellimath/recordclass/raw/default/examples/what_is_recordclass.ipynb).
 
 ## Quick start:
+
+### Installation
+
+#### Install from sources directory
+
+Installation:
+
+    >>> python setup.py install
+
+Run tests:
+
+    >>> python test_all.py
+
+#### Install from PyPI
+
+Installation:
+
+    >>> pip install recordclass
     
+Run tests:
+
+    >>> python -c "from recordclass.test import *; test_all()"
+
 ### Quick start with recordclass
 
 First load inventory:
