@@ -45,7 +45,7 @@ Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/i
 
 ### Installation
 
-#### Install from sources directory
+#### Install from directory with sources
 
 Installation:
 
