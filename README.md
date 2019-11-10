@@ -41,7 +41,7 @@ is on [bitbucket](https://bitbucket.org/intellimath/recordclass).
 
 Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/intellimath/recordclass/raw/default/examples/what_is_recordclass.ipynb).
 
-## Quick start:
+## Quick start
 
 ### Installation
 

@@ -124,18 +124,15 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     Py_ssize_t n_args;
     PyObject **items, **pp;
     PyObject *v;
-//     int is_tuple = 0;
 
     if (Py_TYPE(args) == &PyTuple_Type) {
         tmp = args;
         Py_INCREF(args);
-//         is_tuple = 1;
     } else {
         tmp = PySequence_Tuple(args);
         if (tmp == NULL) {
             return NULL;
         }
-//         is_tuple = 1;
     }
     
     n_args = PyTuple_GET_SIZE(tmp);
@@ -151,29 +148,13 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     op = type->tp_alloc(type, 0);
 
     items = dataobject_slots(op);
-//     if (is_tuple) {
-        pp = ((PyTupleObject*)tmp)->ob_item;
-        while (n_args--) {
-            v = *(pp++);
-            Py_INCREF(v);
-            *(items++) = v;
-            n_slots--;
-        }
-//     } else {
-//         int i;
-
-//         for (i=0; i < n_args; i++) {
-//             v = PySequence_ITEM(tmp, i);
-//             if (v == NULL) {
-//                 PyErr_SetString(PyExc_ValueError,
-//                                 "Can't get an argument from args");
-//                 Py_DECREF(tmp);
-//                 return NULL;                            
-//             }
-//             *(items++) = v;
-//             n_slots--;
-//         }
-//     }
+    pp = ((PyTupleObject*)tmp)->ob_item;
+    while (n_args--) {
+        v = *(pp++);
+        Py_INCREF(v);
+        *(items++) = v;
+        n_slots--;
+    }
 
     while (n_slots--) {
         Py_INCREF(Py_None);
