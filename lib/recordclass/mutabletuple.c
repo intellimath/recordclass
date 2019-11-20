@@ -20,6 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifdef Py_LIMITED_API
+#undef Py_LIMITED_API
+#endif
+
 #include "pyconfig.h"
 #include "Python.h"
 #include <string.h>
