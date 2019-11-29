@@ -185,10 +185,17 @@ mutabletuple_dealloc(PyMutableTupleObject *op)
 }
 
 static void mutabletuple_free(void *o) {
+//     PyTypeObject *type = Py_TYPE(o);
+
     if PyType_IS_GC(Py_TYPE((PyObject*)o))
         PyObject_GC_Del((PyObject*)o);
     else
         PyObject_Del((PyObject*)o);
+
+// #if PY_VERSION_HEX >= 0x03080000
+//     // This was not needed before Python 3.8 (Python issue 35810)
+//     Py_DECREF(type);
+// #endif
 }
 
 static int
@@ -929,13 +936,22 @@ mutabletupleiter_len(mutabletupleiterobject *it)
 PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(it)).");
 
 static PyObject *
-mutabletupleiter_reduce(mutabletupleiterobject *it)
+mutabletupleiter_reduce(mutabletupleiterobject *it, PyObject *Py_UNUSED(ignore))
 {
+#if PY_MAJOR_VERSION >= 3
+    _Py_IDENTIFIER(iter);
+    if (it->it_seq)
+        return Py_BuildValue("N(O)n", _PyEval_GetBuiltinId(&PyId_iter),
+                             it->it_seq, it->it_index);
+    else
+        return Py_BuildValue("N(())", _PyEval_GetBuiltinId(&PyId_iter));
+#else
     if (it->it_seq)
         return Py_BuildValue("N(O)n", _PyObject_GetBuiltin("iter"),
                              it->it_seq, it->it_index);
     else
         return Py_BuildValue("N(())", _PyObject_GetBuiltin("iter"));
+#endif
 }
 
 PyDoc_STRVAR(mutabletupleiter_reduce_doc, "D.__reduce__()");

@@ -213,21 +213,6 @@ dataobject_clear(PyObject *op)
 }
 
 static void
-dataobject_free(void *op)
-{
-    PyTypeObject *type = Py_TYPE((PyObject*)op);
-    int is_gc = PyType_IS_GC(type);
-
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_DECREF(type);
-
-    if (!is_gc)
-        PyObject_Del((PyObject*)op);
-    else
-        PyObject_GC_Del((PyObject*)op);
-}
-
-static void
 dataobject_dealloc(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op); 
@@ -253,6 +238,21 @@ dataobject_dealloc(PyObject *op)
     }    
 
     type->tp_free((PyObject *)op);
+}
+
+static void
+dataobject_free(void *op)
+{
+    PyTypeObject *type = Py_TYPE((PyObject*)op);
+    int is_gc = PyType_IS_GC(type);
+
+    if (!is_gc)
+        PyObject_Del((PyObject*)op);
+    else
+        PyObject_GC_Del((PyObject*)op);
+
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_DECREF(type);
 }
 
 static int
@@ -908,7 +908,7 @@ PyDoc_STRVAR(dataobject_reduce_doc,
 "T.__reduce__()");
 
 static PyObject *
-dataobject_reduce(PyObject *ob)
+dataobject_reduce(PyObject *ob, PyObject *Py_UNUSED(ignore))
 {
     PyObject *args;
     PyObject *result;
@@ -1097,11 +1097,8 @@ datatuple_alloc(PyTypeObject *type, Py_ssize_t n_items)
     Py_TYPE(op) = type;
     _Py_NewReference(op);
 
-//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE) {
-//         //printf("heap ");
-//         Py_INCREF(type);
-//     }
-    Py_INCREF(type);
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_INCREF(type);
     
     if (type->tp_flags & Py_TPFLAGS_HAVE_GC)
         PyObject_GC_Track(op);
@@ -1873,13 +1870,22 @@ dataobjectiter_len(dataobjectiterobject *it)
 PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(it)).");
 
 static PyObject *
-dataobjectiter_reduce(dataobjectiterobject *it)
+dataobjectiter_reduce(dataobjectiterobject *it, PyObject *Py_UNUSED(ignore))
 {
+#if PY_MAJOR_VERSION >= 3
+    _Py_IDENTIFIER(iter);
+    if (it->it_seq)
+        return Py_BuildValue("N(O)n", _PyEval_GetBuiltinId(&PyId_iter),
+                             it->it_seq, it->it_index);
+    else
+        return Py_BuildValue("N(())", _PyEval_GetBuiltinId(&PyId_iter));
+#else
     if (it->it_seq)
         return Py_BuildValue("N(O)n", _PyObject_GetBuiltin("iter"),
                              it->it_seq, it->it_index);
     else
         return Py_BuildValue("N(())", _PyObject_GetBuiltin("iter"));
+#endif
 }
 
 PyDoc_STRVAR(dataobjectiter_reduce_doc, "D.__reduce__()");

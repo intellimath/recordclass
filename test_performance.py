@@ -1,4 +1,4 @@
-from recordclass import recordclass, structclass, new_datatype
+from recordclass import recordclass, structclass, make_dataclass
 from collections import namedtuple
 import perf
 #from sys import getsizeof as sizeof
@@ -17,7 +17,7 @@ ra2 = RTest2(a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10,k=11)
 RTest3 = structclass("RTEST", "a b c d e f g h i j k", gc=True)
 ra3 = RTest3(a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10,k=11)
 
-NDTest = new_datatype("NDTest", "a b c d e f g h i j k")
+NDTest = make_dataclass("NDTest", "a b c d e f g h i j k")
 nd = NDTest(a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10,k=11)
 
 class Test(object):
