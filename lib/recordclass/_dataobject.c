@@ -245,7 +245,7 @@ dataobject_free(void *op)
 {
     PyTypeObject *type = Py_TYPE((PyObject*)op);
     int is_gc = PyType_IS_GC(type);
-
+    
     if (!is_gc)
         PyObject_Del((PyObject*)op);
     else

@@ -12,8 +12,8 @@ from recordclass import DataclassStorage
 
 TestPickle1 = make_arrayclass("TestPickle1", fields=3)
 TestPickle2 = make_dataclass("TestPickle2", ('x','y','z'))
-TestPickle3 = make_dataclass("TestPickle3", ('x','y','z'), use_dict=True)
 TestPickleV1 = make_arrayclass("TestPickleV1", fields=3, varsize=True)
+TestPickle3 = make_dataclass("TestPickle3", ('x','y','z'), use_dict=True)
 TestPickleV2 = make_dataclass("TestPickleV2", ('x','y','z'), varsize=True)
 TestPickleV3 = make_dataclass("TestPickleV3", ('x','y','z'), varsize=True, use_dict=True)
 
@@ -370,9 +370,6 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
-#         self.assertEqual(sys.getsizeof(a), 48)
-#         self.assertEqual(A.__dictoffset__, 32)
-#         self.assertEqual(A.__weakrefoffset__, 40)
         weakref.ref(a)
         self.assertEqual(a.__dict__, {})
         

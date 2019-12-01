@@ -12,7 +12,7 @@ _PY36 = sys.version_info[:2] >= (3, 6)
 if _PY36:
     from recordclass.test.typing.test_recordclass import *
     from recordclass.test.typing.test_structclass import *
-    from recordclass.test.typing.test_dataobject import *
+    #from recordclass.test.typing.test_dataobject import *
 
 def test_all():
     import unittest
