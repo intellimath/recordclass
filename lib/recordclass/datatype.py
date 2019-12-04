@@ -143,10 +143,15 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
             bases = (dataobject,)
     elif varsize and not isinstance(base[0], datatuple):
         raise TypeError("First base class should be subclass of datatuple")
+        
+    if varsize:
+        _sequence = True
+    else:
+        _sequence = sequence
 
     cls = datatype(typename, bases, ns)
     
-    _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, 
+    _clsconfig(cls, sequence=_sequence, mapping=mapping, readonly=readonly, 
                use_dict=use_dict, use_weakref=use_weakref, iterable=iterable, hashable=hashable)
 
     if gc:

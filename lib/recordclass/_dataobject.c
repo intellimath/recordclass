@@ -908,7 +908,7 @@ PyDoc_STRVAR(dataobject_reduce_doc,
 "T.__reduce__()");
 
 static PyObject *
-dataobject_reduce(PyObject *ob, PyObject *Py_UNUSED(ignore))
+dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
 {
     PyObject *args;
     PyObject *result;
@@ -1051,7 +1051,7 @@ static PyTypeObject PyDataObject_Type = {
     PyObject_GenericGetAttr,                /* tp_getattro */
     PyObject_GenericSetAttr,                /* tp_setattro */
     0,                                      /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_BASETYPE,
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
                                             /* tp_flags */
     dataobject_doc,                           /* tp_doc */
     0,                      /* tp_traverse */
@@ -1555,95 +1555,95 @@ datatuple_copy(PyObject* op)
     return new_op;
 }
 
-// PyDoc_STRVAR(datatuple_getnewargs_doc,
-// "T.__getnewargs__()");
+PyDoc_STRVAR(datatuple_getnewargs_doc,
+"T.__getnewargs__()");
 
-// static PyObject *
-// datatuple_getnewargs(PyObject *op)
-// {
-//     PyTypeObject *type = Py_TYPE(op);
-//     Py_ssize_t i, n_slots = datatuple_numslots(type);
-//     Py_ssize_t n_items = Py_SIZE(op);
-//     PyObject *args, *tail;
-//     PyObject *v;
+static PyObject *
+datatuple_getnewargs(PyObject *op)
+{
+    PyTypeObject *type = Py_TYPE(op);
+    Py_ssize_t i, n_slots = datatuple_numslots(type);
+    Py_ssize_t n_items = Py_SIZE(op);
+    PyObject *args, *tail;
+    PyObject *v;
 
-//     args = PyTuple_New(n_slots+1);
-//     if (args == NULL)
-//         return NULL;
+    args = PyTuple_New(n_slots+1);
+    if (args == NULL)
+        return NULL;
     
-//     for (i=0; i<n_slots; i++) {
-//         v = datatuple_slot(op, i);
-//         if (!v) {
-//             Py_DECREF(args);
-//             return NULL;
-//         }
-//         PyTuple_SET_ITEM(args, i, v);
-//     }
+    for (i=0; i<n_slots; i++) {
+        v = datatuple_slot(op, i);
+        if (!v) {
+            Py_DECREF(args);
+            return NULL;
+        }
+        PyTuple_SET_ITEM(args, i, v);
+    }
 
-//     tail = PyTuple_New(n_items);
-//     if (tail == NULL) {
-//         Py_DECREF(args);
-//         return NULL;
-//     }
+    tail = PyTuple_New(n_items);
+    if (tail == NULL) {
+        Py_DECREF(args);
+        return NULL;
+    }
 
-//     if (n_items > 0) {
-//         for (i=0; i<n_items; i++) {
-//             v = datatuple_item(op, n_slots+i);
-//             if (!v) {
-//                 Py_DECREF(args);
-//                 return NULL;
-//             }
-//             PyTuple_SET_ITEM(tail, i, v);
-//         }
-//     }
+    if (n_items > 0) {
+        for (i=0; i<n_items; i++) {
+            v = datatuple_item(op, n_slots+i);
+            if (!v) {
+                Py_DECREF(args);
+                return NULL;
+            }
+            PyTuple_SET_ITEM(tail, i, v);
+        }
+    }
     
-//     PyTuple_SET_ITEM(args, n_slots, tail);
+    PyTuple_SET_ITEM(args, n_slots, tail);
     
     
-//     return args;
-// }
+    return args;
+}
 
-// PyDoc_STRVAR(datatuple_reduce_doc,
-// "T.__reduce__()");
+PyDoc_STRVAR(datatuple_reduce_doc,
+"T.__reduce__()");
 
-// static PyObject *
-// datatuple_reduce(PyObject *ob)
-// {
-//     PyObject *args;
-//     PyObject *result;
-//     PyTypeObject *tp = Py_TYPE(ob);
-//     PyObject *kw = NULL;
-//     PyObject **dictptr;
+static PyObject *
+datatuple_reduce(PyObject *ob)
+{
+    PyObject *args;
+    PyObject *result;
+    PyTypeObject *tp = Py_TYPE(ob);
+    PyObject *kw = NULL;
+    PyObject **dictptr;
 
-//     args = datatuple_getnewargs(ob);
-//     if (args == NULL)
-//         return NULL;
+    args = datatuple_getnewargs(ob);
+    if (args == NULL)
+        return NULL;
 
-//     if (tp->tp_dictoffset) {
-//         dictptr = dataobject_dictptr(tp, ob);
-//         if (dictptr) {
-//             kw = *dictptr;
-//             if (kw) Py_INCREF(kw);
-//         }
-//     }
-//     if (kw) {
-//         result = PyTuple_Pack(3, Py_TYPE(ob), args, kw);
-// //         Py_DECREF(kw);
-//     } else
-//         result = PyTuple_Pack(2, Py_TYPE(ob), args);
-// //     Py_DECREF(args);
+    if (tp->tp_dictoffset) {
+        dictptr = dataobject_dictptr(tp, ob);
+        if (dictptr) {
+            kw = *dictptr;
+            if (kw) Py_INCREF(kw);
+        }
+    }
+    if (kw) {
+        result = PyTuple_Pack(3, Py_TYPE(ob), args, kw);
+//         Py_DECREF(kw);
+    } else
+        result = PyTuple_Pack(2, Py_TYPE(ob), args);
+//     Py_DECREF(args);
 
-//     return result;
-// }
+    return result;
+}
 
 
 static PyMethodDef datatuple_methods[] = {
     {"__copy__", (PyCFunction)datatuple_copy, METH_NOARGS, datatuple_copy_doc},
     {"__len__", (PyCFunction)datatuple_len, METH_NOARGS, datatuple_len_doc},
     {"__sizeof__",      (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
-    {"__reduce__",      (PyCFunction)dataobject_reduce, METH_NOARGS, dataobject_reduce_doc},
+    {"__reduce__",      (PyCFunction)dataobject_reduce, METH_NOARGS, datatuple_reduce_doc},
     {"__getstate__",      (PyCFunction)dataobject_getstate, METH_NOARGS, dataobject_getstate_doc},
-    {"__getnewargs__",      (PyCFunction)dataobject_getnewargs, METH_NOARGS, dataobject_getnewargs_doc},
+    {"__getnewargs__",      (PyCFunction)dataobject_getnewargs, METH_NOARGS, datatuple_getnewargs_doc},
     {"__setstate__",      (PyCFunction)dataobject_setstate, METH_O, dataobject_setstate_doc},
     {NULL}
 };
@@ -1669,7 +1669,7 @@ static PyTypeObject PyDataTuple_Type = {
     PyObject_GenericGetAttr,                /* tp_getattro */
     PyObject_GenericSetAttr,                /* tp_setattro */
     0,                                      /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_BASETYPE,
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
                                             /* tp_flags */
     dataobject_doc,                           /* tp_doc */
     0,                      /* tp_traverse */
@@ -1681,7 +1681,7 @@ static PyTypeObject PyDataTuple_Type = {
     datatuple_methods,                       /* tp_methods */
     0,                                      /* tp_members */
     0,                                      /* tp_getset */
-    &PyDataObject_Type,                                      /* tp_base */
+    DEFERRED_ADDRESS(&PyDataObject_Type),   /* tp_base */
     0,                                      /* tp_memoryslots */
     0,                                      /* tp_descr_get */
     0,                                      /* tp_descr_set */
@@ -1870,7 +1870,7 @@ dataobjectiter_len(dataobjectiterobject *it)
 PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(it)).");
 
 static PyObject *
-dataobjectiter_reduce(dataobjectiterobject *it, PyObject *Py_UNUSED(ignore))
+dataobjectiter_reduce(dataobjectiterobject *it) //, PyObject *Py_UNUSED(ignore))
 {
 #if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 6
     _Py_IDENTIFIER(iter);
@@ -2301,7 +2301,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
     } else {
         if ((tp_base != &PyDataTuple_Type) && !PyType_IsSubtype(tp_base, &PyDataTuple_Type)) {
             PyErr_SetString(PyExc_TypeError, "the type should be datatuple or it's subtype");
-            return NULL;            
+            return NULL;
         }
     
     }
@@ -2389,19 +2389,6 @@ _set_iterable(PyObject *cls, PyObject *iterable) {
     Py_RETURN_NONE;
 }
 
-static void
-__fix_type(PyObject *tp, PyTypeObject *meta) {
-    PyObject *val;
-    
-    if (tp->ob_type != meta) {
-        val = (PyObject*)tp->ob_type;
-        Py_XDECREF(val);
-        tp->ob_type = meta;
-        Py_INCREF(meta);
-        PyType_Modified((PyTypeObject*)tp);
-    }     
-}
-
 static PyObject*
 _set_dictoffset(PyObject *cls, PyObject *add_dict) {
     PyTypeObject *tp;
@@ -2410,7 +2397,7 @@ _set_dictoffset(PyObject *cls, PyObject *add_dict) {
     tp = (PyTypeObject*)cls;
     state = PyObject_IsTrue(add_dict);
 
-    if (!PyObject_IsInstance((PyObject*)tp, (PyObject*)&PyType_Type)) {
+    if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
         PyErr_SetString(PyExc_TypeError, "argument is not a subtype of the type");        
         return NULL;
     }
@@ -2437,7 +2424,7 @@ _set_weaklistoffset(PyObject *cls, PyObject* add_weakref) {
     int state;
 
     tp = (PyTypeObject*)cls;
-    if (!PyObject_IsInstance((PyObject*)tp, (PyObject*)&PyType_Type)) {
+    if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
         PyErr_SetString(PyExc_TypeError, "argument is not a subtype of the type");        
         return NULL;
     }
@@ -2658,6 +2645,19 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     return cls;
 }
 
+static void
+__fix_type(PyObject *tp, PyTypeObject *meta) {
+    PyObject *val;
+    
+    if (tp->ob_type != meta) {
+        val = (PyObject*)tp->ob_type;
+        Py_XDECREF(val);
+        tp->ob_type = meta;
+        Py_INCREF(meta);
+        PyType_Modified((PyTypeObject*)tp);
+    }     
+}
+
 //////////////////////////////////////////////////
 
 PyDoc_STRVAR(dataobjectmodule_doc,
@@ -2719,7 +2719,10 @@ PyInit__dataobject(void)
         Py_FatalError("Can't initialize dataslotgetset type");    
 
     Py_INCREF(&PyDataObject_Type);
-    PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);    
+    PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
+    
+    Py_INCREF(&PyDataObject_Type);
+    PyDataTuple_Type.tp_base = &PyDataObject_Type;    
     Py_INCREF(&PyDataTuple_Type);
     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);    
 
@@ -2760,6 +2763,9 @@ init_dataobject(void)
 
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
+    
+    Py_INCREF(&PyDataObject_Type);
+    PyDataTuple_Type.tp_base = &PyDataObject_Type;
     Py_INCREF(&PyDataTuple_Type);
     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);    
 

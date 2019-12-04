@@ -63,7 +63,6 @@ del _t, _t1, _o
 #############
 
 def number_of_dataslots(cls):
-    basicsize = cls.__basicsize__
     if cls.__itemsize__:
         basesize = pyvarobject_size
     else:
@@ -87,7 +86,7 @@ def dataslot_offset(cls, i):
 
 def dataitem_offset(cls, i):
     tp_basicsize = cls.__basicsize__
-    return basicsize + i*ref_size
+    return tp_basicsize + i*ref_size
 
 def check_name(name):
     if not isinstance(name, str):
