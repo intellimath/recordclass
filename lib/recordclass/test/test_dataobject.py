@@ -10,12 +10,12 @@ from recordclass.datatype import make_dataclass, make_arrayclass, datatype, asdi
 from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 from recordclass import DataclassStorage
 
-TestPickle1 = make_arrayclass("TestPickle1", fields=3)
-TestPickle2 = make_dataclass("TestPickle2", ('x','y','z'))
-TestPickleV1 = make_arrayclass("TestPickleV1", fields=3, varsize=True)
-TestPickle3 = make_dataclass("TestPickle3", ('x','y','z'), use_dict=True)
-TestPickleV2 = make_dataclass("TestPickleV2", ('x','y','z'), varsize=True)
-TestPickleV3 = make_dataclass("TestPickleV3", ('x','y','z'), varsize=True, use_dict=True)
+TPickle1 = make_arrayclass("TPickle1", fields=3)
+TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
+TPickleV1 = make_arrayclass("TPickleV1", fields=3, varsize=True)
+TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
+# TPickleV2 = make_dataclass("TPickleV2", ('x','y','z'), varsize=True)
+# TPickleV3 = make_dataclass("TPickleV3", ('x','y','z'), varsize=True, use_dict=True)
 
 class arrayobjectTest(unittest.TestCase):
 
@@ -334,14 +334,6 @@ class dataobjectTest(unittest.TestCase):
         a = A(1,2)
         b = a.__copy__()
         self.assertEqual(a, b)
-
-    def test_datatype_copy2(self):
-        A = make_dataclass("A", ('x', 'y'), varsize=True)
-        a = A(1,2,(3,4,5))
-        self.assertEqual(gc.is_tracked(a), False)
-        b = a.__copy__()
-        self.assertEqual(gc.is_tracked(b), False)
-        self.assertEqual(a, b)
         
     def test_datatype_copy_dict(self):
         A = make_dataclass("A", ('x', 'y'), use_dict=True)
@@ -533,7 +525,7 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(t, (1,2,3))
         
     def test_pickle1(self):
-        p = TestPickle1(10, 20, 30)
+        p = TPickle1(10, 20, 30)
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')
@@ -543,7 +535,7 @@ class dataobjectTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle2(self):
-        p = TestPickle2(10, 20, 30)
+        p = TPickle2(10, 20, 30)
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')
@@ -553,7 +545,7 @@ class dataobjectTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle3(self):
-        p = TestPickle3(10, 20, 30)
+        p = TPickle3(10, 20, 30)
         p.a = 1
         p.b = 2
         for module in (pickle,):
@@ -565,39 +557,7 @@ class dataobjectTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle4(self):
-        p = TestPickleV1(10, 20, 30)
-        for module in (pickle,):
-            loads = getattr(module, 'loads')
-            dumps = getattr(module, 'dumps')
-            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
-                tmp = dumps(p, protocol)
-                q = loads(tmp)
-                self.assertEqual(p, q)
-
-    def test_pickle5(self):
-        p = TestPickleV2(10, 20, 30)
-        for module in (pickle,):
-            loads = getattr(module, 'loads')
-            dumps = getattr(module, 'dumps')
-            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
-                tmp = dumps(p, protocol)
-                q = loads(tmp)
-                self.assertEqual(p, q)
-
-    def test_pickle6(self):
-        p = TestPickleV3(10, 20, 30)
-        p.a = 1
-        p.b = 2
-        for module in (pickle,):
-            loads = getattr(module, 'loads')
-            dumps = getattr(module, 'dumps')
-            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
-                tmp = dumps(p, protocol)
-                q = loads(tmp)
-                self.assertEqual(p, q)
-
-    def test_pickle7(self):
-        p = TestPickleV2(10, 20, 30, 100, 200, 300)
+        p = TPickleV1(10, 20, 30)
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')
@@ -637,10 +597,59 @@ class dataobjectTest(unittest.TestCase):
         a = A(x=1,y=2)
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
+
+class datatupleTest(unittest.TestCase):
+    
+    def test_datatype_copy2(self):
+        A = make_dataclass("A", ('x', 'y'), varsize=True)
+        a = A(1,2,(3,4,5))
+        self.assertEqual(gc.is_tracked(a), False)
+        b = a.__copy__()
+        self.assertEqual(gc.is_tracked(b), False)
+        self.assertEqual(a, b)
+        
+    def test_pickle5(self):
+        global TPickleV2
+        TPickleV2 = make_dataclass("TPickleV2", ('x','y','z'), varsize=True)
+        p = TPickleV2(10, 20, 30)
+        for module in (pickle,):
+            loads = getattr(module, 'loads')
+            dumps = getattr(module, 'dumps')
+            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+                tmp = dumps(p, protocol)
+                q = loads(tmp)
+                self.assertEqual(p, q)
+
+    def test_pickle6(self):
+        global TPickleV3
+        TPickleV3 = make_dataclass("TPickleV3", ('x','y','z'), varsize=True, use_dict=True)
+        p = TPickleV3(10, 20, 30)
+        p.a = 1
+        p.b = 2
+        for module in (pickle,):
+            loads = getattr(module, 'loads')
+            dumps = getattr(module, 'dumps')
+            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+                tmp = dumps(p, protocol)
+                q = loads(tmp)
+                self.assertEqual(p, q)
+
+    def test_pickle7(self):
+        global TPickleV2
+        TPickleV2 = make_dataclass("TPickleV2", ('x','y','z'), varsize=True)
+        p = TPickleV2(10, 20, 30, 100, 200, 300)
+        for module in (pickle,):
+            loads = getattr(module, 'loads')
+            dumps = getattr(module, 'dumps')
+            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+                tmp = dumps(p, protocol)
+                q = loads(tmp)
+                self.assertEqual(p, q)
+        
         
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(arrayobjectTest))
     suite.addTest(unittest.makeSuite(dataobjectTest))
+    suite.addTest(unittest.makeSuite(datatupleTest))
     return suite
-

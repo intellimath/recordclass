@@ -7,7 +7,7 @@ import gc
 import weakref
 
 from recordclass import make_dataclass, datatype, DataclassStorage
-from recordclass import dataobject
+from recordclass import dataobject, datatuple
 from recordclass import asdict, clsconfig, enable_gc
 
 _t = ()
@@ -25,6 +25,12 @@ class TestPickle2(dataobject):
 class TestPickle3(dataobject):
     __fields__  = 'x', 'y', 'z', '__dict__'
 
+class TestPickleV2(datatuple):
+    __fields__ = 'x', 'y', 'z'
+
+class TestPickleV3(datatuple):
+    __fields__  = 'x', 'y', 'z', '__dict__'
+    
 class TestPickle22(dataobject):
     x:int
     y:int

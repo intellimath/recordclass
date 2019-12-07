@@ -86,7 +86,7 @@ PyMutableTuple_New(PyTypeObject *tp, Py_ssize_t size)
         return NULL;
 
     memset(op->ob_item, 0, Py_SIZE(op)*sizeof(void*));
-
+    
     if (is_gc)
         PyObject_GC_Track(op);
     
@@ -120,6 +120,8 @@ mutabletuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     } else {
         //assert(PyType_IsSubtype(type, &PyMutableTuple_Type));
         newobj = (PyMutableTupleObject*)(type->tp_alloc(type, n));
+        if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+            Py_INCREF(type);
     }
 
     if (newobj == NULL) {
@@ -185,17 +187,17 @@ mutabletuple_dealloc(PyMutableTupleObject *op)
 }
 
 static void mutabletuple_free(void *o) {
-//     PyTypeObject *type = Py_TYPE(o);
+    PyTypeObject *type = Py_TYPE(o);
 
     if PyType_IS_GC(Py_TYPE((PyObject*)o))
         PyObject_GC_Del((PyObject*)o);
     else
         PyObject_Del((PyObject*)o);
 
-// #if PY_VERSION_HEX >= 0x03080000
-//     // This was not needed before Python 3.8 (Python issue 35810)
-//     Py_DECREF(type);
-// #endif
+#if PY_VERSION_HEX >= 0x03080000
+    // This was not needed before Python 3.8 (Python issue 35810)
+    Py_DECREF(type);
+#endif
 }
 
 static int
@@ -1290,6 +1292,19 @@ PyInit_mutabletuple(void)
 
     if (PyType_Ready(&PyMutableTupleIter_Type) < 0)
         Py_FatalError("Can't initialize mutabletuple iter type");
+    
+#if PY_VERSION_HEX >= 0x03080000
+    if (PyMutableTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+        PyMutableTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+    if (PyImmutableTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+        PyImmutableTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+    if (mutabletuple_itemgetset_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+        mutabletuple_itemgetset_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+    if (PyMutableTupleIter_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+        PyMutableTupleIter_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+    if (ItemGet_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+        ItemGet_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+#endif
     
     Py_INCREF(&PyMutableTuple_Type);
     PyModule_AddObject(m, "mutabletuple", (PyObject *)&PyMutableTuple_Type);

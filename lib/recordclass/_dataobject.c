@@ -1286,57 +1286,57 @@ datatuple_traverse(PyObject *op, visitproc visit, void *arg)
     return 0;
 }
 
-static PyObject *
-datatuple_slot(PyObject *op, Py_ssize_t i)
-{
-    PyTypeObject *type = Py_TYPE(op);
-    PyObject **items;
-    PyObject *v;
+// static PyObject *
+// datatuple_slot(PyObject *op, Py_ssize_t i)
+// {
+//     PyTypeObject *type = Py_TYPE(op);
+//     PyObject **items;
+//     PyObject *v;
 
-    Py_ssize_t n= datatuple_numslots(type);
+//     Py_ssize_t n= datatuple_numslots(type);
 
-    if (i < 0)
-        i += n;
-    if (i < 0 || i >= n) {
-        PyErr_SetString(PyExc_IndexError, "index out of range");
-        return NULL;
-    }
+//     if (i < 0)
+//         i += n;
+//     if (i < 0 || i >= n) {
+//         PyErr_SetString(PyExc_IndexError, "index out of range");
+//         return NULL;
+//     }
 
-    items = datatuple_slots(op);
+//     items = datatuple_slots(op);
 
-    v = items[i];
-    Py_INCREF(v);
-    return v;
-}
+//     v = items[i];
+//     Py_INCREF(v);
+//     return v;
+// }
 
-static int
-datatuple_ass_slot(PyObject *op, Py_ssize_t i, PyObject *val)
-{
-    PyObject **items;
-    PyTypeObject *type = Py_TYPE(op);
-    PyObject* old_val;
+// static int
+// datatuple_ass_slot(PyObject *op, Py_ssize_t i, PyObject *val)
+// {
+//     PyObject **items;
+//     PyTypeObject *type = Py_TYPE(op);
+//     PyObject* old_val;
 
-    Py_ssize_t n = datatuple_numslots(type);
+//     Py_ssize_t n = datatuple_numslots(type);
 
 
-    if (i < 0)
-        i += n;
-    if (i < 0 || i >= n) {
-        PyErr_SetString(PyExc_IndexError, "index out of range");
-        return -1;
-    }
+//     if (i < 0)
+//         i += n;
+//     if (i < 0 || i >= n) {
+//         PyErr_SetString(PyExc_IndexError, "index out of range");
+//         return -1;
+//     }
 
-    items = datatuple_slots(op);
+//     items = datatuple_slots(op);
 
-    items += i;
+//     items += i;
 
-    old_val = *items;
-    if (old_val)
-        Py_DECREF(old_val);
-    Py_INCREF(val);
-    *items = val;
-    return 0;
-}
+//     old_val = *items;
+//     if (old_val)
+//         Py_DECREF(old_val);
+//     Py_INCREF(val);
+//     *items = val;
+//     return 0;
+// }
 
 static PyObject *
 datatuple_item(PyObject *op, Py_ssize_t i)
@@ -1558,83 +1558,83 @@ datatuple_copy(PyObject* op)
 PyDoc_STRVAR(datatuple_getnewargs_doc,
 "T.__getnewargs__()");
 
-static PyObject *
-datatuple_getnewargs(PyObject *op)
-{
-    PyTypeObject *type = Py_TYPE(op);
-    Py_ssize_t i, n_slots = datatuple_numslots(type);
-    Py_ssize_t n_items = Py_SIZE(op);
-    PyObject *args, *tail;
-    PyObject *v;
+// static PyObject *
+// datatuple_getnewargs(PyObject *op)
+// {
+//     PyTypeObject *type = Py_TYPE(op);
+//     Py_ssize_t i, n_slots = datatuple_numslots(type);
+//     Py_ssize_t n_items = Py_SIZE(op);
+//     PyObject *args, *tail;
+//     PyObject *v;
 
-    args = PyTuple_New(n_slots+1);
-    if (args == NULL)
-        return NULL;
+//     args = PyTuple_New(n_slots+1);
+//     if (args == NULL)
+//         return NULL;
     
-    for (i=0; i<n_slots; i++) {
-        v = datatuple_slot(op, i);
-        if (!v) {
-            Py_DECREF(args);
-            return NULL;
-        }
-        PyTuple_SET_ITEM(args, i, v);
-    }
+//     for (i=0; i<n_slots; i++) {
+//         v = datatuple_slot(op, i);
+//         if (!v) {
+//             Py_DECREF(args);
+//             return NULL;
+//         }
+//         PyTuple_SET_ITEM(args, i, v);
+//     }
 
-    tail = PyTuple_New(n_items);
-    if (tail == NULL) {
-        Py_DECREF(args);
-        return NULL;
-    }
+//     tail = PyTuple_New(n_items);
+//     if (tail == NULL) {
+//         Py_DECREF(args);
+//         return NULL;
+//     }
 
-    if (n_items > 0) {
-        for (i=0; i<n_items; i++) {
-            v = datatuple_item(op, n_slots+i);
-            if (!v) {
-                Py_DECREF(args);
-                return NULL;
-            }
-            PyTuple_SET_ITEM(tail, i, v);
-        }
-    }
+//     if (n_items > 0) {
+//         for (i=0; i<n_items; i++) {
+//             v = datatuple_item(op, n_slots+i);
+//             if (!v) {
+//                 Py_DECREF(args);
+//                 return NULL;
+//             }
+//             PyTuple_SET_ITEM(tail, i, v);
+//         }
+//     }
     
-    PyTuple_SET_ITEM(args, n_slots, tail);
+//     PyTuple_SET_ITEM(args, n_slots, tail);
     
     
-    return args;
-}
+//     return args;
+// }
 
 PyDoc_STRVAR(datatuple_reduce_doc,
 "T.__reduce__()");
 
-static PyObject *
-datatuple_reduce(PyObject *ob)
-{
-    PyObject *args;
-    PyObject *result;
-    PyTypeObject *tp = Py_TYPE(ob);
-    PyObject *kw = NULL;
-    PyObject **dictptr;
+// static PyObject *
+// datatuple_reduce(PyObject *ob)
+// {
+//     PyObject *args;
+//     PyObject *result;
+//     PyTypeObject *tp = Py_TYPE(ob);
+//     PyObject *kw = NULL;
+//     PyObject **dictptr;
 
-    args = datatuple_getnewargs(ob);
-    if (args == NULL)
-        return NULL;
+//     args = dataobject_getnewargs(ob);
+//     if (args == NULL)
+//         return NULL;
 
-    if (tp->tp_dictoffset) {
-        dictptr = dataobject_dictptr(tp, ob);
-        if (dictptr) {
-            kw = *dictptr;
-            if (kw) Py_INCREF(kw);
-        }
-    }
-    if (kw) {
-        result = PyTuple_Pack(3, Py_TYPE(ob), args, kw);
-//         Py_DECREF(kw);
-    } else
-        result = PyTuple_Pack(2, Py_TYPE(ob), args);
-//     Py_DECREF(args);
+//     if (tp->tp_dictoffset) {
+//         dictptr = dataobject_dictptr(tp, ob);
+//         if (dictptr) {
+//             kw = *dictptr;
+//             if (kw) Py_INCREF(kw);
+//         }
+//     }
+//     if (kw) {
+//         result = PyTuple_Pack(3, Py_TYPE(ob), args, kw);
+// //         Py_DECREF(kw);
+//     } else
+//         result = PyTuple_Pack(2, Py_TYPE(ob), args);
+// //     Py_DECREF(args);
 
-    return result;
-}
+//     return result;
+// }
 
 
 static PyMethodDef datatuple_methods[] = {
@@ -1974,7 +1974,7 @@ dataobject_iter(PyObject *seq)
 struct dataslotgetset_object {
     PyObject_HEAD
     Py_ssize_t offset;
-    short readonly;
+    int readonly;
 };
 
 static PyMethodDef dataslotgetset_methods[] = {
@@ -1995,17 +1995,17 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
     }
 
     item = PyTuple_GET_ITEM(args, 0);
-    if (len == 2)
-        readonly = PyObject_IsTrue(PyTuple_GET_ITEM(args, 1));
-    else
-        readonly = 0;
-
     offset = PyNumber_AsSsize_t(item, PyExc_IndexError);
     if (offset == -1 && PyErr_Occurred()) {
-        Py_DECREF(ob);
         return NULL;
     }
 
+    item = PyTuple_GET_ITEM(args, 1);
+    if (len == 2)
+        readonly = PyObject_IsTrue(item);
+    else
+        readonly = 0;
+    
     ob = (struct dataslotgetset_object*)PyBaseObject_Type.tp_new(t, PyTuple_New(0), 0);    
     if (ob == NULL)
         return NULL;
@@ -2541,6 +2541,13 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     
     PyType_Modified(tp);
 
+//     if (tp->tp_finalize) { printf("has finilize\n"); }
+
+#if PY_VERSION_HEX >= 0x03080000
+    if (tp->tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+        tp->tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+#endif
+
     Py_RETURN_NONE;
 }
 
@@ -2674,11 +2681,7 @@ static PyMethodDef dataobjectmodule_methods[] = {
 
 #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef dataobjectmodule = {
-  #if PY_VERSION_HEX < 0x03020000
-    { PyObject_HEAD_INIT(NULL) NULL, 0, NULL },
-  #else
     PyModuleDef_HEAD_INIT,
-  #endif
     "recordclass._dataobject",
     dataobjectmodule_doc,
     -1,
@@ -2717,6 +2720,17 @@ PyInit__dataobject(void)
 
     if (PyType_Ready(&PyDataSlotGetSet_Type) < 0)
         Py_FatalError("Can't initialize dataslotgetset type");    
+    
+#if PY_VERSION_HEX >= 0x03080000
+    if (PyDataObject_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+        PyDataObject_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+    if (PyDataTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+        PyDataTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+    if (PyDataObjectIter_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+        PyDataObjectIter_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+    if (PyDataSlotGetSet_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+        PyDataSlotGetSet_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+#endif    
 
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
@@ -2760,7 +2774,7 @@ init_dataobject(void)
 
     if (PyType_Ready(&PyDataSlotGetSet_Type) < 0)
         Py_FatalError("Can't initialize dataslotgetset type");
-
+    
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
     

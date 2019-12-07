@@ -311,7 +311,7 @@ class datatype(type):
                    use_weakref=use_weakref, iterable=iterable, hashable=hashable)
 
         if has_fields:
-            if readonly is None or type(readonly) is bool:
+            if not readonly:
                 if readonly:
                     readonly_fields = set(fields)
                 else:
@@ -320,10 +320,11 @@ class datatype(type):
                 readonly_fields = set(readonly)
 
             for i, name in enumerate(fields):
+                offset = dataslot_offset(cls, i)
                 if name in readonly_fields:
-                    setattr(cls, name, dataslotgetset(dataslot_offset(cls, i), True))
+                    setattr(cls, name, dataslotgetset(offset, True))
                 else:
-                    setattr(cls, name, dataslotgetset(dataslot_offset(cls, i)))
+                    setattr(cls, name, dataslotgetset(offset))
 
         return cls
 
