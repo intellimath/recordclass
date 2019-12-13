@@ -299,6 +299,13 @@ class dataobjectTest(unittest.TestCase):
         with self.assertRaises(TypeError):     
             a['x']
 
+    def test_dataobject_local_dict(self):
+        A = make_dataclass("A", ('x', 'y'), use_dict=True)
+        a = A(1,2)
+        a.a = 1
+        self.assertEqual(a.a, 1)
+        self.assertEqual(a.__dict__, {'a':1})
+
     def test_datatype_sq_nomp(self):
         A = make_dataclass("A", ('x', 'y'), sequence=True)
 

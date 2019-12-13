@@ -2011,7 +2011,7 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
 
 #if PY_VERSION_HEX < 0x03080000
     // Workaround for Python issue 35810; no longer necessary in Python 3.8
-    Py_INCREF(t)
+    Py_INCREF(t);
 #endif    
     ob->readonly = readonly;
     ob->offset = offset;
@@ -2557,10 +2557,10 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
 //     if (tp->tp_finalize) { printf("has finilize\n"); }
 
-#if PY_VERSION_HEX >= 0x03080000
-    if (tp->tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-        tp->tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-#endif
+// #if PY_VERSION_HEX >= 0x03080000
+//     if (tp->tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+//         tp->tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+// #endif
 
     Py_DECREF(__dict__);
 
@@ -2737,16 +2737,16 @@ PyInit__dataobject(void)
     if (PyType_Ready(&PyDataSlotGetSet_Type) < 0)
         Py_FatalError("Can't initialize dataslotgetset type");    
     
-#if PY_VERSION_HEX >= 0x03080000
-    if (PyDataObject_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-        PyDataObject_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-    if (PyDataTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-        PyDataTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-    if (PyDataObjectIter_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-        PyDataObjectIter_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-    if (PyDataSlotGetSet_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-        PyDataSlotGetSet_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-#endif    
+// #if PY_VERSION_HEX >= 0x03080000
+//     if (PyDataObject_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+//         PyDataObject_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+//     if (PyDataTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+//         PyDataTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+//     if (PyDataObjectIter_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+//         PyDataObjectIter_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+//     if (PyDataSlotGetSet_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+//         PyDataSlotGetSet_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+// #endif    
 
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
