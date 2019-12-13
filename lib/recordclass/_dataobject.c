@@ -2752,8 +2752,13 @@ PyInit__dataobject(void)
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
     
 //     Py_INCREF(&PyDataObject_Type);
-    PyDataTuple_Type.tp_base = &PyDataObject_Type;    
+    if (PyDataTuple_Type.tp_base)
+        Py_DECREF(PyDataTuple_Type.tp_base);
+    PyDataTuple_Type.tp_base = &PyDataObject_Type;
     Py_INCREF(&PyDataTuple_Type);
+    if (PyDataTuple_Type.tp_bases)
+        Py_DECREF(PyDataTuple_Type.tp_bases);
+    PyDataTuple_Type.tp_bases = PyTuple_Pack(1, &PyDataObject_Type);
     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);    
 
     Py_INCREF(&PyDataObjectIter_Type);
@@ -2795,8 +2800,13 @@ init_dataobject(void)
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
     
 //     Py_INCREF(&PyDataObject_Type);
+    if (PyDataTuple_Type.tp_base)
+        Py_DECREF(PyDataTuple_Type.tp_base);
     PyDataTuple_Type.tp_base = &PyDataObject_Type;
     Py_INCREF(&PyDataTuple_Type);
+    if (PyDataTuple_Type.tp_bases)
+        Py_DECREF(PyDataTuple_Type.tp_bases);
+    PyDataTuple_Type.tp_bases = PyTuple_Pack(1, &PyDataObject_Type);
     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);    
 
     Py_INCREF(&PyDataObjectIter_Type);
