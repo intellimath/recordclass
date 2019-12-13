@@ -24,7 +24,6 @@
 #undef Py_LIMITED_API
 #endif
 
-#include "pyconfig.h"
 #include "Python.h"
 #include <string.h>
 
@@ -2010,13 +2009,23 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
     if (ob == NULL)
         return NULL;
 
+#if PY_VERSION_HEX < 0x03080000
+    // Workaround for Python issue 35810; no longer necessary in Python 3.8
+    Py_INCREF(t)
+#endif    
     ob->readonly = readonly;
     ob->offset = offset;
     return (PyObject*)ob;
 }
 
 static void dataslotgetset_dealloc(PyObject *o) {
+    PyTypeObject *t = Py_TYPE(o);
+
     PyObject_Del(o);
+#if PY_VERSION_HEX >= 0x03080000
+    // This was not needed before Python 3.8 (Python issue 35810)
+    Py_DECREF(t);
+#endif
 }
 
 #define dataobject_item_by_offset(op, offset) (*((PyObject**)((char*)op + offset)))
@@ -2470,6 +2479,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     __dict__ = PyObject_GetAttrString(cls, "__dict__");
 
     fields = PyMapping_GetItemString(__dict__, "__fields__");
+
     if (!fields){
         PyErr_SetString(PyExc_TypeError, "__fields__ is missing");
         return NULL;    
@@ -2480,10 +2490,14 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         has_fields = 1;
     } else {
         n_fields = PyNumber_AsSsize_t(fields, PyExc_IndexError);
-        if (n_fields == -1 && PyErr_Occurred())
+        if (n_fields == -1 && PyErr_Occurred()) {
+            Py_DECREF(fields);
             return NULL;
+        }
         has_fields = 0;
     }
+    
+    Py_DECREF(fields);
     
     tp = (PyTypeObject*)cls;
     tp_base = tp->tp_base;
@@ -2547,6 +2561,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     if (tp->tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
         tp->tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
 #endif
+
+    Py_DECREF(__dict__);
 
     Py_RETURN_NONE;
 }
@@ -2735,7 +2751,7 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
     
-    Py_INCREF(&PyDataObject_Type);
+//     Py_INCREF(&PyDataObject_Type);
     PyDataTuple_Type.tp_base = &PyDataObject_Type;    
     Py_INCREF(&PyDataTuple_Type);
     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);    
@@ -2778,7 +2794,7 @@ init_dataobject(void)
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
     
-    Py_INCREF(&PyDataObject_Type);
+//     Py_INCREF(&PyDataObject_Type);
     PyDataTuple_Type.tp_base = &PyDataObject_Type;
     Py_INCREF(&PyDataTuple_Type);
     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);    
