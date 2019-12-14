@@ -2019,7 +2019,9 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
 }
 
 static void dataslotgetset_dealloc(PyObject *o) {
+#if PY_VERSION_HEX >= 0x03080000
     PyTypeObject *t = Py_TYPE(o);
+#endif
 
     PyObject_Del(o);
 #if PY_VERSION_HEX >= 0x03080000
@@ -2751,14 +2753,14 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
     
-//     Py_INCREF(&PyDataObject_Type);
-    if (PyDataTuple_Type.tp_base)
-        Py_DECREF(PyDataTuple_Type.tp_base);
+    Py_INCREF(&PyDataObject_Type);
+    Py_XDECREF(PyDataTuple_Type.tp_base);
     PyDataTuple_Type.tp_base = &PyDataObject_Type;
-    Py_INCREF(&PyDataTuple_Type);
-    if (PyDataTuple_Type.tp_bases)
-        Py_DECREF(PyDataTuple_Type.tp_bases);
+    
+    Py_XDECREF(PyDataTuple_Type.tp_bases);
     PyDataTuple_Type.tp_bases = PyTuple_Pack(1, &PyDataObject_Type);
+    
+    Py_INCREF(&PyDataTuple_Type);
     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);    
 
     Py_INCREF(&PyDataObjectIter_Type);
@@ -2799,14 +2801,14 @@ init_dataobject(void)
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
     
-//     Py_INCREF(&PyDataObject_Type);
-    if (PyDataTuple_Type.tp_base)
-        Py_DECREF(PyDataTuple_Type.tp_base);
+    Py_INCREF(&PyDataObject_Type);
+    Py_XDECREF(PyDataTuple_Type.tp_base);
     PyDataTuple_Type.tp_base = &PyDataObject_Type;
-    Py_INCREF(&PyDataTuple_Type);
-    if (PyDataTuple_Type.tp_bases)
-        Py_DECREF(PyDataTuple_Type.tp_bases);
+    
+    Py_XDECREF(PyDataTuple_Type.tp_bases);
     PyDataTuple_Type.tp_bases = PyTuple_Pack(1, &PyDataObject_Type);
+    
+    Py_INCREF(&PyDataTuple_Type);
     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);    
 
     Py_INCREF(&PyDataObjectIter_Type);

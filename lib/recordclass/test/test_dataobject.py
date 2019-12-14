@@ -645,7 +645,6 @@ class datatupleTest(unittest.TestCase):
         global TPickleV2
         TPickleV2 = make_dataclass("TPickleV2", ('x','y','z'), varsize=True)
         p = TPickleV2(10, 20, 30, 100, 200, 300)
-        print(p)
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')

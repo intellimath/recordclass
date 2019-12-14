@@ -287,7 +287,8 @@ Here are also table with some performance counters:
 #### 0.13
 
 * Remove arrayclass.py in favor of `dataobject`-based array-like subclasses.
-* Move repository to git instead of mercurial since bitbucket will drop support of the last.
+* Move repository to git instead of mercurial since bitbucket will drop support of mercurial repositories.
+* Fix some potential reference leaks.
 
 #### 0.12.0.1
 
