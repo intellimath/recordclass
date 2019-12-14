@@ -2484,6 +2484,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     if (!fields){
         PyErr_SetString(PyExc_TypeError, "__fields__ is missing");
+        Py_DECREF(__dict__);
         return NULL;    
     }
     
@@ -2493,6 +2494,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     } else {
         n_fields = PyNumber_AsSsize_t(fields, PyExc_IndexError);
         if (n_fields == -1 && PyErr_Occurred()) {
+            Py_DECREF(__dict__);
             Py_DECREF(fields);
             return NULL;
         }
@@ -2514,6 +2516,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         } else {
             PyErr_SetString(PyExc_TypeError, 
                             "common base class should be dataobject, datatuple or subclass");        
+            Py_DECREF(__dict__);
             return NULL;
         }
     }
@@ -2522,6 +2525,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         tp->tp_basicsize += n_fields * sizeof(PyObject*);
     } else {
         PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");        
+        Py_DECREF(__dict__);
         return NULL;    
     }
 
