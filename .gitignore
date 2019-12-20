@@ -3,7 +3,9 @@ MANIFEST
 python/build
 python/dist
 python/doc/_build
-ipynb_checkpoints
+.ipynb_checkpoints
+build/
+dist/
 *.pyc
 *.pyo
 __pycache__
