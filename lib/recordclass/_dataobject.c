@@ -923,10 +923,10 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
         dictptr = dataobject_dictptr(tp, ob);
         if (dictptr) {
             kw = *dictptr;
-            if (kw) Py_INCREF(kw);
         }
     }
     if (kw) {
+        Py_INCREF(kw);
         result = PyTuple_Pack(3, tp, args, kw);
     } else
         result = PyTuple_Pack(2, tp, args);
@@ -1207,9 +1207,9 @@ datatuple_clear(PyObject *op)
         }
     }
 
-    items = datatuple_items(type, op);
     n_items = Py_SIZE(op);
     if (n_items) {
+        items = datatuple_items(type, op);
         while (n_items-- > 0) {
             PyObject *v;
 

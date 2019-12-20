@@ -510,7 +510,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
         
 
-    def test_pickle2(self):
+    def test_pickle2a(self):
         p = TestPickle2(10, 20, 30)
 #         print(p.__sizeof__())
         for module in (pickle,):
@@ -521,7 +521,7 @@ class DataObjectTest3(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
 
-    def test_pickle3(self):
+    def test_pickle3a(self):
         p = TestPickle3(10, 20, 30)
         p.a = 1
         p.b = 2
