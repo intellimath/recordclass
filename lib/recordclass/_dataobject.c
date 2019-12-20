@@ -926,11 +926,12 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
         }
     }
     if (kw) {
-        Py_INCREF(kw);
+//         Py_INCREF(kw);
         result = PyTuple_Pack(3, tp, args, kw);
     } else
         result = PyTuple_Pack(2, tp, args);
 
+    Py_DECREF(args);
     return result;
 }
 
