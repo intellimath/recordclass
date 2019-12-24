@@ -640,20 +640,6 @@ class datatupleTest(unittest.TestCase):
                 tmp = dumps(p, protocol)
                 q = loads(tmp)
                 self.assertEqual(p, q)
-
-    def test_pickle6a(self):
-        global TPickleV3
-        TPickleV3 = make_dataclass("TPickleV3", ('x','y','z'), varsize=True, use_dict=True)
-        p = TPickleV3(10, 20, 30, 100, 200, 300)
-        p.a = 1
-        p.b = 2
-        for module in (pickle,):
-            loads = getattr(module, 'loads')
-            dumps = getattr(module, 'dumps')
-            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
-                tmp = dumps(p, protocol)
-                q = loads(tmp)
-                self.assertEqual(p, q)
                 
     def test_pickle7(self):
         global TPickleV2
@@ -667,6 +653,19 @@ class datatupleTest(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
         
+    def test_pickle8(self):
+        global TPickleV3
+        TPickleV3 = make_dataclass("TPickleV3", ('x','y','z'), varsize=True, use_dict=True)
+        p = TPickleV3(10, 20, 30, 100, 200, 300)
+        p.a = 1
+        p.b = 2
+        for module in (pickle,):
+            loads = getattr(module, 'loads')
+            dumps = getattr(module, 'dumps')
+            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+                tmp = dumps(p, protocol)
+                q = loads(tmp)
+                self.assertEqual(p, q)
         
 def main():
     suite = unittest.TestSuite()
