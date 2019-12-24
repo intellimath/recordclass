@@ -1541,7 +1541,7 @@ datatuple_copy(PyObject* op)
                 PyErr_SetString(PyExc_TypeError, "failed to create new dict");
                 return NULL;                                    
             }
-            *new_dictptr = new_dict;                        
+            *new_dictptr = new_dict;
         }
         
         if (dict) {

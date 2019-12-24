@@ -14,8 +14,10 @@ TPickle1 = make_arrayclass("TPickle1", fields=3)
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
 TPickleV1 = make_arrayclass("TPickleV1", fields=3, varsize=True)
 TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
-# TPickleV2 = make_dataclass("TPickleV2", ('x','y','z'), varsize=True)
-# TPickleV3 = make_dataclass("TPickleV3", ('x','y','z'), varsize=True, use_dict=True)
+TPickleV5 = make_dataclass("TPickleV5", ('x','y','z'), varsize=True)
+TPickleV6 = make_dataclass("TPickleV6", ('x','y','z'), varsize=True, use_dict=True)
+TPickleV7 = make_dataclass("TPickleV7", ('x','y','z'), varsize=True)
+TPickleV8 = make_dataclass("TPickleV8", ('x','y','z'), varsize=True, use_dict=True)
 
 class arrayobjectTest(unittest.TestCase):
 
@@ -626,8 +628,6 @@ class datatupleTest(unittest.TestCase):
         self.assertEqual(a, b)
         
     def test_pickle5(self):
-        global TPickleV5
-        TPickleV5 = make_dataclass("TPickleV5", ('x','y','z'), varsize=True)
         p = TPickleV5(10, 20, 30)
         for module in (pickle,):
             loads = getattr(module, 'loads')
@@ -638,8 +638,6 @@ class datatupleTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle6(self):
-        global TPickleV6
-        TPickleV6 = make_dataclass("TPickleV6", ('x','y','z'), varsize=True, use_dict=True)
         p = TPickleV6(10, 20, 30)
         p.a = 1
         p.b = 2
@@ -652,8 +650,6 @@ class datatupleTest(unittest.TestCase):
                 self.assertEqual(p, q)
                 
     def test_pickle7(self):
-        global TPickleV7
-        TPickleV7 = make_dataclass("TPickleV7", ('x','y','z'), varsize=True)
         p = TPickleV7(10, 20, 30, 100, 200, 300)
         for module in (pickle,):
             loads = getattr(module, 'loads')
@@ -662,10 +658,8 @@ class datatupleTest(unittest.TestCase):
                 tmp = dumps(p, protocol)
                 q = loads(tmp)
                 self.assertEqual(p, q)
-        
+
     def test_pickle8(self):
-        global TPickleV8
-        TPickleV8 = make_dataclass("TPickleV8", ('x','y','z'), varsize=True, use_dict=True)
         p = TPickleV8(10, 20, 30, 100, 200, 300)
         p.a = 1
         p.b = 2
