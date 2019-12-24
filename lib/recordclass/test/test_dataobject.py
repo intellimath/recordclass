@@ -607,18 +607,28 @@ class dataobjectTest(unittest.TestCase):
 
 class datatupleTest(unittest.TestCase):
     
-    def test_datatype_copy2(self):
+    def test_datatype_copy1(self):
         A = make_dataclass("A", ('x', 'y'), varsize=True)
-        a = A(1,2,(3,4,5))
+        a = A(1,2,3,4,5)
+        self.assertEqual(gc.is_tracked(a), False)
+        b = a.__copy__()
+        self.assertEqual(gc.is_tracked(b), False)
+        self.assertEqual(a, b)
+
+    def test_datatype_copy2(self):
+        A = make_dataclass("A", ('x', 'y'), varsize=True, use_dict=True)
+        a = A(1,2,3,4,5)
+        a.a=1
+        a.b=2
         self.assertEqual(gc.is_tracked(a), False)
         b = a.__copy__()
         self.assertEqual(gc.is_tracked(b), False)
         self.assertEqual(a, b)
         
     def test_pickle5(self):
-        global TPickleV2
-        TPickleV2 = make_dataclass("TPickleV2", ('x','y','z'), varsize=True)
-        p = TPickleV2(10, 20, 30)
+        global TPickleV5
+        TPickleV5 = make_dataclass("TPickleV5", ('x','y','z'), varsize=True)
+        p = TPickleV5(10, 20, 30)
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')
@@ -628,9 +638,9 @@ class datatupleTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle6(self):
-        global TPickleV3
-        TPickleV3 = make_dataclass("TPickleV3", ('x','y','z'), varsize=True, use_dict=True)
-        p = TPickleV3(10, 20, 30)
+        global TPickleV6
+        TPickleV6 = make_dataclass("TPickleV6", ('x','y','z'), varsize=True, use_dict=True)
+        p = TPickleV6(10, 20, 30)
         p.a = 1
         p.b = 2
         for module in (pickle,):
@@ -642,9 +652,9 @@ class datatupleTest(unittest.TestCase):
                 self.assertEqual(p, q)
                 
     def test_pickle7(self):
-        global TPickleV2
-        TPickleV2 = make_dataclass("TPickleV2", ('x','y','z'), varsize=True)
-        p = TPickleV2(10, 20, 30, 100, 200, 300)
+        global TPickleV7
+        TPickleV7 = make_dataclass("TPickleV7", ('x','y','z'), varsize=True)
+        p = TPickleV7(10, 20, 30, 100, 200, 300)
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')
@@ -654,9 +664,9 @@ class datatupleTest(unittest.TestCase):
                 self.assertEqual(p, q)
         
     def test_pickle8(self):
-        global TPickleV3
-        TPickleV3 = make_dataclass("TPickleV3", ('x','y','z'), varsize=True, use_dict=True)
-        p = TPickleV3(10, 20, 30, 100, 200, 300)
+        global TPickleV8
+        TPickleV8 = make_dataclass("TPickleV8", ('x','y','z'), varsize=True, use_dict=True)
+        p = TPickleV8(10, 20, 30, 100, 200, 300)
         p.a = 1
         p.b = 2
         for module in (pickle,):
