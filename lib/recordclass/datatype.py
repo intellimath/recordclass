@@ -170,8 +170,8 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
 make_class = make_dataclass
 
 def make_arrayclass(typename, fields=0, bases=None, namespace=None, 
-                 varsize=False, use_dict=False, use_weakref=False, hashable=False,
-                 readonly=False, gc=False,
+                 varsize=False, use_dict=False, use_weakref=False,
+                 hashable=False, readonly=False, gc=False,
                  module=None):
 
     from ._dataobject import dataobject, datatuple, enable_gc
@@ -225,8 +225,11 @@ class datatype(type):
         mapping = options.get('mapping', False)
         iterable = options.get('iterable', False)
         argsonly = options.get('argsonly', False)
-        use_dict = options.get('dict', False)
-        use_weakref = options.get('weakref', False)
+#         use_dict = options.get('dict', False)
+#         use_weakref = options.get('weakref', False)
+
+        use_dict = False
+        use_weakref = False
 
         if not bases:
             raise TypeError("The base class in not specified")
@@ -343,14 +346,14 @@ def make_new_function(typename, fields, defaults, annotations, varsize, use_dict
             new_func_template = \
 """
 def __new__(cls, {2}, *args, **kw):
-    'Create new instance: {0}({1})'
+    'Create new instance: {0}({1}, *args, **kw)'
     return _method_new(cls, {1}, *args, **kw)
 """            
         else:
             new_func_template = \
 """
 def __new__(cls, {2}, **kw):
-    'Create new instance: {0}({1})'
+    'Create new instance: {0}({1}, **kw)'
     return _method_new(cls, {1}, **kw)
 """
     else:
@@ -358,7 +361,7 @@ def __new__(cls, {2}, **kw):
             new_func_template = \
 """
 def __new__(cls, {2}, *args):
-    'Create new instance: {0}({1})'
+    'Create new instance: {0}({1}, *args)'
     return _method_new(cls, {1}, *args)
 """
         else:

@@ -2,10 +2,10 @@
 import unittest, doctest, operator
 from recordclass import structclass
 
-try:
-    from test import support
-except:
-    from test import test_support as support
+# try:
+#     from test import support
+# except:
+#     from test import test_support as support
 
 import pickle
 import typing

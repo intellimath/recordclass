@@ -1681,7 +1681,7 @@ static PyTypeObject PyDataTuple_Type = {
     datatuple_methods,                       /* tp_methods */
     0,                                      /* tp_members */
     0,                                      /* tp_getset */
-    DEFERRED_ADDRESS(&PyDataObject_Type),   /* tp_base */
+    &PyDataObject_Type,   /* tp_base */
     0,                                      /* tp_memoryslots */
     0,                                      /* tp_descr_get */
     0,                                      /* tp_descr_set */
