@@ -1681,7 +1681,7 @@ static PyTypeObject PyDataTuple_Type = {
     datatuple_methods,                       /* tp_methods */
     0,                                      /* tp_members */
     0,                                      /* tp_getset */
-    &PyDataObject_Type,   /* tp_base */
+    DEFERRED_ADDRESS(&PyDataObject_Type),   /* tp_base */
     0,                                      /* tp_memoryslots */
     0,                                      /* tp_descr_get */
     0,                                      /* tp_descr_set */
@@ -2758,9 +2758,9 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
     
-//     Py_INCREF(&PyDataObject_Type);
-//     Py_XDECREF(PyDataTuple_Type.tp_base);
-//     PyDataTuple_Type.tp_base = &PyDataObject_Type;
+    Py_INCREF(&PyDataObject_Type);
+    Py_XDECREF(PyDataTuple_Type.tp_base);
+    PyDataTuple_Type.tp_base = &PyDataObject_Type;
     
     Py_XDECREF(PyDataTuple_Type.tp_bases);
     PyDataTuple_Type.tp_bases = PyTuple_Pack(1, &PyDataObject_Type);
@@ -2806,9 +2806,9 @@ init_dataobject(void)
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
     
-//     Py_INCREF(&PyDataObject_Type);
-//     Py_XDECREF(PyDataTuple_Type.tp_base);
-//     PyDataTuple_Type.tp_base = &PyDataObject_Type;
+    Py_INCREF(&PyDataObject_Type);
+    Py_XDECREF(PyDataTuple_Type.tp_base);
+    PyDataTuple_Type.tp_base = &PyDataObject_Type;
     
     Py_XDECREF(PyDataTuple_Type.tp_bases);
     PyDataTuple_Type.tp_bases = PyTuple_Pack(1, &PyDataObject_Type);
