@@ -1942,7 +1942,7 @@ PyTypeObject PyDataObjectIter_Type = {
     PyObject_GenericGetAttr,                    /* tp_getattro */
     0,                                          /* tp_setattro */
     0,                                          /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,                         /* tp_flags */
+    Py_TPFLAGS_DEFAULT,                         /* tp_flags */
     0,                                          /* tp_doc */
     0,     /* tp_traverse */
     0,             /* tp_clear */
@@ -2112,7 +2112,7 @@ static PyTypeObject PyDataSlotGetSet_Type = {
     0, /*tp_getattro*/
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    Py_TPFLAGS_DEFAULT, /*tp_flags*/
     0, /*tp_doc*/
     0, /*tp_traverse*/
     0, /*tp_clear*/
@@ -2735,6 +2735,8 @@ PyInit__dataobject(void)
     
     if (PyType_Ready(&PyDataObject_Type) < 0)
         Py_FatalError("Can't initialize dataobject type");
+    
+    PyDataTuple_Type.tp_base = &PyDataObject_Type;
     if (PyType_Ready(&PyDataTuple_Type) < 0)
         Py_FatalError("Can't initialize datatuple type");
 
@@ -2757,13 +2759,6 @@ PyInit__dataobject(void)
 
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
-    
-    Py_INCREF(&PyDataObject_Type);
-    Py_XDECREF(PyDataTuple_Type.tp_base);
-    PyDataTuple_Type.tp_base = &PyDataObject_Type;
-    
-    Py_XDECREF(PyDataTuple_Type.tp_bases);
-    PyDataTuple_Type.tp_bases = PyTuple_Pack(1, &PyDataObject_Type);
     
     Py_INCREF(&PyDataTuple_Type);
     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);    
@@ -2794,6 +2789,8 @@ init_dataobject(void)
 
     if (PyType_Ready(&PyDataObject_Type) < 0)
          Py_FatalError("Can't initialize dataobject type");
+    
+    PyDataTuple_Type.tp_base = &PyDataObject_Type;
     if (PyType_Ready(&PyDataTuple_Type) < 0)
         Py_FatalError("Can't initialize datatuple type");
 
@@ -2805,14 +2802,7 @@ init_dataobject(void)
     
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
-    
-    Py_INCREF(&PyDataObject_Type);
-    Py_XDECREF(PyDataTuple_Type.tp_base);
-    PyDataTuple_Type.tp_base = &PyDataObject_Type;
-    
-    Py_XDECREF(PyDataTuple_Type.tp_bases);
-    PyDataTuple_Type.tp_bases = PyTuple_Pack(1, &PyDataObject_Type);
-    
+        
     Py_INCREF(&PyDataTuple_Type);
     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);    
 
