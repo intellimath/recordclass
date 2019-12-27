@@ -244,7 +244,7 @@ dataobject_free(void *op)
 {
     PyTypeObject *type = Py_TYPE((PyObject*)op);
     int is_gc = PyType_IS_GC(type);
-    
+
     if (!is_gc)
         PyObject_Del((PyObject*)op);
     else
@@ -2553,8 +2553,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     
     tp->tp_flags |= Py_TPFLAGS_HEAPTYPE;
     
-    if (tp->tp_flags & Py_TPFLAGS_HAVE_GC)
-        tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
+//     if (tp->tp_flags & Py_TPFLAGS_HAVE_GC)
+    tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
 
     tp->tp_traverse = NULL;
     tp->tp_clear = NULL;
