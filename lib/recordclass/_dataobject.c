@@ -1971,11 +1971,11 @@ dataobject_iter(PyObject *seq)
 
 ////////////////////////////////////////////////////////////////////////
 
-struct dataslotgetset_object {
+typedef struct {
     PyObject_HEAD
     Py_ssize_t offset;
     int readonly;
-};
+} dataslotgetset_object;
 
 static PyMethodDef dataslotgetset_methods[] = {
 //   {"__set_name__", dataslotgetset_setname, METH_VARARGS, dataslotgetset_setname_doc},
@@ -1983,7 +1983,7 @@ static PyMethodDef dataslotgetset_methods[] = {
 };
 
 static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k) {    
-    struct dataslotgetset_object *ob = NULL;
+    dataslotgetset_object *ob = NULL;
     PyObject *item;
     Py_ssize_t len, offset;
     int readonly;
@@ -2006,7 +2006,7 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
     else
         readonly = 0;
     
-    ob = (struct dataslotgetset_object*)PyBaseObject_Type.tp_new(t, PyTuple_New(0), 0);    
+    ob = PyObject_New(dataslotgetset_object, t);    
     if (ob == NULL)
         return NULL;
 
@@ -2020,21 +2020,21 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
 }
 
 static void dataslotgetset_dealloc(PyObject *o) {
-#if PY_VERSION_HEX >= 0x03080000
-    PyTypeObject *t = Py_TYPE(o);
-#endif
+// #if PY_VERSION_HEX >= 0x03080000
+//     PyTypeObject *t = Py_TYPE(o);
+// #endif
 
     PyObject_Del(o);
-#if PY_VERSION_HEX >= 0x03080000
-    // This was not needed before Python 3.8 (Python issue 35810)
-    Py_DECREF(t);
-#endif
+// #if PY_VERSION_HEX >= 0x03080000
+//     // This was not needed before Python 3.8 (Python issue 35810)
+//     Py_DECREF(t);
+// #endif
 }
 
 #define dataobject_item_by_offset(op, offset) (*((PyObject**)((char*)op + offset)))
 #define dataobject_ass_item_by_offset(op, offset, val) (*((PyObject**)((char*)op + offset))=val)
 
-#define self_igs ((struct dataslotgetset_object *)self)
+#define self_igs ((dataslotgetset_object *)self)
 
 static PyObject* dataslotgetset_get(PyObject *self, PyObject *obj, PyObject *type) {
     PyObject *v;
@@ -2077,13 +2077,13 @@ static int dataslotgetset_set(PyObject *self, PyObject *obj, PyObject *value) {
 static PyObject*
 dataslotgetset_offset(PyObject *self)
 {
-    return PyLong_FromSsize_t(((struct dataslotgetset_object*)self)->offset);
+    return PyLong_FromSsize_t(((dataslotgetset_object*)self)->offset);
 }
 
 static PyObject*
 dataslotgetset_readonly(PyObject *self)
 {
-    return PyBool_FromLong((long)(((struct dataslotgetset_object*)self)->offset));
+    return PyBool_FromLong((long)(((dataslotgetset_object*)self)->offset));
 }
 
 static PyGetSetDef dataslotgetset_getsets[] = {
@@ -2095,7 +2095,7 @@ static PyGetSetDef dataslotgetset_getsets[] = {
 static PyTypeObject PyDataSlotGetSet_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
     "recordclass._dataobject.dataslotgetset", /*tp_name*/
-    sizeof(struct dataslotgetset_object), /*tp_basicsize*/
+    sizeof(dataslotgetset_object), /*tp_basicsize*/
     0, /*tp_itemsize*/
     dataslotgetset_dealloc, /*tp_dealloc*/
     0, /*tp_print*/
