@@ -14,10 +14,10 @@ TPickle1 = make_arrayclass("TPickle1", fields=3)
 TPickleV1 = make_arrayclass("TPickleV1", fields=3, varsize=True)
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
 TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
-TPickleV5 = make_dataclass("TPickleV5", ('x','y','z'), varsize=True)
-TPickleV6 = make_dataclass("TPickleV6", ('x','y','z'), varsize=True, use_dict=True)
-TPickleV7 = make_dataclass("TPickleV7", ('x','y','z'), varsize=True)
-TPickleV8 = make_dataclass("TPickleV8", ('x','y','z'), varsize=True, use_dict=True)
+# TPickleV5 = make_dataclass("TPickleV5", ('x','y','z'), varsize=True)
+# TPickleV6 = make_dataclass("TPickleV6", ('x','y','z'), varsize=True, use_dict=True)
+# TPickleV7 = make_dataclass("TPickleV7", ('x','y','z'), varsize=True)
+# TPickleV8 = make_dataclass("TPickleV8", ('x','y','z'), varsize=True, use_dict=True)
 
 class arrayobjectTest(unittest.TestCase):
 
@@ -607,69 +607,69 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
 
-class datatupleTest(unittest.TestCase):
+# class datatupleTest(unittest.TestCase):
     
-    def test_datatype_copy1(self):
-        A = make_dataclass("A", ('x', 'y'), varsize=True)
-        a = A(1,2,3,4,5)
-        self.assertEqual(gc.is_tracked(a), False)
-        b = a.__copy__()
-        self.assertEqual(gc.is_tracked(b), False)
-        self.assertEqual(a, b)
+#     def test_datatype_copy1(self):
+#         A = make_dataclass("A", ('x', 'y'), varsize=True)
+#         a = A(1,2,3,4,5)
+#         self.assertEqual(gc.is_tracked(a), False)
+#         b = a.__copy__()
+#         self.assertEqual(gc.is_tracked(b), False)
+#         self.assertEqual(a, b)
 
-    def test_datatype_copy2(self):
-        A = make_dataclass("A", ('x', 'y'), varsize=True, use_dict=True)
-        a = A(1,2,3,4,5)
-        a.a=1
-        a.b=2
-        self.assertEqual(gc.is_tracked(a), False)
-        b = a.__copy__()
-        self.assertEqual(gc.is_tracked(b), False)
-        self.assertEqual(a, b)
+#     def test_datatype_copy2(self):
+#         A = make_dataclass("A", ('x', 'y'), varsize=True, use_dict=True)
+#         a = A(1,2,3,4,5)
+#         a.a=1
+#         a.b=2
+#         self.assertEqual(gc.is_tracked(a), False)
+#         b = a.__copy__()
+#         self.assertEqual(gc.is_tracked(b), False)
+#         self.assertEqual(a, b)
         
-    def test_pickle5(self):
-        p = TPickleV5(10, 20, 30)
-        for module in (pickle,):
-            loads = getattr(module, 'loads')
-            dumps = getattr(module, 'dumps')
-            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
-                tmp = dumps(p, protocol)
-                q = loads(tmp)
-                self.assertEqual(p, q)
+#     def test_pickle5(self):
+#         p = TPickleV5(10, 20, 30)
+#         for module in (pickle,):
+#             loads = getattr(module, 'loads')
+#             dumps = getattr(module, 'dumps')
+#             for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+#                 tmp = dumps(p, protocol)
+#                 q = loads(tmp)
+#                 self.assertEqual(p, q)
 
-    def test_pickle6(self):
-        p = TPickleV6(10, 20, 30)
-        p.a = 1
-        p.b = 2
-        for module in (pickle,):
-            loads = getattr(module, 'loads')
-            dumps = getattr(module, 'dumps')
-            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
-                tmp = dumps(p, protocol)
-                q = loads(tmp)
-                self.assertEqual(p, q)
+#     def test_pickle6(self):
+#         p = TPickleV6(10, 20, 30)
+#         p.a = 1
+#         p.b = 2
+#         for module in (pickle,):
+#             loads = getattr(module, 'loads')
+#             dumps = getattr(module, 'dumps')
+#             for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+#                 tmp = dumps(p, protocol)
+#                 q = loads(tmp)
+#                 self.assertEqual(p, q)
                 
-    def test_pickle7(self):
-        p = TPickleV7(10, 20, 30, 100, 200, 300)
-        for module in (pickle,):
-            loads = getattr(module, 'loads')
-            dumps = getattr(module, 'dumps')
-            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
-                tmp = dumps(p, protocol)
-                q = loads(tmp)
-                self.assertEqual(p, q)
+#     def test_pickle7(self):
+#         p = TPickleV7(10, 20, 30, 100, 200, 300)
+#         for module in (pickle,):
+#             loads = getattr(module, 'loads')
+#             dumps = getattr(module, 'dumps')
+#             for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+#                 tmp = dumps(p, protocol)
+#                 q = loads(tmp)
+#                 self.assertEqual(p, q)
 
-    def test_pickle8(self):
-        p = TPickleV8(10, 20, 30, 100, 200, 300)
-        p.a = 1
-        p.b = 2
-        for module in (pickle,):
-            loads = getattr(module, 'loads')
-            dumps = getattr(module, 'dumps')
-            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
-                tmp = dumps(p, protocol)
-                q = loads(tmp)
-                self.assertEqual(p, q)
+#     def test_pickle8(self):
+#         p = TPickleV8(10, 20, 30, 100, 200, 300)
+#         p.a = 1
+#         p.b = 2
+#         for module in (pickle,):
+#             loads = getattr(module, 'loads')
+#             dumps = getattr(module, 'dumps')
+#             for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+#                 tmp = dumps(p, protocol)
+#                 q = loads(tmp)
+#                 self.assertEqual(p, q)
         
 def main():
     suite = unittest.TestSuite()

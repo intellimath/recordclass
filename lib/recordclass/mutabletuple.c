@@ -187,7 +187,9 @@ mutabletuple_dealloc(PyMutableTupleObject *op)
 }
 
 static void mutabletuple_free(void *o) {
+#if PY_VERSION_HEX >= 0x03080000
     PyTypeObject *type = Py_TYPE(o);
+#endif
 
     if PyType_IS_GC(Py_TYPE((PyObject*)o))
         PyObject_GC_Del((PyObject*)o);

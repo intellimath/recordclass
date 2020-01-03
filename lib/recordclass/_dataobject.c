@@ -2010,10 +2010,10 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
     if (ob == NULL)
         return NULL;
 
-#if PY_VERSION_HEX < 0x03080000
-    // Workaround for Python issue 35810; no longer necessary in Python 3.8
-    Py_INCREF(t);
-#endif    
+// #if PY_VERSION_HEX < 0x03080000
+//     // Workaround for Python issue 35810; no longer necessary in Python 3.8
+//     Py_INCREF(t);
+// #endif    
     ob->readonly = readonly;
     ob->offset = offset;
     return (PyObject*)ob;

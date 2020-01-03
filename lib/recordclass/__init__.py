@@ -40,7 +40,7 @@ from .datatype import clsconfig
 
 from ._dataobject import dataobject, datatuple, enable_gc
 
-# from .litelist import litelist
+from .litelist import litelist
 
 if _PY36:
     from .typing import RecordClass, StructClass
