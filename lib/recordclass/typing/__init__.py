@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 import collections
-from recordclass import recordclass, structclass
+from recordclass import recordclass
 from typing import _type_check
 
 import sys as _sys

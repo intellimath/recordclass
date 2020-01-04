@@ -2741,7 +2741,8 @@ PyInit__dataobject(void)
 
     dtype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
     __fix_type((PyObject*)&PyDataObject_Type, dtype);
-    __fix_type((PyObject*)&PyDataTuple_Type, dtype);    
+    __fix_type((PyObject*)&PyDataTuple_Type, dtype);
+    Py_DECREF(dtype);
     
     if (PyType_Ready(&PyDataObject_Type) < 0)
         Py_FatalError("Can't initialize dataobject type");
@@ -2780,8 +2781,13 @@ init_dataobject(void)
     m = Py_InitModule3("recordclass._dataobject", dataobjectmodule_methods, dataobjectmodule_doc);
     if (m == NULL)
         return;
-    Py_XINCREF(m);
+    Py_INCREF(m);
 
+    dtype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
+    __fix_type((PyObject*)&PyDataObject_Type, dtype);
+    __fix_type((PyObject*)&PyDataTuple_Type, dtype);
+    Py_DECREF(dtype);
+    
     if (PyType_Ready(&PyDataObject_Type) < 0)
          Py_FatalError("Can't initialize dataobject type");
     
@@ -2806,10 +2812,6 @@ init_dataobject(void)
 
     Py_INCREF(&PyDataSlotGetSet_Type);
     PyModule_AddObject(m, "dataslotgetset", (PyObject *)&PyDataSlotGetSet_Type);        
-
-    dtype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
-    __fix_type((PyObject*)&PyDataObject_Type, dtype);
-    __fix_type((PyObject*)&PyDataTuple_Type, dtype);
     
     return;
 }

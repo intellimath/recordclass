@@ -31,8 +31,6 @@ del _sys
 from .mutabletuple import mutabletuple
 from .recordclass import recordclass, RecordclassStorage
 
-# from .recordobject import sequenceproxy, recordobject
-
 from .datatype import make_class, make_dataclass, make_arrayclass, datatype
 from .datatype import asdict, DataclassStorage
 from .datatype import clsconfig

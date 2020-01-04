@@ -323,9 +323,6 @@ class datatype(type):
                     readonly_fields = set(readonly)
             else:
                 readonly_fields = set()
-#             if not readonly:
-#             else:
-#                 readonly_fields = set(readonly)
 
             for i, name in enumerate(fields):
                 offset = dataslot_offset(cls, i)
