@@ -118,7 +118,7 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
     if namespace is None:
         ns = {}
     else:
-        ns = namespace
+        ns = namespace.copy()
 
     if defaults:
         for i in range(-n_defaults, 0):
@@ -294,6 +294,8 @@ class datatype(type):
             annotations = _annotations
 
             fields = tuple(fields)
+            
+#             print(fields, argsonly)
 
             if fields and (not argsonly or defaults) and '__new__' not in ns:
                 __new__ = make_new_function(typename, fields, defaults, annotations, varsize, use_dict)
@@ -314,13 +316,16 @@ class datatype(type):
                    use_weakref=use_weakref, iterable=iterable, hashable=hashable)
 
         if has_fields:
-            if not readonly:
-                if readonly:
+            if readonly:
+                if type(readonly) is type(True):
                     readonly_fields = set(fields)
                 else:
-                    readonly_fields = set()
+                    readonly_fields = set(readonly)
             else:
-                readonly_fields = set(readonly)
+                readonly_fields = set()
+#             if not readonly:
+#             else:
+#                 readonly_fields = set(readonly)
 
             for i, name in enumerate(fields):
                 offset = dataslot_offset(cls, i)
@@ -345,31 +350,31 @@ def make_new_function(typename, fields, defaults, annotations, varsize, use_dict
         if varsize:
             new_func_template = \
 """
-def __new__(cls, {2}, *args, **kw):
+def __new__(_cls_, {2}, *args, **kw):
     'Create new instance: {0}({1}, *args, **kw)'
-    return _method_new(cls, {1}, *args, **kw)
+    return _method_new(_cls_, {1}, *args, **kw)
 """            
         else:
             new_func_template = \
 """
-def __new__(cls, {2}, **kw):
+def __new__(_cls_, {2}, **kw):
     'Create new instance: {0}({1}, **kw)'
-    return _method_new(cls, {1}, **kw)
+    return _method_new(_cls_, {1}, **kw)
 """
     else:
         if varsize:
             new_func_template = \
 """
-def __new__(cls, {2}, *args):
+def __new__(_cls_, {2}, *args):
     'Create new instance: {0}({1}, *args)'
-    return _method_new(cls, {1}, *args)
+    return _method_new(_cls_, {1}, *args)
 """
         else:
             new_func_template = \
 """
-def __new__(cls, {2}):
+def __new__(_cls_, {2}):
     'Create new instance: {0}({1})'
-    return _method_new(cls, {1})
+    return _method_new(_cls_, {1})
 """
     new_func_def = new_func_template.format(typename, ', '.join(fields), ', '.join(fields2))
     

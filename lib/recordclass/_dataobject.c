@@ -68,12 +68,18 @@ _PyObject_GetObject(const char *modname, const char *name)
     mod_name = PyUnicode_FromString(modname);   /* borrowed */
     if (mod_name == NULL)
         return NULL;
+    Py_INCREF(mod_name);
     mod = PyImport_Import(mod_name);
-    if (mod == NULL)
+    if (mod == NULL) {
+        Py_DECREF(mod_name);
         return NULL;
+    }
+    Py_DECREF(mod_name);
     mod_dict = PyObject_GetAttrString(mod, "__dict__");
-    if (mod_dict == NULL)
+    if (mod_dict == NULL) {
+        Py_DECREF(mod);
         return NULL;
+    }
     attr = PyDict_GetItemString(mod_dict, name);
     Py_DECREF(mod);
     Py_DECREF(mod_dict);
@@ -2732,6 +2738,10 @@ PyInit__dataobject(void)
     m = PyModule_Create(&dataobjectmodule);
     if (m == NULL)
         return NULL;
+
+    dtype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
+    __fix_type((PyObject*)&PyDataObject_Type, dtype);
+    __fix_type((PyObject*)&PyDataTuple_Type, dtype);    
     
     if (PyType_Ready(&PyDataObject_Type) < 0)
         Py_FatalError("Can't initialize dataobject type");
@@ -2745,17 +2755,6 @@ PyInit__dataobject(void)
 
     if (PyType_Ready(&PyDataSlotGetSet_Type) < 0)
         Py_FatalError("Can't initialize dataslotgetset type");    
-    
-// #if PY_VERSION_HEX >= 0x03080000
-//     if (PyDataObject_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-//         PyDataObject_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-//     if (PyDataTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-//         PyDataTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-//     if (PyDataObjectIter_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-//         PyDataObjectIter_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-//     if (PyDataSlotGetSet_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-//         PyDataSlotGetSet_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-// #endif    
 
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
@@ -2768,10 +2767,6 @@ PyInit__dataobject(void)
 
     Py_INCREF(&PyDataSlotGetSet_Type);
     PyModule_AddObject(m, "dataslotgetset", (PyObject *)&PyDataSlotGetSet_Type);        
-
-    dtype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
-    __fix_type((PyObject*)&PyDataObject_Type, dtype);
-    __fix_type((PyObject*)&PyDataTuple_Type, dtype);    
     
     return m;
 }

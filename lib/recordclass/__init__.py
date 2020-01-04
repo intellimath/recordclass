@@ -32,13 +32,14 @@ from .mutabletuple import mutabletuple
 from .recordclass import recordclass, RecordclassStorage
 
 # from .recordobject import sequenceproxy, recordobject
-# from .structclass import structclass, join_classes
 
 from .datatype import make_class, make_dataclass, make_arrayclass, datatype
 from .datatype import asdict, DataclassStorage
 from .datatype import clsconfig
 
 from ._dataobject import dataobject, datatuple, enable_gc
+
+from .structclass import structclass, join_classes
 
 from .litelist import litelist
 

@@ -9,7 +9,7 @@ from recordclass import structclass
 
 import pickle
 import typing
-from recordclass import StructClass, recordobject
+from recordclass import StructClass, dataobject
 
 class CoolEmployee(StructClass):
     name: str
@@ -59,7 +59,7 @@ class StructClassTypingTest(unittest.TestCase):
         joe = Emp('Joe', 42)
         jim = Emp(name='Jim', id=1)
         self.assertIsInstance(joe, Emp)
-        self.assertIsInstance(joe, recordobject)
+        self.assertIsInstance(joe, dataobject)
         self.assertEqual(joe.name, 'Joe')
         self.assertEqual(joe.id, 42)
         self.assertEqual(jim.name, 'Jim')
@@ -81,7 +81,7 @@ class StructClassTypingTest(unittest.TestCase):
     def test_annotation_usage(self):
         tim = CoolEmployee('Tim', 9000)
         self.assertIsInstance(tim, CoolEmployee)
-        self.assertIsInstance(tim, recordobject)
+        self.assertIsInstance(tim, dataobject)
         self.assertEqual(tim.name, 'Tim')
         self.assertEqual(tim.cool, 9000)
         self.assertEqual(CoolEmployee.__name__, 'CoolEmployee')
@@ -93,7 +93,7 @@ class StructClassTypingTest(unittest.TestCase):
     def test_annotation_usage_with_default(self):
         jelle = CoolEmployeeWithDefault('Jelle')
         self.assertIsInstance(jelle, CoolEmployeeWithDefault)
-        self.assertIsInstance(jelle, recordobject)
+        self.assertIsInstance(jelle, dataobject)
         self.assertEqual(jelle.name, 'Jelle')
         self.assertEqual(jelle.cool, 0)
         cooler_employee = CoolEmployeeWithDefault('Sjoerd', 1)
@@ -136,7 +136,7 @@ class XMethBad2(StructClass):
     def test_recordclass_keyword_usage(self):
         LocalEmployee = StructClass("LocalEmployee", name=str, age=int)
         nick = LocalEmployee('Nick', 25)
-        self.assertIsInstance(nick, recordobject)
+        self.assertIsInstance(nick, dataobject)
         self.assertEqual(nick.name, 'Nick')
         self.assertEqual(LocalEmployee.__name__, 'LocalEmployee')
         self.assertEqual(LocalEmployee.__fields__, ('name', 'age'))
@@ -146,14 +146,14 @@ class XMethBad2(StructClass):
         with self.assertRaises(TypeError):
             StructClass('Name', x=1, y='a')
             
-    def test_hash(self):
-        a = HR(1, 2)
-        self.assertEqual(hash(a), hash(tuple(a)))
-        b = H(1, 2)
-        hash_b = hash(b)
-        self.assertEqual(hash_b, hash(tuple(b)))
-        b.x = -1
-        self.assertNotEqual(hash(b), hash_b)            
+#     def test_hash(self):
+#         a = HR(1, 2)
+#         self.assertEqual(hash(a), hash(tuple(a)))
+#         b = H(1, 2)
+#         hash_b = hash(b)
+#         self.assertEqual(hash_b, hash(tuple(b)))
+#         b.x = -1
+#         self.assertNotEqual(hash(b), hash_b)            
 
     def test_pickle(self):
         global Emp  # pickle wants to reference the class by name
