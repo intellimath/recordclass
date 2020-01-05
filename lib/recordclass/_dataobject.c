@@ -1840,8 +1840,17 @@ typedef struct {
 static void
 dataobjectiter_dealloc(dataobjectiterobject *it)
 {
+#if PY_VERSION_HEX < 0x03080000
+    PyTypeObject *t = Py_TYPE(it);
+#endif
+
     Py_CLEAR(it->it_seq);
     PyObject_Del(it);
+    
+#if PY_VERSION_HEX < 0x03080000
+    if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    Py_INCREF(t);
+#endif    
 }
 
 static PyObject *
@@ -1968,6 +1977,14 @@ dataobject_iter(PyObject *seq)
     it = PyObject_New(dataobjectiterobject, &PyDataObjectIter_Type);
     if (it == NULL)
         return NULL;
+#if PY_VERSION_HEX < 0x03080000
+    {
+        PyTypeObject *t = Py_TYPE(it);
+        if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
+            Py_INCREF(t);
+    }
+#endif    
+    
     it->it_index = 0;
     it->it_seq = seq;
     it->it_len = do_getlen(seq);
@@ -2016,25 +2033,28 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
     if (ob == NULL)
         return NULL;
 
-// #if PY_VERSION_HEX < 0x03080000
-//     // Workaround for Python issue 35810; no longer necessary in Python 3.8
-//     Py_INCREF(t);
-// #endif    
+#if PY_VERSION_HEX < 0x03080000
+    {
+        PyTypeObject *tp = Py_TYPE(ob);
+        if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
+            Py_INCREF(tp);
+    }
+#endif    
     ob->readonly = readonly;
     ob->offset = offset;
     return (PyObject*)ob;
 }
 
 static void dataslotgetset_dealloc(PyObject *o) {
-// #if PY_VERSION_HEX >= 0x03080000
-//     PyTypeObject *t = Py_TYPE(o);
-// #endif
+#if PY_VERSION_HEX >= 0x03080000
+    PyTypeObject *t = Py_TYPE(o);
+#endif
 
     PyObject_Del(o);
-// #if PY_VERSION_HEX >= 0x03080000
-//     // This was not needed before Python 3.8 (Python issue 35810)
-//     Py_DECREF(t);
-// #endif
+#if PY_VERSION_HEX >= 0x03080000
+    if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_INCREF(t);
+#endif
 }
 
 #define dataobject_item_by_offset(op, offset) (*((PyObject**)((char*)op + offset)))

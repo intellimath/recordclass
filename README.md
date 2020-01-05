@@ -289,6 +289,7 @@ Here are also table with some performance counters:
 * Remove arrayclass.py in favor of `dataobject`-based array-like subclasses.
 * Move repository to git instead of mercurial since bitbucket will drop support of mercurial repositories.
 * Fix some potential reference leaks.
+* Drop support of `structclass` in favour of `dataobject`.
 
 #### 0.12.0.1
 
