@@ -2577,6 +2577,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
             tp->tp_init = NULL;
     }
     
+    Py_DECREF(__dict__);    
+    
     tp->tp_flags |= Py_TPFLAGS_HEAPTYPE;
     
 //     if (tp->tp_flags & Py_TPFLAGS_HAVE_GC)
@@ -2594,8 +2596,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 //     if (tp->tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
 //         tp->tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
 // #endif
-
-    Py_DECREF(__dict__);
 
     Py_RETURN_NONE;
 }
