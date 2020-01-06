@@ -135,14 +135,20 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
     ns['__fields__'] = fields
     if annotations:
         ns['__annotations__'] = annotations
-        
-    if not bases:
+
+    if bases:
+        base0 = bases[0]
+        if varsize:
+            if not isinstance(base0, datatuple):
+                raise TypeError("First base class should be subclass of datatuple")
+        else:
+            if not isinstance(base0, dataobject):
+                raise TypeError("First base class should be subclass of dataobject")
+    else:
         if varsize:
             bases = (datatuple,)
         else:
             bases = (dataobject,)
-    elif varsize and not isinstance(base[0], datatuple):
-        raise TypeError("First base class should be subclass of datatuple")
         
     if varsize:
         _sequence = True
