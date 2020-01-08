@@ -204,7 +204,7 @@ class structclassTest(unittest.TestCase):
         self.assertEqual(tuple(b2), tuple(b2_expected))
         self.assertEqual(b.__fields__, tuple(names))
 
-    def test_pickle(self):
+    def test_pickle_sc(self):
         p = TestNT(x=10, y=20, z=30)
         for module in (pickle,):
             loads = getattr(module, 'loads')
@@ -216,7 +216,7 @@ class structclassTest(unittest.TestCase):
                 self.assertEqual(p.__fields__, q.__fields__)
                 self.assertNotIn(b'OrderedDict', dumps(p, protocol))
 
-    def test_pickle2(self):
+    def test_pickle2_sc(self):
         p = TestNT2(x=10, y=20, z=30)
         p.a = 100
         p.b = 200
@@ -338,6 +338,15 @@ class structclassTest(unittest.TestCase):
 #         self.assertEqual((c.red, c.green, c.blue), (10, 20, 30))
 #         self.assertEqual(NTColor.__fields__, ('red', 'green', 'blue'))
 #         globals().pop('NTColor', None)          # clean-up after this test
+
+    def test_refleak_on_assignemnt(self):
+        Test = structclass("Test", "x")
+        a={}
+        c = sys.getrefcount(a)
+        b=Test(a)
+        self.assertEqual(sys.getrefcount(a), c+1)
+        b.x = None
+        self.assertEqual(sys.getrefcount(a), c)
 
 def main():
     suite = unittest.TestSuite()

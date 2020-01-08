@@ -1,11 +1,6 @@
-"""Unit tests for recordclass.py."""
+"""Unit tests for structclass.py."""
 import unittest, doctest, operator
 from recordclass import structclass
-
-# try:
-#     from test import support
-# except:
-#     from test import test_support as support
 
 import pickle
 import typing
@@ -155,7 +150,7 @@ class XMethBad2(StructClass):
 #         b.x = -1
 #         self.assertNotEqual(hash(b), hash_b)            
 
-    def test_pickle(self):
+    def test_pickle_b(self):
         global Emp  # pickle wants to reference the class by name
         Emp = StructClass('Emp', [('name', str), ('id', int)])
         jane = Emp('jane', 37)
@@ -164,7 +159,7 @@ class XMethBad2(StructClass):
             jane2 = pickle.loads(z)
             self.assertEqual(jane2, jane)
 
-    def test_pickle2(self):
+    def test_pickle2b(self):
         global Emp2
         class Emp2(StructClass):
             name:str
@@ -176,7 +171,7 @@ class XMethBad2(StructClass):
             jane2 = pickle.loads(z)
             self.assertEqual(jane2, jane)
 
-    def test_pickle3(self):
+    def test_pickle3b(self):
         jane = CoolEmployee('jane', 37)
         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             z = pickle.dumps(jane, proto)

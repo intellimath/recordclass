@@ -268,6 +268,7 @@ cdef inline PyObject* recordobject_item "recordobject_item"(PyObject *op, Py_ssi
 cdef inline int recordobject_ass_item "recordobject_ass_item"(PyObject *op, Py_ssize_t i, PyObject *val):
     cdef Py_ssize_t n
     cdef PyObject **items
+    cdef PyObject *temp
 
     n = recordobject_len(op)
     items = recordobject_items(op)
@@ -278,8 +279,11 @@ cdef inline int recordobject_ass_item "recordobject_ass_item"(PyObject *op, Py_s
         PyErr_SetString(PyExc_IndexError, "index out of range")
         return 0
 
+    items += i
+    temp = items[0]
+    Py_DECREF(temp)
     Py_INCREF(val)
-    items[i] = val
+    items[0] = val
     return 0
 
 cdef inline PyObject* recordobject_subscript "recordobject_subscript"(PyObject *op, PyObject *ind):
@@ -304,6 +308,7 @@ cdef inline PyObject* recordobject_subscript "recordobject_subscript"(PyObject *
 cdef inline int recordobject_ass_subscript "recordobject_ass_subscript"(PyObject *op, PyObject *ind, PyObject *val):
     cdef Py_ssize_t i "i", n "n"
     cdef PyObject **items "items"
+    cdef PyObject *temp
 
     n = recordobject_len(op)
     items = recordobject_items(op)
@@ -315,8 +320,12 @@ cdef inline int recordobject_ass_subscript "recordobject_ass_subscript"(PyObject
         PyErr_SetString(PyExc_IndexError, "index out of range")
         return 0
 
+    items += i
+    temp = items[0]
+    Py_DECREF(temp)
     Py_INCREF(val)
-    items[i] = val
+    items[0] = val
+    return 0
     return 0
 
 cdef inline int recordobject_clear "recordobject_clear"(PyObject *op) except -1:
@@ -427,13 +436,13 @@ cdef public class recordobject[object recordobject, type recordobjectType]:
                 Py_INCREF(v)
                 items[i] = v
 
-        if tp.tp_dictoffset:
-            dictptr = recordobject_dictptr(op, tp)
-            vv = {}
-            if kw:
-                vv.update(kw)
-            Py_INCREF(<PyObject*>vv)
-            dictptr[0] = <PyObject*>vv
+#         if tp.tp_dictoffset:
+#             dictptr = recordobject_dictptr(op, tp)
+#             vv = {}
+#             if kw:
+#                 vv.update(kw)
+#             Py_INCREF(<PyObject*>vv)
+#             dictptr[0] = <PyObject*>vv
 
     def __dealloc__(self):
         cdef PyObject* op "op" = <PyObject*>self
@@ -447,13 +456,14 @@ cdef public class recordobject[object recordobject, type recordobjectType]:
         if n > 0:
             items = recordobject_items(op)    
             for i in range(0,n):
-                Py_CLEAR(items[i])
+                v = items[i]
+                Py_CLEAR(v)
 
         if tp.tp_dictoffset:
             dictptr = recordobject_dictptr(op, tp)
             v = dictptr[0]
             (<dict>v).clear()
-            Py_XDECREF(<PyObject*>v)
+            Py_DECREF(<PyObject*>v)
             dictptr[0] = NULL
 
     def __len__(ob):

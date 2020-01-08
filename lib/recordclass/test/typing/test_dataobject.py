@@ -319,7 +319,8 @@ class DataObjectTest3(unittest.TestCase):
             x:int
             y:int
             z:int
-                
+        
+        print(A.__dict__)
         a = A(1,2,3)
         self.assertEqual(repr(a), "A(x=1, y=2, z=3)")
         self.assertEqual(a.x, 1)

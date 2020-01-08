@@ -544,7 +544,8 @@ class dataobjectTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle2(self):
-        print(TPickle2.__dict__)
+        print(TPickle3)
+        print(TPickle3.__dict__)
         p = TPickle2(10, 20, 30)
         for module in (pickle,):
             loads = getattr(module, 'loads')
@@ -555,6 +556,8 @@ class dataobjectTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle3(self):
+        print(TPickle3)
+        print(TPickle3.__dict__)
         p = TPickle3(10, 20, 30)
         p.a = 1
         p.b = 2
@@ -608,6 +611,15 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
 
+    def test_refleak_on_assignemnt_do(self):
+        Test = make_dataclass("Test", "x")
+        a={}
+        c = sys.getrefcount(a)
+        b=Test(a)
+        self.assertEqual(sys.getrefcount(a), c+1)
+        b.x = None
+        self.assertEqual(sys.getrefcount(a), c)
+        
 class datatupleTest(unittest.TestCase):
     
     def test_datatype_copy1(self):
@@ -671,7 +683,16 @@ class datatupleTest(unittest.TestCase):
                 tmp = dumps(p, protocol)
                 q = loads(tmp)
                 self.assertEqual(p, q)
-        
+
+    def test_refleak_on_assignemnt_dt(self):
+        Test = make_dataclass("Test", "x", varsize=True)
+        a={}
+        c = sys.getrefcount(a)
+        b=Test(a)
+        self.assertEqual(sys.getrefcount(a), c+1)
+        b.x = None
+        self.assertEqual(sys.getrefcount(a), c)
+
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(arrayobjectTest))

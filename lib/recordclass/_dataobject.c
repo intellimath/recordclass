@@ -63,26 +63,23 @@ _PyObject_GetBuiltin(const char *name)
 static PyObject *
 _PyObject_GetObject(const char *modname, const char *name)
 {
-    PyObject *mod_name, *mod, *mod_dict, *attr;
+    PyObject *mod_name, *mod, *attr;
 
     mod_name = PyUnicode_FromString(modname);   /* borrowed */
     if (mod_name == NULL)
         return NULL;
-    Py_INCREF(mod_name);
     mod = PyImport_Import(mod_name);
     if (mod == NULL) {
         Py_DECREF(mod_name);
         return NULL;
     }
     Py_DECREF(mod_name);
-    mod_dict = PyObject_GetAttrString(mod, "__dict__");
-    if (mod_dict == NULL) {
+    attr = PyObject_GetAttrString(mod, name);
+    if (attr == NULL) {
         Py_DECREF(mod);
         return NULL;
     }
-    attr = PyDict_GetItemString(mod_dict, name);
     Py_DECREF(mod);
-    Py_DECREF(mod_dict);
     return attr;
 }
 
@@ -125,16 +122,16 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyObject *op;
     Py_ssize_t n_slots;
-    PyObject *tmp;
+    PyTupleObject *tmp;
     Py_ssize_t n_args;
     PyObject **items, **pp;
     PyObject *v;
 
     if (Py_TYPE(args) == &PyTuple_Type) {
-        tmp = args;
+        tmp = (PyTupleObject*)args;
         Py_INCREF(args);
     } else {
-        tmp = PySequence_Tuple(args);
+        tmp = (PyTupleObject*)PySequence_Tuple(args);
         if (tmp == NULL) {
             return NULL;
         }
@@ -153,7 +150,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     op = type->tp_alloc(type, 0);
 
     items = dataobject_slots(op);
-    pp = ((PyTupleObject*)tmp)->ob_item;
+    pp = tmp->ob_item;
     while (n_args--) {
         v = *(pp++);
         Py_INCREF(v);
@@ -170,14 +167,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     
     if (kwds) {
         if (type->tp_dictoffset) {
-            PyObject **dictptr = dataobject_dictptr(type, op);
-            PyObject *dict;
-            if (*dictptr)
-                dict = *dictptr;
-            else {
-                dict = PyDict_New();
-                *dictptr = dict;
-            }
+            PyObject *dict = PyObject_GetAttrString(op, "__dict__");
 
             if (PyDict_Update(dict, kwds) == -1) {
                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
@@ -198,20 +188,21 @@ dataobject_clear(PyObject *op)
     PyTypeObject *type = Py_TYPE(op);
     PyObject **items = dataobject_slots(op);
     Py_ssize_t n_slots = dataobject_numslots(type);
-    PyObject *v;
+//     PyObject *v;
 
     if (type->tp_weaklistoffset)
         PyObject_ClearWeakRefs(op);
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = dataobject_dictptr(type, op);
+        PyObject **dictptr = _PyObject_GetDictPtr(op);
         if (dictptr && *dictptr)
             Py_CLEAR(*dictptr);
     }
 
     while (n_slots-- > 0) {
-        v = *(items++);
-        Py_CLEAR(v);
+//         v = *(items++);
+        Py_CLEAR(*items);
+        items++;
     }
 
     return 0;
@@ -221,26 +212,31 @@ static void
 dataobject_dealloc(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op); 
-    PyObject **items = dataobject_slots(op);
-    Py_ssize_t n_slots = dataobject_numslots(type);
-    PyObject *v;
+//     PyObject **items = dataobject_slots(op);
+//     Py_ssize_t n_slots = dataobject_numslots(type);
+//     PyObject *v;
 
     if (PyType_IS_GC(type))
         PyObject_GC_UnTrack(op);
 
-    if (type->tp_weaklistoffset)
-        PyObject_ClearWeakRefs(op);
+//     if (type->tp_weaklistoffset)
+//         PyObject_ClearWeakRefs(op);
 
-    if (type->tp_dictoffset) {
-        PyObject **dictptr = dataobject_dictptr(type, op);
-        if (dictptr && *dictptr)
-            Py_CLEAR(*dictptr);
-    }
+//     if (type->tp_dictoffset) {
+//         PyObject **dictptr = dataobject_dictptr(type, op);
+//         if (dictptr && *dictptr)
+//             Py_CLEAR(*dictptr);
+//     }
     
-    while (n_slots-- > 0) {
-        v = *(items++);
-        Py_CLEAR(v);
-    }    
+//     while (n_slots-- > 0) {
+//         v = *(items++);
+//         Py_CLEAR(v);
+//     }
+    
+    dataobject_clear(op);
+    
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_DECREF(type);    
 
     type->tp_free((PyObject *)op);
 }
@@ -248,16 +244,12 @@ dataobject_dealloc(PyObject *op)
 static void
 dataobject_free(void *op)
 {
-    PyTypeObject *type = Py_TYPE((PyObject*)op);
-    int is_gc = PyType_IS_GC(type);
-
-    if (!is_gc)
-        PyObject_Del((PyObject*)op);
-    else
+    PyTypeObject *type = Py_TYPE(op); 
+    
+    if (PyType_IS_GC(type))
         PyObject_GC_Del((PyObject*)op);
-
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_DECREF(type);
+    else
+        PyObject_Del((PyObject*)op);
 }
 
 static int
@@ -279,7 +271,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
     }
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = dataobject_dictptr(type, op);
+        PyObject **dictptr = _PyObject_GetDictPtr(op);
         if (dictptr && *dictptr)
             Py_VISIT(*dictptr);
     }
@@ -586,10 +578,10 @@ dataobject_copy(PyObject* op)
     }
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = dataobject_dictptr(type, op);
+        PyObject **dictptr = _PyObject_GetDictPtr(op);
         PyObject *dict = *dictptr;
         
-        PyObject **new_dictptr = dataobject_dictptr(type, new_op);
+        PyObject **new_dictptr = _PyObject_GetDictPtr(new_op);
         PyObject *new_dict = *new_dictptr;
         
         if (dict && !new_dict) {
@@ -926,7 +918,7 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
         return NULL;
 
     if (tp->tp_dictoffset) {
-        dictptr = dataobject_dictptr(tp, ob);
+        dictptr = _PyObject_GetDictPtr(ob);
         if (dictptr) {
             kw = *dictptr;
         }
@@ -966,18 +958,18 @@ dataobject_getstate(PyObject *ob) {
     PyObject **dictptr;
 
     if (tp->tp_dictoffset) {
-        dictptr = dataobject_dictptr(tp, ob);
+        dictptr = _PyObject_GetDictPtr(ob);
         if (dictptr) {
             kw = *dictptr;
             if (kw) {
-                Py_INCREF(kw);
-                return kw;
+                PyObject *d = PyDict_New();
+                PyDict_Update(d, kw);
+                return d;
             }
         }
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 PyDoc_STRVAR(dataobject_setstate_doc,
@@ -993,7 +985,7 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
         return 0;
 
     if (tp->tp_dictoffset) {
-        dictptr = dataobject_dictptr(tp, ob);
+        dictptr = _PyObject_GetDictPtr(ob);
         dict = *dictptr;
 
         if (!dict) {
@@ -1014,8 +1006,7 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
         return NULL;                                            
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyMethodDef dataobject_methods[] = {
@@ -1088,8 +1079,9 @@ datatuple_alloc(PyTypeObject *type, Py_ssize_t n_items)
 {
     PyObject *op;
     Py_ssize_t size = _PyObject_VAR_SIZE(type, n_items);
+    int is_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
         
-    if (type->tp_flags & Py_TPFLAGS_HAVE_GC)
+    if (is_gc)
         op = _PyObject_GC_Malloc(size);
     else
         op = (PyObject *)PyObject_MALLOC(size);
@@ -1100,13 +1092,14 @@ datatuple_alloc(PyTypeObject *type, Py_ssize_t n_items)
     memset(op, '\0', size);
 
     Py_SIZE(op) = n_items;
-    Py_TYPE(op) = type;
-    _Py_NewReference(op);
 
+    Py_TYPE(op) = type;
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_INCREF(type);
+
+    _Py_NewReference(op);
     
-    if (type->tp_flags & Py_TPFLAGS_HAVE_GC)
+    if (is_gc)
         PyObject_GC_Track(op);
     
     return op;
@@ -1117,16 +1110,16 @@ datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyObject *op;
     Py_ssize_t n_slots, n_items;
-    PyObject *tmp;
+    PyTupleObject *tmp;
     Py_ssize_t n, n_args;
     PyObject **items, **pp;
     PyObject *v;
 
     if (PyTuple_CheckExact(args)) {
-        tmp = args;
+        tmp = (PyTupleObject*)args;
         Py_INCREF(args);
     } else {
-        tmp = PySequence_Tuple(args);
+        tmp = (PyTupleObject*)PySequence_Tuple(args);
         if (tmp == NULL) {
             return NULL;
         }
@@ -1145,7 +1138,7 @@ datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     op = type->tp_alloc(type, n_items);
 
-    pp = ((PyTupleObject*)tmp)->ob_item;
+    pp = tmp->ob_item;
     if (n_slots) {
         n = n_slots;
         items = datatuple_slots(op);
@@ -1170,7 +1163,7 @@ datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     
     if (kwds) {
         if (type->tp_dictoffset) {
-            PyObject **dictptr = dataobject_dictptr(type, op);
+            PyObject **dictptr = _PyObject_GetDictPtr(op);
             PyObject *dict;
             if (*dictptr)
                 dict = *dictptr;
@@ -1205,11 +1198,7 @@ datatuple_clear(PyObject *op)
     items = datatuple_slots(op);
     if (n_slots) {
         while (n_slots-- > 0) {
-            PyObject *v;
-
-            v = *items;
-            Py_XDECREF(v);
-            *items = NULL;
+            Py_CLEAR(*items);
             items++;
         }
     }
@@ -1218,23 +1207,19 @@ datatuple_clear(PyObject *op)
     if (n_items) {
         items = datatuple_items(type, op);
         while (n_items-- > 0) {
-            PyObject *v;
-
-            v = *items;
-            Py_XDECREF(v);
-            *items = NULL;
+            Py_CLEAR(*items);
             items++;
         }
     }
 
+    if (type->tp_weaklistoffset)
+        PyObject_ClearWeakRefs(op);
+    
     if (type->tp_dictoffset) {
-        PyObject **dictptr = dataobject_dictptr(type, op);
+        PyObject **dictptr = _PyObject_GetDictPtr(op);
         if (dictptr && *dictptr)
             Py_CLEAR(*dictptr);
     }
-
-    if (type->tp_weaklistoffset)
-        PyObject_ClearWeakRefs(op);
 
     return 0;
 }
@@ -1250,6 +1235,9 @@ datatuple_dealloc(PyObject *op)
 
     datatuple_clear(op);
 
+    if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_DECREF(tp);
+    
     tp->tp_free((PyObject *)op);
 }
 
@@ -1284,7 +1272,7 @@ datatuple_traverse(PyObject *op, visitproc visit, void *arg)
     }
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = dataobject_dictptr(type, op);
+        PyObject **dictptr = _PyObject_GetDictPtr(op);
         if (dictptr && *dictptr)
             Py_VISIT(*dictptr);
     }
@@ -1535,10 +1523,10 @@ datatuple_copy(PyObject* op)
     }
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = dataobject_dictptr(type, op);
+        PyObject **dictptr = _PyObject_GetDictPtr(op);
         PyObject *dict = *dictptr;
         
-        PyObject **new_dictptr = dataobject_dictptr(type, new_op);
+        PyObject **new_dictptr = _PyObject_GetDictPtr(new_op);
         PyObject *new_dict = *new_dictptr;
         
         if (dict && !new_dict) {
@@ -1849,7 +1837,7 @@ dataobjectiter_dealloc(dataobjectiterobject *it)
     
 #if PY_VERSION_HEX < 0x03080000
     if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
-    Py_INCREF(t);
+    Py_DECREF(t);
 #endif    
 }
 
@@ -2053,7 +2041,7 @@ static void dataslotgetset_dealloc(PyObject *o) {
     PyObject_Del(o);
 #if PY_VERSION_HEX >= 0x03080000
     if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_INCREF(t);
+        Py_DECREF(t);
 #endif
 }
 
@@ -2492,7 +2480,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     PyTypeObject *tp;
     PyTypeObject *tp_base;
-    PyObject *__dict__;
     int __init__, __new__;
     PyObject *fields;
     int n_fields;
@@ -2505,13 +2492,10 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     cls = PyTuple_GET_ITEM(args, 0);
 
-    __dict__ = PyObject_GetAttrString(cls, "__dict__");
-
-    fields = PyMapping_GetItemString(__dict__, "__fields__");
+    fields = PyObject_GetAttrString(cls, "__fields__");
 
     if (!fields){
         PyErr_SetString(PyExc_TypeError, "__fields__ is missing");
-        Py_DECREF(__dict__);
         return NULL;    
     }
     
@@ -2521,7 +2505,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     } else {
         n_fields = PyNumber_AsSsize_t(fields, PyExc_IndexError);
         if (n_fields == -1 && PyErr_Occurred()) {
-            Py_DECREF(__dict__);
             Py_DECREF(fields);
             return NULL;
         }
@@ -2543,7 +2526,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         } else {
             PyErr_SetString(PyExc_TypeError, 
                             "common base class should be dataobject, datatuple or subclass");        
-            Py_DECREF(__dict__);
             return NULL;
         }
     }
@@ -2552,7 +2534,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         tp->tp_basicsize += n_fields * sizeof(PyObject*);
     } else {
         PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");        
-        Py_DECREF(__dict__);
         return NULL;    
     }
 
@@ -2561,7 +2542,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     tp->tp_alloc = tp_base->tp_alloc;
 
-    __new__ = PyMapping_HasKeyString(__dict__, "__new__");
+    __new__ = PyObject_HasAttrString(cls, "__new__");
 
     if (!has_fields && !__new__)
         tp->tp_new = tp_base->tp_new;    
@@ -2569,7 +2550,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_dealloc = tp_base->tp_dealloc;
     tp->tp_free = tp_base->tp_free;
     
-    __init__ = PyMapping_HasKeyString(__dict__, "__init__");
+    __init__ = PyObject_HasAttrString(cls, "__init__");
     if (!__init__) {
         if (tp_base->tp_init)
             tp->tp_init = tp_base->tp_init;
@@ -2577,12 +2558,10 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
             tp->tp_init = NULL;
     }
     
-    Py_DECREF(__dict__);    
-    
     tp->tp_flags |= Py_TPFLAGS_HEAPTYPE;
     
-//     if (tp->tp_flags & Py_TPFLAGS_HAVE_GC)
-    tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
+    if (tp->tp_flags & Py_TPFLAGS_HAVE_GC)
+        tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
 
     tp->tp_traverse = NULL;
     tp->tp_clear = NULL;
@@ -2707,7 +2686,8 @@ __fix_type(PyObject *tp, PyTypeObject *meta) {
     
     if (tp->ob_type != meta) {
         val = (PyObject*)tp->ob_type;
-        Py_XDECREF(val);
+        if (val)
+            Py_DECREF(val);
         tp->ob_type = meta;
         Py_INCREF(meta);
         PyType_Modified((PyTypeObject*)tp);

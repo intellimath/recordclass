@@ -10,7 +10,7 @@ struct recordobjectGetSet;
 struct recordobjectGet;
 struct SequenceProxyObject;
 
-/* "recordclass/recordobject.pyx":401
+/* "recordclass/recordobject.pyx":410
  * 
  * @cython.auto_pickle(False)
  * cdef public class recordobject[object recordobject, type recordobjectType]:             # <<<<<<<<<<<<<<
@@ -21,7 +21,7 @@ struct recordobject {
   PyObject_HEAD
 };
 
-/* "recordclass/recordobject.pyx":728
+/* "recordclass/recordobject.pyx":738
  * 
  * @cython.final
  * cdef public class recordobjectiter[object recordobjectIter, type recordobjectIterType]:             # <<<<<<<<<<<<<<
@@ -35,7 +35,7 @@ struct recordobjectIter {
   Py_ssize_t n;
 };
 
-/* "recordclass/recordobject.pyx":750
+/* "recordclass/recordobject.pyx":760
  * 
  * @cython.final
  * cdef public class recordobjectgetset[object recordobjectGetSet, type recordobjectGetSetType]:             # <<<<<<<<<<<<<<
@@ -47,7 +47,7 @@ struct recordobjectGetSet {
   Py_ssize_t i;
 };
 
-/* "recordclass/recordobject.pyx":768
+/* "recordclass/recordobject.pyx":778
  * 
  * @cython.final
  * cdef public class recordobjectget[object recordobjectGet, type recordobjectGetType]:             # <<<<<<<<<<<<<<
@@ -59,7 +59,7 @@ struct recordobjectGet {
   Py_ssize_t i;
 };
 
-/* "recordclass/recordobject.pyx":781
+/* "recordclass/recordobject.pyx":791
  * 
  * @cython.final
  * cdef public class SequenceProxy[object SequenceProxyObject, type SequenceProxyType]:             # <<<<<<<<<<<<<<

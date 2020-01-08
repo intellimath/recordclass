@@ -22,6 +22,7 @@
 
 import collections
 from recordclass import recordclass
+from recordclass import structclass
 from typing import _type_check
 
 import sys as _sys

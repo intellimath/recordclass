@@ -248,7 +248,7 @@ class datatype(type):
         annotations = ns.get('__annotations__', {})
 
         if '__fields__' in ns:
-            fields = ns.get('__fields__')
+            fields = ns['__fields__']
         else:
             fields = [name for name in annotations]
 
@@ -281,25 +281,21 @@ class datatype(type):
                 fields.remove('__weakref__')
                 use_weakref = True
 
-            n_fields = len(fields)
-
             _fields, _defaults, _annotations = collect_info_from_bases(bases)
 
             defaults = {f:ns[f] for f in fields if f in ns}
 
             if fields:
                 fields = [f for f in fields if f not in _fields]
-                n_fields = len(fields)
             fields = _fields + fields
-            n_fields += len(_fields)
+            fields = tuple(fields)
+            n_fields = len(fields)
 
             _defaults.update(defaults)
             defaults = _defaults
 
             _annotations.update(annotations)
             annotations = _annotations
-
-            fields = tuple(fields)
             
 #             print(fields, argsonly)
 
