@@ -248,38 +248,39 @@ class structclassTest(unittest.TestCase):
         newt = t._replace(itemgetter=10, property=20, self=30, cls=40, tuple=50)
         self.assertEqual(tuple(newt), (10,20,30,40,50))
 
-        # Broader test of all interesting names in a template
-        with support.captured_stdout() as template:
-            T = structclass('T', 'x')
-        words = set(re.findall('[A-Za-z]+', template.getvalue()))
-        words -= set(keyword.kwlist)
-        words = list(words)
-        if 'None' in words:
-            words.remove('None')
-        T = structclass('T', words)
-        print(T.__dict__)
-        # test __new__
-        values = tuple(range(len(words)))
-        t = T(*values)
-        self.assertEqual(tuple(t), values)
-        t = T(**dict(zip(T.__fields__, values)))
-        self.assertEqual(tuple(t), values)
-        # test _make
-        t = T._make(values)
-        self.assertEqual(tuple(t), values)
-        # exercise __repr__
-        repr(t)
-        # test _asdict
-        self.assertEqual(t._asdict(), dict(zip(T.__fields__, values)))
-        # test _replace
-        t = T._make(values)
-        newvalues = tuple(v*10 for v in values)
-        newt = t._replace(**dict(zip(T.__fields__, newvalues)))
-        self.assertEqual(tuple(newt), newvalues)
-        # test __fields__
-        self.assertEqual(T.__fields__, tuple(words))
-        # test __getnewargs__
-        #self.assertEqual(t.__getnewargs__(), newvalues)
+#     def test_name_conflicts2(self):
+#         # Broader test of all interesting names in a template
+#         with support.captured_stdout() as template:
+#             T = structclass('T', 'x')
+#         words = set(re.findall('[A-Za-z]+', template.getvalue()))
+#         words -= set(keyword.kwlist)
+#         words = list(words)
+#         if 'None' in words:
+#             words.remove('None')
+#         T = structclass('T', words)
+#         print(T.__dict__)
+#         # test __new__
+#         values = tuple(range(len(words)))
+#         t = T(*values)
+#         self.assertEqual(tuple(t), values)
+#         t = T(**dict(zip(T.__fields__, values)))
+#         self.assertEqual(tuple(t), values)
+#         # test _make
+#         t = T._make(values)
+#         self.assertEqual(tuple(t), values)
+#         # exercise __repr__
+#         repr(t)
+#         # test _asdict
+#         self.assertEqual(t._asdict(), dict(zip(T.__fields__, values)))
+#         # test _replace
+#         t = T._make(values)
+#         newvalues = tuple(v*10 for v in values)
+#         newt = t._replace(**dict(zip(T.__fields__, newvalues)))
+#         self.assertEqual(tuple(newt), newvalues)
+#         # test __fields__
+#         self.assertEqual(T.__fields__, tuple(words))
+#         # test __getnewargs__
+#         #self.assertEqual(t.__getnewargs__(), newvalues)
 
     def test_repr(self):
         with support.captured_stdout() as template:
