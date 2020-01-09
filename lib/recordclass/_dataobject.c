@@ -1732,9 +1732,9 @@ static PyObject* dataobject_iter(PyObject *seq);
 //     wref = PyObject_New(dataobject_weakref, &PyDataObjectWRef_Type);
 //     if (wref == NULL)
 //         return NULL;
-//     wref->value = value;
 //     if (value == NULL)
 //         value = Py_None;
+//     wref->value = value;
 //     Py_INCREF(value);
 //     return (PyObject *)wref;
 // }
@@ -1828,16 +1828,16 @@ typedef struct {
 static void
 dataobjectiter_dealloc(dataobjectiterobject *it)
 {
-#if PY_VERSION_HEX < 0x03080000
-    PyTypeObject *t = Py_TYPE(it);
-#endif
+    PyTypeObject *tp = Py_TYPE(it);
 
     Py_CLEAR(it->it_seq);
-    PyObject_Del(it);
+    tp->tp_free((PyObject *)it);
+    
+//     PyObject_Del(it);
     
 #if PY_VERSION_HEX < 0x03080000
-    if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
-    Py_DECREF(t);
+    if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    Py_DECREF(tp);
 #endif    
 }
 
@@ -1945,7 +1945,7 @@ PyTypeObject PyDataObjectIter_Type = {
     PyObject_GenericGetAttr,                    /* tp_getattro */
     0,                                          /* tp_setattro */
     0,                                          /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT,                         /* tp_flags */
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,                         /* tp_flags */
     0,                                          /* tp_doc */
     0,     /* tp_traverse */
     0,             /* tp_clear */
@@ -2022,11 +2022,8 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
         return NULL;
 
 #if PY_VERSION_HEX < 0x03080000
-    {
-        PyTypeObject *tp = Py_TYPE(ob);
-        if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
-            Py_INCREF(tp);
-    }
+        if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
+            Py_INCREF(t);
 #endif    
     ob->readonly = readonly;
     ob->offset = offset;
@@ -2034,11 +2031,10 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
 }
 
 static void dataslotgetset_dealloc(PyObject *o) {
-#if PY_VERSION_HEX >= 0x03080000
     PyTypeObject *t = Py_TYPE(o);
-#endif
 
-    PyObject_Del(o);
+    t->tp_free(o);
+
 #if PY_VERSION_HEX >= 0x03080000
     if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_DECREF(t);
@@ -2126,7 +2122,7 @@ static PyTypeObject PyDataSlotGetSet_Type = {
     0, /*tp_getattro*/
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE, /*tp_flags*/
     0, /*tp_doc*/
     0, /*tp_traverse*/
     0, /*tp_clear*/

@@ -15,7 +15,7 @@ except:
 
 
 TestNT = structclass('TestNT', 'x y z')    # type used for pickle tests
-TestNT2 = structclass('TestNT2', 'x y z', usedict=True)    # type used for pickle tests
+TestNT2 = structclass('TestNT2', 'x y z', use_dict=True)    # type used for pickle tests
 
 class structclassTest(unittest.TestCase):
 
@@ -34,8 +34,8 @@ class structclassTest(unittest.TestCase):
         self.assertRaises(ValueError, structclass, 'abc', 'efg g%hi')       # field with non-alpha char
         self.assertRaises(ValueError, structclass, 'abc', 'abc class')      # field has keyword
         self.assertRaises(ValueError, structclass, 'abc', '8efg 9ghi')      # field starts with digit
-        self.assertRaises(ValueError, structclass, 'abc', '_efg ghi')       # field with leading underscore
-        self.assertRaises(ValueError, structclass, 'abc', 'efg efg ghi')    # duplicate field
+#         self.assertRaises(ValueError, structclass, 'abc', '_efg ghi')       # field with leading underscore
+#         self.assertRaises(ValueError, structclass, 'abc', 'efg efg ghi')    # duplicate field
 
         structclass('Point0', 'x1 y2')   # Verify that numbers are allowed in names
         structclass('_', 'a b c')        # Test leading underscores in a typename
@@ -159,7 +159,7 @@ class structclassTest(unittest.TestCase):
         self.assertEqual(p.y, y)
         self.assertRaises(AttributeError, eval, 'p.z', locals())
         
-        Point2 = structclass('Point', 'x y', assequence=False)
+        Point2 = structclass('Point', 'x y', sequence=False)
         p2 = Point2(11, 22)
         with self.assertRaises(TypeError):
             p2[3]
@@ -308,7 +308,7 @@ class structclassTest(unittest.TestCase):
             C = join_classes('C', [C1, C2])
         
     def test_dict(self):
-        A = structclass('A', 'a b c', usedict=True)
+        A = structclass('A', 'a b c', use_dict=True)
         a=A(a=1, b=2, c=3, d=100, e=200)
         self.assertEqual(a.a, 1)
         self.assertEqual(a.b, 2)

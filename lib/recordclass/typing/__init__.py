@@ -98,13 +98,13 @@ class RecordClass(metaclass=RecordClassMeta):
         return _make_recordclass(typename, fields)
 
 
-def _make_structclass(name, types, readonly=False, usedict=False, gc=False, 
-                            weakref=False, hashable=False):
+def _make_structclass(name, types, readonly=False, use_dict=False, gc=False, 
+                            use_weakref=False, hashable=False):
     msg = "StructClass('Name', [(f0, t0), (f1, t1), ...]); each t must be a type"
     types = [(n, _type_check(t, msg)) for n, t in types]
     struct_cls = structclass(name, [n for n, _ in types], 
-                             readonly=readonly, usedict=usedict, gc=gc, 
-                             weakref=weakref, hashable=hashable)
+                             readonly=readonly, use_dict=use_dict, gc=gc, 
+                             use_weakref=use_weakref, hashable=hashable)
     struct_cls.__annotations__ = dict(types)
     try:
         struct_cls.__module__ = _sys._getframe(2).f_globals.get('__name__', '__main__')
@@ -120,8 +120,8 @@ class StructClassMeta(type):
 
         options = ns.pop('__options__', {})
         readonly = options.get('readonly', False)
-        usedict = options.get('usedict', False)
-        weakref = options.get('weakref', False)
+        use_dict = options.get('use_dict', False)
+        use_weakref = options.get('use_weakref', False)
         hashable = options.get('hashable', False)
         
         if 'gc' in options:
@@ -143,8 +143,8 @@ class StructClassMeta(type):
                                         default_names=', '.join(defaults_dict.keys())))
         
         struct_cls = _make_structclass(typename, types.items(),
-                            readonly=readonly, usedict=usedict, gc=gc, 
-                            weakref=weakref, hashable=hashable)
+                            readonly=readonly, use_dict=use_dict, gc=gc, 
+                            use_weakref=use_weakref, hashable=hashable)
 
         struct_cls.__new__.__defaults__ = tuple(defaults)
         struct_cls.__new__.__annotations__ = collections.OrderedDict(types)

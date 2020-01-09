@@ -301,6 +301,7 @@ class datatype(type):
 
             if fields and (not argsonly or defaults) and '__new__' not in ns:
                 __new__ = make_new_function(typename, fields, defaults, annotations, varsize, use_dict)
+                __new__.__qualname__ = typename + '.' + '__new__'
 
                 ns['__new__'] = __new__
 

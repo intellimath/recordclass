@@ -25,7 +25,7 @@
 from keyword import iskeyword as _iskeyword
 
 from .mutabletuple import mutabletuple, immutabletuple, mutabletuple_itemgetset, mutabletuple_itemget
-from .recordobject import recordobject, recordclasstype
+from .recordobject import recordclasstype
 from collections import namedtuple, OrderedDict
 
 

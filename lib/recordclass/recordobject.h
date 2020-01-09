@@ -4,60 +4,7 @@
 #define __PYX_HAVE__recordclass__recordobject
 
 #include "Python.h"
-struct recordobject;
-struct recordobjectIter;
-struct recordobjectGetSet;
-struct recordobjectGet;
 struct SequenceProxyObject;
-
-/* "recordclass/recordobject.pyx":410
- * 
- * @cython.auto_pickle(False)
- * cdef public class recordobject[object recordobject, type recordobjectType]:             # <<<<<<<<<<<<<<
- * 
- *     def __cinit__(self, *args, **kw):
- */
-struct recordobject {
-  PyObject_HEAD
-};
-
-/* "recordclass/recordobject.pyx":738
- * 
- * @cython.final
- * cdef public class recordobjectiter[object recordobjectIter, type recordobjectIterType]:             # <<<<<<<<<<<<<<
- *     cdef PyObject *op "op"
- *     cdef Py_ssize_t i "i"
- */
-struct recordobjectIter {
-  PyObject_HEAD
-  PyObject *op;
-  Py_ssize_t i;
-  Py_ssize_t n;
-};
-
-/* "recordclass/recordobject.pyx":760
- * 
- * @cython.final
- * cdef public class recordobjectgetset[object recordobjectGetSet, type recordobjectGetSetType]:             # <<<<<<<<<<<<<<
- * 
- *     cdef Py_ssize_t i "i"
- */
-struct recordobjectGetSet {
-  PyObject_HEAD
-  Py_ssize_t i;
-};
-
-/* "recordclass/recordobject.pyx":778
- * 
- * @cython.final
- * cdef public class recordobjectget[object recordobjectGet, type recordobjectGetType]:             # <<<<<<<<<<<<<<
- * 
- *     cdef Py_ssize_t i "i"
- */
-struct recordobjectGet {
-  PyObject_HEAD
-  Py_ssize_t i;
-};
 
 /* "recordclass/recordobject.pyx":791
  * 
@@ -86,10 +33,6 @@ struct SequenceProxyObject {
   #define DL_IMPORT(_T) _T
 #endif
 
-__PYX_EXTERN_C DL_IMPORT(PyTypeObject) recordobjectType;
-__PYX_EXTERN_C DL_IMPORT(PyTypeObject) recordobjectIterType;
-__PYX_EXTERN_C DL_IMPORT(PyTypeObject) recordobjectGetSetType;
-__PYX_EXTERN_C DL_IMPORT(PyTypeObject) recordobjectGetType;
 __PYX_EXTERN_C DL_IMPORT(PyTypeObject) SequenceProxyType;
 
 #endif /* !__PYX_HAVE_API__recordclass__recordobject */
