@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 
-// Copyright (c) «2015-2019» «Shibzukhov Zaur, szport at gmail dot com»
+// Copyright (c) «2015-2020» «Shibzukhov Zaur, szport at gmail dot com»
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software - recordclass library - and associated documentation files 
@@ -582,9 +582,9 @@ dataobject_copy(PyObject* op)
         PyObject *dict = *dictptr;
         
         PyObject **new_dictptr = _PyObject_GetDictPtr(new_op);
-        PyObject *new_dict = *new_dictptr;
+        PyObject *new_dict;
         
-        if (dict && !new_dict) {
+        if (dict) {
             new_dict = PyDict_New();
             if (!new_dict) {
                 PyErr_SetString(PyExc_TypeError, "failed to create new dict");
@@ -592,8 +592,11 @@ dataobject_copy(PyObject* op)
             }            
             *new_dictptr = new_dict;            
         }
+        else {
+            *new_dictptr = NULL;
+        }
         
-        if (dict) {
+        if (dict && new_dict) {
             if (PyDict_Update(new_dict, dict) < 0) {
                 PyErr_SetString(PyExc_TypeError, "dict update failed");
                 return NULL;                        
@@ -1527,23 +1530,27 @@ datatuple_copy(PyObject* op)
         PyObject *dict = *dictptr;
         
         PyObject **new_dictptr = _PyObject_GetDictPtr(new_op);
-        PyObject *new_dict = *new_dictptr;
-        
-        if (dict && !new_dict) {
+        PyObject *new_dict;
+                
+        if (dict) {
             new_dict = PyDict_New();
             if (!new_dict) {
                 PyErr_SetString(PyExc_TypeError, "failed to create new dict");
                 return NULL;                                    
-            }
-            *new_dictptr = new_dict;
+            }            
+            *new_dictptr = new_dict;            
+        }
+        else {
+            *new_dictptr = NULL;
         }
         
-        if (dict) {
+        if (dict && new_dict) {
             if (PyDict_Update(new_dict, dict) < 0) {
                 PyErr_SetString(PyExc_TypeError, "dict update failed");
+                Py_DECREF(new_dict);
                 return NULL;                        
             }
-        }        
+        }
     }
 
     return new_op;

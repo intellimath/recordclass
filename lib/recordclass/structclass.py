@@ -24,7 +24,6 @@
 
 from keyword import iskeyword as _iskeyword
 from collections import namedtuple, OrderedDict
-# from .recordobject import recordobject, structclasstype
 from .utils import check_name
 
 import sys as _sys

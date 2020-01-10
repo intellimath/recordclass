@@ -651,6 +651,8 @@ class datatupleTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle6(self):
+        print(TPickleV6)
+        print(TPickleV6.__dict__)
         p = TPickleV6(10, 20, 30)
         p.a = 1
         p.b = 2
