@@ -42,6 +42,8 @@
     return Py_INCREF(Py_NotImplemented), Py_NotImplemented
 #endif
 
+#define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
+
 #if PY_MAJOR_VERSION == 2
 static PyObject *
 _PyObject_GetBuiltin(const char *name)
@@ -76,8 +78,6 @@ PyObject_GenericGetDict(PyObject *obj, void *context)
     return dict;
 }
 #endif
-
-#define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
 static PyObject *
 _PyObject_GetObject(const char *modname, const char *name)
