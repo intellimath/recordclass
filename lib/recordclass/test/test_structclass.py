@@ -217,6 +217,7 @@ class structclassTest(unittest.TestCase):
                 self.assertNotIn(b'OrderedDict', dumps(p, protocol))
 
     def test_pickle2_sc(self):
+        print(TestNT2, TestNT2.__dict__) 
         p = TestNT2(x=10, y=20, z=30)
         p.a = 100
         p.b = 200

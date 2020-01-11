@@ -167,7 +167,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     
     if (kwds) {
         if (type->tp_dictoffset) {
-            PyObject *dict = PyObject_GetAttrString(op, "__dict__");
+            PyObject *dict = PyObject_GenericGetDict(op, NULL);
 
             if (PyDict_Update(dict, kwds) == -1) {
                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
@@ -585,9 +585,9 @@ dataobject_copy(PyObject* op)
         PyObject *new_dict;
         
         if (dict) {
-            new_dict = PyDict_New();
+            new_dict = PyDict_Copy(dict);
             if (!new_dict) {
-                PyErr_SetString(PyExc_TypeError, "failed to create new dict");
+                PyErr_SetString(PyExc_TypeError, "it is failed to make copy of the dict");
                 return NULL;                                    
             }            
             *new_dictptr = new_dict;            
@@ -965,8 +965,7 @@ dataobject_getstate(PyObject *ob) {
         if (dictptr) {
             kw = *dictptr;
             if (kw) {
-                PyObject *d = PyDict_New();
-                PyDict_Update(d, kw);
+                PyObject *d = PyDict_Copy(kw);
                 return d;
             }
         }
@@ -981,23 +980,19 @@ PyDoc_STRVAR(dataobject_setstate_doc,
 static PyObject*
 dataobject_setstate(PyObject *ob, PyObject *state) {
     PyTypeObject *tp = Py_TYPE(ob);
-    PyObject **dictptr;
+//     PyObject **dictptr;
     PyObject *dict;
 
     if (!state || state == Py_None)
         return 0;
 
     if (tp->tp_dictoffset) {
-        dictptr = _PyObject_GetDictPtr(ob);
-        dict = *dictptr;
+//         dictptr = _PyObject_GetDictPtr(ob);
+        dict = PyObject_GenericGetDict(ob, NULL);
 
         if (!dict) {
-            dict = PyDict_New();
-            if (!dict) {
-                PyErr_SetString(PyExc_TypeError, "failed to create new dict");
-                return NULL;                                    
-            }
-            *dictptr = dict;
+            PyErr_SetString(PyExc_TypeError, "failed to create new dict");
+            return NULL;                                    
         }        
         if (PyDict_Update(dict, state) < 0) {
             PyErr_SetString(PyExc_TypeError, "dict update failed");
@@ -1166,14 +1161,7 @@ datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     
     if (kwds) {
         if (type->tp_dictoffset) {
-            PyObject **dictptr = _PyObject_GetDictPtr(op);
-            PyObject *dict;
-            if (*dictptr)
-                dict = *dictptr;
-            else {
-                dict = PyDict_New();
-                *dictptr = dict;
-            }
+            PyObject *dict = PyObject_GenericGetDict(op, NULL);
 
             if (PyDict_Update(dict, kwds) == -1) {
                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
@@ -1283,57 +1271,6 @@ datatuple_traverse(PyObject *op, visitproc visit, void *arg)
     return 0;
 }
 
-// static PyObject *
-// datatuple_slot(PyObject *op, Py_ssize_t i)
-// {
-//     PyTypeObject *type = Py_TYPE(op);
-//     PyObject **items;
-//     PyObject *v;
-
-//     Py_ssize_t n= datatuple_numslots(type);
-
-//     if (i < 0)
-//         i += n;
-//     if (i < 0 || i >= n) {
-//         PyErr_SetString(PyExc_IndexError, "index out of range");
-//         return NULL;
-//     }
-
-//     items = datatuple_slots(op);
-
-//     v = items[i];
-//     Py_INCREF(v);
-//     return v;
-// }
-
-// static int
-// datatuple_ass_slot(PyObject *op, Py_ssize_t i, PyObject *val)
-// {
-//     PyObject **items;
-//     PyTypeObject *type = Py_TYPE(op);
-//     PyObject* old_val;
-
-//     Py_ssize_t n = datatuple_numslots(type);
-
-
-//     if (i < 0)
-//         i += n;
-//     if (i < 0 || i >= n) {
-//         PyErr_SetString(PyExc_IndexError, "index out of range");
-//         return -1;
-//     }
-
-//     items = datatuple_slots(op);
-
-//     items += i;
-
-//     old_val = *items;
-//     if (old_val)
-//         Py_DECREF(old_val);
-//     Py_INCREF(val);
-//     *items = val;
-//     return 0;
-// }
 
 static PyObject *
 datatuple_item(PyObject *op, Py_ssize_t i)
@@ -1863,8 +1800,8 @@ dataobjectiter_next(dataobjectiterobject *it)
         return item;
     }
 
-    Py_DECREF(it->it_seq);
-    it->it_seq = NULL;
+//     Py_DECREF(it->it_seq);
+//     it->it_seq = NULL;
     return NULL;
 }
 
@@ -2574,7 +2511,9 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_clear = NULL;
     tp->tp_is_gc = NULL;
     
+#if PY_MAJOR_VERSION > 2
     tp->tp_finalize = NULL;
+#endif
     
     PyType_Modified(tp);
 

@@ -25,11 +25,11 @@ class TestPickle2(dataobject):
 class TestPickle3(dataobject):
     __fields__  = 'x', 'y', 'z', '__dict__'
 
-class TestPickleVar2(datatuple):
-    __fields__ = 'x', 'y', 'z'
+# class TestPickleVar2(datatuple):
+#     __fields__ = 'x', 'y', 'z'
 
-class TestPickleVar3(datatuple):
-    __fields__  = 'x', 'y', 'z', '__dict__'
+# class TestPickleVar3(datatuple):
+#     __fields__  = 'x', 'y', 'z', '__dict__'
     
 class TestPickle22(dataobject):
     x:int
