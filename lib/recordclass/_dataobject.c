@@ -58,7 +58,26 @@ _PyObject_GetBuiltin(const char *name)
     Py_DECREF(mod);
     return attr;
 }
+
+PyObject *
+PyObject_GenericGetDict(PyObject *obj, void *context)
+{
+    PyObject *dict, **dictptr = PyObject_GetDictPtr(obj);
+    if (dictptr == NULL) {
+        PyErr_SetString(PyExc_AttributeError,
+                        "This object has no __dict__");
+        return NULL;
+    }
+    dict = *dictptr;
+    if (dict == NULL) {
+        *dictptr = dict = PyDict_New();
+    }
+    Py_XINCREF(dict);
+    return dict;
+}
 #endif
+
+#define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
 static PyObject *
 _PyObject_GetObject(const char *modname, const char *name)
@@ -173,6 +192,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
                 return NULL;            
             }
+            Py_DECREF(dict);
         } else {
             PyErr_SetString(PyExc_TypeError, "instance hasn't __dict__");
             return NULL;            
@@ -194,7 +214,7 @@ dataobject_clear(PyObject *op)
         PyObject_ClearWeakRefs(op);
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = _PyObject_GetDictPtr(op);
+        PyObject **dictptr = PyObject_GetDictPtr(op);
         if (dictptr && *dictptr)
             Py_CLEAR(*dictptr);
     }
@@ -271,7 +291,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
     }
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = _PyObject_GetDictPtr(op);
+        PyObject **dictptr = PyObject_GetDictPtr(op);
         if (dictptr && *dictptr)
             Py_VISIT(*dictptr);
     }
@@ -578,10 +598,10 @@ dataobject_copy(PyObject* op)
     }
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = _PyObject_GetDictPtr(op);
+        PyObject **dictptr = PyObject_GetDictPtr(op);
         PyObject *dict = *dictptr;
         
-        PyObject **new_dictptr = _PyObject_GetDictPtr(new_op);
+        PyObject **new_dictptr = PyObject_GetDictPtr(new_op);
         PyObject *new_dict;
         
         if (dict) {
@@ -921,7 +941,7 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
         return NULL;
 
     if (tp->tp_dictoffset) {
-        dictptr = _PyObject_GetDictPtr(ob);
+        dictptr = PyObject_GetDictPtr(ob);
         if (dictptr) {
             kw = *dictptr;
         }
@@ -961,7 +981,7 @@ dataobject_getstate(PyObject *ob) {
     PyObject **dictptr;
 
     if (tp->tp_dictoffset) {
-        dictptr = _PyObject_GetDictPtr(ob);
+        dictptr = PyObject_GetDictPtr(ob);
         if (dictptr) {
             kw = *dictptr;
             if (kw) {
@@ -987,7 +1007,7 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
         return 0;
 
     if (tp->tp_dictoffset) {
-//         dictptr = _PyObject_GetDictPtr(ob);
+//         dictptr = PyObject_GetDictPtr(ob);
         dict = PyObject_GenericGetDict(ob, NULL);
 
         if (!dict) {
@@ -999,6 +1019,7 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
             Py_DECREF(dict);
             return NULL;                        
         }
+        Py_DECREF(dict);
     } else {
         PyErr_SetString(PyExc_TypeError, "object has no __dict__");
         return NULL;                                            
@@ -1165,8 +1186,10 @@ datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
             if (PyDict_Update(dict, kwds) == -1) {
                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
+                Py_DECREF(dict);
                 return NULL;            
             }
+            Py_DECREF(dict);
         } else {
             PyErr_SetString(PyExc_TypeError, "invalid kwargs");
             return NULL;            
@@ -1207,7 +1230,7 @@ datatuple_clear(PyObject *op)
         PyObject_ClearWeakRefs(op);
     
     if (type->tp_dictoffset) {
-        PyObject **dictptr = _PyObject_GetDictPtr(op);
+        PyObject **dictptr = PyObject_GetDictPtr(op);
         if (dictptr && *dictptr)
             Py_CLEAR(*dictptr);
     }
@@ -1245,25 +1268,21 @@ datatuple_traverse(PyObject *op, visitproc visit, void *arg)
     if (n_slots) {
         items = datatuple_slots(op);
         while (n_slots--) {
-            PyObject *v;
-
-            v = *(items++);
-            Py_VISIT(v);
+            Py_VISIT(*items);
+            items++;
         }
     }
 
     if (n_items) {
         items = datatuple_items(type, op);
         while (n_items--) {
-            PyObject *v;
-
-            v = *(items++);
-            Py_VISIT(v);
+            Py_VISIT(*items);
+            items++;
         }
     }
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = _PyObject_GetDictPtr(op);
+        PyObject **dictptr = PyObject_GetDictPtr(op);
         if (dictptr && *dictptr)
             Py_VISIT(*dictptr);
     }
@@ -1463,10 +1482,10 @@ datatuple_copy(PyObject* op)
     }
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = _PyObject_GetDictPtr(op);
+        PyObject **dictptr = PyObject_GetDictPtr(op);
         PyObject *dict = *dictptr;
         
-        PyObject **new_dictptr = _PyObject_GetDictPtr(new_op);
+        PyObject **new_dictptr = PyObject_GetDictPtr(new_op);
         PyObject *new_dict;
                 
         if (dict) {
