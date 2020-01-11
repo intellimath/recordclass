@@ -2434,14 +2434,16 @@ _set_dictoffset(PyObject *cls, PyObject *add_dict) {
     if (!tp->tp_dictoffset && state) {
         tp->tp_dictoffset = tp->tp_basicsize;
         tp->tp_basicsize += sizeof(PyObject*);
-        if (tp->tp_weaklistoffset)
-            tp->tp_weaklistoffset = tp->tp_basicsize;
+//         if (tp->tp_weaklistoffset)
+//             tp->tp_weaklistoffset = tp->tp_basicsize;
     }
     if (tp->tp_dictoffset && !state) {
-        tp->tp_dictoffset = 0;
-        tp->tp_basicsize -= sizeof(PyObject*);
-        if (tp->tp_weaklistoffset)
-            tp->tp_weaklistoffset = tp->tp_basicsize;
+        PyErr_SetString(PyExc_TypeError, "we can only enable __dict__");        
+        return NULL;
+//         tp->tp_dictoffset = 0;
+//         tp->tp_basicsize -= sizeof(PyObject*);
+//         if (tp->tp_weaklistoffset)
+//             tp->tp_weaklistoffset = tp->tp_basicsize;
     }
 
     Py_RETURN_NONE;
@@ -2465,10 +2467,12 @@ _set_weaklistoffset(PyObject *cls, PyObject* add_weakref) {
         tp->tp_basicsize += sizeof(PyObject*);
     }
     if (tp->tp_weaklistoffset && !state) {
-        tp->tp_weaklistoffset = 0;
-        tp->tp_basicsize -= sizeof(PyObject*);
-        if (tp->tp_dictoffset)
-            tp->tp_dictoffset = tp->tp_basicsize;
+        PyErr_SetString(PyExc_TypeError, "we can only enable __weakref__");        
+        return NULL;
+//         tp->tp_weaklistoffset = 0;
+//         tp->tp_basicsize -= sizeof(PyObject*);
+//         if (tp->tp_dictoffset)
+//             tp->tp_dictoffset = tp->tp_basicsize;
     }
 
     Py_RETURN_NONE;
@@ -2557,8 +2561,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     if (!__init__) {
         if (tp_base->tp_init)
             tp->tp_init = tp_base->tp_init;
-        else
-            tp->tp_init = NULL;
+//         else
+//             tp->tp_init = NULL;
     }
     
     tp->tp_flags |= Py_TPFLAGS_HEAPTYPE;
@@ -2569,6 +2573,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_traverse = NULL;
     tp->tp_clear = NULL;
     tp->tp_is_gc = NULL;
+    
+    tp->tp_finalize = NULL;
     
     PyType_Modified(tp);
 
