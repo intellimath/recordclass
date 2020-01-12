@@ -2513,7 +2513,11 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 #if PY_MAJOR_VERSION > 2
     tp->tp_finalize = NULL;
 #endif
-    
+
+#if PY_VERSION_HEX == 0x03080000
+    tp->tp_vectorcall_offset = 0
+#endif
+
     PyType_Modified(tp);
 
 //     if (tp->tp_finalize) { printf("has finilize\n"); }
@@ -2693,11 +2697,17 @@ PyInit__dataobject(void)
     
     PyDataObject_Type.tp_base = &PyBaseObject_Type;
     Py_INCREF(&PyBaseObject_Type);
+#if PY_VERSION_HEX == 0x03080000
+    PyDataObject_Type.tp_vectorcall_offset = 0
+#endif
     if (PyType_Ready(&PyDataObject_Type) < 0)
         Py_FatalError("Can't initialize dataobject type");
     
     PyDataTuple_Type.tp_base = &PyDataObject_Type;
     Py_INCREF(&PyDataObject_Type);
+#if PY_VERSION_HEX == 0x03080000
+    PyDataTuple_Type.tp_vectorcall_offset = 0
+#endif
     if (PyType_Ready(&PyDataTuple_Type) < 0)
         Py_FatalError("Can't initialize datatuple type");
 
