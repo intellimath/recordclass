@@ -208,7 +208,6 @@ dataobject_clear(PyObject *op)
     PyTypeObject *type = Py_TYPE(op);
     PyObject **items = dataobject_slots(op);
     Py_ssize_t n_slots = dataobject_numslots(type);
-//     PyObject *v;
 
     if (type->tp_weaklistoffset)
         PyObject_ClearWeakRefs(op);
@@ -220,7 +219,6 @@ dataobject_clear(PyObject *op)
     }
 
     while (n_slots-- > 0) {
-//         v = *(items++);
         Py_CLEAR(*items);
         items++;
     }
@@ -232,27 +230,10 @@ static void
 dataobject_dealloc(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op); 
-//     PyObject **items = dataobject_slots(op);
-//     Py_ssize_t n_slots = dataobject_numslots(type);
-//     PyObject *v;
 
     if (PyType_IS_GC(type))
         PyObject_GC_UnTrack(op);
 
-//     if (type->tp_weaklistoffset)
-//         PyObject_ClearWeakRefs(op);
-
-//     if (type->tp_dictoffset) {
-//         PyObject **dictptr = dataobject_dictptr(type, op);
-//         if (dictptr && *dictptr)
-//             Py_CLEAR(*dictptr);
-//     }
-    
-//     while (n_slots-- > 0) {
-//         v = *(items++);
-//         Py_CLEAR(v);
-//     }
-    
     dataobject_clear(op);
     
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
@@ -399,7 +380,6 @@ dataobject_hash(PyObject *op)
     x = 0x345678L;
     for(i=0; i<len; i++) {
         o = do_getitem(op, i);
-//         Py_INCREF(o);
         y = PyObject_Hash(o);
         Py_DECREF(o);
         if (y == -1)
@@ -1928,6 +1908,7 @@ dataobject_iter(PyObject *seq)
     it = PyObject_New(dataobjectiterobject, &PyDataObjectIter_Type);
     if (it == NULL)
         return NULL;
+
 #if PY_VERSION_HEX < 0x03080000
     {
         PyTypeObject *t = Py_TYPE(it);
@@ -2006,7 +1987,6 @@ static void dataslotgetset_dealloc(PyObject *o) {
 
 #define dataobject_item_by_offset(op, offset) (*((PyObject**)((char*)op + offset)))
 #define dataobject_ass_item_by_offset(op, offset, val) (*((PyObject**)((char*)op + offset))=val)
-
 #define self_igs ((dataslotgetset_object *)self)
 
 static PyObject* dataslotgetset_get(PyObject *self, PyObject *obj, PyObject *type) {
