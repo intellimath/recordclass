@@ -2691,10 +2691,13 @@ PyInit__dataobject(void)
     __fix_type((PyObject*)&PyDataTuple_Type, dtype);
     Py_DECREF(dtype);
     
+    PyDataObject_Type.tp_base = &PyBaseObject_Type;
+    Py_INCREF(&PyBaseObject_Type);
     if (PyType_Ready(&PyDataObject_Type) < 0)
         Py_FatalError("Can't initialize dataobject type");
     
     PyDataTuple_Type.tp_base = &PyDataObject_Type;
+    Py_INCREF(&PyDataObject_Type);
     if (PyType_Ready(&PyDataTuple_Type) < 0)
         Py_FatalError("Can't initialize datatuple type");
 
@@ -2735,8 +2738,8 @@ init_dataobject(void)
     __fix_type((PyObject*)&PyDataTuple_Type, dtype);
     Py_DECREF(dtype);
     
-    PyDataObject_Type.tp_base = &PyObjectBase_Type;
-    Py_INCREF(&PyObjectBase_Type);
+    PyDataObject_Type.tp_base = &PyBaseObject_Type;
+    Py_INCREF(&PyBaseObject_Type);
     if (PyType_Ready(&PyDataObject_Type) < 0)
          Py_FatalError("Can't initialize dataobject type");
     
