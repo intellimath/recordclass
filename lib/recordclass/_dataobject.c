@@ -2622,7 +2622,7 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     _set_hashable(cls, hashable);
     _set_iterable(cls, iterable);
     
-    PyType_Modified(tp);
+    PyType_Modified((PyTypeObject*)cls);
     
     Py_XDECREF(sequence);
     Py_XDECREF(mapping);
