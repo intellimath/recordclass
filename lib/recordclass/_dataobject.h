@@ -17,3 +17,8 @@
 #define dataobject_weaklistptr(type, op) ((PyObject**)((char*)op + type->tp_weaklistoffset))
 #define dataobject_hasdict(type) (type->tp_dictoffset != 0)
 #define dataobject_hasweaklist(type) (type->tp_weaklistoffset != 0)
+
+// #define _Py_SIZE_ROUND_DOWN(n, a) ((size_t)(n) & ~(size_t)((a) - 1))
+// #define _Py_SIZE_ROUND_UP(n, a) (((size_t)(n) + \
+//         (size_t)((a) - 1)) & ~(size_t)((a) - 1))
+// #define _Py_ALIGN_DOWN(p, a) ((void *)((uintptr_t)(p) & ~(uintptr_t)((a) - 1)))

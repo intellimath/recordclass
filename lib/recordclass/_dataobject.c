@@ -2518,8 +2518,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_vectorcall_offset = 0
 #endif
 
-    PyType_Modified(tp);
-
 //     if (tp->tp_finalize) { printf("has finilize\n"); }
 
 // #if PY_VERSION_HEX >= 0x03080000
@@ -2560,6 +2558,8 @@ dataobject_enable_gc(PyObject *module, PyObject *args)
         type->tp_traverse = dataobject_traverse;
         type->tp_clear = dataobject_clear;
     }
+    
+    PyType_Modified(tp);    
     
     Py_INCREF(cls);
     return cls;
@@ -2621,6 +2621,9 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     _set_weaklistoffset(cls, use_weakref);
     _set_hashable(cls, hashable);
     _set_iterable(cls, iterable);
+    
+    PyType_Modified(tp);
+    
     Py_XDECREF(sequence);
     Py_XDECREF(mapping);
     Py_XDECREF(readonly);
