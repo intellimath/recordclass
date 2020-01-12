@@ -2559,7 +2559,7 @@ dataobject_enable_gc(PyObject *module, PyObject *args)
         type->tp_clear = dataobject_clear;
     }
     
-    PyType_Modified(tp);    
+    PyType_Modified(type);    
     
     Py_INCREF(cls);
     return cls;
