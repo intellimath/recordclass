@@ -494,20 +494,20 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.z, "a")        
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
         
-#     def test_enable_gc(self):
+    def test_enable_gc(self):
 
-#         class A(dataobject):
-#             __fields__ = 'x', 'y', 'z'
+        class A(dataobject):
+            __fields__ = 'x', 'y', 'z'
         
-#         @enable_gc
-#         class B(dataobject):
-#             __fields__ = 'x', 'y', 'z'
+        @enable_gc
+        class B(dataobject):
+            __fields__ = 'x', 'y', 'z'
             
-#         a = A(1,2,3)
-#         b = B(1,2,3)
-#         self.assertEqual(a.x, b.x)
-#         self.assertEqual(a.y, b.y)
-#         self.assertEqual(a.z, b.z)
+        a = A(1,2,3)
+        b = B(1,2,3)
+        self.assertEqual(a.x, b.x)
+        self.assertEqual(a.y, b.y)
+        self.assertEqual(a.z, b.z)
 #         self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)        
 
     def test_pickle2a(self):
