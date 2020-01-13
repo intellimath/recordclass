@@ -1049,8 +1049,8 @@ static PyTypeObject PyDataObject_Type = {
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
                                             /* tp_flags */
     dataobject_doc,                           /* tp_doc */
-    0,                      /* tp_traverse */
-    0,                         /* tp_clear */
+    dataobject_traverse,                      /* tp_traverse */
+    dataobject_clear,                         /* tp_clear */
     dataobject_richcompare,                   /* tp_richcompare */
     0,                                      /* tp_weaklistoffset*/
     dataobject_iter,                                      /* tp_iter */
@@ -1608,8 +1608,8 @@ static PyTypeObject PyDataTuple_Type = {
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
                                             /* tp_flags */
     dataobject_doc,                           /* tp_doc */
-    0,                      /* tp_traverse */
-    0,                         /* tp_clear */
+    datatuple_traverse,                      /* tp_traverse */
+    datatuple_clear,                         /* tp_clear */
     dataobject_richcompare,                   /* tp_richcompare */
     0,                                      /* tp_weaklistoffset*/
     dataobject_iter,                                      /* tp_iter */
