@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .utils import dataslot_offset, dataitem_offset
+from .utils import dataslot_offset, dataslot_offset2, dataitem_offset
 from .utils import check_name, collect_info_from_bases
 
 import sys as _sys
@@ -305,6 +305,22 @@ class datatype(type):
 
                 ns['__new__'] = __new__
 
+        if has_fields:
+            if readonly:
+                if type(readonly) is type(True):
+                    readonly_fields = set(fields)
+                else:
+                    readonly_fields = set(readonly)
+            else:
+                readonly_fields = set()
+
+            for i, name in enumerate(fields):
+                offset = dataslot_offset2(i, n_fields, varsize)
+                if name in readonly_fields:
+                    ns[name] = dataslotgetset(offset, True)
+                else:
+                    ns[name] = dataslotgetset(offset)
+                
         cls = type.__new__(metatype, typename, bases, ns)
 
         if has_fields:
@@ -318,21 +334,21 @@ class datatype(type):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                    use_weakref=use_weakref, iterable=iterable, hashable=hashable)
 
-        if has_fields:
-            if readonly:
-                if type(readonly) is type(True):
-                    readonly_fields = set(fields)
-                else:
-                    readonly_fields = set(readonly)
-            else:
-                readonly_fields = set()
+#         if has_fields:
+#             if readonly:
+#                 if type(readonly) is type(True):
+#                     readonly_fields = set(fields)
+#                 else:
+#                     readonly_fields = set(readonly)
+#             else:
+#                 readonly_fields = set()
 
-            for i, name in enumerate(fields):
-                offset = dataslot_offset(cls, i)
-                if name in readonly_fields:
-                    setattr(cls, name, dataslotgetset(offset, True))
-                else:
-                    setattr(cls, name, dataslotgetset(offset))
+#             for i, name in enumerate(fields):
+#                 offset = dataslot_offset(cls, i)
+#                 if name in readonly_fields:
+#                     setattr(cls, name, dataslotgetset(offset, True))
+#                 else:
+#                     setattr(cls, name, dataslotgetset(offset))
 
         return cls
 
