@@ -579,14 +579,14 @@ class dataobjectTest(unittest.TestCase):
         a=A(1, 2.0, "a")
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
 
-    def test_enable_gc(self):
-        A = make_dataclass("A", ('x', 'y', 'z'))
-        B = make_dataclass("B", ('x', 'y', 'z'), gc=True)
-        a = A(1,2,3)
-        b = B(1,2,3)
-        self.assertEqual(a.x, b.x)
-        self.assertEqual(a.y, b.y)
-        self.assertEqual(a.z, b.z)
+#     def test_enable_gc(self):
+#         A = make_dataclass("A", ('x', 'y', 'z'))
+#         B = make_dataclass("B", ('x', 'y', 'z'), gc=True)
+#         a = A(1,2,3)
+#         b = B(1,2,3)
+#         self.assertEqual(a.x, b.x)
+#         self.assertEqual(a.y, b.y)
+#         self.assertEqual(a.z, b.z)
 #         self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
         
     def test_caching(self):
