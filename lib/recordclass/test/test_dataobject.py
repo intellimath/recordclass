@@ -544,8 +544,8 @@ class dataobjectTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle2(self):
-        print(TPickle3)
-        print(TPickle3.__dict__)
+#         print(TPickle3)
+#         print(TPickle3.__dict__)
         p = TPickle2(10, 20, 30)
         for module in (pickle,):
             loads = getattr(module, 'loads')
@@ -556,8 +556,8 @@ class dataobjectTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle3(self):
-        print(TPickle3)
-        print(TPickle3.__dict__)
+#         print(TPickle3)
+#         print(TPickle3.__dict__)
         p = TPickle3(10, 20, 30)
         p.a = 1
         p.b = 2

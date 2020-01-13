@@ -2428,7 +2428,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     PyTypeObject *tp;
     PyTypeObject *tp_base;
     int __init__, __new__;
-    PyObject *fields;
+    PyObject *fields, *dict;
     int n_fields;
     int has_fields;
 
@@ -2489,15 +2489,19 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     tp->tp_alloc = tp_base->tp_alloc;
 
-    __new__ = PyObject_HasAttrString(cls, "__new__");
+    dict = PyObject_GetAttrString(cls, "__dict__");
 
-    if (!has_fields && !__new__)
+    __new__ = PyMapping_HasKeyString(dict, "__new__");
+
+//     if (!has_fields && !__new__)
+    if(!__new__)
         tp->tp_new = tp_base->tp_new;    
 
     tp->tp_dealloc = tp_base->tp_dealloc;
     tp->tp_free = tp_base->tp_free;
     
-    __init__ = PyObject_HasAttrString(cls, "__init__");
+    __init__ = PyMapping_HasKeyString(dict, "__init__");
+//     __init__ = PyObject_HasAttrString(cls, "__init__");
     if (!__init__) {
         if (tp_base->tp_init)
             tp->tp_init = tp_base->tp_init;
@@ -2528,6 +2532,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 //     if (tp->tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
 //         tp->tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
 // #endif
+
+    Py_DECREF(dict);
 
     Py_RETURN_NONE;
 }
