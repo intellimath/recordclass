@@ -259,15 +259,14 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
     Py_ssize_t n_slots;
     PyObject **items;
     PyTypeObject *type = Py_TYPE(op);
-    PyObject *v;
 
     n_slots = dataobject_numslots(type);
 
     if (n_slots) {
         items = dataobject_slots(op);
         while (n_slots--) {
-            v = *(items++);
-            Py_VISIT(v);
+            Py_VISIT(*items);
+            items++;
         }
     }
 
