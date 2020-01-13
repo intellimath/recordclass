@@ -1905,6 +1905,11 @@ dataobject_iter(PyObject *seq)
 {
     dataobjectiterobject *it;
 
+    if (!PyObject_IsInstance(seq, (PyObject*)&PyDataObject_Type)) {
+        PyErr_SetString(PyExc_TypeError, "the object is not instance of dataobject");
+        return NULL;
+    }
+
     it = PyObject_New(dataobjectiterobject, &PyDataObjectIter_Type);
     if (it == NULL)
         return NULL;
@@ -1915,12 +1920,12 @@ dataobject_iter(PyObject *seq)
         if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
             Py_INCREF(t);
     }
-#endif    
-    
+#endif
+
     it->it_index = 0;
     it->it_seq = seq;
-    it->it_len = do_getlen(seq);
     Py_INCREF(seq);
+    it->it_len = do_getlen(seq);
     return (PyObject *)it;
 }
 
