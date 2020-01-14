@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .utils import dataslot_offset2
+from .utils import dataslot_offset
 from .utils import check_name, collect_info_from_bases
 
 import sys as _sys
@@ -51,10 +51,8 @@ else:
     def _type_check(t, msg):
         return t
 
-__all__ = ('datatype', 'make_class', 'make_dataclass', 'make_arrayclass',
-           'asdict', 'clsconfig', 'enable_gc')
-
-int_type = type(1)
+# __all__ = ('datatype', 'make_class', 'make_dataclass', 'make_arrayclass',
+#            'asdict', 'clsconfig', 'enable_gc')
 
 def clsconfig(sequence=False, mapping=False, readonly=False, 
               use_dict=False, use_weakref=False, iterable=True, hashable=False):
@@ -66,158 +64,7 @@ def clsconfig(sequence=False, mapping=False, readonly=False,
         return cls
     return func
 
-def make_dataclass(typename, fields=None, bases=None, namespace=None, 
-                   varsize=False,  use_dict=False, use_weakref=False, hashable=True,
-                   sequence=False, mapping=False, iterable=False, readonly=False,
-                   defaults=None, module=None, argsonly=False, gc=False):
-    
-    from ._dataobject import _clsconfig, enable_gc
-    from ._dataobject import dataobject, datatuple
-
-    annotations = {}
-    if isinstance(fields, str):
-        fields = fields.replace(',', ' ').split()
-        fields = [fn.strip() for fn in fields]
-    else:
-        msg = "make_dataclass('Name', [(f0, t0), (f1, t1), ...]); each t must be a type"
-        field_names = []
-        if isinstance(fields, dict):
-            for fn, tp in fields.items():
-                tp = _type_check(tp, msg)
-                check_name(fn)
-                fn = _intern(fn)
-                annotations[fn] = tp
-                field_names.append(fn)
-        else:
-            for fn in fields:
-                if type(fn) is tuple:
-                    fn, tp = fn
-                    tp = _type_check(tp, msg)
-                    annotations[fn] = tp
-                check_name(fn)
-                fn = _intern(fn)
-                field_names.append(fn)
-        fields = field_names
-    typename = check_name(typename)
-
-    if defaults is not None:
-        n_fields = len(fields)
-        defaults = tuple(defaults)
-        n_defaults = len(defaults)
-        if n_defaults > n_fields:
-            raise TypeError('Got more default values than fields')
-    else:
-        defaults = None
-
-    options = {
-        'readonly':readonly,
-        'defaults':defaults,
-        'argsonly':argsonly,
-    }
-
-    if namespace is None:
-        ns = {}
-    else:
-        ns = namespace.copy()
-
-    if defaults:
-        for i in range(-n_defaults, 0):
-            fname = fields[i]
-            val = defaults[i]
-            ns[fname] = val
-
-    if use_dict and '__dict__' not in fields:
-        fields.append('__dict__')
-    if use_weakref and '__weakref__' not in fields:
-        fields.append('__weakref__')
-
-    ns['__options__'] = options
-    ns['__fields__'] = fields
-    if annotations:
-        ns['__annotations__'] = annotations
-
-    if bases:
-        base0 = bases[0]
-        if varsize:
-            if not isinstance(base0, datatuple):
-                raise TypeError("First base class should be subclass of datatuple")
-        else:
-            if not isinstance(base0, dataobject):
-                raise TypeError("First base class should be subclass of dataobject")
-    else:
-        if varsize:
-            bases = (datatuple,)
-        else:
-            bases = (dataobject,)
-        
-    if varsize:
-        _sequence = True
-    else:
-        _sequence = sequence
-
-    cls = datatype(typename, bases, ns)
-    
-    _clsconfig(cls, sequence=_sequence, mapping=mapping, readonly=readonly, 
-               use_dict=use_dict, use_weakref=use_weakref, iterable=iterable, hashable=hashable)
-
-    if gc:
-        cls = enable_gc(cls)
-
-    if module is None:
-        try:
-            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
-        except (AttributeError, ValueError):
-            module = None
-    if module is not None:
-        cls.__module__ = module
-
-    return cls
-
-make_class = make_dataclass
-
-def make_arrayclass(typename, fields=0, bases=None, namespace=None, 
-                 varsize=False, use_dict=False, use_weakref=False,
-                 hashable=False, readonly=False, gc=False,
-                 module=None):
-
-    from ._dataobject import dataobject, datatuple, enable_gc
-    
-    if not isinstance(fields, int_type):
-        raise TypeError("argument fields is not integer")
-        
-    if not bases:
-        if varsize:
-            bases = (datatuple,)
-        else:
-            bases = (dataobject,)        
-
-    options = {
-        'dict':use_dict, 'weakref':use_weakref, 'hashable':hashable, 
-        'sequence':True, 'iterable':True, 'readonly':readonly, 
-    }
-
-    if namespace is None:
-        ns = {}
-    else:
-        ns = namespace
-
-    ns['__options__'] = options
-    ns['__fields__'] = fields
-
-    cls = datatype(typename, bases, ns)
-
-    if gc:
-        cls = enable_gc(cls)
-
-    if module is None:
-        try:
-            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
-        except (AttributeError, ValueError):
-            module = None
-    if module is not None:
-        cls.__module__ = module
-
-    return cls
+int_type = type(1)
 
 class datatype(type):
 
@@ -315,7 +162,7 @@ class datatype(type):
                 readonly_fields = set()
 
             for i, name in enumerate(fields):
-                offset = dataslot_offset2(i, n_fields, varsize)
+                offset = dataslot_offset(i, n_fields, varsize)
                 if name in readonly_fields:
                     ns[name] = dataslotgetset(offset, True)
                 else:
@@ -414,21 +261,3 @@ def __new__(_cls_, {2}):
 
     return __new__
 
-def asdict(ob):
-    _getattr = getattr
-    return {fn:_getattr(ob, fn) for fn in ob.__class__.__fields__}
-
-class DataclassStorage:
-    #
-    def __init__(self):
-        self._storage = {}
-    #
-    def make_dataclass(self, name, fields):
-        fields = tuple(fields)
-        key = (name, fields)
-        cls = self._storage.get(key, None)
-        if cls is None:
-            cls = make_dataclass(name, fields)
-            self._storage[key] = cls
-        return cls
-    make_class = make_dataclass

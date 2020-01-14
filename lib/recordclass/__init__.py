@@ -31,11 +31,14 @@ del _sys
 from .mutabletuple import mutabletuple
 from .recordclass import recordclass, RecordclassStorage
 
-from .datatype import make_class, make_dataclass, make_arrayclass, datatype
-from .datatype import asdict, DataclassStorage
-from .datatype import clsconfig
+from .datatype import datatype, clsconfig
 
 from ._dataobject import dataobject, datatuple, enable_gc
+
+from .dataclass import make_dataclass, make_class
+from .dataclass import asdict, DataclassStorage
+
+from .arrayclass import make_arrayclass
 
 from .structclass import structclass, join_classes
 
