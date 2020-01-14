@@ -3,24 +3,28 @@
 ## What is all about?
 
 **Recordclass** is [MIT Licensed](http://opensource.org/licenses/MIT) python library.
-It implements the type `mutabletuple` and factory function `recordclass`
+It implements the type `mutabletuple`, which supports assignment operations and factory function `recordclass`
 in order to create record-like classes -- mutable variant of `collection.namedtuple` 
-with the same API. Later more memory saving variants are added.
+with the same API. 
+
+The `recordclass` library was started as a "proof of concept" for the problem of fast "mutable" 
+alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on stackoverflow). It was evolved further in order to provide more memory saving, fast and flexible types for representation of data objects.
 
 * **mutabletuple** is mutable variant of the `tuple`, which supports assignment operations. 
 * **recordclass** is a factory function that create a "mutable" analog of 
   `collection.namedtuple`. It produces a subclass of `mutabletuple` with namedtuple-like API.
 * **dataobject** is new base class for creating subclasses, which are support the following
   properties by default 1) no `__dict__` and `__weakref__`; 2) cyclic GC support is disabled by default; 
-  3) instances have less memory size than class instances with `__slots__`.
-* **make_dataclass** is a factory function for creation of `dataobject` subclasses described above.
+  3) instances of dataobject and it's subclasses have less memory size than class instances with `__slots__`. 
+  The difference is equal to the size of `PyGC_Head`.
+* **make_dataclass** is a factory function for creation of subclasses of `dataobject` with a given 
+  list of field names
 * **make_arrayclass** is a factory function for creation of array-like subclasses of `dataobject`. 
-* **structclass** is an analog of `recordclass`. 
-  It produces a class with less memory footprint (less than both recordclass-based class instances 
-  and instances of class with `__slots__`) and
-  `namedtuple`-like API. It's instances has no `__dict__`,
+* **structclass** is an analog of `recordclass` factory function. It create subclasses of `dataobject`.
+  It produces a class with and `namedtuple`-like API. It's instances has no `__dict__`,
   `__weakref__` and don't support cyclic garbage collection by default (only reference counting).
   But `structclass`-created classes can support any of them.
+
 
 The `dataobject`-based classes are not following `namedtuple`-like API, but `attrs`/`dataclasses`-like API.
 By default, subclasses of `dataobject` doesn't support cyclic GC, but only reference counting.
@@ -28,13 +32,10 @@ As the result the instance of such class need less memory.
 The difference is equal to the size of `PyGC_Head`.
 
 Subclasses of the `dataobject` are reasonable when reference cycles are not provided. 
-For example, when all fields have values of atomic types (integer, float, strings, date and time, etc.).
+For example, when all fields have values of atomic types (integer, float, strings, date/time/datetime, timedelta, etc.).
 The field's value also may be the instance of a subclass of `dataobject` (i.e. without GC support).
 As an exception, the value of a field can be any object if our instance is not contained in this object
 and in its sub-objects.
-
-The `recordclass` library was started as a "proof of concept" for the problem of fast "mutable" 
-alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on stackoverflow). It was evolved further in order to provide more memory saving, fast and flexible types for representation of data objects.
 
 Main repository for `recordclass` 
 is on [bitbucket](https://bitbucket.org/intellimath/recordclass).
