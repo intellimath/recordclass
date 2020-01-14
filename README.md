@@ -8,7 +8,19 @@ in order to create record-like classes -- mutable variant of `collection.namedtu
 with the same API. 
 
 The `recordclass` library was started as a "proof of concept" for the problem of fast "mutable" 
-alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on stackoverflow). It was evolved further in order to provide more memory saving, fast and flexible types for representation of data objects.
+alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on stackoverflow). 
+It was evolved further in order to provide more memory saving, fast and flexible types for representation of data objects.
+
+The library provides tools for creating classes that do not participate in the cyclic garbage collection mechanism, 
+but support only the reference counting mechanism. 
+The instances of such classes havn't `PyGC_Head` prefix, which decrease their size.
+This may make sense in cases where it is necessary to limit the size of objects as much as possible, 
+provided that they will never be part of circular references. 
+For example, when an object represents a record, the fields of which, by contract, represent simple values. 
+Another example is non-recursive data structures in which all leaf elements represent simple values. 
+Of course, in python, nothing prevents you from “shooting yourself in the foot" by creating the reference cycle in the program. 
+But in some cases, this can still be avoided provided that the developer understands 
+what he is doing and uses such classes in his code with caution.
 
 * **mutabletuple** is mutable variant of the `tuple`, which supports assignment operations. 
 * **recordclass** is a factory function that create a "mutable" analog of 
