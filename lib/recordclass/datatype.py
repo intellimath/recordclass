@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .utils import dataslot_offset, dataslot_offset2, dataitem_offset
+from .utils import dataslot_offset2
 from .utils import check_name, collect_info_from_bases
 
 import sys as _sys

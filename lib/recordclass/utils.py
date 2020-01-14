@@ -74,15 +74,15 @@ def number_of_dataslots(cls):
         n -= 1
     return n
 
-def dataslot_offset(cls, i):
-    n_slots = number_of_dataslots(cls)
-    if i >= n_slots:
-        raise IndexError("invalid index of the slots")
-    if cls.__itemsize__:
-        basesize = pyvarobject_size
-    else:
-        basesize = pyobject_size
-    return basesize + i*ref_size
+# def dataslot_offset(cls, i):
+#     n_slots = number_of_dataslots(cls)
+#     if i >= n_slots:
+#         raise IndexError("invalid index of the slots")
+#     if cls.__itemsize__:
+#         basesize = pyvarobject_size
+#     else:
+#         basesize = pyobject_size
+#     return basesize + i*ref_size
 
 def dataslot_offset2(i, n_slots, varsize):
     if i >= n_slots:
