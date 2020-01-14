@@ -5,7 +5,7 @@
 **Recordclass** is [MIT Licensed](http://opensource.org/licenses/MIT) python library.
 It implements the type `mutabletuple`, which supports assignment operations and factory function `recordclass`
 in order to create record-like classes -- mutable variant of `collection.namedtuple` 
-with the same API. 
+with the same API. They are subclasses of the `mutabletuple`.
 
 The `recordclass` library was started as a "proof of concept" for the problem of fast "mutable" 
 alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on stackoverflow). 
