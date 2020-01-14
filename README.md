@@ -11,7 +11,7 @@ The `recordclass` library was started as a "proof of concept" for the problem of
 alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on stackoverflow). 
 It was evolved further in order to provide more memory saving, fast and flexible types for representation of data objects.
 
-The library provides tools for creating classes that do not participate in the cyclic garbage collection mechanism, 
+The library also provides tools for creating classes that do not participate in the cyclic garbage collection mechanism, 
 but support only the reference counting mechanism. 
 The instances of such classes havn't `PyGC_Head` prefix, which decrease their size.
 This may make sense in cases where it is necessary to limit the size of objects as much as possible, 
