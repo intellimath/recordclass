@@ -82,7 +82,7 @@ else:
         extra_compile_args = extra_compile_args,
     ))
 
-description = """Mutable variants of tuple (mutabletuple) and collections.namedtuple (recordclass), which support assignments and more memory saving variants (dataobject, litelist, ...)."""
+description = """Mutable variants of tuple (mutabletuple) and collections.namedtuple (recordclass), which support assignments and more memory saving variants (dataobject, structclass, litelist, ...)."""
 
 if _PY3:
     with open('README.md', encoding='utf-8') as f:
@@ -110,13 +110,13 @@ setup(
     ext_modules = ext_modules,
     package_dir = {'': 'lib'},
     packages = packages,
-    url = 'https://bitbucket.org/intellimath/recordclass2',
-    download_url = 'https://pypi.org/project/recordclass2/#files',
+    url = 'https://bitbucket.org/intellimath/recordclass',
+    download_url = 'https://pypi.org/project/recordclass/#files',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    description_content_type='text/plain',
+#     description_content_type='text/plain',
     platforms='Linux, Mac OS X, Windows',
-    keywords=['namedtuple', 'recordclass', 'dataobject'],
+    keywords=['namedtuple', 'recordclass', 'dataobject', 'structclass', 'mutable tuple'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
