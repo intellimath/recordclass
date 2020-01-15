@@ -61,7 +61,7 @@ _PyObject_GetBuiltin(const char *name)
     return attr;
 }
 
-PyObject *
+static PyObject *
 PyObject_GenericGetDict(PyObject *obj, void *context)
 {
     PyObject *dict, **dictptr = PyObject_GetDictPtr(obj);
@@ -1818,6 +1818,7 @@ static PyObject *
 dataobjectiter_reduce(dataobjectiterobject *it) //, PyObject *Py_UNUSED(ignore))
 {
 #if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 6
+
     _Py_IDENTIFIER(iter);
     if (it->it_seq)
         return Py_BuildValue("N(O)n", _PyEval_GetBuiltinId(&PyId_iter),
