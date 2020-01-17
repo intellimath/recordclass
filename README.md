@@ -249,7 +249,7 @@ Here are also table with some performance counters:
 #### 0.13
 
 * Make `recordclass` compiled and work with cpython 3.8. 
-* Move repository to git instead of mercurial since bitbucket will drop support of mercurial repositories.
+* Move repository to **git** instead of mercurial since bitbucket will drop support of mercurial repositories.
 * Fix some potential reference leaks.
 
 
