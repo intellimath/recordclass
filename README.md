@@ -28,9 +28,9 @@ Four it provide factory function `structclass` for creation of subclasses of `da
 Main repository for `recordclass`
 is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
-> Note that starting from  0.13 it is a git-based repository. The old hg-based repository is [here](https://bitbucket.org/intellimath/old_recordclass).  
+> Note that starting from  0.13 it is a git-based repository. The old hg-based repository is [here](https://bitbucket.org/intellimath/recordclass_old).  
 
-Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/intellimath/recordclass/raw/default/examples/what_is_recordclass.ipynb).
+Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/intellimath/recordclass/raw/master/examples/what_is_recordclass.ipynb).
 
 
 ## Quick start
