@@ -78,8 +78,8 @@ class datatype(type):
         mapping = options.get('mapping', False)
         iterable = options.get('iterable', False)
         argsonly = options.get('argsonly', False)
-#         use_dict = options.get('dict', False)
-#         use_weakref = options.get('weakref', False)
+        use_dict = options.get('use_dict', False)
+        use_weakref = options.get('use_weakref', False)
 
         use_dict = False
         use_weakref = False

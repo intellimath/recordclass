@@ -24,10 +24,6 @@ import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
 del _sys
 
-# __all__ = ["mutabletuple", "recordclass", "datatype", "datatuple", "dataobject", "enable_gc",
-#           "make_dataclass", "make_arrayclass", "asdict", "clsconfig", 
-#            "structclass", "recordobject", "litelist", "sequenceproxy"]
-
 from .mutabletuple import mutabletuple
 from .recordclass import recordclass, RecordclassStorage
 
@@ -40,7 +36,7 @@ from .dataclass import asdict, DataclassStorage
 
 from .arrayclass import make_arrayclass
 
-from .structclass import structclass, join_classes
+from .structclass import structclass
 
 from .litelist import litelist
 

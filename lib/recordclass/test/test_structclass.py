@@ -1,6 +1,6 @@
 """Unit tests for structclass.py."""
 import unittest, doctest, operator
-from recordclass import structclass, join_classes
+from recordclass import structclass
 from collections import OrderedDict
 import pickle, copy
 import keyword
@@ -205,6 +205,7 @@ class structclassTest(unittest.TestCase):
         self.assertEqual(b.__fields__, tuple(names))
 
     def test_pickle_sc(self):
+        print(TestNT, TestNT.__dict__) 
         p = TestNT(x=10, y=20, z=30)
         for module in (pickle,):
             loads = getattr(module, 'loads')
@@ -217,7 +218,7 @@ class structclassTest(unittest.TestCase):
                 self.assertNotIn(b'OrderedDict', dumps(p, protocol))
 
     def test_pickle2_sc(self):
-#         print(TestNT2, TestNT2.__dict__) 
+        print(TestNT2, TestNT2.__dict__) 
         p = TestNT2(x=10, y=20, z=30)
         p.a = 100
         p.b = 200
@@ -284,8 +285,7 @@ class structclassTest(unittest.TestCase):
 #         #self.assertEqual(t.__getnewargs__(), newvalues)
 
     def test_repr(self):
-        with support.captured_stdout() as template:
-            A = structclass('A', 'x')
+        A = structclass('A', 'x')
         a = A(1)
         self.assertEqual(repr(a), 'A(x=1)')
         # repr should show the name of the subclass
@@ -294,20 +294,21 @@ class structclassTest(unittest.TestCase):
         b = B(1)
         self.assertEqual(repr(b), 'B(x=1)')
         
-    def test_join_structclasses(self):
-        C1 = structclass('C1', 'a b')
-        C2 = structclass('C2', 'c d')
-        C = join_classes('C', [C1, C2])
-        CC = structclass('C', 'a b c d')
-        c = C(1,2,3,4)
-        cc = CC(1,2,3,4)
-        self.assertNotEqual(c, cc)
+#     def test_join_structclasses(self):
+#         C1 = structclass('C1', 'a b')
+#         C2 = structclass('C2', 'c d')
+#         C = join_classes('C', [C1, C2])
+#         CC = structclass('CC', 'a b c d')
+#         cc = CC(1,2,3,4)
+#         print(CC.__module__)
+#         c = C(1,2,3,4)
+#         self.assertNotEqual(c, cc)
 
-    def test_join_structclasses_intersection(self):
-        C1 = structclass('C1', 'a b')
-        C2 = structclass('C2', 'b c')
-        with self.assertRaises(AttributeError):
-            C = join_classes('C', [C1, C2])
+#     def test_join_structclasses_intersection(self):
+#         C1 = structclass('C1', 'a b')
+#         C2 = structclass('C2', 'b c')
+#         with self.assertRaises(AttributeError):
+#             C = join_classes('C', [C1, C2])
         
     def test_dict(self):
         A = structclass('A', 'a b c', use_dict=True)

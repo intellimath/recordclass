@@ -8,22 +8,24 @@ The `recordclass` library was started as a "proof of concept" for the problem of
 alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on stackoverflow).
 It was evolved further in order to provide more memory saving, fast and flexible types for representation of data objects.
 
-Later **recordclass** began to provide tools for creating data classes that do not participate in the cyclic *garbage collection* (GC) mechanism, but support only the *reference counting*.
-The instances of such classes have not `PyGC_Head` prefix, which decrease their size. For CPython 3.8 it is 16 bytes, for CPython 3.4-3.7 it is 24-32 bytes.
+Later **recordclass** began to provide tools for creating data classes that do not participate in cyclic *garbage collection* (GC) mechanism, but support only *reference counting* mechanism.
+The instances of such classes have not `PyGC_Head` prefix in the memory, which decrease their size. For CPython 3.8 it is 16 bytes, for CPython 3.4-3.7 it is 24-32 bytes.
 This may make sense in cases where it is necessary to limit the size of objects as much as possible, provided that they will never be part of circular references in the application.
 For example, when an object represents a record, the fields of which, by contract, represent simple values (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
 Another example is non-recursive data structures in which all leaf elements represent simple values.
 Of course, in python, nothing prevents you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
 But in some cases, this can still be avoided provided that the developer understands
-what he is doing and uses such classes in his code with caution.
+what he is doing and uses such classes in the code with care.
 
-First it provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in cyclic GC by default (type flag `Py_TPFLAGS_HAVE_GC=0`). As the result the instance of such class need less memory. The difference is equal to the size of `PyGC_Head`. All `dataobject`-based classes doesn't support `namedtuple`-like API, but rather `attrs`/`dataclasses`-like API.
+**First** it provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in cyclic GC by default (type flag `Py_TPFLAGS_HAVE_GC=0`). As the result the instance of such class need less memory. The difference is equal to the size of `PyGC_Head`. All `dataobject`-based classes doesn't support `namedtuple`-like API, but rather `attrs`/`dataclasses`-like API.
 
-Second it provide another one base class `datatuple` (special subclass of `dataobject`). It creates variable sized instance like subclasses of the `tuple`.
+**Second** it provide another one base class `datatuple` (special subclass of `dataobject`). It creates variable sized instance like subclasses of the `tuple`.
 
-Third it provide factory function `make_dataclass` for creation of subclasses of `dataobject` or ``datatuple` with the specified field names.
+**Third** it provide factory function `make_dataclass` for creation of subclasses of `dataobject` or ``datatuple` with the specified field names.
 
-Four it provide factory function `structclass` for creation of subclasses of `dataobject` with `namedtuple`-like API.
+**Four** it provide factory function `structclass` for creation of subclasses of `dataobject` with `namedtuple`-like API.
+
+**Six** it provide the class `lightlist`, which considers as list-like *light* container in order to save memory.
 
 Main repository for `recordclass`
 is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 

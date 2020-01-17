@@ -187,7 +187,11 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (kwds) {
         if (type->tp_dictoffset) {
             PyObject *dict = PyObject_GenericGetDict(op, NULL);
-
+            
+            if (!dict) {
+                PyErr_SetString(PyExc_TypeError, "__dict__ initialization failed");
+                return NULL;            
+            }
             if (PyDict_Update(dict, kwds) == -1) {
                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
                 return NULL;            
@@ -2375,8 +2379,8 @@ _set_dictoffset(PyObject *cls, PyObject *add_dict) {
     if (!tp->tp_dictoffset && state) {
         tp->tp_dictoffset = tp->tp_basicsize;
         tp->tp_basicsize += sizeof(PyObject*);
-//         if (tp->tp_weaklistoffset)
-//             tp->tp_weaklistoffset = tp->tp_basicsize;
+        if (tp->tp_weaklistoffset)
+            tp->tp_weaklistoffset = tp->tp_basicsize;
     }
     if (tp->tp_dictoffset && !state) {
         PyErr_SetString(PyExc_TypeError, "we can only enable __dict__");        
@@ -2432,6 +2436,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     PyObject *fields, *dict;
     int n_fields;
     int has_fields;
+    int is_varsize;
 
     if (Py_SIZE(args) != 1) {
         PyErr_SetString(PyExc_TypeError, "number of arguments != 1");
@@ -2463,14 +2468,21 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     
     tp = (PyTypeObject*)cls;
     tp_base = tp->tp_base;
+    
+//     if (!tp_base)
+//         printf("tp_base is BULL\n");
+//     if (tp_base != &PyDataObject_Type && tp_base != &PyDataTuple_Type)
+//         printf("ops\n");
 
     if (PyObject_IsSubclass((PyObject*)tp_base, (PyObject*)&PyDataTuple_Type)) {
             tp->tp_basicsize = sizeof(PyVarObject);    
             tp->tp_itemsize = sizeof(PyObject*);
+            is_varsize = 1;
     } else {
         if (PyObject_IsSubclass((PyObject*)tp_base, (PyObject*)&PyDataObject_Type)) {
             tp->tp_basicsize = sizeof(PyObject);
             tp->tp_itemsize = 0;
+            is_varsize = 0;
         } else {
             PyErr_SetString(PyExc_TypeError, 
                             "common base class should be dataobject, datatuple or subclass");        
@@ -2485,30 +2497,37 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         return NULL;    
     }
 
-    tp->tp_dictoffset = 0;
-    tp->tp_weaklistoffset = 0;
+    tp->tp_dictoffset = tp_base->tp_dictoffset;
+    tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
 
-    tp->tp_alloc = tp_base->tp_alloc;
+    if (is_varsize)
+        tp->tp_alloc = datatuple_alloc;
+    else
+        tp->tp_alloc = dataobject_alloc;
 
     dict = PyObject_GetAttrString(cls, "__dict__");
 
     __new__ = PyMapping_HasKeyString(dict, "__new__");
 
 //     if (!has_fields && !__new__)
-    if(!__new__)
-        tp->tp_new = tp_base->tp_new;    
+    if(!__new__) {
+        if (is_varsize)
+            tp->tp_new = datatuple_new;
+        else
+            tp->tp_new = dataobject_new;
+    }
 
-    tp->tp_dealloc = tp_base->tp_dealloc;
-    tp->tp_free = tp_base->tp_free;
+    if (is_varsize)
+        tp->tp_dealloc = datatuple_dealloc;
+    else
+        tp->tp_dealloc = dataobject_dealloc;
+    tp->tp_free = dataobject_free;
     
     __init__ = PyMapping_HasKeyString(dict, "__init__");
 //     __init__ = PyObject_HasAttrString(cls, "__init__");
     if (!__init__) {
-        if (tp_base->tp_init)
-            tp->tp_init = tp_base->tp_init;
-//         else
-//             tp->tp_init = NULL;
-    }
+        tp->tp_init = tp_base->tp_init;
+    } 
     
     tp->tp_flags |= Py_TPFLAGS_HEAPTYPE;
     
@@ -2519,9 +2538,9 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_clear = NULL;
     tp->tp_is_gc = NULL;
     
-#if PY_MAJOR_VERSION > 2
-    tp->tp_finalize = NULL;
-#endif
+// #if PY_MAJOR_VERSION > 2
+//     tp->tp_finalize = NULL;
+// #endif
 
 #if PY_VERSION_HEX == 0x03080000
     tp->tp_vectorcall_offset = 0

@@ -2,7 +2,7 @@
 
 # The MIT License (MIT)
 # 
-# Copyright (c) <2011-2018> <Shibzukhov Zaur, szport at gmail dot com>
+# Copyright (c) <2015-2020> <Shibzukhov Zaur, szport at gmail dot com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -52,11 +52,6 @@ ext_modules = [
         ["lib/recordclass/_dataobject.c"],
         extra_compile_args = extra_compile_args,
     ),
-#     Extension(
-#         "recordclass._helpers",
-#         ["lib/recordclass/_helpers.c"],
-#         extra_compile_args = extra_compile_args,
-#     ),
 ]
 
 if use_cython:

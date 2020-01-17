@@ -53,7 +53,7 @@ else:
 
 int_type = type(1)
     
-def make_arrayclass(typename, fields=0, bases=None, namespace=None, 
+def make_arrayclass(typename, fields=0, namespace=None, 
              varsize=False, use_dict=False, use_weakref=False,
              hashable=False, readonly=False, gc=False,
              module=None):
@@ -64,14 +64,13 @@ def make_arrayclass(typename, fields=0, bases=None, namespace=None,
     if not isinstance(fields, int_type):
         raise TypeError("argument fields is not integer")
         
-    if not bases:
-        if varsize:
-            bases = (datatuple,)
-        else:
-            bases = (dataobject,)        
+    if varsize:
+        bases = (datatuple,)
+    else:
+        bases = (dataobject,)        
 
     options = {
-        'dict':use_dict, 'weakref':use_weakref, 'hashable':hashable, 
+        'use_dict':use_dict, 'use_weakref':use_weakref, 'hashable':hashable, 
         'sequence':True, 'iterable':True, 'readonly':readonly, 
     }
 
