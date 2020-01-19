@@ -27,9 +27,9 @@ del _sys
 from .mutabletuple import mutabletuple
 from .recordclass import recordclass, RecordclassStorage
 
-from .datatype import datatype, clsconfig
+from .datatype import datatype, clsconfig, enable_gc
 
-from ._dataobject import dataobject, datatuple, enable_gc
+from ._dataobject import dataobject, datatuple
 
 from .dataclass import make_dataclass, make_class
 from .dataclass import asdict, DataclassStorage

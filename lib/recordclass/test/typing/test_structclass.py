@@ -1,5 +1,5 @@
 """Unit tests for structclass.py."""
-import unittest, doctest, operator
+import unittest
 from recordclass import structclass
 
 import pickle

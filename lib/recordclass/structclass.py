@@ -48,7 +48,7 @@ _repr_template = '{name}=%r'
 
 def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashable=True,
                    sequence=True, mapping=False, readonly=False,
-                   defaults=None, module=None, argsonly=False, gc=False):
+                   defaults=None, module=None, gc=False):
     
     from ._dataobject import _clsconfig, enable_gc
     from ._dataobject import dataobject
@@ -56,8 +56,8 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
 
     annotations = {}
     if isinstance(fields, str):
-        fields = fields.replace(',', ' ').split()
-        fields = [fn.strip() for fn in fields]
+        field_names = fields.replace(',', ' ').split()
+        field_names = [fn.strip() for fn in field_names]
     else:
         msg = "make_dataclass('Name', [(f0, t0), (f1, t1), ...]); each t must be a type"
         field_names = []
@@ -77,13 +77,13 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
                 check_name(fn)
                 fn = _intern(fn)
                 field_names.append(fn)
-        fields = field_names
+#         fields = field_names
         
-    n_fields = len(fields)
+    n_fields = len(field_names)
     typename = check_name(typename)
 
     if defaults is not None:
-        n_fields = len(fields)
+        n_fields = len(field_names)
         defaults = tuple(defaults)
         n_defaults = len(defaults)
         if n_defaults > n_fields:
@@ -133,30 +133,39 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
     options = {
         'readonly':readonly,
         'defaults':defaults,
-        'argsonly':argsonly,
+        'argsonly':False,
     }
         
     ns = {'_make': _make, '_replace': _replace, '_asdict': _asdict,
-          '__doc__': typename+'('+ ', '.join(fields) +')',}
+          '__doc__': typename+'('+ ', '.join(field_names) +')',
+         '__module__':module}
 
     if defaults:
         for i in range(-n_defaults, 0):
-            fname = fields[i]
+            fname = field_names[i]
             val = defaults[i]
             ns[fname] = val
 
-    if use_dict and '__dict__' not in fields:
-        fields.append('__dict__')
-    if use_weakref and '__weakref__' not in fields:
-        fields.append('__weakref__')
+    if use_dict and '__dict__' not in field_names:
+        field_names.append('__dict__')
+    if use_weakref and '__weakref__' not in field_names:
+        field_names.append('__weakref__')
 
     ns['__options__'] = options
-    ns['__fields__'] = fields
+    ns['__fields__'] = field_names
     if annotations:
         ns['__annotations__'] = annotations
 
     bases = (dataobject,)
 
+    if module is None:
+        try:
+            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
+        except (AttributeError, ValueError):
+            pass
+        
+    ns['__module__'] = module
+    
     cls = datatype(typename, bases, ns)
     
     _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, 
@@ -164,15 +173,7 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
 
     if gc:
         cls = enable_gc(cls)
-
-    if module is None:
-        try:
-            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
-        except (AttributeError, ValueError):
-            module = None
-    if module is not None:
-        cls.__module__ = module
-
+        
     return cls
 
 

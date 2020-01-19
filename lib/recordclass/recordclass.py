@@ -252,6 +252,12 @@ def __new__(_cls, {1}):
     __options__ = {'hashable':hashable, 'gc':gc}
     if readonly:
         __options__['hashable'] = True
+
+    if module is None:
+        try:
+            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
+        except (AttributeError, ValueError):
+            pass
         
     class_namespace.update({
         '__slots__': (),
@@ -267,19 +273,20 @@ def __new__(_cls, {1}):
         '__reduce__': __reduce__,
         '__dict__': property(_asdict),
         '__options__': __options__,
+        '__module__': module,
     })
 
     _result = recordclasstype(typename, (baseclass,), class_namespace)
     
     # For pickling to work, the __module__ variable needs to be set to the frame
     # where the class is created.
-    if module is None:
-        try:
-            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
-        except (AttributeError, ValueError):
-            pass
-    if module is not None:
-        _result.__module__ = module
+#     if module is None:
+#         try:
+#             module = _sys._getframe(2).f_globals.get('__name__', '__main__')
+#         except (AttributeError, ValueError):
+#             pass
+#     if module is not None:
+#         _result.__module__ = module
     if annotations:
         _result.__annotations__ = annotations
         

@@ -34,6 +34,8 @@ from cython cimport sizeof, pointer
 from libc.string cimport memset
 from cpython.object cimport Py_TPFLAGS_HAVE_GC, Py_TPFLAGS_HEAPTYPE
 
+import sys as _sys
+
 cdef extern from "Python.h":
 
     ctypedef class __builtin__.object [object PyObject]:
@@ -675,6 +677,20 @@ class recordclasstype(type):
             tp_cls.tp_hash = recordclass_hash
         else:
             tp_cls.tp_hash = NULL
+
+        module = ns.get('__module__', None)
+            
+#         print(cls.__qualname__, module, cls)
+
+        if module is None:
+            try:
+                cls.__module__ = _sys._getframe(2).f_globals.get('__name__', '__main__')
+            except (AttributeError, ValueError):
+                pass
+        else:
+            pass
+        
+        print(cls.__qualname__, cls)
 
         return cls
 

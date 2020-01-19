@@ -1,4 +1,4 @@
-import unittest, doctest, operator
+import unittest
 import pickle, copy
 import keyword
 import re
@@ -44,7 +44,7 @@ class TestPickle33(dataobject):
     
 class DataObjectTest3(unittest.TestCase):
 
-    def test_datatype(self):
+    def test_datatype_tp(self):
         class A(dataobject):
             __fields__ = 'x', 'y'
             x:int
@@ -67,7 +67,7 @@ class DataObjectTest3(unittest.TestCase):
             a.z
         a = None
 
-    def test_datatype2(self):
+    def test_datatype2_tp(self):
         class A(dataobject):
             x:int
             y:int
@@ -90,7 +90,7 @@ class DataObjectTest3(unittest.TestCase):
             a.z
         a = None
         
-    def test_datatype3(self):
+    def test_datatype3_tp(self):
         class A(dataobject):
             x:int
             y:int
@@ -100,7 +100,7 @@ class DataObjectTest3(unittest.TestCase):
             
         self.assertEqual(A.__fields__, ('x','y'))
 
-    def test_datatype4(self):
+    def test_datatype4_tp(self):
         @clsconfig(sequence=True)
         class A(dataobject):
             x:int
@@ -111,7 +111,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a[0], 1)
         self.assertEqual(a[1], 2)
 
-    def test_datatype5(self):
+    def test_datatype5_tp(self):
         @clsconfig(mapping=True)
         class A(dataobject):
             x:int
@@ -122,7 +122,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a['x'], 1)
         self.assertEqual(a['y'], 2)
 
-    def test_datatype6(self):
+    def test_datatype6_tp(self):
         @clsconfig(sequence=True, mapping=True)
         class A(dataobject):
             x:int
@@ -137,7 +137,25 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a['x'], 1)
         self.assertEqual(a['y'], 2)
 
-    def test_datatype_dict(self):
+    def test_datatype7_tp(self):
+        class A(dataobject):
+            __fields__ = 'x', 'y'
+
+        a = A(1,2)
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+#         self.assertEqual(sys.getsizeof(a), 32)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
+        with self.assertRaises(AttributeError):     
+            a.__dict__
+        with self.assertRaises(AttributeError):     
+            a.z = 3
+        with self.assertRaises(AttributeError):     
+            a.z
+        a = None
+        
+    def test_datatype_dict_tp(self):
         class A(dataobject):
             __fields__ = 'x', 'y', '__dict__', '__weakref__'
             x:int
@@ -159,7 +177,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.z, a.__dict__['z'])
         #a = None
         
-    def test_subclass(self):
+    def test_subclass_tp(self):
         class A(dataobject):
             x:int
             y:int
@@ -184,7 +202,7 @@ class DataObjectTest3(unittest.TestCase):
             b.__dict__        
         #a = None
 
-    def test_subclass2(self):
+    def test_subclass2_tp(self):
         class A(dataobject):
             x:int
             y:int
@@ -213,7 +231,7 @@ class DataObjectTest3(unittest.TestCase):
             c.__dict__
 
 
-    def test_subclass3(self):
+    def test_subclass3_tp(self):
         class A(dataobject):
             x:int
             y:int
@@ -240,7 +258,7 @@ class DataObjectTest3(unittest.TestCase):
         with self.assertRaises(AttributeError):     
             c.__dict__
 
-    def test_subclass4(self):
+    def test_subclass4_tp(self):
         class A(dataobject):
             x:int
             y:int
@@ -273,7 +291,7 @@ class DataObjectTest3(unittest.TestCase):
         with self.assertRaises(AttributeError):     
             c.__dict__
             
-    def test_defaults(self):
+    def test_defaults_tp(self):
         class A(dataobject):
             x:int = 100
             y:int = 200
@@ -295,7 +313,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a3.y, 2)
         self.assertEqual(a3.z, 300)
         
-    def test_subclass_defaults(self):
+    def test_subclass_defaults_tp(self):
         class A(dataobject):
             x:int
             y:int
@@ -309,7 +327,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(repr(b), "B(x=0, y=1)")
         
         
-    def test_keyword_args(self):
+    def test_keyword_args_tp(self):
         class A(dataobject):
             x:int
             y:int
@@ -337,8 +355,41 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(c.y, 2)
         self.assertEqual(c.z, 3)
             
+    def test_keyword_args2_tp(self):
+        class A(dataobject):
+            __fields__ = 'x', 'y', 'z'
 
-    def test_keyword_args_defaults(self):
+        a1 = A(x=1, y=2, z=3)
+        self.assertEqual(a1.x, 1)
+        self.assertEqual(a1.y, 2)
+        self.assertEqual(a1.z, 3)
+        a3 = A(1,"a",3)
+        self.assertEqual(a3.x, 1)
+        self.assertEqual(a3.y, "a")
+        self.assertEqual(a3.z, 3)
+            
+
+    def test_keyword_args_defaults2_tp(self):
+        class A(dataobject):
+            __fields__ = ('x', 'y', 'z')
+            x = 100
+            y = 200
+            z = 300
+
+        a1 = A(x=1)
+        self.assertEqual(a1.x, 1)
+        self.assertEqual(a1.y, 200)
+        self.assertEqual(a1.z, 300)
+        a2 = A(x=1,y=2.0)
+        self.assertEqual(a2.x, 1)
+        self.assertEqual(a2.y, 2.0)
+        self.assertEqual(a2.z, 300)
+        a3 = A(x=1,y=2.0,z="a")
+        self.assertEqual(a3.x, 1)
+        self.assertEqual(a3.y, 2.0)
+        self.assertEqual(a3.z, "a")
+
+    def test_keyword_args_defaults_tp(self):
         class A(dataobject):
             x:int = 100
             y:int = 200
@@ -360,25 +411,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a3.y, 2)
         self.assertEqual(a3.z, 3)
         
-    def test_datatype2(self):
-        class A(dataobject):
-            __fields__ = 'x', 'y'
-
-        a = A(1,2)
-        self.assertEqual(a.x, 1)
-        self.assertEqual(a.y, 2)
-#         self.assertEqual(sys.getsizeof(a), 32)
-        with self.assertRaises(TypeError):     
-            weakref.ref(a)
-        with self.assertRaises(AttributeError):     
-            a.__dict__
-        with self.assertRaises(AttributeError):     
-            a.z = 3
-        with self.assertRaises(AttributeError):     
-            a.z
-        a = None
-
-    def test_datatype_dict2(self):
+    def test_datatype_dict2_tp(self):
         @clsconfig(use_dict=True, use_weakref=True)
         class A(dataobject):
             __fields__ = 'x', 'y'
@@ -397,7 +430,7 @@ class DataObjectTest3(unittest.TestCase):
         a = None
         
         
-    def test_defaults2(self):
+    def test_defaults2_tp(self):
         class A(dataobject):
             __fields__ = ('x', 'y', 'z')
             x = 100
@@ -417,7 +450,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a3.y, 2)
         self.assertEqual(a3.z, 300)
 
-    def test_defaults3(self):
+    def test_defaults3_tp(self):
         class A(dataobject):
             __fields__ = ('x', 'y', 'z')
             x = 100
@@ -440,50 +473,15 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a3.x, 1)
         self.assertEqual(a3.y, 2)
         self.assertEqual(a3.z, 400)
-        
-        
-    def test_keyword_args2(self):
-        class A(dataobject):
-            __fields__ = 'x', 'y', 'z'
 
-        a1 = A(x=1, y=2, z=3)
-        self.assertEqual(a1.x, 1)
-        self.assertEqual(a1.y, 2)
-        self.assertEqual(a1.z, 3)
-        a3 = A(1,"a",3)
-        self.assertEqual(a3.x, 1)
-        self.assertEqual(a3.y, "a")
-        self.assertEqual(a3.z, 3)
-            
-
-    def test_keyword_args_defaults2(self):
-        class A(dataobject):
-            __fields__ = ('x', 'y', 'z')
-            x = 100
-            y = 200
-            z = 300
-
-        a1 = A(x=1)
-        self.assertEqual(a1.x, 1)
-        self.assertEqual(a1.y, 200)
-        self.assertEqual(a1.z, 300)
-        a2 = A(x=1,y=2.0)
-        self.assertEqual(a2.x, 1)
-        self.assertEqual(a2.y, 2.0)
-        self.assertEqual(a2.z, 300)
-        a3 = A(x=1,y=2.0,z="a")
-        self.assertEqual(a3.x, 1)
-        self.assertEqual(a3.y, 2.0)
-        self.assertEqual(a3.z, "a")
-        
-    def test_iter2(self):
+    def test_iter2_tp(self):
         class A(dataobject):
             __fields__ = 3
         
         a=A(1, 2.0, "a")
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
 
-    def test_iter3(self):
+    def test_iter3_tp(self):
         @clsconfig(iterable=True)
         class A(dataobject):
             __fields__ = ('x', 'y', 'z')
@@ -494,23 +492,26 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.z, "a")        
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
         
-    def test_enable_gc(self):
+    def test_enable_gc_tp(self):
 
         class A(dataobject):
             __fields__ = 'x', 'y', 'z'
         
-        @enable_gc
+        @enable_gc()
         class B(dataobject):
             __fields__ = 'x', 'y', 'z'
+
+        print(A,B)
             
         a = A(1,2,3)
         b = B(1,2,3)
+        print(a,b)
         self.assertEqual(a.x, b.x)
         self.assertEqual(a.y, b.y)
         self.assertEqual(a.z, b.z)
 #         self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)        
 
-    def test_pickle2a(self):
+    def test_pickle2_tp(self):
         p = TestPickle2(10, 20, 30)
 #         print(p.__sizeof__())
         for module in (pickle,):
@@ -521,7 +522,7 @@ class DataObjectTest3(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
 
-    def test_pickle3a(self):
+    def test_pickle3_tp(self):
         p = TestPickle3(10, 20, 30)
         p.a = 1
         p.b = 2
@@ -534,7 +535,7 @@ class DataObjectTest3(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
 
-    def test_pickle22(self):
+    def test_pickle22_tp(self):
         p = TestPickle22(10, 20, 30)
 #         print(p.__sizeof__())
         for module in (pickle,):
@@ -545,7 +546,7 @@ class DataObjectTest3(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
 
-    def test_pickle33(self):
+    def test_pickle33_tp(self):
         p = TestPickle33(10, 20, 30)
         p.a = 1
         p.b = 2

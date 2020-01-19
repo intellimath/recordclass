@@ -64,6 +64,14 @@ def clsconfig(sequence=False, mapping=False, readonly=False,
         return cls
     return func
 
+def enable_gc():
+    from ._dataobject import _enable_gc
+    def func(cls):
+        _enable_gc(cls)
+        return cls
+    return func
+    
+
 int_type = type(1)
 
 class datatype(type):
@@ -71,6 +79,7 @@ class datatype(type):
     def __new__(metatype, typename, bases, ns):        
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
+#         print(ns)
         options = ns.pop('__options__', {})
         readonly = options.get('readonly', False)
         hashable = options.get('hashable', False)
@@ -167,9 +176,21 @@ class datatype(type):
                     ns[name] = dataslotgetset(offset, True)
                 else:
                     ns[name] = dataslotgetset(offset)
-                
-        cls = type.__new__(metatype, typename, bases, ns)
 
+        module = ns.get('__module__', None)
+        if module is None:
+            try:
+                module = _sys._getframe(2).f_globals.get('__name__', '__main__')
+                ns['__module'] = module
+            except (AttributeError, ValueError):
+                pass
+        else:
+            pass
+                    
+        cls = type.__new__(metatype, typename, bases, ns)
+        
+#         print(cls.__qualname__, cls.__module__, cls)
+        
         if has_fields:
             cls.__fields__ = fields
             if defaults:

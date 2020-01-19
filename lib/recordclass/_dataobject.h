@@ -17,3 +17,8 @@
 #define dataobject_weaklistptr(type, op) ((PyObject**)((char*)op + type->tp_weaklistoffset))
 #define dataobject_hasdict(type) (type->tp_dictoffset != 0)
 #define dataobject_hasweaklist(type) (type->tp_weaklistoffset != 0)
+
+// typedef struct {
+//     PyObject ob_head;
+//     Pyobject *ob_slot[1];
+// } PyDataObject;

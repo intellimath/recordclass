@@ -1,5 +1,5 @@
 """Unit tests for structclass.py."""
-import unittest, doctest, operator
+import unittest
 from recordclass import structclass
 from collections import OrderedDict
 import pickle, copy
@@ -8,10 +8,10 @@ import re
 import sys
 
 
-try:
-    from test import support
-except:
-    from test import test_support as support
+# try:
+#     from test import support
+# except:
+#     from test import test_support as support
 
 
 TestNT = structclass('TestNT', 'x y z')    # type used for pickle tests

@@ -37,12 +37,21 @@ _special = ('__module__', '__name__', '__qualname__', '__annotations__')
 def _make_recordclass(name, types, readonly=False, hashable=False):
     msg = "RecordClass('Name', [(f0, t0), (f1, t1), ...]); each t must be a type"
     types = [(n, _type_check(t, msg)) for n, t in types]
-    rec_cls = recordclass(name, [n for n, t in types], readonly=readonly, hashable=hashable)
-    rec_cls.__annotations__ = dict(types)
+    
+    module = None
     try:
-        rec_cls.__module__ = _sys._getframe(2).f_globals.get('__name__', '__main__')
+        module = _sys._getframe(2).f_globals.get('__name__', '__main__')
     except (AttributeError, ValueError):
         pass
+    
+#     print('mod:', module)
+    
+    rec_cls = recordclass(name, [n for n, t in types], readonly=readonly, hashable=hashable, module=module)
+    rec_cls.__annotations__ = dict(types)
+#     try:
+#         rec_cls.__module__ = _sys._getframe(2).f_globals.get('__name__', '__main__')
+#     except (AttributeError, ValueError):
+#         pass
     return rec_cls
 
 class RecordClassMeta(type):
@@ -102,14 +111,23 @@ def _make_structclass(name, types, readonly=False, use_dict=False, gc=False,
                             use_weakref=False, hashable=False):
     msg = "StructClass('Name', [(f0, t0), (f1, t1), ...]); each t must be a type"
     types = [(n, _type_check(t, msg)) for n, t in types]
-    struct_cls = structclass(name, [n for n, _ in types], 
-                             readonly=readonly, use_dict=use_dict, gc=gc, 
-                             use_weakref=use_weakref, hashable=hashable)
-    struct_cls.__annotations__ = dict(types)
+    
+    module = None
     try:
-        struct_cls.__module__ = _sys._getframe(2).f_globals.get('__name__', '__main__')
+        module = _sys._getframe(2).f_globals.get('__name__', '__main__')
     except (AttributeError, ValueError):
         pass
+    
+#     print('mod:', module)
+    
+    struct_cls = structclass(name, [n for n, _ in types], 
+                             readonly=readonly, use_dict=use_dict, gc=gc, 
+                             use_weakref=use_weakref, hashable=hashable, module=module)
+    struct_cls.__annotations__ = dict(types)
+#     try:
+#         struct_cls.__module__ = _sys._getframe(2).f_globals.get('__name__', '__main__')
+#     except (AttributeError, ValueError):
+#         pass
     return struct_cls
     
 class StructClassMeta(type):
@@ -166,5 +184,5 @@ class StructClass(metaclass=StructClassMeta):
             fields = kwargs.items()
         elif kwargs:
             raise TypeError("Either list of fields or keywords"
-                            " can be provided to RecordClass, not both")
+                            " can be provided to RecordClass, not both")            
         return _make_structclass(typename, fields)

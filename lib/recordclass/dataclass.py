@@ -56,7 +56,7 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
                    sequence=False, mapping=False, iterable=False, readonly=False,
                    defaults=None, module=None, argsonly=False, gc=False):
     
-    from ._dataobject import _clsconfig, enable_gc
+    from ._dataobject import _clsconfig, _enable_gc
     from ._dataobject import dataobject, datatuple
     from .datatype import datatype
 
@@ -141,21 +141,25 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
     else:
         _sequence = sequence
 
+        
+    if module is None:
+        try:
+            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
+        except (AttributeError, ValueError):
+            pass
+        
+    ns['__module__'] = module
+
     cls = datatype(typename, bases, ns)
+
     
     _clsconfig(cls, sequence=_sequence, mapping=mapping, readonly=readonly, 
                use_dict=use_dict, use_weakref=use_weakref, iterable=iterable, hashable=hashable)
 
     if gc:
-        cls = enable_gc(cls)
-
-    if module is None:
-        try:
-            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
-        except (AttributeError, ValueError):
-            module = None
-    if module is not None:
-        cls.__module__ = module
+        _enable_gc(cls)
+        
+    print(cls)
 
     return cls
 
