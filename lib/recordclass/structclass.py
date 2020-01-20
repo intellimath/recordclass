@@ -180,7 +180,7 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
 #                use_dict=use_dict, use_weakref=use_weakref, iterable=sequence, hashable=hashable)
 
     if gc:
-        cls = _enable_gc(cls)
+        _enable_gc(cls)
         
     return cls
 
