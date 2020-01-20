@@ -1055,7 +1055,7 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
 
     if (tp->tp_dictoffset) {
 //         dictptr = PyObject_GetDictPtr(ob);
-        dict = PyObject_GenericGetDict(ob, NULL);
+        dict = PyDataObject_GetDict(ob);
 
         if (!dict) {
             PyErr_SetString(PyExc_TypeError, "failed to create new dict");
@@ -1229,7 +1229,7 @@ datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     
     if (kwds) {
         if (type->tp_dictoffset) {
-            PyObject *dict = PyObject_GenericGetDict(op, NULL);
+            PyObject *dict = PyDataObject_GetDict(op);
 
             if (PyDict_Update(dict, kwds) == -1) {
                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
