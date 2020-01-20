@@ -109,7 +109,7 @@ setup(
     download_url = 'https://pypi.org/project/recordclass/#files',
     long_description=long_description,
     long_description_content_type='text/markdown',
-#     description_content_type='text/plain',
+    description_content_type='text/plain',
     platforms='Linux, Mac OS X, Windows',
     keywords=['namedtuple', 'recordclass', 'dataobject', 'structclass', 'mutable tuple'],
     classifiers=[
