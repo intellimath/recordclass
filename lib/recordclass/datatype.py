@@ -189,7 +189,7 @@ class datatype(type):
                     
         cls = type.__new__(metatype, typename, bases, ns)
         
-#         print(cls.__qualname__, cls.__module__, cls)
+        print(1, cls)
         
         if has_fields:
             cls.__fields__ = fields
@@ -202,6 +202,8 @@ class datatype(type):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                    use_weakref=use_weakref, iterable=iterable, hashable=hashable)
 
+        print(2, cls)
+        
 #         if has_fields:
 #             if readonly:
 #                 if type(readonly) is type(True):

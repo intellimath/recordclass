@@ -99,6 +99,14 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
         'readonly':readonly,
         'defaults':defaults,
         'argsonly':argsonly,
+        'sequence':sequence,
+        'mapping':mapping,
+        'iterable':iterable,
+        'use_dict':use_dict,
+        'use_weakref':use_weakref,
+        'readonly':readonly,
+        'hashable':hashable,
+        'gc':gc,
     }
 
     if namespace is None:
@@ -153,8 +161,8 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
     cls = datatype(typename, bases, ns)
 
     
-    _clsconfig(cls, sequence=_sequence, mapping=mapping, readonly=readonly, 
-               use_dict=use_dict, use_weakref=use_weakref, iterable=iterable, hashable=hashable)
+#     _clsconfig(cls, sequence=_sequence, mapping=mapping, readonly=readonly, 
+#                use_dict=use_dict, use_weakref=use_weakref, iterable=iterable, hashable=hashable)
 
     if gc:
         _enable_gc(cls)

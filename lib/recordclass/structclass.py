@@ -50,7 +50,7 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
                    sequence=True, mapping=False, readonly=False,
                    defaults=None, module=None, gc=False):
     
-    from ._dataobject import _clsconfig, enable_gc
+    from ._dataobject import _clsconfig, _enable_gc
     from ._dataobject import dataobject
     from .datatype import datatype
 
@@ -134,6 +134,14 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
         'readonly':readonly,
         'defaults':defaults,
         'argsonly':False,
+        'sequence':sequence,
+        'mapping':mapping,
+        'iterable':sequence,
+        'use_dict':use_dict,
+        'use_weakref':use_weakref,
+        'readonly':readonly,
+        'hashable':hashable,
+        'gc':gc,
     }
         
     ns = {'_make': _make, '_replace': _replace, '_asdict': _asdict,
@@ -168,11 +176,11 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
     
     cls = datatype(typename, bases, ns)
     
-    _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, 
-               use_dict=use_dict, use_weakref=use_weakref, iterable=sequence, hashable=hashable)
+#     _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, 
+#                use_dict=use_dict, use_weakref=use_weakref, iterable=sequence, hashable=hashable)
 
     if gc:
-        cls = enable_gc(cls)
+        cls = _enable_gc(cls)
         
     return cls
 

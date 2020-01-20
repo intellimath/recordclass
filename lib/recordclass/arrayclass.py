@@ -58,7 +58,7 @@ def make_arrayclass(typename, fields=0, namespace=None,
              hashable=False, readonly=False, gc=False,
              module=None):
 
-    from ._dataobject import dataobject, datatuple, enable_gc
+    from ._dataobject import dataobject, datatuple, _enable_gc
     from .datatype import datatype
     
     if not isinstance(fields, int_type):
@@ -71,7 +71,8 @@ def make_arrayclass(typename, fields=0, namespace=None,
 
     options = {
         'use_dict':use_dict, 'use_weakref':use_weakref, 'hashable':hashable, 
-        'sequence':True, 'iterable':True, 'readonly':readonly, 
+        'sequence':True, 'iterable':True, 'readonly':readonly, 'gc':gc,
+        'hashable':hashable,
     }
 
     if namespace is None:
@@ -85,7 +86,7 @@ def make_arrayclass(typename, fields=0, namespace=None,
     cls = datatype(typename, bases, ns)
 
     if gc:
-        cls = enable_gc(cls)
+        cls = _enable_gc(cls)
 
     if module is None:
         try:

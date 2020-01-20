@@ -48,9 +48,8 @@ class StructClassTypingTest(unittest.TestCase):
         self.assertEqual(repr(tmp), "A(a=1, b='1', c=[1, 2, 3])")
         self.assertEqual(A.__annotations__, {'a': int, 'b': str, 'c': typing.List[int]})
 
-    def test_recordclass_basics(self):
+    def test_structclass_basics(self):
         Emp = StructClass('Emp', [('name', str), ('id', int)])
-        #self.assertIsSubclass(Emp, recordobject)
         joe = Emp('Joe', 42)
         jim = Emp(name='Jim', id=1)
         self.assertIsInstance(joe, Emp)
@@ -128,7 +127,7 @@ class XMethBad2(StructClass):
 """)
 
     #@skipUnless(PY36, 'Python 3.6 required')
-    def test_recordclass_keyword_usage(self):
+    def test_structclass_keyword_usage(self):
         LocalEmployee = StructClass("LocalEmployee", name=str, age=int)
         nick = LocalEmployee('Nick', 25)
         self.assertIsInstance(nick, dataobject)
