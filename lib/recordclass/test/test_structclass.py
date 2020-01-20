@@ -205,7 +205,7 @@ class structclassTest(unittest.TestCase):
         self.assertEqual(b.__fields__, tuple(names))
 
     def test_pickle_sc(self):
-        print(TestNT, TestNT.__dict__) 
+#         print(TestNT, TestNT.__dict__) 
         p = TestNT(x=10, y=20, z=30)
         for module in (pickle,):
             loads = getattr(module, 'loads')
@@ -218,7 +218,7 @@ class structclassTest(unittest.TestCase):
                 self.assertNotIn(b'OrderedDict', dumps(p, protocol))
 
     def test_pickle2_sc(self):
-        print(TestNT2, TestNT2.__dict__) 
+#         print(TestNT2, TestNT2.__dict__) 
         p = TestNT2(x=10, y=20, z=30)
         p.a = 100
         p.b = 200

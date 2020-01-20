@@ -159,7 +159,7 @@ class arrayobjectTest(unittest.TestCase):
 
     def test_varsize1(self):
         A = make_arrayclass("A", varsize=True)
-        print(A.__dict__)
+#         print(A.__dict__)
         a = A(100)
         self.assertEqual(repr(a), "A(100)")
         self.assertEqual(len(a), 1)

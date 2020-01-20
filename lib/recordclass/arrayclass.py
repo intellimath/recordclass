@@ -86,7 +86,7 @@ def make_arrayclass(typename, fields=0, namespace=None,
     cls = datatype(typename, bases, ns)
 
     if gc:
-        cls = _enable_gc(cls)
+        _enable_gc(cls)
 
     if module is None:
         try:

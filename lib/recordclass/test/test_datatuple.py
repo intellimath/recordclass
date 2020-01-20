@@ -46,8 +46,8 @@ class datatupleTest(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_pickle6(self):
-        print(TPickleV6)
-        print(TPickleV6.__dict__)
+#         print(TPickleV6)
+#         print(TPickleV6.__dict__)
         p = TPickleV6(10, 20, 30)
         p.a = 1
         p.b = 2
@@ -81,14 +81,14 @@ class datatupleTest(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
 
-#     def test_refleak_on_assignemnt_dt(self):
-#         Test = make_dataclass("Test", "x", varsize=True)
-#         a={}
-#         c = sys.getrefcount(a)
-#         b=Test(a)
-#         self.assertEqual(sys.getrefcount(a), c+1)
-#         b.x = None
-#         self.assertEqual(sys.getrefcount(a), c)
+    def test_refleak_on_assignemnt_dt(self):
+        Test = make_dataclass("Test", "x", varsize=True)
+        a={}
+        c = sys.getrefcount(a)
+        b=Test(a)
+        self.assertEqual(sys.getrefcount(a), c+1)
+        b.x = None
+        self.assertEqual(sys.getrefcount(a), c)
 
 def main():
     suite = unittest.TestSuite()

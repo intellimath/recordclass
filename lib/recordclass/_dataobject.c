@@ -2672,8 +2672,7 @@ dataobject_enable_gc(PyObject *module, PyObject *args)
     
     PyType_Modified(type);    
     
-    Py_INCREF(cls);
-    return cls;
+    Py_RETURN_NONE;
 }
 
 PyDoc_STRVAR(astuple_doc,
@@ -2742,7 +2741,8 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     Py_XDECREF(use_weakref);
     Py_XDECREF(iterable);
     Py_XDECREF(hashable);
-    return cls;
+
+    Py_RETURN_NONE;
 }
 
 static void

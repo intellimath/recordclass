@@ -338,7 +338,7 @@ class DataObjectTest3(unittest.TestCase):
             y:int
             z:int
         
-        print(A.__dict__)
+#         print(A.__dict__)
         a = A(1,2,3)
         self.assertEqual(repr(a), "A(x=1, y=2, z=3)")
         self.assertEqual(a.x, 1)
@@ -492,24 +492,24 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.z, "a")        
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
         
-#     def test_enable_gc_tp(self):
+    def test_enable_gc_tp(self):
 
-#         class A(dataobject):
-#             __fields__ = 'x', 'y', 'z'
+        class A(dataobject):
+            __fields__ = 'x', 'y', 'z'
         
-#         @enable_gc()
-#         class B(dataobject):
-#             __fields__ = 'x', 'y', 'z'
+        @enable_gc()
+        class B(dataobject):
+            __fields__ = 'x', 'y', 'z'
 
 #         print(A,B)
             
-#         a = A(1,2,3)
-#         b = B(1,2,3)
+        a = A(1,2,3)
+        b = B(1,2,3)
 #         print(a,b)
-#         self.assertEqual(a.x, b.x)
-#         self.assertEqual(a.y, b.y)
-#         self.assertEqual(a.z, b.z)
-# #         self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)        
+        self.assertEqual(a.x, b.x)
+        self.assertEqual(a.y, b.y)
+        self.assertEqual(a.z, b.z)
+        self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)        
 
     def test_pickle2_tp(self):
         p = TestPickle2(10, 20, 30)

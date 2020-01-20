@@ -189,7 +189,7 @@ class datatype(type):
                     
         cls = type.__new__(metatype, typename, bases, ns)
         
-        print(1, cls)
+#         print(1, cls)
         
         if has_fields:
             cls.__fields__ = fields
