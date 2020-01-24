@@ -248,6 +248,11 @@ Here are also table with some performance counters:
 
 ### Changes:
 
+#### 0.13.0.1
+
+* Remove redundant debug code.
+
+
 #### 0.13
 
 * Make `recordclass` compiled and work with cpython 3.8. 
