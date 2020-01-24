@@ -338,7 +338,6 @@ class DataObjectTest3(unittest.TestCase):
             y:int
             z:int
         
-#         print(A.__dict__)
         a = A(1,2,3)
         self.assertEqual(repr(a), "A(x=1, y=2, z=3)")
         self.assertEqual(a.x, 1)
@@ -500,12 +499,9 @@ class DataObjectTest3(unittest.TestCase):
         @enable_gc()
         class B(dataobject):
             __fields__ = 'x', 'y', 'z'
-
-#         print(A,B)
             
         a = A(1,2,3)
         b = B(1,2,3)
-#         print(a,b)
         self.assertEqual(a.x, b.x)
         self.assertEqual(a.y, b.y)
         self.assertEqual(a.z, b.z)
@@ -513,7 +509,6 @@ class DataObjectTest3(unittest.TestCase):
 
     def test_pickle2_tp(self):
         p = TestPickle2(10, 20, 30)
-#         print(p.__sizeof__())
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')
@@ -526,7 +521,6 @@ class DataObjectTest3(unittest.TestCase):
         p = TestPickle3(10, 20, 30)
         p.a = 1
         p.b = 2
-#         print(p.__sizeof__())
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')
@@ -537,7 +531,6 @@ class DataObjectTest3(unittest.TestCase):
 
     def test_pickle22_tp(self):
         p = TestPickle22(10, 20, 30)
-#         print(p.__sizeof__())
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')
@@ -550,7 +543,6 @@ class DataObjectTest3(unittest.TestCase):
         p = TestPickle33(10, 20, 30)
         p.a = 1
         p.b = 2
-#         print(p.__sizeof__())
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')

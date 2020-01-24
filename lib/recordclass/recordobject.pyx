@@ -680,8 +680,6 @@ class recordclasstype(type):
 
         module = ns.get('__module__', None)
             
-#         print(cls.__qualname__, module, cls)
-
         if module is None:
             try:
                 cls.__module__ = _sys._getframe(2).f_globals.get('__name__', '__main__')
@@ -689,8 +687,6 @@ class recordclasstype(type):
                 pass
         else:
             pass
-        
-        print(cls.__qualname__, cls)
 
         return cls
 

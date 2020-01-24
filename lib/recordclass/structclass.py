@@ -176,9 +176,6 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
     
     cls = datatype(typename, bases, ns)
     
-#     _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, 
-#                use_dict=use_dict, use_weakref=use_weakref, iterable=sequence, hashable=hashable)
-
     if gc:
         _enable_gc(cls)
         

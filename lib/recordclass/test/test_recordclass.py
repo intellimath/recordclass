@@ -120,7 +120,6 @@ class RecordClassTest(unittest.TestCase):
         self.assertRaises(TypeError, eval, 'Point(x=1)', locals())          # missing keyword argument
         self.assertEqual(repr(p), 'Point(x=11, y=22)')
         #self.assertNotIn('__weakref__', dir(p))
-        #print(p)
         self.assertEqual(p, Point._make([11, 22]))                          # test _make classmethod
         self.assertEqual(p.__fields__, ('x', 'y'))                             # test __fields__ attribute
         self.assertEqual(p._replace(x=1), Point(1, 22))                          # test _replace method

@@ -2604,11 +2604,10 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         tp->tp_dealloc = dataobject_dealloc;
     tp->tp_free = dataobject_free;
     
-//     __init__ = PyMapping_HasKeyString(dict, "__init__");
-// //     __init__ = PyObject_HasAttrString(cls, "__init__");
-//     if (!__init__) {
-//         tp->tp_init = tp_base->tp_init;
-//     } 
+    __init__ = PyMapping_HasKeyString(dict, "__init__");
+    if (!__init__) {
+        tp->tp_init = tp_base->tp_init;
+    } 
     
     tp->tp_flags |= Py_TPFLAGS_HEAPTYPE;
     

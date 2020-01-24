@@ -160,14 +160,8 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
 
     cls = datatype(typename, bases, ns)
 
-    
-#     _clsconfig(cls, sequence=_sequence, mapping=mapping, readonly=readonly, 
-#                use_dict=use_dict, use_weakref=use_weakref, iterable=iterable, hashable=hashable)
-
     if gc:
         _enable_gc(cls)
-        
-    print(cls)
 
     return cls
 
