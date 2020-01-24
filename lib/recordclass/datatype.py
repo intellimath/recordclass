@@ -51,9 +51,6 @@ else:
     def _type_check(t, msg):
         return t
 
-# __all__ = ('datatype', 'make_class', 'make_dataclass', 'make_arrayclass',
-#            'asdict', 'clsconfig', 'enable_gc')
-
 def clsconfig(sequence=False, mapping=False, readonly=False, 
               use_dict=False, use_weakref=False, iterable=True, hashable=False):
     from ._dataobject import _clsconfig    
@@ -70,7 +67,6 @@ def enable_gc():
         _enable_gc(cls)
         return cls
     return func
-    
 
 int_type = type(1)
 
@@ -79,7 +75,6 @@ class datatype(type):
     def __new__(metatype, typename, bases, ns):        
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
-#         print(ns)
         options = ns.pop('__options__', {})
         readonly = options.get('readonly', False)
         hashable = options.get('hashable', False)
@@ -152,8 +147,6 @@ class datatype(type):
 
             _annotations.update(annotations)
             annotations = _annotations
-            
-#             print(fields, argsonly)
 
             if fields and (not argsonly or defaults) and '__new__' not in ns:
                 __new__ = make_new_function(typename, fields, defaults, annotations, varsize, use_dict)
@@ -189,8 +182,6 @@ class datatype(type):
                     
         cls = type.__new__(metatype, typename, bases, ns)
         
-#         print(1, cls)
-        
         if has_fields:
             cls.__fields__ = fields
             if defaults:
@@ -201,24 +192,6 @@ class datatype(type):
         _dataobject_type_init(cls)
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                    use_weakref=use_weakref, iterable=iterable, hashable=hashable)
-
-#         print(2, cls)
-        
-#         if has_fields:
-#             if readonly:
-#                 if type(readonly) is type(True):
-#                     readonly_fields = set(fields)
-#                 else:
-#                     readonly_fields = set(readonly)
-#             else:
-#                 readonly_fields = set()
-
-#             for i, name in enumerate(fields):
-#                 offset = dataslot_offset(cls, i)
-#                 if name in readonly_fields:
-#                     setattr(cls, name, dataslotgetset(offset, True))
-#                 else:
-#                     setattr(cls, name, dataslotgetset(offset))
 
         return cls
 

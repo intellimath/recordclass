@@ -6,7 +6,7 @@
 #include "Python.h"
 struct SequenceProxyObject;
 
-/* "recordclass/recordobject.pyx":803
+/* "recordclass/recordobject.pyx":271
  * 
  * @cython.final
  * cdef public class SequenceProxy[object SequenceProxyObject, type SequenceProxyType]:             # <<<<<<<<<<<<<<

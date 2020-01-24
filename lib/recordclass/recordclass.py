@@ -276,17 +276,7 @@ def __new__(_cls, {1}):
         '__module__': module,
     })
 
-    _result = recordclasstype(typename, (baseclass,), class_namespace)
-    
-    # For pickling to work, the __module__ variable needs to be set to the frame
-    # where the class is created.
-#     if module is None:
-#         try:
-#             module = _sys._getframe(2).f_globals.get('__name__', '__main__')
-#         except (AttributeError, ValueError):
-#             pass
-#     if module is not None:
-#         _result.__module__ = module
+    _result = recordclasstype(typename, (baseclass,), class_namespace)    
     if annotations:
         _result.__annotations__ = annotations
         
