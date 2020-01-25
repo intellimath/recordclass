@@ -1,6 +1,6 @@
 """Unit tests for structclass.py."""
 import unittest
-from recordclass import structclass
+from recordclass import structclass, join_classes
 from collections import OrderedDict
 import pickle, copy
 import keyword
@@ -291,21 +291,20 @@ class structclassTest(unittest.TestCase):
         b = B(1)
         self.assertEqual(repr(b), 'B(x=1)')
         
-#     def test_join_structclasses(self):
-#         C1 = structclass('C1', 'a b')
-#         C2 = structclass('C2', 'c d')
-#         C = join_classes('C', [C1, C2])
-#         CC = structclass('CC', 'a b c d')
-#         cc = CC(1,2,3,4)
-#         print(CC.__module__)
-#         c = C(1,2,3,4)
-#         self.assertNotEqual(c, cc)
+    def test_join_structclasses(self):
+        C1 = structclass('C1', 'a b')
+        C2 = structclass('C2', 'c d')
+        C = join_classes('C', [C1, C2])
+        CC = structclass('CC', 'a b c d')
+        cc = CC(1,2,3,4)
+        c = C(1,2,3,4)
+        self.assertNotEqual(c, cc)
 
-#     def test_join_structclasses_intersection(self):
-#         C1 = structclass('C1', 'a b')
-#         C2 = structclass('C2', 'b c')
-#         with self.assertRaises(AttributeError):
-#             C = join_classes('C', [C1, C2])
+    def test_join_structclasses_intersection(self):
+        C1 = structclass('C1', 'a b')
+        C2 = structclass('C2', 'b c')
+        with self.assertRaises(AttributeError):
+            C = join_classes('C', [C1, C2])
         
     def test_dict(self):
         A = structclass('A', 'a b c', use_dict=True)

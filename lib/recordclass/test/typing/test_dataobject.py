@@ -496,7 +496,7 @@ class DataObjectTest3(unittest.TestCase):
         class A(dataobject):
             __fields__ = 'x', 'y', 'z'
         
-        @enable_gc()
+        @enable_gc
         class B(dataobject):
             __fields__ = 'x', 'y', 'z'
             

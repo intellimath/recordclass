@@ -36,7 +36,7 @@ from .dataclass import asdict, DataclassStorage
 
 from .arrayclass import make_arrayclass
 
-from .structclass import structclass
+from .structclass import structclass, join_classes
 
 from .litelist import litelist
 

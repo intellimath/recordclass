@@ -61,12 +61,10 @@ def clsconfig(sequence=False, mapping=False, readonly=False,
         return cls
     return func
 
-def enable_gc():
+def enable_gc(cls):
     from ._dataobject import _enable_gc
-    def func(cls):
-        _enable_gc(cls)
-        return cls
-    return func
+    _enable_gc(cls)
+    return cls
 
 int_type = type(1)
 
