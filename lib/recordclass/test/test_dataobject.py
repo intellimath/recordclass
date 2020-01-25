@@ -6,7 +6,7 @@ import sys
 import gc
 import weakref
 
-from recordclass import make_dataclass, make_arrayclass, datatype, asdict
+from recordclass import make_dataclass, make_arrayclass, datatype, asdict, join_dataclasses
 from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 from recordclass import DataclassStorage
 
@@ -343,6 +343,21 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(sys.getrefcount(a), c+1)
         b.x = None
         self.assertEqual(sys.getrefcount(a), c)
+
+    def test_join_dataclasses(self):
+        C1 = make_dataclass('C1', 'a b')
+        C2 = make_dataclass('C2', 'c d')
+        C = join_dataclasses('C', [C1, C2])
+        CC = make_dataclass('CC', 'a b c d')
+        cc = CC(1,2,3,4)
+        c = C(1,2,3,4)
+        self.assertNotEqual(c, cc)
+
+    def test_join_dataclasses_intersection(self):
+        C1 = make_dataclass('C1', 'a b')
+        C2 = make_dataclass('C2', 'b c')
+        with self.assertRaises(AttributeError):
+            C = join_dataclasses('C', [C1, C2])
         
 
 def main():

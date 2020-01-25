@@ -31,7 +31,7 @@ from .datatype import datatype, clsconfig, enable_gc
 
 from ._dataobject import dataobject, datatuple
 
-from .dataclass import make_dataclass, make_class
+from .dataclass import make_dataclass, make_class, join_dataclasses
 from .dataclass import asdict, DataclassStorage
 
 from .arrayclass import make_arrayclass

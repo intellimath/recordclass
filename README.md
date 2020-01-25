@@ -218,6 +218,10 @@ Here are also table with some performance counters:
 
 ### Changes:
 
+#### 0.13.1
+
+* Restore ``join_classes` and add new function `join_dataclasses`.
+
 #### 0.13.0.1
 
 * Remove redundant debug code.

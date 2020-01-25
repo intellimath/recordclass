@@ -185,3 +185,28 @@ class DataclassStorage:
             self._storage[key] = cls
         return cls
     make_class = make_dataclass
+
+def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False, 
+                 use_weakref=False, hashable=True, sequence=False, argsonly=False, iterable=False, module=None):
+    
+    from ._dataobject import dataobject, datatuple
+    
+    if not all(issubclass(cls, dataobject) for cls in classes):
+        raise TypeError('All arguments should be child of dataobject')
+    for cls in classes:
+        if isinstance(cls, datatuple):
+            raise TypeError('The class', cls, 'should not be a subclass of datatuple')
+    if not all(hasattr(cls, '__fields__') for cls in classes):
+        raise TypeError('Some of the base classes has not __fields__')
+
+    _attrs = []
+    for cls in classes:
+        for a in cls.__fields__:
+            if a in _attrs:
+                raise AttributeError('Duplicate attribute in the base classes')
+            _attrs.append(a)
+
+    return make_dataclass(name, _attrs, 
+                          readonly=readonly, use_dict=use_dict, gc=gc, use_weakref=use_weakref, 
+                          hashable=hashable, sequence=sequence, iterable=iterable, module=module)
+    
