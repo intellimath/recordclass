@@ -44,8 +44,6 @@ else:
         return _re.match(r'^[a-z_][a-z0-9_]*$', s, _re.I) is not None
     _type_check = None
 
-_repr_template = '{name}=%r'
-
 def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashable=True,
                    sequence=True, mapping=False, readonly=False,
                    defaults=None, module=None, gc=False):
@@ -77,7 +75,6 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
                 check_name(fn)
                 fn = _intern(fn)
                 field_names.append(fn)
-#         fields = field_names
         
     n_fields = len(field_names)
     typename = check_name(typename)
@@ -91,7 +88,6 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
     else:
         defaults = None
         
-    #@classmethod
     def _make(_cls, iterable):
         ob = _cls(*iterable)
         if len(ob) != n_fields:
@@ -106,19 +102,6 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
         return _self
     
     _replace.__doc__ = 'Return a new %s object replacing specified fields with new values' % typename
-
-#     def __repr__(self):
-#         'Return a nicely formatted representation string'
-#         args_text = repr_fmt % tuple(self)
-#         try:
-#             kw = self.__dict__
-#         except AttributeError:
-#             kw = None
-#         if kw:
-#             kw_text = repr(kw)
-#             return self.__class__.__name__ + "(" + args_text + ", **" + kw_text + ")" 
-#         else:
-#             return self.__class__.__name__ + "(" + args_text + ")" 
     
     def _asdict(self):
         'Return a new OrderedDict which maps field names to their values.'
@@ -127,8 +110,7 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
     for method in (_make, _replace, _asdict,):
         method.__qualname__ = typename + "." + method.__name__        
         
-    _make = classmethod(_make)
-        
+    _make = classmethod(_make)        
 
     options = {
         'readonly':readonly,
