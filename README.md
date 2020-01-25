@@ -211,9 +211,9 @@ Here are also table with some performance counters:
 
 |         | namedtuple    |  class/\_\_slots\_\_  |  recordclass   | dataobject  |
 | ------- | ------------- | ----------------- | -------------- | ------------- |
-|   `new`   |    739±24 ns  |     915±35 ns    |   763±21 ns   |    889±34 ns  |
-| `getattr` |   84.0±1.7 ns |    42.8±1.5 ns   |   39.5±1.0 ns |   41.7±1.1 ns |
-| `setattr` |               |     50.5±1.7 ns  |   50.9±1.5 ns |   48.8±1.0 ns |
+|   `new`   |    320±6 ns  |     411±8 ns    |   406±8 ns   |    113±1 ns  |
+| `getattr` |   35.6±0.7 ns |    20.8±0.4 ns   |   26.8±1.8 ns |   27.7±2.3 ns |
+| `setattr` |               |     24.2±0.3 ns  |   30.9±1.1 ns |   31.5±1.8 ns |
 
 
 ### Changes:

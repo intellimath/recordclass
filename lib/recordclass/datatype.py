@@ -51,6 +51,8 @@ else:
     def _type_check(t, msg):
         return t
 
+int_type = type(1)
+
 def clsconfig(sequence=False, mapping=False, readonly=False, 
               use_dict=False, use_weakref=False, iterable=True, hashable=False):
     from ._dataobject import _clsconfig    
@@ -65,8 +67,6 @@ def enable_gc(cls):
     from ._dataobject import _enable_gc
     _enable_gc(cls)
     return cls
-
-int_type = type(1)
 
 class datatype(type):
 
@@ -147,7 +147,7 @@ class datatype(type):
             annotations = _annotations
 
             if fields and (not argsonly or defaults) and '__new__' not in ns:
-                __new__ = make_new_function(typename, fields, defaults, annotations, varsize, use_dict)
+                __new__ = _make_new_function(typename, fields, defaults, annotations, varsize, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
 
                 ns['__new__'] = __new__
@@ -193,7 +193,7 @@ class datatype(type):
 
         return cls
 
-def make_new_function(typename, fields, defaults, annotations, varsize, use_dict):
+def _make_new_function(typename, fields, defaults, annotations, varsize, use_dict):
     
     from ._dataobject import dataobject, datatuple
     

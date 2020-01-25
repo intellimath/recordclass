@@ -1,6 +1,6 @@
 from recordclass import recordclass, structclass, make_dataclass
 from collections import namedtuple
-import perf
+import pyperf as perf
 #from sys import getsizeof as sizeof
 
 
@@ -88,8 +88,8 @@ runner.timeit(
     "Dataobject.new",
     stmt="R(1,2,3,4,5,6,7,8,9,10,11)",
     setup="""
-from recordclass import new_datatype
-R = new_datatype('R', 'a b c d e f g h i j k')
+from recordclass import make_dataclass
+R = make_dataclass('R', 'a b c d e f g h i j k', argsonly=True)
 """
 )
 
@@ -146,8 +146,8 @@ runner.timeit(
     "Dataobject.getattr",
     stmt="r.k",
     setup="""
-from recordclass import new_datatype
-R = new_datatype('R', 'a b c d e f g h i j k')
+from recordclass import make_dataclass
+R = make_dataclass('R', 'a b c d e f g h i j k', argsonly=True)
 r = R(1,2,3,4,5,6,7,8,9,10,11)
 """
 )
@@ -195,8 +195,8 @@ runner.timeit(
     "Dataobject.setattr",
     stmt="r.k=1",
     setup="""
-from recordclass import new_datatype
-R = new_datatype('R', 'a b c d e f g h i j k')
+from recordclass import make_dataclass
+R = make_dataclass('R', 'a b c d e f g h i j k', argsonly=True)
 r = R(1,2,3,4,5,6,7,8,9,10,11)
 """
 )

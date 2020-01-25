@@ -163,8 +163,6 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
         
     return cls
 
-
-
 def join_classes(name, classes, readonly=False, use_dict=False, gc=False, 
                  use_weakref=False, hashable=True, sequence=True, module=None):
     
