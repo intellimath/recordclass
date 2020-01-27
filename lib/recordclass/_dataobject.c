@@ -654,18 +654,16 @@ dataobject_copy(PyObject* op)
             if (!new_dict) {
                 PyErr_SetString(PyExc_TypeError, "it is failed to make copy of the dict");
                 return NULL;                                    
-            }            
-            *new_dictptr = new_dict;            
-        }
-        else {
-            *new_dictptr = NULL;
-        }
-        
-        if (dict && new_dict) {
+            }
+
             if (PyDict_Update(new_dict, dict) < 0) {
                 PyErr_SetString(PyExc_TypeError, "dict update failed");
                 return NULL;                        
-            }
+            }            
+            *new_dictptr = new_dict;
+        }
+        else {
+            *new_dictptr = NULL;
         }        
     }
 
