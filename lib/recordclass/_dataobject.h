@@ -20,10 +20,10 @@
 
 typedef struct {
     PyObject ob_head;
-    PyObject *ob_slots[1];
+    PyObject *ob_slot[1];
 } PyDataObject;
 
 typedef struct {
     PyVarObject ob_head;
-    PyObject *ob_slots[1];
+    PyObject *ob_slot[1];
 } PyDataTuple;
