@@ -18,7 +18,12 @@
 #define dataobject_hasdict(type) (type->tp_dictoffset != 0)
 #define dataobject_hasweaklist(type) (type->tp_weaklistoffset != 0)
 
-// typedef struct {
-//     PyObject ob_head;
-//     Pyobject *ob_slot[1];
-// } PyDataObject;
+typedef struct {
+    PyObject ob_head;
+    PyObject *ob_slots[1];
+} PyDataObject;
+
+typedef struct {
+    PyVarObject ob_head;
+    PyObject *ob_slots[1];
+} PyDataTuple;

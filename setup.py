@@ -94,7 +94,7 @@ if _PY36:
 
 setup(
     name = 'recordclass',
-    version = '0.13.0.1',
+    version = '0.13.1a0',
     description = description,
     author = 'Zaur Shibzukhov',
     author_email = 'szport@gmail.com',

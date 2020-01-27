@@ -213,7 +213,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     op = type->tp_alloc(type, 0);
 
-    items = dataobject_slots(op);
+    items = ((PyDataObject*)op)->ob_slots; //dataobject_slots(op);
     pp = tmp->ob_item;
     while (n_args--) {
         v = *(pp++);
@@ -1207,7 +1207,7 @@ datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     pp = tmp->ob_item;
     if (n_slots) {
         n = n_slots;
-        items = datatuple_slots(op);
+        items = ((PyDataTuple*)op)->ob_slots; //datatuple_slots(op);
         while (n-- > 0) {
             v = *(pp++);
             Py_INCREF(v);
@@ -1253,7 +1253,16 @@ datatuple_clear(PyObject *op)
     PyTypeObject *type = Py_TYPE(op);
     Py_ssize_t n_slots, n_items;
     PyObject **items;
+
+    if (type->tp_weaklistoffset)
+        PyObject_ClearWeakRefs(op);
     
+    if (type->tp_dictoffset) {
+        PyObject **dictptr = PyObject_GetDictPtr(op);
+        if (dictptr && *dictptr)
+            Py_CLEAR(*dictptr);
+    }
+
     n_slots = datatuple_numslots(type);
 
     items = datatuple_slots(op);
@@ -1273,16 +1282,43 @@ datatuple_clear(PyObject *op)
         }
     }
 
+    return 0;
+}
+
+static void
+datatuple_xdecref(PyObject *op)
+{
+    PyTypeObject *type = Py_TYPE(op);
+    Py_ssize_t n_slots, n_items;
+    PyObject **items;
+
     if (type->tp_weaklistoffset)
         PyObject_ClearWeakRefs(op);
     
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyObject_GetDictPtr(op);
         if (dictptr && *dictptr)
-            Py_CLEAR(*dictptr);
+            Py_XDECREF(*dictptr);
+    }
+    
+    n_slots = datatuple_numslots(type);
+
+    items = datatuple_slots(op);
+    if (n_slots) {
+        while (n_slots-- > 0) {
+            Py_XDECREF(*items);
+            items++;
+        }
     }
 
-    return 0;
+    n_items = Py_SIZE(op);
+    if (n_items) {
+        items = datatuple_items(type, op);
+        while (n_items-- > 0) {
+            Py_XDECREF(*items);
+            items++;
+        }
+    }
 }
 
 static void
@@ -1294,7 +1330,7 @@ datatuple_dealloc(PyObject *op)
         PyObject_GC_UnTrack(op);
     }
 
-    datatuple_clear(op);
+    datatuple_xdecref(op);
 
     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_DECREF(tp);
