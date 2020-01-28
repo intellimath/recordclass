@@ -203,7 +203,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     
     n_args = PyTuple_GET_SIZE(tmp);
 
-    n_slots = dataobject_numslots(type);
+    n_slots = PyDataObject_NUMSLOTS(type);
     if (n_args > n_slots) {
         PyErr_SetString(PyExc_TypeError,
                         "number of the arguments should not be greater than the number of the slots");
@@ -213,7 +213,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     op = type->tp_alloc(type, 0);
 
-    items = ((PyDataObject*)op)->ob_slot; //dataobject_slots(op);
+    items = PyDataObject_SLOTS(op);
     pp = tmp->ob_item;
     while (n_args--) {
         v = *(pp++);
@@ -251,8 +251,8 @@ static int
 dataobject_clear(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
-    PyObject **items = dataobject_slots(op);
-    Py_ssize_t n_slots = dataobject_numslots(type);
+    PyObject **items = PyDataObject_SLOTS(op);
+    Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
 
 //     if (type->tp_weaklistoffset)
 //         PyObject_ClearWeakRefs(op);
@@ -275,8 +275,8 @@ static int
 dataobject_xdecref(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
-    PyObject **items = dataobject_slots(op);
-    Py_ssize_t n_slots = dataobject_numslots(type);
+    PyObject **items = PyDataObject_SLOTS(op);
+    Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
 
     if (type->tp_weaklistoffset)
         PyObject_ClearWeakRefs(op);
@@ -329,10 +329,10 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
     PyObject **items;
     PyTypeObject *type = Py_TYPE(op);
 
-    n_slots = dataobject_numslots(type);
+    n_slots = PyDataObject_NUMSLOTS(type);
 
     if (n_slots) {
-        items = dataobject_slots(op);
+        items = PyDataObject_SLOTS(op);
         while (n_slots--) {
             Py_VISIT(*items);
             items++;
@@ -351,10 +351,10 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
 static PyObject *
 dataobject_item(PyObject *op, Py_ssize_t i)
 {
-//     PyObject **items;
+    PyObject **items;
     PyObject *v;
     
-    Py_ssize_t n = dataobject_numslots(Py_TYPE(op));
+    Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
 
     if (i < 0)
         i += n;
@@ -363,8 +363,8 @@ dataobject_item(PyObject *op, Py_ssize_t i)
         return NULL;
     }
 
-//     items = dataobject_slots(op);
-    v = ((PyDataObject*)op)->ob_slot[i]; //items[i];
+    items = PyDataObject_SLOTS(op);
+    v = items[i];
     Py_INCREF(v);
     return v;
 }
@@ -374,7 +374,7 @@ dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
     PyObject **items;
         
-    Py_ssize_t n = dataobject_numslots(Py_TYPE(op));
+    Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
 
     if (i < 0)
         i += n;
@@ -383,7 +383,7 @@ dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
         return -1;
     }
 
-    items = ((PyDataObject*)op)->ob_slot; //dataobject_slots(op);
+    items = PyDataObject_SLOTS(op);
 
     items += i;
 
@@ -550,7 +550,7 @@ dataobject_len(PyObject *op)
     PyTypeObject *type = Py_TYPE(op);
     Py_ssize_t n;
 
-    n = dataobject_numslots(type);
+    n = PyDataObject_NUMSLOTS(type);
     if (type->tp_itemsize)
         n += Py_SIZE(op);
 
@@ -1191,7 +1191,7 @@ datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     n_args = PyTuple_GET_SIZE(tmp);
 
-    n_slots = datatuple_numslots(type);
+    n_slots = PyDataTuple_NUMSLOTS(type);
     n_items = n_args - n_slots;
     if (n_items < 0) {
         PyErr_SetString(PyExc_TypeError,
@@ -1205,7 +1205,7 @@ datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     pp = tmp->ob_item;
     if (n_slots) {
         n = n_slots;
-        items = ((PyDataTuple*)op)->ob_slot; //datatuple_slots(op);
+        items = PyDataTuple_SLOTS(op);
         while (n-- > 0) {
             v = *(pp++);
             Py_INCREF(v);
@@ -1215,7 +1215,7 @@ datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     if (n_items) {
         n = n_items;
-        items = datatuple_items(type, op);
+        items = PyDataTuple_ITEMS(type, op);
         while (n-- > 0) {
             v = *(pp++);
             Py_INCREF(v);
@@ -1261,9 +1261,9 @@ datatuple_clear(PyObject *op)
             Py_CLEAR(*dictptr);
     }
 
-    n_slots = datatuple_numslots(type);
+    n_slots = PyDataTuple_NUMSLOTS(type);
 
-    items = datatuple_slots(op);
+    items = PyDataTuple_SLOTS(op);
     if (n_slots) {
         while (n_slots-- > 0) {
             Py_CLEAR(*items);
@@ -1273,7 +1273,7 @@ datatuple_clear(PyObject *op)
 
     n_items = Py_SIZE(op);
     if (n_items) {
-        items = datatuple_items(type, op);
+        items = PyDataTuple_ITEMS(type, op);
         while (n_items-- > 0) {
             Py_CLEAR(*items);
             items++;
@@ -1299,9 +1299,9 @@ datatuple_xdecref(PyObject *op)
             Py_XDECREF(*dictptr);
     }
     
-    n_slots = datatuple_numslots(type);
+    n_slots = PyDataTuple_NUMSLOTS(type);
 
-    items = datatuple_slots(op);
+    items = PyDataTuple_SLOTS(op);
     if (n_slots) {
         while (n_slots-- > 0) {
             Py_XDECREF(*items);
@@ -1311,7 +1311,7 @@ datatuple_xdecref(PyObject *op)
 
     n_items = Py_SIZE(op);
     if (n_items) {
-        items = datatuple_items(type, op);
+        items = PyDataTuple_ITEMS(type, op);
         while (n_items-- > 0) {
             Py_XDECREF(*items);
             items++;
@@ -1343,11 +1343,11 @@ datatuple_traverse(PyObject *op, visitproc visit, void *arg)
     PyObject **items;
     PyTypeObject *type = Py_TYPE(op);
 
-    n_slots = datatuple_numslots(type);
+    n_slots = PyDataTuple_NUMSLOTS(type);
     n_items = Py_SIZE(op);
 
     if (n_slots) {
-        items = datatuple_slots(op);
+        items = PyDataTuple_SLOTS(op);
         while (n_slots--) {
             Py_VISIT(*items);
             items++;
@@ -1355,7 +1355,7 @@ datatuple_traverse(PyObject *op, visitproc visit, void *arg)
     }
 
     if (n_items) {
-        items = datatuple_items(type, op);
+        items = PyDataTuple_ITEMS(type, op);
         while (n_items--) {
             Py_VISIT(*items);
             items++;
@@ -1379,8 +1379,8 @@ datatuple_item(PyObject *op, Py_ssize_t i)
     PyObject **items;
     PyObject *v;
 
-    Py_ssize_t n_slots = datatuple_numslots(type);
-    Py_ssize_t n_items = datatuple_numitems(op);
+    Py_ssize_t n_slots = PyDataTuple_NUMSLOTS(type);
+    Py_ssize_t n_items = PyDataTuple_NUMITEMS(op);
     Py_ssize_t n = n_slots + n_items;
 
     if (i < 0)
@@ -1391,9 +1391,9 @@ datatuple_item(PyObject *op, Py_ssize_t i)
     }
 
     if (i < n_slots) {
-        items = datatuple_slots(op);
+        items = PyDataTuple_SLOTS(op);
     } else {
-        items = datatuple_items(type, op);
+        items = PyDataTuple_ITEMS(type, op);
         i -= n_slots;
     }
 
@@ -1410,8 +1410,8 @@ datatuple_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     PyTypeObject *type = Py_TYPE(op);
     PyObject* old_val;
 
-    Py_ssize_t n_slots = datatuple_numslots(type);
-    Py_ssize_t n_items = datatuple_numitems(op);
+    Py_ssize_t n_slots = PyDataTuple_NUMSLOTS(type);
+    Py_ssize_t n_items = PyDataTuple_NUMITEMS(op);
 
     n = n_slots + n_items;
 
@@ -1423,9 +1423,9 @@ datatuple_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     }
 
     if (i < n_slots) {
-        items = datatuple_slots(op);
+        items = PyDataTuple_SLOTS(op);
     } else {
-        items = datatuple_items(type, op);
+        items = PyDataTuple_ITEMS(type, op);
         i -= n_slots;
     }
 
@@ -1487,7 +1487,7 @@ datatuple_len(PyObject *op)
     PyTypeObject *type = Py_TYPE(op);
     Py_ssize_t n;
 
-    n = datatuple_numslots(type);
+    n = PyDataTuple_NUMSLOTS(type);
     if (type->tp_itemsize)
         n += Py_SIZE(op);
 
@@ -1600,7 +1600,7 @@ PyDoc_STRVAR(datatuple_getnewargs_doc,
 // datatuple_getnewargs(PyObject *op)
 // {
 //     PyTypeObject *type = Py_TYPE(op);
-//     Py_ssize_t i, n_slots = datatuple_numslots(type);
+//     Py_ssize_t i, n_slots = PyDataTuple_NUMSLOTS(type);
 //     Py_ssize_t n_items = Py_SIZE(op);
 //     PyObject *args, *tail;
 //     PyObject *v;
@@ -1658,7 +1658,7 @@ PyDoc_STRVAR(datatuple_reduce_doc,
 //         return NULL;
 
 //     if (tp->tp_dictoffset) {
-//         dictptr = dataobject_dictptr(tp, ob);
+//         dictptr = PyDataObject_DICTPTR(tp, ob);
 //         if (dictptr) {
 //             kw = *dictptr;
 //             if (kw) Py_INCREF(kw);

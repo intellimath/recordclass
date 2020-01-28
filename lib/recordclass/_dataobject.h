@@ -1,29 +1,29 @@
-#define datatuple_items(type, op) (PyObject**)((char*)(op) + type->tp_basicsize)
+#define PyDataTuple_ITEMS(type, op) (PyObject**)((char*)(op) + type->tp_basicsize)
 
-#define dataobject_slots(op) (PyObject**)((char*)(op) + sizeof(PyObject))
-#define datatuple_slots(op) (PyObject**)((char*)(op) + sizeof(PyVarObject))
+#define PyDataObject_SLOTS(op) (PyObject**)((char*)(op) + sizeof(PyObject))
+#define PyDataTuple_SLOTS(op) (PyObject**)((char*)(op) + sizeof(PyVarObject))
 
-#define datatuple_numslots(tp) ((tp->tp_basicsize - sizeof(PyVarObject))/sizeof(PyObject*) - \
-                                (tp->tp_dictoffset?1:0) - \
-                                (tp->tp_weaklistoffset?1:0))
-
-#define dataobject_numslots(tp) ((tp->tp_basicsize - sizeof(PyObject))/sizeof(PyObject*)) - \
+#define PyDataTuple_NUMSLOTS(tp) ((tp->tp_basicsize - sizeof(PyVarObject))/sizeof(PyObject*) - \
                                  (tp->tp_dictoffset?1:0) - \
-                                 (tp->tp_weaklistoffset?1:0)
+                                 (tp->tp_weaklistoffset?1:0))
 
-#define datatuple_numitems(op) Py_SIZE(op)
+#define PyDataObject_NUMSLOTS(tp) ((tp->tp_basicsize - sizeof(PyObject))/sizeof(PyObject*)) - \
+                                  (tp->tp_dictoffset?1:0) - \
+                                  (tp->tp_weaklistoffset?1:0)
 
-#define dataobject_dictptr(type, op) ((PyObject**)((char*)(op) + type->tp_dictoffset))
-#define dataobject_weaklistptr(type, op) ((PyObject**)((char*)op + type->tp_weaklistoffset))
-#define dataobject_hasdict(type) (type->tp_dictoffset != 0)
-#define dataobject_hasweaklist(type) (type->tp_weaklistoffset != 0)
+#define PyDataTuple_NUMITEMS(op) Py_SIZE(op)
 
-typedef struct {
-    PyObject ob_head;
-    PyObject *ob_slot[1];
-} PyDataObject;
+#define PyDataObject_DICTPTR(type, op) ((PyObject**)((char*)(op) + type->tp_dictoffset))
+#define PyDataObject_WEAKLISTPTR(type, op) ((PyObject**)((char*)op + type->tp_weaklistoffset))
+#define PyDataObject_HAS_DICT(type) (type->tp_dictoffset != 0)
+#define PyDataObject_HAS_WEAKLIST(type) (type->tp_weaklistoffset != 0)
 
-typedef struct {
-    PyVarObject ob_head;
-    PyObject *ob_slot[1];
-} PyDataTuple;
+// typedef struct {
+//     PyObject ob_head;
+//     PyObject *ob_slot[1];
+// } PyDataObject;
+
+// typedef struct {
+//     PyVarObject ob_head;
+//     PyObject *ob_slot[1];
+// } PyDataTuple;
