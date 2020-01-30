@@ -940,7 +940,7 @@ mutabletupleiter_len(mutabletupleiterobject *it)
 PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(it)).");
 
 static PyObject *
-mutabletupleiter_reduce(mutabletupleiterobject *it, PyObject *Py_UNUSED(ignore))
+mutabletupleiter_reduce(mutabletupleiterobject *it) //, PyObject *Py_UNUSED(ignore))
 {
 #if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
     _Py_IDENTIFIER(iter);
