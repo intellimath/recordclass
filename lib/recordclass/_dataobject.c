@@ -254,9 +254,6 @@ dataobject_clear(PyObject *op)
     PyObject **items = PyDataObject_SLOTS(op);
     Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
 
-//     if (type->tp_weaklistoffset)
-//         PyObject_ClearWeakRefs(op);
-
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_GetDictPtr(op);
         if (dictptr && *dictptr)
@@ -991,10 +988,10 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
         }
     }
     if (kw) {
-//         Py_INCREF(kw);
         result = PyTuple_Pack(3, tp, args, kw);
-    } else
+    } else {
         result = PyTuple_Pack(2, tp, args);
+    }
 
     Py_DECREF(args);
     Py_XDECREF(kw);
@@ -1045,14 +1042,12 @@ PyDoc_STRVAR(dataobject_setstate_doc,
 static PyObject*
 dataobject_setstate(PyObject *ob, PyObject *state) {
     PyTypeObject *tp = Py_TYPE(ob);
-//     PyObject **dictptr;
     PyObject *dict;
 
     if (!state || state == Py_None)
         return 0;
 
     if (tp->tp_dictoffset) {
-//         dictptr = PyObject_GetDictPtr(ob);
         dict = PyDataObject_GetDict(ob);
 
         if (!dict) {
@@ -1658,7 +1653,7 @@ PyDoc_STRVAR(datatuple_reduce_doc,
 //         return NULL;
 
 //     if (tp->tp_dictoffset) {
-//         dictptr = PyDataObject_DICTPTR(tp, ob);
+//         dictptr = PyObject_GetDictPtr(tp, ob);
 //         if (dictptr) {
 //             kw = *dictptr;
 //             if (kw) Py_INCREF(kw);
