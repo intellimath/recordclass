@@ -942,7 +942,7 @@ PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(
 static PyObject *
 mutabletupleiter_reduce(mutabletupleiterobject *it, PyObject *Py_UNUSED(ignore))
 {
-#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 6
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
     _Py_IDENTIFIER(iter);
     if (it->it_seq)
         return Py_BuildValue("N(O)n", _PyEval_GetBuiltinId(&PyId_iter),
