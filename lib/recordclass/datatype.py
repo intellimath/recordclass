@@ -68,6 +68,16 @@ def enable_gc(cls):
     _enable_gc(cls)
     return cls
 
+def _matching_annotations_and_defaults(annotations, defaults):
+#     print(annotations, defaults)
+    args = True
+    for name, val in annotations.items():
+        if name in defaults:
+            args = False
+        else:
+            if not args:
+                defaults[name] = None
+
 class datatype(type):
 
     def __new__(metatype, typename, bases, ns):        
@@ -124,15 +134,20 @@ class datatype(type):
 
             if '__dict__' in fields:
                 fields.remove('__dict__')
+                if '__dict__' in annotations:
+                    del annotations['__dict__']
                 use_dict = True
 
             if '__weakref__' in fields:
                 fields.remove('__weakref__')
+                if '__weakref__' in annotations:
+                    del annotations['__weakref__']
                 use_weakref = True
 
             _fields, _defaults, _annotations = collect_info_from_bases(bases)
 
             defaults = {f:ns[f] for f in fields if f in ns}
+            _matching_annotations_and_defaults(annotations, defaults)
 
             if fields:
                 fields = [f for f in fields if f not in _fields]

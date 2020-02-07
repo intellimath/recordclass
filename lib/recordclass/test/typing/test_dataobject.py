@@ -551,6 +551,19 @@ class DataObjectTest3(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
                 
+    def test_copy_defaults_tp(self):
+        import copy
+
+        class A(dataobject):
+            x:int=0
+            y:int
+                
+        a=A(x=1,y=2)
+        b = copy.copy(a)
+        self.assertEqual(a, b)
+        c = copy.deepcopy(a)
+        self.assertEqual(a, c)
+                
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(DataObjectTest3))
