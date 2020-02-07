@@ -218,6 +218,10 @@ Here are also table with some performance counters:
 
 ### Changes:
 
+#### 0.13.2
+
+* Fix issue #14 with deepcopy of dataobjects.
+
 #### 0.13.1
 
 * Restore ``join_classes` and add new function `join_dataclasses`.
