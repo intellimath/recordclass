@@ -74,7 +74,7 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
                 fn = _intern(fn)
                 annotations[fn] = tp
                 field_names.append(fn)
-        els:e
+        else:
             for fn in fields:
                 if type(fn) is tuple:
                     fn, tp = fn
