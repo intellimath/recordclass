@@ -242,6 +242,25 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a3.x, 1)
         self.assertEqual(a3.y, 2)
         self.assertEqual(a3.z, 3)
+
+    def test_keyword_args_defaults2(self):
+        A = make_dataclass("A", ('x', 'y', 'z'), argsonly=True)
+
+        a1 = A(x=1)
+        self.assertEqual(repr(a1), "A(x=1, y=None, z=None)")
+        self.assertEqual(a1.x, 1)
+        self.assertEqual(a1.y, None)
+        self.assertEqual(a1.z, None)
+        a2 = A(x=1,y=2)
+        self.assertEqual(repr(a2), "A(x=1, y=2, z=None)")
+        self.assertEqual(a2.x, 1)
+        self.assertEqual(a2.y, 2)
+        self.assertEqual(a2.z, None)
+        a3 = A(x=1,y=2,z=3)
+        self.assertEqual(repr(a3), "A(x=1, y=2, z=3)")
+        self.assertEqual(a3.x, 1)
+        self.assertEqual(a3.y, 2)
+        self.assertEqual(a3.z, 3)
         
     def test_missing_args(self):
         A = make_dataclass("A", ("a", "b", "c"), argsonly=True, sequence=True)

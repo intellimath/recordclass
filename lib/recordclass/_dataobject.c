@@ -228,21 +228,42 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     }
     
     Py_DECREF(tmp);
-    
+        
     if (kwds) {
         if (type->tp_dictoffset) {
             PyObject *dict = PyDataObject_GetDict(op);
-            
+
             if (PyDict_Update(dict, kwds) == -1) {
                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
                 return NULL;            
             }
             Py_XDECREF(dict);
         } else {
-            PyErr_SetString(PyExc_TypeError, "instance hasn't __dict__");
-            return NULL;            
-        }        
-    }
+            PyObject *iter, *key, *val;
+
+            iter = PyObject_GetIter(kwds);
+            while ((key = PyIter_Next(iter))) {
+                val = PyObject_GetItem(kwds, key);
+                if (!val) {
+                    PyErr_SetString(PyExc_KeyError, "Invalid kwarg");
+                    Py_DECREF(key);
+                    Py_DECREF(iter);
+                    return NULL;                                        
+                }
+                if (PyObject_SetAttr(op, key, val) < 0) {
+                    PyErr_SetString(PyExc_AttributeError, "Set attribute failed");
+                    Py_DECREF(val);
+                    Py_DECREF(key);
+                    Py_DECREF(iter);
+                    return NULL;                    
+                }
+                Py_DECREF(val);
+                Py_DECREF(key);
+            }
+
+            Py_DECREF(iter);
+        }
+    } 
 
     return op;
 }

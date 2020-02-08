@@ -54,7 +54,7 @@ else:
 def make_dataclass(typename, fields=None, bases=None, namespace=None, 
                    varsize=False,  use_dict=False, use_weakref=False, hashable=True,
                    sequence=False, mapping=False, iterable=False, readonly=False,
-                   defaults=None, module=None, argsonly=False, gc=False):
+                   defaults=None, module=None, argsonly=False, fast_new=False, gc=False):
     
     from ._dataobject import _clsconfig, _enable_gc
     from ._dataobject import dataobject, datatuple
@@ -74,7 +74,7 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
                 fn = _intern(fn)
                 annotations[fn] = tp
                 field_names.append(fn)
-        else:
+        els:e
             for fn in fields:
                 if type(fn) is tuple:
                     fn, tp = fn
@@ -106,6 +106,7 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
         'use_weakref':use_weakref,
         'readonly':readonly,
         'hashable':hashable,
+        'fast_new':fast_new,
         'gc':gc,
     }
 
