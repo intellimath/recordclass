@@ -563,6 +563,22 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a, b)
         c = copy.deepcopy(a)
         self.assertEqual(a, c)
+        
+    def test_signature_tp(self):
+        class A(dataobject):
+            x:int
+            y:int=2
+                
+        import inspect
+        s = inspect.signature(A)
+        px = s.parameters['x']
+        self.assertEqual(px.name, 'x')
+        self.assertEqual(px.annotation, int)
+        self.assertEqual(px.default, px.empty)
+        py = s.parameters['y']
+        self.assertEqual(py.name, 'y')
+        self.assertEqual(py.annotation, int)
+        self.assertEqual(py.default, 2)
                 
 def main():
     suite = unittest.TestSuite()

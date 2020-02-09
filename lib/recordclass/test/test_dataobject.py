@@ -264,7 +264,6 @@ class dataobjectTest(unittest.TestCase):
 
     def test_keyword_args_defaults3(self):
         A = make_dataclass("A", ('x', 'y', 'z'), fast_new=True)
-        print(A.__dict__)
 
         a1 = A(1, y=2,)
         self.assertEqual(repr(a1), "A(x=1, y=2, z=None)")
