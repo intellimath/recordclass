@@ -202,11 +202,13 @@ class datatype(type):
                 cls.__defaults__ = defaults
             if annotations:
                 cls.__annotations__ = annotations
+                
+            cls.__doc__ = _make_cls_doc(cls, typename, fields, defaults, varsize, use_dict)
 
         _dataobject_type_init(cls)
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                    use_weakref=use_weakref, iterable=iterable, hashable=hashable)
-
+        
         return cls
 
 def _make_new_function(typename, fields, defaults, annotations, varsize, use_dict):
@@ -270,4 +272,29 @@ def __new__(_cls_, {2}):
         __new__.__annotations__ = annotations
 
     return __new__
+
+def _make_cls_doc(cls, typename, fields, defaults, varsize, use_dict):
+    
+    from ._dataobject import dataobject, datatuple
+    
+    if fields and defaults:
+        fields2 = [f for f in fields if f not in defaults] + ["%s=%r" % (f, defaults[f]) for f in fields if f in defaults]
+    else:
+        fields2 = fields
+    fields2 = tuple(fields2)
+    
+    if use_dict:
+        if varsize:
+            template = "{0}({2}, *args, **kw)\n--\nCreate class instance"
+        else:
+            template = "{0}({2}, **kw)\n--\nCreate class instance"
+    else:
+        if varsize:
+            template = "{0}({2}, *args)\n--\nCreate class instance"
+        else:
+            template = "{0}({2})\n--\nCreate class instance"
+    doc = template.format(typename, ', '.join(fields), ', '.join(fields2))
+    
+
+    return doc
 
