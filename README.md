@@ -218,6 +218,10 @@ Here are also table with some performance counters:
 
 ### Changes:
 
+#### 0.14:
+
+* Add __doc__ to generated `dataobject`-based class in order to support `inspect.signature`.
+
 #### 0.13.2
 
 * Fix issue #14 with deepcopy of dataobjects.
