@@ -396,6 +396,7 @@ class dataobjectTest(unittest.TestCase):
         C2 = make_dataclass('C2', 'b c')
         with self.assertRaises(AttributeError):
             C = join_dataclasses('C', [C1, C2])
+
         
 
 def main():

@@ -579,6 +579,30 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(py.name, 'y')
         self.assertEqual(py.annotation, int)
         self.assertEqual(py.default, 2)
+        
+    def test_fast_new_tp(self):
+        class A(dataobject):
+            __fields__ = 'x', 'y'
+            __options__ = {'fast_new':True}
+        
+        self.assertTrue('__new__' not in A.__dict__)
+        a = A(1,2)
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+        a = A(1,y=2)
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+        a = A(1,**{'y':2})
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+        a = A(x=1,y=2)
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+        a = A(**{'x':1, 'y':2})
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+            
+        
                 
 def main():
     suite = unittest.TestSuite()
