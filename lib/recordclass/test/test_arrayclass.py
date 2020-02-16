@@ -175,6 +175,7 @@ class arrayobjectTest(unittest.TestCase):
 
     def test_varsize2(self):
         A = make_arrayclass("A", varsize=True)
+        print(A.__base__, A.__dict__)
         a = A(100,200)
         self.assertEqual(repr(a), "A(100, 200)")
         self.assertEqual(len(a), 2)
@@ -212,6 +213,27 @@ class arrayobjectTest(unittest.TestCase):
             a.__dict__
         a = None
 
+    def test_fields_fixsize1(self):
+        A = make_arrayclass("A", 2)
+        print(A.__dict__)
+        a = A(100, 200)
+        self.assertEqual(repr(a), "A(100, 200)")
+        self.assertEqual(len(a), 2)
+        self.assertEqual(a[0], 100)
+        self.assertEqual(a[1], 200)
+        self.assertEqual(a[-1], 200)
+        a[0] = -100
+        a[1] = -200
+        self.assertEqual(a[0], -100)
+        self.assertEqual(a[1], -200)
+        with self.assertRaises(IndexError): 
+            a[2]
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
+        with self.assertRaises(AttributeError):     
+            a.__dict__
+        a = None
+        
     def test_gc_varsize0(self):
         A = make_arrayclass("A", varsize=True, gc=True)
         a = A()

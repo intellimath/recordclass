@@ -85,6 +85,8 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a['y'], 2)
         self.assertEqual(a[0], 1)
         self.assertEqual(a[1], 2)
+        a[0] = 100
+        self.assertEqual(a[0], 100)
             
     def test_datatype_copy(self):
         A = make_dataclass("A", ('x', 'y'))

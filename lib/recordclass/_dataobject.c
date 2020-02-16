@@ -110,7 +110,7 @@ PyDataObject_SetDict(PyObject *obj, PyObject* value)
     if (value == NULL) {
         PyErr_SetString(PyExc_TypeError,
                         "can not delete __dict__");
-        return -1;        
+        return -1;
     }
     if (!PyDict_Check(value)) {
         PyErr_Format(PyExc_TypeError,
@@ -200,7 +200,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             return NULL;
         }
     }
-    
+
     n_args = PyTuple_GET_SIZE(tmp);
 
     n_slots = PyDataObject_NUMSLOTS(type);
@@ -226,16 +226,16 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         Py_INCREF(Py_None);
         *(items++) = Py_None;
     }
-    
+
     Py_DECREF(tmp);
-        
+
     if (kwds) {
         if (type->tp_dictoffset) {
             PyObject *dict = PyDataObject_GetDict(op);
 
             if (PyDict_Update(dict, kwds) == -1) {
                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
-                return NULL;            
+                return NULL;
             }
             Py_XDECREF(dict);
         } else {
@@ -248,7 +248,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                     PyErr_SetString(PyExc_KeyError, "Invalid kwarg");
                     Py_DECREF(key);
                     Py_DECREF(iter);
-                    return NULL;                                        
+                    return NULL;
                 }
                 if (PyObject_SetAttr(op, key, val) < 0) {
                     PyErr_SetString(PyExc_AttributeError, "Set attribute failed");
@@ -371,7 +371,7 @@ dataobject_item(PyObject *op, Py_ssize_t i)
 {
     PyObject **items;
     PyObject *v;
-    
+
     Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
 
     if (i < 0)
@@ -597,6 +597,17 @@ static PySequenceMethods dataobject_as_sequence = {
     0,                                              /* sq_contains */
 };
 
+static PySequenceMethods dataobject_as_sequence_ro = {
+    (lenfunc)dataobject_len,                          /* sq_length */
+    0,                                              /* sq_concat */
+    0,                                              /* sq_repeat */
+    (ssizeargfunc)dataobject_item,                    /* sq_item */
+    0,                                              /* sq_slice */
+    0,             /* sq_ass_item */
+    0,                                              /* sq_ass_slice */
+    0,                                              /* sq_contains */
+};
+
 static PyMappingMethods dataobject_as_mapping0 = {
     (lenfunc)dataobject_len,                          /* mp_len */
     0,                 /* mp_subscr */
@@ -609,10 +620,22 @@ static PyMappingMethods dataobject_as_mapping = {
     (objobjargproc)dataobject_ass_subscript,          /* mp_ass_subscr */
 };
 
+static PyMappingMethods dataobject_as_mapping_ro = {
+    (lenfunc)dataobject_len,                          /* mp_len */
+    (binaryfunc)dataobject_subscript,                 /* mp_subscr */
+    0,          /* mp_ass_subscr */
+};
+
 static PyMappingMethods dataobject_as_mapping2 = {
     (lenfunc)dataobject_len,                          /* mp_len */
     (binaryfunc)dataobject_subscript2,                 /* mp_subscr */
     (objobjargproc)dataobject_ass_subscript2,          /* mp_ass_subscr */
+};
+
+static PyMappingMethods dataobject_as_mapping2_ro = {
+    (lenfunc)dataobject_len,                          /* mp_len */
+    (binaryfunc)dataobject_subscript2,                 /* mp_subscr */
+    0,          /* mp_ass_subscr */
 };
 
 
@@ -666,7 +689,7 @@ dataobject_copy(PyObject* op)
         
         PyObject **new_dictptr = PyObject_GetDictPtr(new_op);
         PyObject *new_dict;
-        
+
         if (dict) {
             new_dict = PyDict_Copy(dict);
             if (!new_dict) {
@@ -1533,6 +1556,17 @@ PySequenceMethods datatuple_as_sequence = {
     0,                                              /* sq_contains */
 };
 
+PySequenceMethods datatuple_as_sequence_ro = {
+    (lenfunc)datatuple_len,                          /* sq_length */
+    0,                                              /* sq_concat */
+    0,                                              /* sq_repeat */
+    (ssizeargfunc)datatuple_item,                    /* sq_item */
+    0,                                              /* sq_slice */
+    0,             /* sq_ass_item */
+    0,                                              /* sq_ass_slice */
+    0,                                              /* sq_contains */
+};
+
 PyMappingMethods datatuple_as_mapping0 = {
     (lenfunc)datatuple_len,                          /* mp_len */
     0,                 /* mp_subscr */
@@ -1545,10 +1579,22 @@ PyMappingMethods datatuple_as_mapping = {
     (objobjargproc)datatuple_ass_subscript,          /* mp_ass_subscr */
 };
 
+PyMappingMethods datatuple_as_mapping_ro = {
+    (lenfunc)datatuple_len,                          /* mp_len */
+    (binaryfunc)datatuple_subscript,                 /* mp_subscr */
+    0,          /* mp_ass_subscr */
+};
+
 PyMappingMethods datatuple_as_mapping2 = {
     (lenfunc)datatuple_len,                          /* mp_len */
     (binaryfunc)datatuple_subscript2,                 /* mp_subscr */
     (objobjargproc)datatuple_ass_subscript2,          /* mp_ass_subscr */
+};
+
+PyMappingMethods datatuple_as_mapping2_ro = {
+    (lenfunc)datatuple_len,                          /* mp_len */
+    (binaryfunc)datatuple_subscript2,                 /* mp_subscr */
+    0,          /* mp_ass_subscr */
 };
 
 PyDoc_STRVAR(datatuple_copy_doc,
@@ -1702,6 +1748,10 @@ static PyMethodDef datatuple_methods[] = {
     {NULL}
 };
 
+PyDoc_STRVAR(datatuple_doc,
+"datatuple(...) --> datatuple\n\n\
+");
+
 static PyTypeObject PyDataTuple_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
     "recordclass._dataobject.datatuple",        /* tp_name */
@@ -1725,7 +1775,7 @@ static PyTypeObject PyDataTuple_Type = {
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
                                             /* tp_flags */
-    dataobject_doc,                           /* tp_doc */
+    datatuple_doc,                           /* tp_doc */
     datatuple_traverse,                      /* tp_traverse */
     datatuple_clear,                         /* tp_clear */
     dataobject_richcompare,                   /* tp_richcompare */
@@ -2396,6 +2446,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
     sq = PyObject_IsTrue(sequence);
     mp = PyObject_IsTrue(mapping);
     ro = PyObject_IsTrue(readonly);
+//     printf("ro:%i\n", ro);
     
     tp_base = tp->tp_base;
     
@@ -2418,21 +2469,21 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
                 tp->tp_as_sequence = NULL;
                 tp->tp_as_mapping = &dataobject_as_mapping2;
                 if (ro)
-                   tp->tp_as_mapping->mp_ass_subscript = NULL;
+                   tp->tp_as_mapping = &dataobject_as_mapping2_ro;
             } else {
+                tp->tp_as_mapping = NULL;
                 tp->tp_as_sequence = &dataobject_as_sequence;
                 if (ro)
-                   tp->tp_as_sequence->sq_ass_item = NULL;            
+                   tp->tp_as_sequence = &dataobject_as_sequence_ro;            
             }
         } else {
+            tp->tp_as_sequence = NULL;
             if (mp) {
-                tp->tp_as_sequence = NULL;
                 tp->tp_as_mapping = &dataobject_as_mapping;
                 if (ro)
-                   tp->tp_as_mapping->mp_ass_subscript = NULL;            
+                   tp->tp_as_mapping = &dataobject_as_mapping_ro;            
             } else {
-                tp->tp_as_sequence = &dataobject_as_sequence0;
-                tp->tp_as_mapping = &dataobject_as_mapping0;
+                tp->tp_as_mapping = NULL;
             }        
         }
     } else {
@@ -2441,21 +2492,21 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
                 tp->tp_as_sequence = NULL;
                 tp->tp_as_mapping = &datatuple_as_mapping2;
                 if (ro)
-                   tp->tp_as_mapping->mp_ass_subscript = NULL;
+                   tp->tp_as_mapping = &datatuple_as_mapping2_ro;
             } else {
                 tp->tp_as_sequence = &datatuple_as_sequence;
+                tp->tp_as_mapping = NULL;
                 if (ro)
-                   tp->tp_as_sequence->sq_ass_item = NULL;            
+                   tp->tp_as_sequence = &datatuple_as_sequence_ro;
             }
         } else {
+            tp->tp_as_sequence = NULL;
             if (mp) {
-                tp->tp_as_sequence = NULL;
                 tp->tp_as_mapping = &datatuple_as_mapping;
                 if (ro)
-                   tp->tp_as_mapping->mp_ass_subscript = NULL;            
+                   tp->tp_as_mapping = &datatuple_as_mapping_ro;
             } else {
-                tp->tp_as_sequence = &datatuple_as_sequence0;
-                tp->tp_as_mapping = &datatuple_as_mapping0;
+                tp->tp_as_mapping = NULL;
             }        
         }
     }

@@ -95,6 +95,9 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
     else:
         defaults = None
 
+    if varsize:
+        sequence = True
+        
     options = {
         'readonly':readonly,
         'defaults':defaults,
@@ -144,12 +147,6 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
             bases = (datatuple,)
         else:
             bases = (dataobject,)
-        
-    if varsize:
-        _sequence = True
-    else:
-        _sequence = sequence
-
         
     if module is None:
         try:

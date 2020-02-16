@@ -72,7 +72,7 @@ def make_arrayclass(typename, fields=0, namespace=None,
     options = {
         'use_dict':use_dict, 'use_weakref':use_weakref, 'hashable':hashable, 
         'sequence':True, 'iterable':True, 'readonly':readonly, 'gc':gc,
-        'hashable':hashable,
+        'fast_new':True,
     }
 
     if namespace is None:
@@ -83,17 +83,28 @@ def make_arrayclass(typename, fields=0, namespace=None,
     ns['__options__'] = options
     ns['__fields__'] = fields
 
+    if module is None:
+        try:
+            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
+        except (AttributeError, ValueError):
+            pass
+        
+    ns['__module__'] = module
+    
     cls = datatype(typename, bases, ns)
 
     if gc:
         _enable_gc(cls)
 
-    if module is None:
-        try:
-            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
-        except (AttributeError, ValueError):
-            module = None
-    if module is not None:
-        cls.__module__ = module
+#     if module is None:
+#         try:
+#             module = _sys._getframe(1).f_globals.get('__name__', '__main__')
+#         except (AttributeError, ValueError):
+#             module = None
+#     if module is not None:
+#         cls.__module__ = module
 
     return cls
+
+ilitetuple = make_arrayclass('ilitetuple', varsize=True, hashable=True, readonly=True)
+mlitetuple = make_arrayclass('mlitetuple', varsize=True, hashable=False)
