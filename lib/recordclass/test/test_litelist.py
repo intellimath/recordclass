@@ -147,6 +147,15 @@ class litelistTest(unittest.TestCase):
         next(it)
         d = pickle.dumps(it)
         self.assertEqual(list(litelist(it)), list(data[1:]))
+
+    def test_refleak_on_assignemnt(self):
+        a = 1
+        ll = litelist([a,2,3])
+        c = sys.getrefcount(a)
+        b = ll[0]
+        self.assertEqual(sys.getrefcount(a), c+1)
+        ll[0] = None        
+        self.assertEqual(sys.getrefcount(a), c)
         
         
 def main():

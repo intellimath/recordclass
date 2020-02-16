@@ -53,9 +53,11 @@ cdef inline Py_ssize_t resize(Py_ssize_t size):
 cdef litelist make_empty(Py_ssize_t size):
     cdef litelist op = litelist.__new__(litelist, ())
     cdef Py_ssize_t i
+    cdef PyObject **p;
     
     op.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
     op.size = op.allocated = size
+    p = op.items
     for i in range(size):
         op.items[i] = NULL
         
@@ -83,7 +85,13 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
         else:
             self.items = NULL
             self.size = self.allocated = 0
-        
+
+    def __dealloc__(self):
+        cdef Py_ssize_t i, size = self.size
+        for i in range(size):
+            Py_XDECREF(self.items[i])
+            self.items[i] = NULL
+        PyObject_Free(self.items)
 
     cdef object get_slice(self, Py_ssize_t i, Py_ssize_t n):
         cdef litelist op = make_empty(n)
@@ -131,6 +139,7 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
         cdef Py_ssize_t i
         cdef Py_ssize_t size = self.size
         cdef Py_ssize_t start, stop, step
+        cdef PyObject *v
 
         if PySlice_Check(index):
             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
@@ -143,6 +152,7 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
             if i < 0 or i >= size:
                 raise IndexError('%s' % index)
 
+            Py_XDECREF(self.items[i])
             Py_INCREF(<PyObject*>val)
             self.items[i] = <PyObject*>val
 
@@ -253,13 +263,6 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
     
     def __iter__(self):
         return litelistiter(self)
-    
-    def __dealloc__(self):
-        cdef Py_ssize_t i, size = self.size
-        for i in range(size):
-            Py_XDECREF(self.items[i])
-            self.items[i] = NULL
-        PyObject_Free(self.items)
 
 cdef class litelistiter:
     cdef litelist op
