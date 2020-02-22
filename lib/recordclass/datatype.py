@@ -264,7 +264,7 @@ def __new__(_cls_, {2}):
     eval(code, namespace)
     
     __new__ = namespace['__new__']
-    
+
     if defaults:
         default_vals = tuple(defaults[f] for f in fields2 if f in defaults)
         __new__.__defaults__ = default_vals    
@@ -282,7 +282,7 @@ def _make_cls_doc(cls, typename, fields, defaults, varsize, use_dict):
     else:
         fields2 = fields
     fields2 = tuple(fields2)
-    
+
     if use_dict:
         if varsize:
             template = "{0}({2}, *args, **kw)\n--\nCreate class instance"
@@ -294,7 +294,6 @@ def _make_cls_doc(cls, typename, fields, defaults, varsize, use_dict):
         else:
             template = "{0}({2})\n--\nCreate class instance"
     doc = template.format(typename, ', '.join(fields), ', '.join(fields2))
-    
 
     return doc
 

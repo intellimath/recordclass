@@ -1,14 +1,14 @@
 # coding: utf-8
- 
+
 # The MIT License (MIT)
 
 # Copyright (c) «2015-2020» «Shibzukhov Zaur, szport at gmail dot com»
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software - recordclass library - and associated documentation files 
-# (the "Software"), to deal in the Software without restriction, including 
-# without limitation the rights to use, copy, modify, merge, publish, distribute, 
-# sublicense, and/or sell copies of the Software, and to permit persons to whom 
+# of this software - recordclass library - and associated documentation files
+# (the "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom
 # the Software is furnished to do so, subject to the following conditions:
 
 # The above copyright notice and this permission notice shall be included in
@@ -42,7 +42,7 @@ if _PY3:
             if isinstance(t, (type, str)):
                 return t
             else:
-                raise TypeError('invalid type annotation', t)    
+                raise TypeError('invalid type annotation', t)
 else:
     from __builtin__ import intern as _intern
     import re as _re
@@ -51,11 +51,11 @@ else:
     def _type_check(t, msg):
         return t
 
-def make_dataclass(typename, fields=None, bases=None, namespace=None, 
+def make_dataclass(typename, fields=None, bases=None, namespace=None,
                    varsize=False,  use_dict=False, use_weakref=False, hashable=True,
                    sequence=False, mapping=False, iterable=False, readonly=False,
                    defaults=None, module=None, argsonly=False, fast_new=False, gc=False):
-    
+
     from ._dataobject import _clsconfig, _enable_gc
     from ._dataobject import dataobject, datatuple
     from .datatype import datatype
@@ -97,7 +97,7 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
 
     if varsize:
         sequence = True
-        
+
     options = {
         'readonly':readonly,
         'defaults':defaults,
@@ -147,13 +147,13 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
             bases = (datatuple,)
         else:
             bases = (dataobject,)
-        
+
     if module is None:
         try:
             module = _sys._getframe(1).f_globals.get('__name__', '__main__')
         except (AttributeError, ValueError):
             pass
-        
+
     ns['__module__'] = module
 
     cls = datatype(typename, bases, ns)
@@ -187,11 +187,11 @@ class DataclassStorage:
         return cls
     make_class = make_dataclass
 
-def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False, 
+def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False,
                  use_weakref=False, hashable=True, sequence=False, argsonly=False, iterable=False, module=None):
-    
+
     from ._dataobject import dataobject, datatuple
-    
+
     if not all(issubclass(cls, dataobject) for cls in classes):
         raise TypeError('All arguments should be child of dataobject')
     for cls in classes:
@@ -207,7 +207,6 @@ def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False,
                 raise AttributeError('Duplicate attribute in the base classes')
             _attrs.append(a)
 
-    return make_dataclass(name, _attrs, 
-                          readonly=readonly, use_dict=use_dict, gc=gc, use_weakref=use_weakref, 
+    return make_dataclass(name, _attrs,
+                          readonly=readonly, use_dict=use_dict, gc=gc, use_weakref=use_weakref,
                           hashable=hashable, sequence=sequence, iterable=iterable, module=module)
-    
