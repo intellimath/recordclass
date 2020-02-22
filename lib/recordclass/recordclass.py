@@ -288,6 +288,9 @@ class RecordclassStorage:
     def __init__(self):
         self._storage = {}
     #
+    def clear_storage(self):
+        self._storage.clear()
+    #
     def recordclass(self, name, fields):
         fields = tuple(fields)
         key = (name, fields)

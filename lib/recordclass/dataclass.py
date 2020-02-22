@@ -174,6 +174,9 @@ class DataclassStorage:
     def __init__(self):
         self._storage = {}
     #
+    def clear_storage(self):
+        self._storage.clear()
+    #
     def make_dataclass(self, name, fields):
         fields = tuple(fields)
         key = (name, fields)
