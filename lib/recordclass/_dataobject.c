@@ -227,6 +227,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         PyObject **dictptr = PyObject_GetDictPtr(type);
         PyObject *dict = *dictptr;
         PyObject *defaults = NULL;
+        PyObject *fields = NULL;
         
         if (!PyMapping_HasKeyString(dict, "__defaults__")) {
             while (j--) {
@@ -235,7 +236,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             }            
         } else {
             defaults = PyMapping_GetItemString(dict, "__defaults__");
-            PyObject *fields = PyMapping_GetItemString(dict, "__fields__");
+            fields = PyMapping_GetItemString(dict, "__fields__");
             
             while (j) {
                 PyObject *fname = PyTuple_GET_ITEM(fields, n_slots-j);
