@@ -1,14 +1,14 @@
 # coding: utf-8
- 
+
 # The MIT License (MIT)
 
 # Copyright (c) «2015-2020» «Shibzukhov Zaur, szport at gmail dot com»
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software - recordclass library - and associated documentation files 
-# (the "Software"), to deal in the Software without restriction, including 
-# without limitation the rights to use, copy, modify, merge, publish, distribute, 
-# sublicense, and/or sell copies of the Software, and to permit persons to whom 
+# of this software - recordclass library - and associated documentation files
+# (the "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom
 # the Software is furnished to do so, subject to the following conditions:
 
 # The above copyright notice and this permission notice shall be included in
@@ -42,7 +42,7 @@ if _PY3:
             if isinstance(t, (type, str)):
                 return t
             else:
-                raise TypeError('invalid type annotation', t)    
+                raise TypeError('invalid type annotation', t)
 else:
     from __builtin__ import intern as _intern
     import re as _re
@@ -53,9 +53,9 @@ else:
 
 int_type = type(1)
 
-def clsconfig(sequence=False, mapping=False, readonly=False, 
+def clsconfig(sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=True, hashable=False):
-    from ._dataobject import _clsconfig    
+    from ._dataobject import _clsconfig
     def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
@@ -80,7 +80,7 @@ def _matching_annotations_and_defaults(annotations, defaults):
 
 class datatype(type):
 
-    def __new__(metatype, typename, bases, ns):        
+    def __new__(metatype, typename, bases, ns):
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
         options = ns.pop('__options__', {})
@@ -125,7 +125,7 @@ class datatype(type):
         if varsize:
             sequence = True
             iterable = True
-            
+
         if sequence or mapping:
             iterable = True
 
@@ -193,34 +193,34 @@ class datatype(type):
                 pass
         else:
             pass
-                    
+
         cls = type.__new__(metatype, typename, bases, ns)
-        
+
         if has_fields:
             cls.__fields__ = fields
             if defaults:
                 cls.__defaults__ = defaults
             if annotations:
                 cls.__annotations__ = annotations
-                
+
             cls.__doc__ = _make_cls_doc(cls, typename, fields, defaults, varsize, use_dict)
 
         _dataobject_type_init(cls)
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                    use_weakref=use_weakref, iterable=iterable, hashable=hashable)
-        
+
         return cls
 
 def _make_new_function(typename, fields, defaults, annotations, varsize, use_dict):
-    
+
     from ._dataobject import dataobject, datatuple
-    
+
     if fields and defaults:
         fields2 = [f for f in fields if f not in defaults] + [f for f in fields if f in defaults]
     else:
         fields2 = fields
     fields2 = tuple(fields2)
-    
+
     if use_dict:
         if varsize:
             new_func_template = \
@@ -228,7 +228,7 @@ def _make_new_function(typename, fields, defaults, annotations, varsize, use_dic
 def __new__(_cls_, {2}, *args, **kw):
     'Create new instance: {0}({1}, *args, **kw)'
     return _method_new(_cls_, {1}, *args, **kw)
-"""            
+"""
         else:
             new_func_template = \
 """
@@ -252,7 +252,7 @@ def __new__(_cls_, {2}):
     return _method_new(_cls_, {1})
 """
     new_func_def = new_func_template.format(typename, ', '.join(fields), ', '.join(fields2))
-    
+
     if varsize:
         _method_new = datatuple.__new__
     else:
@@ -262,21 +262,21 @@ def __new__(_cls_, {2}):
 
     code = compile(new_func_def, "", "exec")
     eval(code, namespace)
-    
+
     __new__ = namespace['__new__']
 
     if defaults:
         default_vals = tuple(defaults[f] for f in fields2 if f in defaults)
-        __new__.__defaults__ = default_vals    
+        __new__.__defaults__ = default_vals
     if annotations:
         __new__.__annotations__ = annotations
 
     return __new__
 
 def _make_cls_doc(cls, typename, fields, defaults, varsize, use_dict):
-    
+
     from ._dataobject import dataobject, datatuple
-    
+
     if fields and defaults:
         fields2 = [f for f in fields if f not in defaults] + ["%s=%r" % (f, defaults[f]) for f in fields if f in defaults]
     else:

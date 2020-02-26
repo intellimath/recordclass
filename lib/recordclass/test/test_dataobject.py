@@ -292,18 +292,33 @@ class dataobjectTest(unittest.TestCase):
 
     def test_missing_args2(self):
         A = make_dataclass("A", ('x', 'y', 'z'))
-        a=A(1)
-        self.assertEqual(a[0], 1)
-        self.assertEqual(a[1], None)
-        self.assertEqual(a[2], None)
+        with self.assertRaises(TypeError):     
+            a=A(1)
+#         self.assertEqual(a[0], 1)
+#         self.assertEqual(a[1], None)
+#         self.assertEqual(a[2], None)
         
-    def test_missing_args2(self):
-        A = make_dataclass("A", ('a','b','c'), argsonly=True)
+    def test_missing_args3(self):
+        A = make_dataclass("A", ('a','b','c'), fast_new=True)
         a=A(1)
         self.assertEqual(a.a, 1)
         self.assertEqual(a.b, None)
         self.assertEqual(a.c, None)
 
+    def test_missing_args4(self):
+        A = make_dataclass("A", ('a','b','c'), defaults=(-1,), fast_new=True)
+        a=A(1)
+        self.assertEqual(a.a, 1)
+        self.assertEqual(a.b, None)
+        self.assertEqual(a.c, -1)
+
+    def test_missing_args5(self):
+        A = make_dataclass("A", ('a','b','c'), defaults=(-1,-2), fast_new=True)
+        a=A(1)
+        self.assertEqual(a.a, 1)
+        self.assertEqual(a.b, -1)
+        self.assertEqual(a.c, -2)
+        
     def test_tuple2(self):
         A = make_dataclass("A", ('x', 'y', 'z'), iterable=True)
         a=A(1, 2.0, "a")
