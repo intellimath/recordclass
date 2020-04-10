@@ -221,6 +221,9 @@ Here are also table with some performance counters:
 #### 0.14:
 
 * Add __doc__ to generated `dataobject`-based class in order to support `inspect.signature`.
+* Add `fast_new` argument/option for fast instance creation.
+* Fix refleak in `litelist`.
+* Fix sequence protocol ability for `dataobject`/`datatuple`.
 
 #### 0.13.2
 

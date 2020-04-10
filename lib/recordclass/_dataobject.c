@@ -259,15 +259,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     Py_DECREF(tmp);
 
     if (kwds) {
-//         if (type->tp_dictoffset) {
-//             PyObject *dict = PyDataObject_GetDict(op);
-
-//             if (PyDict_Update(dict, kwds) == -1) {
-//                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
-//                 return NULL;
-//             }
-//             Py_XDECREF(dict);
-//         } else {
             PyObject *iter, *key, *val;
 
             iter = PyObject_GetIter(kwds);
@@ -291,7 +282,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             }
 
             Py_DECREF(iter);
-//         }
     }
 
     return op;
