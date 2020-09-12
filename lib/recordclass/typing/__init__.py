@@ -164,8 +164,10 @@ class StructClassMeta(type):
                             readonly=readonly, use_dict=use_dict, gc=gc, 
                             use_weakref=use_weakref, hashable=hashable)
 
-        struct_cls.__new__.__defaults__ = tuple(defaults)
-        struct_cls.__new__.__annotations__ = collections.OrderedDict(types)
+        if defaults:
+            struct_cls.__new__.__defaults__ = tuple(defaults)
+        if types:
+            struct_cls.__new__.__annotations__ = collections.OrderedDict(types)
         #struct_cls._field_defaults = defaults_dict
         # update from user namespace without overriding special recordclass attributes
         for name in ns:
