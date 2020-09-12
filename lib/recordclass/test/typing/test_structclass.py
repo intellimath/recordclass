@@ -176,6 +176,13 @@ class XMethBad2(StructClass):
             z = pickle.dumps(jane, proto)
             jane2 = pickle.loads(z)
             self.assertEqual(jane2, jane)
+            
+    def test_empty_subclasss(self):
+        class Foo(StructClass):
+            pass
+        
+        self.assertEqual(Foo.__fields__, ())
+        self.assertEqual(Foo.__annotations__, {})
 
 def main():
     suite = unittest.TestSuite()

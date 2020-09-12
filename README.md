@@ -224,6 +224,7 @@ Here are also table with some performance counters:
 * Add `fast_new` argument/option for fast instance creation.
 * Fix refleak in `litelist`.
 * Fix sequence protocol ability for `dataobject`/`datatuple`.
+* Fix typed interface for `StructClass`.
 
 #### 0.13.2
 
