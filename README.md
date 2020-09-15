@@ -14,7 +14,7 @@ Of course, in python, nothing prevents you from “shooting yourself in the foot
 But in some cases, this can still be avoided provided that the developer understands
 what he is doing and uses such classes in the code with care.
 
-**First** it provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in cyclic GC by default (type flag `Py_TPFLAGS_HAVE_GC=0`). As the result the instance of such class need less memory. The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All `dataobject`-based classes doesn't support `namedtuple`-like API, but rather `attrs`/`dataclasses`-like API.
+**First** ``` recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in cyclic GC by default (type flag `Py_TPFLAGS_HAVE_GC=0`). As the result the instance of such class need less memory. The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All `dataobject`-based classes doesn't support `namedtuple`-like API, but rather `attrs`/`dataclasses`-like API.
 
 **Second** it provide another one base class `datatuple` (special subclass of `dataobject`). It creates variable sized instance like subclasses of the `tuple`.
 
@@ -95,7 +95,16 @@ Example with `RecordClass` and typehints::
     Point(10, 20)
     
 
-Now by default `recordclass`-based class instances doesn't participate in cyclic GC and therefore  they are smaller than `namedtuple`-based ones.
+Now by default `recordclass`-based class instances doesn't participate in cyclic GC and therefore  they are smaller than `namedtuple`-based ones. If one want to use in it scenarios with reference cycles then one have to use option `gc=``:
+
+    >>> Node = recordclass('Node', 'root, children', gc=1)
+    
+or decorator ``@enable_gc` for `RecordClass`-based classes:
+
+    @recordclass.enable_gc
+    class Node(RecordClass):
+         root: 'Node'
+         chilren: list
 
 ### Quick start with dataobject
 
@@ -197,8 +206,8 @@ As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.
             self.b = b
             self.c = c
 
-    R_gc = recordclass2('R_gc', 'a b c', cyclic_gc=True)
-    R_nogc = recordclass2('R_nogc', 'a b c')
+    R_gc = recordclass('R_gc', 'a b c', gc=1)
+    R_nogc = recordclass('R_nogc', 'a b c')
 
     s = S(1,2,3)
     r_gc = R_gc(1,2,3)
