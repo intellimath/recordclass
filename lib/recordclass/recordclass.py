@@ -219,11 +219,14 @@ def __new__(_cls, {1}):
     def __reduce__(self):
         'Reduce'
         return type(self), tuple(self)
+    
+    class_namespace = {}    
 
-    if not readonly and hashable:
+    if hashable and not readonly:
         def __hash__(self):
             return hash(tuple(self))
         __hash__.__qualname__ = typename + "." + "__hash__"
+        class_namespace['__hash__'] = __hash__
 
     for method in (__new__, _make, _replace,
                    __repr__, _asdict, __getnewargs__,
@@ -236,7 +239,6 @@ def __new__(_cls, {1}):
         _cache = _itemgeters
     else:
         _cache = _itemgetseters
-    class_namespace = {}
     for index, name in enumerate(field_names):
         try:
             item_object = _cache[index]

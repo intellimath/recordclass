@@ -224,6 +224,7 @@ class recordclasstype(type):
     #
     def __new__(tp, name, bases, ns):
         cdef PyTypeObject *tp_cls "tp_cls"
+#         cdef PyTypeObject *tp_base "tp_base";
         cdef object options "options"
         cdef bint gc "gc"
         cdef bint hashable "hashable"
@@ -238,6 +239,7 @@ class recordclasstype(type):
 
         cls = type.__new__(tp, name, bases, ns)
         tp_cls = <PyTypeObject*>cls
+#         tp_base = tp_cls->tp_base
 
         if gc:
             if not tp_cls.tp_flags & Py_TPFLAGS_HAVE_GC:
@@ -248,12 +250,15 @@ class recordclasstype(type):
             tp_cls.tp_free = PyObject_Del
             tp_cls.tp_is_gc = NULL
             tp_cls.tp_clear = NULL
-            tp_cls.tp_traverse = NULL            
+            tp_cls.tp_traverse = NULL
+            
+        
 
-        if hashable:
-            tp_cls.tp_hash = recordclass_hash
-        else:
-            tp_cls.tp_hash = NULL
+#         if not getattr(cls, '__hash__', None) or tp_cls.tp_hash != NULL:
+#             if hashable:
+#                 tp_cls.tp_hash = recordclass_hash
+#             else:
+#                 tp_cls.tp_hash = NULL
 
         module = ns.get('__module__', None)
             

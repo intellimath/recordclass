@@ -160,6 +160,20 @@ class XMethBad2(RecordClass):
         b.x = -1
         self.assertNotEqual(hash(b), hash_b)
 
+    def test_hash_subcls(self):
+        class B(H): pass
+#         print(dir(B))
+        b = B(1,2)
+        hash(b)
+
+    def test_hash_subcls2(self):
+        class B(HR):
+            def __hash__(self):
+                return 0
+#         print(dir(B))
+        b = B(1,2)
+        hash(b)
+        
     def test_pickle(self):
         global Emp  # pickle wants to reference the class by name
         Emp = RecordClass('Emp', [('name', str), ('id', int)])

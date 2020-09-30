@@ -278,6 +278,7 @@ class RecordClassTest(unittest.TestCase):
     def test_hash(self):
         A = recordclass('A', 'x y', readonly=True)
         a = A(1, 2)
+        self.assertNotEqual(hash(a), None)
         hash_a = hash(a)
         #self.assertEqual(hash(a), hash(tuple(a)))
         B = recordclass('B', 'x y', hashable=True)
@@ -286,6 +287,22 @@ class RecordClassTest(unittest.TestCase):
         #self.assertEqual(hash_b, hash(tuple(b)))
         b.x = -1
         self.assertNotEqual(hash(b), hash_b)
+        
+    def test_hash_subcls(self):
+        A = recordclass('A', 'x y', hashable=True)
+        class B(A): pass
+#         print(dir(B))
+        b = B(1,2)
+        hash(b)
+
+    def test_hash_subcls2(self):
+        A = recordclass('A', 'x y', hashable=True)
+        class B(A):
+            def __hash__(self):
+                return 0
+#         print(dir(B))
+        b = B(1,2)
+        hash(b)
         
     def test_caching(self):
         rs = RecordclassStorage()
