@@ -227,6 +227,10 @@ Here are also table with some performance counters:
 
 ### Changes:
 
+#### 0.14.1:
+
+* Fix issue with __hash__ when subclassing recordclass-based classes.
+
 #### 0.14:
 
 * Add __doc__ to generated `dataobject`-based class in order to support `inspect.signature`.
