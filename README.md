@@ -227,6 +227,10 @@ Here are also table with some performance counters:
 
 ### Changes:
 
+#### 0.14.2:
+
+* Fix compilation issue for python 3.9.
+
 #### 0.14.1:
 
 * Fix issue with __hash__ when subclassing recordclass-based classes.

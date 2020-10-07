@@ -24,7 +24,7 @@
 #undef Py_LIMITED_API
 #endif
 
-#include "pyconfig.h"
+/*#include "pyconfig.h"*/
 #include "Python.h"
 #include <string.h>
 
@@ -176,7 +176,7 @@ mutabletuple_dealloc(PyMutableTupleObject *op)
 {
     Py_ssize_t i;
 
-    if PyType_IS_GC(Py_TYPE(op)) 
+    if (PyType_IS_GC(Py_TYPE(op))) 
         PyObject_GC_UnTrack(op);
     else
         for (i = Py_SIZE(op); --i >= 0; ) {
@@ -191,7 +191,7 @@ static void mutabletuple_free(void *o) {
     PyTypeObject *type = Py_TYPE(o);
 #endif
 
-    if PyType_IS_GC(Py_TYPE((PyObject*)o))
+    if (PyType_IS_GC(Py_TYPE((PyObject*)o)))
         PyObject_GC_Del((PyObject*)o);
     else
         PyObject_Del((PyObject*)o);
