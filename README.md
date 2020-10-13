@@ -227,6 +227,10 @@ Here are also table with some performance counters:
 
 ### Changes:
 
+#### 0.14.3:
+
+* Subclasses of `dataobject` now support iterable and hashable protocols by default.
+
 #### 0.14.2:
 
 * Fix compilation issue for python 3.9.
