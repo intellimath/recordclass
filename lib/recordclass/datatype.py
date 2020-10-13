@@ -85,10 +85,10 @@ class datatype(type):
 
         options = ns.pop('__options__', {})
         readonly = options.get('readonly', False)
-        hashable = options.get('hashable', False)
+        hashable = options.get('hashable', True)
         sequence = options.get('sequence', False)
         mapping = options.get('mapping', False)
-        iterable = options.get('iterable', False)
+        iterable = options.get('iterable', True)
         argsonly = options.get('argsonly', False)
         fast_new = options.get('fast_new', False)
         use_dict = options.get('use_dict', False)
