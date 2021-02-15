@@ -31,11 +31,7 @@
 
 #define DEFERRED_ADDRESS(addr) 0
 
-// #if PY_MAJOR_VERSION > 2
 #define IsStr(op) PyUnicode_CheckExact(op)
-// #else
-// #define IsStr(op) (PyString_CheckExact(op) || PyUnicode_CheckExact(op))
-// #endif
 
 #ifndef Py_RETURN_NOTIMPLEMENTED
 #define Py_RETURN_NOTIMPLEMENTED \
@@ -43,24 +39,6 @@
 #endif
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
-
-// #if PY_MAJOR_VERSION == 2
-// static PyObject *
-// _PyObject_GetBuiltin(const char *name)
-// {
-//     PyObject *mod_name, *mod, *attr;
-
-//     mod_name = PyUnicode_FromString("__builtin__");   /* borrowed */
-//     if (mod_name == NULL)
-//         return NULL;
-//     mod = PyImport_Import(mod_name);
-//     if (mod == NULL)
-//         return NULL;
-//     attr = PyObject_GetAttrString(mod, name);
-//     Py_DECREF(mod);
-//     return attr;
-// }
-// #endif
 
 static PyObject **
 PyDataObject_GetDictPtr(PyObject *ob) {
@@ -730,163 +708,6 @@ dataobject_copy(PyObject* op)
     return new_op;
 }
 
-// #if PY_MAJOR_VERSION == 2
-
-// static PyObject *
-// dataobject_repr(PyObject *self)
-// {
-//     Py_ssize_t i, n, n_fs = 0;
-//     PyObject *fs;
-//     PyTypeObject *tp = Py_TYPE(self);
-//     PyObject *tp_name = PyObject_GetAttrString((PyObject*)tp, "__name__");
-//     PyObject *text, *t;
-//     PyObject *lc = PyUnicode_FromString("(");
-//     PyObject *rc = PyUnicode_FromString(")");
-//     PyObject *cc = PyUnicode_FromString(", ");
-//     PyObject *eq = PyUnicode_FromString("=");
-
-//     n = do_getlen(self);
-//     if (n == 0) {
-//         PyObject *s = PyUnicode_FromString("()");
-//         text = PyUnicode_Concat(tp_name, s);
-//         Py_DECREF(tp_name);
-//         Py_DECREF(s);
-
-//         Py_DECREF(lc);
-//         Py_DECREF(rc);
-//         Py_DECREF(cc);
-//         Py_DECREF(eq);
-
-//         return text;
-//     }
-
-//     i = Py_ReprEnter((PyObject *)self);
-//     if (i != 0) {
-//         Py_DECREF(tp_name);
-//         Py_DECREF(lc);
-//         Py_DECREF(rc);
-//         Py_DECREF(cc);
-//         Py_DECREF(eq);
-
-//         return i > 0 ? PyUnicode_FromString("(...)") : NULL;
-//     }
-
-//     text = PyUnicode_Concat(tp_name, lc);
-//     Py_DECREF(tp_name);
-
-//     fs = PyObject_GetAttrString(self, "__fields__");
-//     if (fs) {
-//         if (Py_TYPE(fs) == &PyTuple_Type) {
-//             n_fs = PyObject_Length(fs);
-//         } else {
-//             n_fs = (Py_ssize_t)PyNumber_AsSsize_t(fs, PyExc_IndexError);
-//             if (n_fs < 0) {
-//                 Py_DECREF(fs);
-//                 Py_DECREF(tp_name);
-//                 Py_DECREF(lc);
-//                 Py_DECREF(rc);
-//                 Py_DECREF(cc);
-//                 Py_DECREF(eq);
-//                 return NULL;
-//             }
-//             n_fs = 0;
-//         }
-//     } else
-//         PyErr_Clear();
-
-//     /* Do repr() on each element. */
-//     for (i = 0; i < n; ++i) {
-//         PyObject *s, *ob;
-//         PyObject *fn;
-
-//         if (n_fs > 0 && i < n_fs) {
-//             fn = PyTuple_GET_ITEM(fs, i);
-
-//             t = text;
-//             text = PyUnicode_Concat(t, fn);
-//             Py_DECREF(t);
-
-//             t = text;
-//             text = PyUnicode_Concat(t, eq);
-//             Py_DECREF(t);
-//         }
-
-//         ob = do_getitem(self, i);
-//         if (ob == NULL)
-//             goto error;
-
-//         s = PyObject_Repr(ob);
-//         if (s == NULL) {
-//             Py_DECREF(ob);
-//             goto error;
-//         }
-
-//         t = text;
-//         text = PyUnicode_Concat(t, s);
-//         Py_DECREF(t);
-//         Py_DECREF(s);
-
-//         Py_DECREF(ob);
-
-//         if (i < n-1) {
-//             t = text;
-//             text = PyUnicode_Concat(t, cc);
-//             Py_DECREF(t);
-//         }
-//     }
-
-//     if (tp->tp_dictoffset) {
-//         PyObject *dict = PyObject_GetAttrString(self, "__dict__");
-//         PyObject *s;
-
-//         if (dict) {
-//             if (PyObject_IsTrue(dict)) {
-//                 PyObject *aa = PyUnicode_FromString(", **");
-
-//                 t = text;
-//                 text = PyUnicode_Concat(t, aa);
-//                 Py_DECREF(t);
-
-//                 s = PyObject_Repr(dict);
-//                 t = text;
-//                 text = PyUnicode_Concat(t, s);
-//                 Py_DECREF(t);
-//                 Py_DECREF(s);
-//             }
-//             Py_DECREF(dict);
-//         }
-//     }
-
-//     t = text;
-//     text = PyUnicode_Concat(text, rc);
-//     Py_DECREF(t);
-
-//     Py_ReprLeave((PyObject *)self);
-
-//     Py_XDECREF(fs);
-
-//     Py_DECREF(lc);
-//     Py_DECREF(rc);
-//     Py_DECREF(cc);
-//     Py_DECREF(eq);
-
-//     return text;
-
-// error:
-//     Py_ReprLeave((PyObject *)self);
-
-//     Py_XDECREF(fs);
-
-//     Py_DECREF(lc);
-//     Py_DECREF(rc);
-//     Py_DECREF(cc);
-//     Py_DECREF(eq);
-
-//     return NULL;
-// }
-
-// #else
-
 static PyObject *
 dataobject_repr(PyObject *self)
 {
@@ -1025,7 +846,6 @@ error:
     Py_ReprLeave((PyObject *)self);
     return NULL;
 }
-// #endif
 
 PyDoc_STRVAR(dataobject_reduce_doc,
 "T.__reduce__()");

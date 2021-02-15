@@ -28,25 +28,17 @@ _PY36 = _PY3 and _sys.version_info[1] >= 6
 
 from keyword import iskeyword as _iskeyword
 
-if _PY3:
-    _intern = _sys.intern
-    def _isidentifier(s):
-        return s.isidentifier()
-    if _PY36:
-        from typing import _type_check
-    else:
-        def _type_check(t, msg):
-            if isinstance(t, (type, str)):
-                return t
-            else:
-                raise TypeError('invalid type annotation', t)    
+_intern = _sys.intern
+def _isidentifier(s):
+    return s.isidentifier()
+if _PY36:
+    from typing import _type_check
 else:
-    from __builtin__ import intern as _intern
-    import re as _re
-    def _isidentifier(s):
-        return _re.match(r'^[a-z_][a-z0-9_]*$', s, _re.I) is not None
     def _type_check(t, msg):
-        return t
+        if isinstance(t, (type, str)):
+            return t
+        else:
+            raise TypeError('invalid type annotation', t)    
 
 ### sizes
 

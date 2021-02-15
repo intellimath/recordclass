@@ -30,21 +30,13 @@ from collections import namedtuple, OrderedDict
 
 
 import sys as _sys
-_PY3 = _sys.version_info[0] >= 3
 
-if _PY3:
-    _intern = _sys.intern
-    def _isidentifier(s):
-        return s.isidentifier()
-    if _sys.version_info[1] >= 6:
-        from typing import _type_check
-    else:
-        _type_check = None
+_intern = _sys.intern
+def _isidentifier(s):
+    return s.isidentifier()
+if _sys.version_info[1] >= 6:
+    from typing import _type_check
 else:
-    from __builtin__ import intern as _intern
-    import re as _re
-    def _isidentifier(s):
-        return _re.match(r'^[a-z_][a-z0-9_]*$', s, _re.I) is not None
     _type_check = None
 
 _repr_template = '{name}=%r'
