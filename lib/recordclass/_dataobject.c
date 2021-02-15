@@ -31,11 +31,11 @@
 
 #define DEFERRED_ADDRESS(addr) 0
 
-#if PY_MAJOR_VERSION > 2
+// #if PY_MAJOR_VERSION > 2
 #define IsStr(op) PyUnicode_CheckExact(op)
-#else
-#define IsStr(op) (PyString_CheckExact(op) || PyUnicode_CheckExact(op))
-#endif
+// #else
+// #define IsStr(op) (PyString_CheckExact(op) || PyUnicode_CheckExact(op))
+// #endif
 
 #ifndef Py_RETURN_NOTIMPLEMENTED
 #define Py_RETURN_NOTIMPLEMENTED \
@@ -44,23 +44,23 @@
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
-#if PY_MAJOR_VERSION == 2
-static PyObject *
-_PyObject_GetBuiltin(const char *name)
-{
-    PyObject *mod_name, *mod, *attr;
+// #if PY_MAJOR_VERSION == 2
+// static PyObject *
+// _PyObject_GetBuiltin(const char *name)
+// {
+//     PyObject *mod_name, *mod, *attr;
 
-    mod_name = PyUnicode_FromString("__builtin__");   /* borrowed */
-    if (mod_name == NULL)
-        return NULL;
-    mod = PyImport_Import(mod_name);
-    if (mod == NULL)
-        return NULL;
-    attr = PyObject_GetAttrString(mod, name);
-    Py_DECREF(mod);
-    return attr;
-}
-#endif
+//     mod_name = PyUnicode_FromString("__builtin__");   /* borrowed */
+//     if (mod_name == NULL)
+//         return NULL;
+//     mod = PyImport_Import(mod_name);
+//     if (mod == NULL)
+//         return NULL;
+//     attr = PyObject_GetAttrString(mod, name);
+//     Py_DECREF(mod);
+//     return attr;
+// }
+// #endif
 
 static PyObject **
 PyDataObject_GetDictPtr(PyObject *ob) {
@@ -730,162 +730,162 @@ dataobject_copy(PyObject* op)
     return new_op;
 }
 
-#if PY_MAJOR_VERSION == 2
+// #if PY_MAJOR_VERSION == 2
 
-static PyObject *
-dataobject_repr(PyObject *self)
-{
-    Py_ssize_t i, n, n_fs = 0;
-    PyObject *fs;
-    PyTypeObject *tp = Py_TYPE(self);
-    PyObject *tp_name = PyObject_GetAttrString((PyObject*)tp, "__name__");
-    PyObject *text, *t;
-    PyObject *lc = PyUnicode_FromString("(");
-    PyObject *rc = PyUnicode_FromString(")");
-    PyObject *cc = PyUnicode_FromString(", ");
-    PyObject *eq = PyUnicode_FromString("=");
+// static PyObject *
+// dataobject_repr(PyObject *self)
+// {
+//     Py_ssize_t i, n, n_fs = 0;
+//     PyObject *fs;
+//     PyTypeObject *tp = Py_TYPE(self);
+//     PyObject *tp_name = PyObject_GetAttrString((PyObject*)tp, "__name__");
+//     PyObject *text, *t;
+//     PyObject *lc = PyUnicode_FromString("(");
+//     PyObject *rc = PyUnicode_FromString(")");
+//     PyObject *cc = PyUnicode_FromString(", ");
+//     PyObject *eq = PyUnicode_FromString("=");
 
-    n = do_getlen(self);
-    if (n == 0) {
-        PyObject *s = PyUnicode_FromString("()");
-        text = PyUnicode_Concat(tp_name, s);
-        Py_DECREF(tp_name);
-        Py_DECREF(s);
+//     n = do_getlen(self);
+//     if (n == 0) {
+//         PyObject *s = PyUnicode_FromString("()");
+//         text = PyUnicode_Concat(tp_name, s);
+//         Py_DECREF(tp_name);
+//         Py_DECREF(s);
 
-        Py_DECREF(lc);
-        Py_DECREF(rc);
-        Py_DECREF(cc);
-        Py_DECREF(eq);
+//         Py_DECREF(lc);
+//         Py_DECREF(rc);
+//         Py_DECREF(cc);
+//         Py_DECREF(eq);
 
-        return text;
-    }
+//         return text;
+//     }
 
-    i = Py_ReprEnter((PyObject *)self);
-    if (i != 0) {
-        Py_DECREF(tp_name);
-        Py_DECREF(lc);
-        Py_DECREF(rc);
-        Py_DECREF(cc);
-        Py_DECREF(eq);
+//     i = Py_ReprEnter((PyObject *)self);
+//     if (i != 0) {
+//         Py_DECREF(tp_name);
+//         Py_DECREF(lc);
+//         Py_DECREF(rc);
+//         Py_DECREF(cc);
+//         Py_DECREF(eq);
 
-        return i > 0 ? PyUnicode_FromString("(...)") : NULL;
-    }
+//         return i > 0 ? PyUnicode_FromString("(...)") : NULL;
+//     }
 
-    text = PyUnicode_Concat(tp_name, lc);
-    Py_DECREF(tp_name);
+//     text = PyUnicode_Concat(tp_name, lc);
+//     Py_DECREF(tp_name);
 
-    fs = PyObject_GetAttrString(self, "__fields__");
-    if (fs) {
-        if (Py_TYPE(fs) == &PyTuple_Type) {
-            n_fs = PyObject_Length(fs);
-        } else {
-            n_fs = (Py_ssize_t)PyNumber_AsSsize_t(fs, PyExc_IndexError);
-            if (n_fs < 0) {
-                Py_DECREF(fs);
-                Py_DECREF(tp_name);
-                Py_DECREF(lc);
-                Py_DECREF(rc);
-                Py_DECREF(cc);
-                Py_DECREF(eq);
-                return NULL;
-            }
-            n_fs = 0;
-        }
-    } else
-        PyErr_Clear();
+//     fs = PyObject_GetAttrString(self, "__fields__");
+//     if (fs) {
+//         if (Py_TYPE(fs) == &PyTuple_Type) {
+//             n_fs = PyObject_Length(fs);
+//         } else {
+//             n_fs = (Py_ssize_t)PyNumber_AsSsize_t(fs, PyExc_IndexError);
+//             if (n_fs < 0) {
+//                 Py_DECREF(fs);
+//                 Py_DECREF(tp_name);
+//                 Py_DECREF(lc);
+//                 Py_DECREF(rc);
+//                 Py_DECREF(cc);
+//                 Py_DECREF(eq);
+//                 return NULL;
+//             }
+//             n_fs = 0;
+//         }
+//     } else
+//         PyErr_Clear();
 
-    /* Do repr() on each element. */
-    for (i = 0; i < n; ++i) {
-        PyObject *s, *ob;
-        PyObject *fn;
+//     /* Do repr() on each element. */
+//     for (i = 0; i < n; ++i) {
+//         PyObject *s, *ob;
+//         PyObject *fn;
 
-        if (n_fs > 0 && i < n_fs) {
-            fn = PyTuple_GET_ITEM(fs, i);
+//         if (n_fs > 0 && i < n_fs) {
+//             fn = PyTuple_GET_ITEM(fs, i);
 
-            t = text;
-            text = PyUnicode_Concat(t, fn);
-            Py_DECREF(t);
+//             t = text;
+//             text = PyUnicode_Concat(t, fn);
+//             Py_DECREF(t);
 
-            t = text;
-            text = PyUnicode_Concat(t, eq);
-            Py_DECREF(t);
-        }
+//             t = text;
+//             text = PyUnicode_Concat(t, eq);
+//             Py_DECREF(t);
+//         }
 
-        ob = do_getitem(self, i);
-        if (ob == NULL)
-            goto error;
+//         ob = do_getitem(self, i);
+//         if (ob == NULL)
+//             goto error;
 
-        s = PyObject_Repr(ob);
-        if (s == NULL) {
-            Py_DECREF(ob);
-            goto error;
-        }
+//         s = PyObject_Repr(ob);
+//         if (s == NULL) {
+//             Py_DECREF(ob);
+//             goto error;
+//         }
 
-        t = text;
-        text = PyUnicode_Concat(t, s);
-        Py_DECREF(t);
-        Py_DECREF(s);
+//         t = text;
+//         text = PyUnicode_Concat(t, s);
+//         Py_DECREF(t);
+//         Py_DECREF(s);
 
-        Py_DECREF(ob);
+//         Py_DECREF(ob);
 
-        if (i < n-1) {
-            t = text;
-            text = PyUnicode_Concat(t, cc);
-            Py_DECREF(t);
-        }
-    }
+//         if (i < n-1) {
+//             t = text;
+//             text = PyUnicode_Concat(t, cc);
+//             Py_DECREF(t);
+//         }
+//     }
 
-    if (tp->tp_dictoffset) {
-        PyObject *dict = PyObject_GetAttrString(self, "__dict__");
-        PyObject *s;
+//     if (tp->tp_dictoffset) {
+//         PyObject *dict = PyObject_GetAttrString(self, "__dict__");
+//         PyObject *s;
 
-        if (dict) {
-            if (PyObject_IsTrue(dict)) {
-                PyObject *aa = PyUnicode_FromString(", **");
+//         if (dict) {
+//             if (PyObject_IsTrue(dict)) {
+//                 PyObject *aa = PyUnicode_FromString(", **");
 
-                t = text;
-                text = PyUnicode_Concat(t, aa);
-                Py_DECREF(t);
+//                 t = text;
+//                 text = PyUnicode_Concat(t, aa);
+//                 Py_DECREF(t);
 
-                s = PyObject_Repr(dict);
-                t = text;
-                text = PyUnicode_Concat(t, s);
-                Py_DECREF(t);
-                Py_DECREF(s);
-            }
-            Py_DECREF(dict);
-        }
-    }
+//                 s = PyObject_Repr(dict);
+//                 t = text;
+//                 text = PyUnicode_Concat(t, s);
+//                 Py_DECREF(t);
+//                 Py_DECREF(s);
+//             }
+//             Py_DECREF(dict);
+//         }
+//     }
 
-    t = text;
-    text = PyUnicode_Concat(text, rc);
-    Py_DECREF(t);
+//     t = text;
+//     text = PyUnicode_Concat(text, rc);
+//     Py_DECREF(t);
 
-    Py_ReprLeave((PyObject *)self);
+//     Py_ReprLeave((PyObject *)self);
 
-    Py_XDECREF(fs);
+//     Py_XDECREF(fs);
 
-    Py_DECREF(lc);
-    Py_DECREF(rc);
-    Py_DECREF(cc);
-    Py_DECREF(eq);
+//     Py_DECREF(lc);
+//     Py_DECREF(rc);
+//     Py_DECREF(cc);
+//     Py_DECREF(eq);
 
-    return text;
+//     return text;
 
-error:
-    Py_ReprLeave((PyObject *)self);
+// error:
+//     Py_ReprLeave((PyObject *)self);
 
-    Py_XDECREF(fs);
+//     Py_XDECREF(fs);
 
-    Py_DECREF(lc);
-    Py_DECREF(rc);
-    Py_DECREF(cc);
-    Py_DECREF(eq);
+//     Py_DECREF(lc);
+//     Py_DECREF(rc);
+//     Py_DECREF(cc);
+//     Py_DECREF(eq);
 
-    return NULL;
-}
+//     return NULL;
+// }
 
-#else
+// #else
 
 static PyObject *
 dataobject_repr(PyObject *self)
@@ -1025,7 +1025,7 @@ error:
     Py_ReprLeave((PyObject *)self);
     return NULL;
 }
-#endif
+// #endif
 
 PyDoc_STRVAR(dataobject_reduce_doc,
 "T.__reduce__()");
@@ -2043,11 +2043,11 @@ dataobjectiter_setstate(dataobjectiterobject *it, PyObject *state)
 {
     Py_ssize_t index;
 
-#if PY_MAJOR_VERSION >= 3
+// #if PY_MAJOR_VERSION >= 3
     index = PyLong_AsSsize_t(state);
-#else
-    index = PyNumber_AsSsize_t(state, NULL);
-#endif
+// #else
+//     index = PyNumber_AsSsize_t(state, NULL);
+// #endif
     if (index == -1 && PyErr_Occurred())
         return NULL;
     if (it->it_seq != NULL) {
@@ -2892,7 +2892,7 @@ static PyMethodDef dataobjectmodule_methods[] = {
 };
 
 
-#if PY_MAJOR_VERSION >= 3
+// #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef dataobjectmodule = {
     PyModuleDef_HEAD_INIT,
     "recordclass._dataobject",
@@ -2904,9 +2904,9 @@ static struct PyModuleDef dataobjectmodule = {
     NULL,
     NULL
 };
-#endif
+// #endif
 
-#if PY_MAJOR_VERSION >= 3
+// #if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC
 PyInit__dataobject(void)
 {
@@ -2964,51 +2964,51 @@ PyInit__dataobject(void)
 
     return m;
 }
-#else
-PyMODINIT_FUNC
-init_dataobject(void)
-{
-    PyObject *m;
-    PyTypeObject *dtype;
+// #else
+// PyMODINIT_FUNC
+// init_dataobject(void)
+// {
+//     PyObject *m;
+//     PyTypeObject *dtype;
 
-    m = Py_InitModule3("recordclass._dataobject", dataobjectmodule_methods, dataobjectmodule_doc);
-    if (m == NULL)
-        return;
-    Py_INCREF(m);
+//     m = Py_InitModule3("recordclass._dataobject", dataobjectmodule_methods, dataobjectmodule_doc);
+//     if (m == NULL)
+//         return;
+//     Py_INCREF(m);
 
-    dtype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
-    __fix_type((PyObject*)&PyDataObject_Type, dtype);
-    __fix_type((PyObject*)&PyDataTuple_Type, dtype);
-    Py_DECREF(dtype);
+//     dtype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
+//     __fix_type((PyObject*)&PyDataObject_Type, dtype);
+//     __fix_type((PyObject*)&PyDataTuple_Type, dtype);
+//     Py_DECREF(dtype);
 
-    PyDataObject_Type.tp_base = &PyBaseObject_Type;
-    Py_INCREF(&PyBaseObject_Type);
-    if (PyType_Ready(&PyDataObject_Type) < 0)
-         Py_FatalError("Can't initialize dataobject type");
+//     PyDataObject_Type.tp_base = &PyBaseObject_Type;
+//     Py_INCREF(&PyBaseObject_Type);
+//     if (PyType_Ready(&PyDataObject_Type) < 0)
+//          Py_FatalError("Can't initialize dataobject type");
 
-    PyDataTuple_Type.tp_base = &PyDataObject_Type;
-    Py_INCREF(&PyDataObject_Type);
-    if (PyType_Ready(&PyDataTuple_Type) < 0)
-        Py_FatalError("Can't initialize datatuple type");
+//     PyDataTuple_Type.tp_base = &PyDataObject_Type;
+//     Py_INCREF(&PyDataObject_Type);
+//     if (PyType_Ready(&PyDataTuple_Type) < 0)
+//         Py_FatalError("Can't initialize datatuple type");
 
-    if (PyType_Ready(&PyDataObjectIter_Type) < 0)
-        Py_FatalError("Can't initialize dataobjectiter type");
+//     if (PyType_Ready(&PyDataObjectIter_Type) < 0)
+//         Py_FatalError("Can't initialize dataobjectiter type");
 
-    if (PyType_Ready(&PyDataSlotGetSet_Type) < 0)
-        Py_FatalError("Can't initialize dataslotgetset type");
+//     if (PyType_Ready(&PyDataSlotGetSet_Type) < 0)
+//         Py_FatalError("Can't initialize dataslotgetset type");
 
-    Py_INCREF(&PyDataObject_Type);
-    PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
+//     Py_INCREF(&PyDataObject_Type);
+//     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
 
-    Py_INCREF(&PyDataTuple_Type);
-    PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);
+//     Py_INCREF(&PyDataTuple_Type);
+//     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);
 
-    Py_INCREF(&PyDataObjectIter_Type);
-    PyModule_AddObject(m, "dataobject_iterator", (PyObject *)&PyDataObjectIter_Type);
+//     Py_INCREF(&PyDataObjectIter_Type);
+//     PyModule_AddObject(m, "dataobject_iterator", (PyObject *)&PyDataObjectIter_Type);
 
-    Py_INCREF(&PyDataSlotGetSet_Type);
-    PyModule_AddObject(m, "dataslotgetset", (PyObject *)&PyDataSlotGetSet_Type);
+//     Py_INCREF(&PyDataSlotGetSet_Type);
+//     PyModule_AddObject(m, "dataslotgetset", (PyObject *)&PyDataSlotGetSet_Type);
 
-    return;
-}
-#endif
+//     return;
+// }
+// #endif
