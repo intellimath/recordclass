@@ -9,7 +9,7 @@
 
 # The MIT License (MIT)
 
-# Copyright (c) «2015-2020» «Shibzukhov Zaur, szport at gmail dot com»
+# Copyright (c) «2015-2021» «Shibzukhov Zaur, szport at gmail dot com»
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software - recordclass library - and associated documentation files 
@@ -130,11 +130,11 @@ cdef extern from "Python.h":
         PyObject *ht_fields
         PyObject *ht_qualname
 
-    cdef inline PyTypeObject* Py_TYPE(PyObject*)
+    cdef PyTypeObject* Py_TYPE(PyObject*)
 
-    cdef inline void Py_INCREF(PyObject*)
-    cdef inline void Py_DECREF(PyObject*)
-    cdef inline void Py_XDECREF(PyObject*)
+    cdef void Py_INCREF(PyObject*)
+    cdef void Py_DECREF(PyObject*)
+    cdef void Py_XDECREF(PyObject*)
 
     cdef Py_ssize_t PyNumber_AsSsize_t(PyObject*, PyObject*) except? -1
 
@@ -146,8 +146,8 @@ cdef extern from "Python.h":
     cdef PyObject* Py_None
 
     cdef PyTypeObject PyTuple_Type
-    cdef inline void PyTuple_SET_ITEM(PyObject*, Py_ssize_t, PyObject*)
-    cdef inline PyObject* PyTuple_GET_ITEM(PyObject*, Py_ssize_t)
+    cdef void PyTuple_SET_ITEM(PyObject*, Py_ssize_t, PyObject*)
+    cdef PyObject* PyTuple_GET_ITEM(PyObject*, Py_ssize_t)
     cdef PyObject* PyTuple_New(Py_ssize_t)
 
     cdef void PyType_Modified(PyTypeObject*)
@@ -187,12 +187,12 @@ cdef extern from *:
     #define recordobject_hasdict(op) ((Py_TYPE((PyObject*)(op)))->tp_dictoffset != 0)
     #define recordobject_hasweaklist(op) ((Py_TYPE((PyObject*)(op)))->tp_weaklistoffset != 0)
     """
-    cdef inline Py_ssize_t C_DIV(Py_ssize_t, Py_ssize_t)
-    cdef inline PyObject** recordobject_items(PyObject*)
-    cdef inline PyObject** recordobject_dictptr(PyObject*, PyTypeObject*)
-    cdef inline PyObject** recordobject_weaklistptr(PyObject*, PyTypeObject*)
-    cdef inline bint recordobject_hasdict(PyObject *op)
-    cdef inline bint recordobject_hasweaklist(PyObject *op)
+    cdef Py_ssize_t C_DIV(Py_ssize_t, Py_ssize_t)
+    cdef PyObject** recordobject_items(PyObject*)
+    cdef PyObject** recordobject_dictptr(PyObject*, PyTypeObject*)
+    cdef PyObject** recordobject_weaklistptr(PyObject*, PyTypeObject*)
+    cdef bint recordobject_hasdict(PyObject *op)
+    cdef bint recordobject_hasweaklist(PyObject *op)
 
 from cpython.object cimport Py_TPFLAGS_HAVE_GC, Py_TPFLAGS_READY
 
