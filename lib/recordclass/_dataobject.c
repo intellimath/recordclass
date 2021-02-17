@@ -33,10 +33,10 @@
 
 #define IsStr(op) PyUnicode_CheckExact(op)
 
-#ifndef Py_RETURN_NOTIMPLEMENTED
-#define Py_RETURN_NOTIMPLEMENTED \
-    return Py_INCREF(Py_NotImplemented), Py_NotImplemented
-#endif
+    // #ifndef Py_RETURN_NOTIMPLEMENTED
+    // #define Py_RETURN_NOTIMPLEMENTED \
+    //     return Py_INCREF(Py_NotImplemented), Py_NotImplemented
+    // #endif
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
@@ -48,8 +48,7 @@ PyDataObject_GetDictPtr(PyObject *ob) {
     if (dictoffset == 0)
         return NULL;
     if (dictoffset < 0) {
-        PyErr_SetString(PyExc_TypeError,
-                        "tp_dictoffset < 0");
+        PyErr_SetString(PyExc_TypeError, "tp_dictoffset < 0");
         return NULL;
     }
     return (PyObject**) ((char *)ob + dictoffset);
@@ -60,8 +59,7 @@ PyDataObject_GetDict(PyObject *obj)
 {
     PyObject *dict, **dictptr = PyDataObject_GetDictPtr(obj);
     if (dictptr == NULL) {
-        PyErr_SetString(PyExc_AttributeError,
-                        "This object has no __dict__");
+        PyErr_SetString(PyExc_AttributeError, "This object has no __dict__");
         return NULL;
     }
     dict = *dictptr;

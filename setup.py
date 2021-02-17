@@ -94,7 +94,7 @@ if _PY36:
 
 setup(
     name = 'recordclass',
-    version = '0.14.3',
+    version = '0.15',
     description = description,
     author = 'Zaur Shibzukhov',
     author_email = 'szport@gmail.com',
@@ -109,7 +109,7 @@ setup(
     download_url = 'https://pypi.org/project/recordclass/#files',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    description_content_type='text/plain',
+#     description_content_type='text/plain',
     platforms='Linux, Mac OS X, Windows',
     keywords=['namedtuple', 'recordclass', 'dataobject', 'structclass', 'mutable tuple'],
     classifiers=[
@@ -117,8 +117,6 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',

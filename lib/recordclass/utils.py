@@ -66,16 +66,6 @@ def number_of_dataslots(cls):
         n -= 1
     return n
 
-# def dataslot_offset(cls, i):
-#     n_slots = number_of_dataslots(cls)
-#     if i >= n_slots:
-#         raise IndexError("invalid index of the slots")
-#     if cls.__itemsize__:
-#         basesize = pyvarobject_size
-#     else:
-#         basesize = pyobject_size
-#     return basesize + i*ref_size
-
 def dataslot_offset(i, n_slots, varsize):
     if i >= n_slots:
         raise IndexError("invalid index of the slots")
@@ -109,7 +99,12 @@ def collect_info_from_bases(bases):
         fs = base.__dict__.get('__fields__', ())
         n = number_of_dataslots(base)
         if type(fs) is tuple and len(fs) == n:
-            fields.extend(f for f in fs if f not in fields)
+            for f in fs:
+                if f in fields:
+                    raise TypeError('field %s is already defined in the %s' % (f, base))
+                else:
+                    fields.append(f)
+#             fields.extend(f for f in fs if f not in fields)
         else:
             raise TypeError("invalid fields in base class %r" % base)
             
