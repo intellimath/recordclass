@@ -43,4 +43,4 @@ from .litelist import litelist
 if _PY36:
     from .typing import RecordClass, StructClass
 
-__version__ = '0.14.3'
+__version__ = '0.15'
