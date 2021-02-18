@@ -199,7 +199,7 @@ def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False,
     for cls in classes:
         for a in cls.__fields__:
             if a in _attrs:
-                raise AttributeError('Duplicate attribute in the base classes')
+                raise AttributeError('Duplicate attribute %s in the base classes' % a)
             _attrs.append(a)
 
     return make_dataclass(name, _attrs,
