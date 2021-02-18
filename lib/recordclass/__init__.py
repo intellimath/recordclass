@@ -25,14 +25,14 @@ _PY36 = _sys.version_info[:2] >= (3, 6)
 del _sys
 
 from .mutabletuple import mutabletuple
-from .recordclass import recordclass, RecordclassStorage
+from .recordclass import recordclass #, RecordclassStorage
 
 from .datatype import datatype, clsconfig, enable_gc
 
 from ._dataobject import dataobject, datatuple
 
 from .dataclass import make_dataclass, make_class, join_dataclasses
-from .dataclass import asdict, DataclassStorage
+from .dataclass import asdict #, DataclassStorage
 
 from .arrayclass import make_arrayclass
 

@@ -8,7 +8,7 @@ import weakref
 
 from recordclass import make_dataclass, make_arrayclass, datatype, asdict, join_dataclasses
 from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
-from recordclass import DataclassStorage
+# from recordclass import DataclassStorage
 
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
 TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
@@ -378,11 +378,11 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.z, b.z)
         self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
         
-    def test_caching(self):
-        ds = DataclassStorage()
-        A = ds.make_dataclass('A', ('x', 'y'))
-        B = ds.make_dataclass('A', ['x', 'y'])
-        self.assertEqual(A, B)
+#     def test_caching(self):
+#         ds = DataclassStorage()
+#         A = ds.make_dataclass('A', ('x', 'y'))
+#         B = ds.make_dataclass('A', ['x', 'y'])
+#         self.assertEqual(A, B)
 
     def test_fields_dict(self):
         A = make_dataclass("A", {'x':int, 'y':int})

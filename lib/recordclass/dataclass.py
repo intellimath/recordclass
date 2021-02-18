@@ -161,23 +161,26 @@ def asdict(ob):
     _getattr = getattr
     return {fn:_getattr(ob, fn) for fn in ob.__class__.__fields__}
 
-class DataclassStorage:
-    #
-    def __init__(self):
-        self._storage = {}
-    #
-    def clear_storage(self):
-        self._storage.clear()
-    #
-    def make_dataclass(self, name, fields):
-        fields = tuple(fields)
-        key = (name, fields)
-        cls = self._storage.get(key, None)
-        if cls is None:
-            cls = make_dataclass(name, fields)
-            self._storage[key] = cls
-        return cls
-    make_class = make_dataclass
+# class DataclassStorage:
+#     #
+#     def __init__(self):
+#         self._storage = {}
+#     #
+#     def clear_storage(self):
+#         self._storage.clear()
+#     #
+#     def make_dataclass(self, name, fields):
+#         if type(fields) is str:
+#             fields = fields.replace(',', ' ').split()
+#             fields = [fn.strip() for fn in fields]
+#         fields = tuple(fields)
+#         key = (name, fields)
+#         cls = self._storage.get(key, None)
+#         if cls is None:
+#             cls = make_dataclass(name, fields)
+#             self._storage[key] = cls
+#         return cls
+#     make_class = make_dataclass
 
 def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False,
                  use_weakref=False, hashable=True, sequence=False, argsonly=False, iterable=False, module=None):

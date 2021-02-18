@@ -8,7 +8,7 @@ import weakref
 
 from recordclass import make_dataclass, make_arrayclass, datatype, asdict
 from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
-from recordclass import DataclassStorage
+# from recordclass import DataclassStorage
 
 TPickleV5 = make_dataclass("TPickleV5", ('x','y','z'), varsize=True)
 TPickleV6 = make_dataclass("TPickleV6", ('x','y','z'), varsize=True, use_dict=True)

@@ -277,19 +277,19 @@ def __new__(_cls, {1}):
     return _result
 
 
-class RecordclassStorage:
+# class RecordclassStorage:
     
-    def __init__(self):
-        self._storage = {}
-    #
-    def clear_storage(self):
-        self._storage.clear()
-    #
-    def recordclass(self, name, fields):
-        fields = tuple(fields)
-        key = (name, fields)
-        cls = self._storage.get(key, None)
-        if cls is None:
-            cls = recordclass(name, fields)
-            self._storage[(name, fields)] = cls
-        return cls
+#     def __init__(self):
+#         self._storage = {}
+#     #
+#     def clear_storage(self):
+#         self._storage.clear()
+#     #
+#     def recordclass(self, name, fields):
+#         fields = tuple(fields)
+#         key = (name, fields)
+#         cls = self._storage.get(key, None)
+#         if cls is None:
+#             cls = recordclass(name, fields)
+#             self._storage[(name, fields)] = cls
+#         return cls

@@ -1,6 +1,6 @@
 """Unit tests for recordclass.py."""
 import unittest, doctest, operator
-from recordclass import recordclass, RecordclassStorage
+from recordclass import recordclass #, RecordclassStorage
 from collections import OrderedDict
 import pickle, copy
 import keyword
@@ -304,11 +304,11 @@ class RecordClassTest(unittest.TestCase):
         b = B(1,2)
         hash(b)
         
-    def test_caching(self):
-        rs = RecordclassStorage()
-        A = rs.recordclass('A', ('x', 'y'))
-        B = rs.recordclass('A', ['x', 'y'])
-        self.assertEqual(A, B)
+#     def test_caching(self):
+#         rs = RecordclassStorage()
+#         A = rs.recordclass('A', ('x', 'y'))
+#         B = rs.recordclass('A', ['x', 'y'])
+#         self.assertEqual(A, B)
         
 
 def main():
