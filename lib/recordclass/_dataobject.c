@@ -133,7 +133,7 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t n_items)
     if (is_gc)
         op = _PyObject_GC_Malloc(size);
     else
-        op = (PyObject *)PyObject_MALLOC(size);
+        op = (PyObject*)PyObject_MALLOC(size);
 
     if (op == NULL)
         return PyErr_NoMemory();
