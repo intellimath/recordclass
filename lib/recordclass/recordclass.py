@@ -32,9 +32,7 @@ from collections import namedtuple, OrderedDict
 import sys as _sys
 
 _intern = _sys.intern
-def _isidentifier(s):
-    return s.isidentifier()
-if _sys.version_info[1] >= 6:
+if _sys.version_info[:2] >= (3, 6):
     from typing import _type_check
 else:
     _type_check = None
@@ -100,7 +98,7 @@ def recordclass(typename, fields,
     if rename:
         seen = set()
         for index, name in enumerate(field_names):
-            if (not _isidentifier(name)
+            if (not name.isidentifier()
                 or _iskeyword(name)
                 or name.startswith('_')
                 or name in seen):
@@ -110,7 +108,7 @@ def recordclass(typename, fields,
     for name in [typename] + field_names:
         if type(name) != str:
             raise TypeError('Type names and field names must be strings')
-        if not _isidentifier(name):
+        if not name.isidentifier():
             raise ValueError('Type names and field names must be valid '
                              'identifiers: %r' % name)
         if _iskeyword(name):

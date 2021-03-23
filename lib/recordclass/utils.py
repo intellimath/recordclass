@@ -23,14 +23,11 @@
 # THE SOFTWARE.
 
 import sys as _sys
-_PY3 = _sys.version_info[0] >= 3
-_PY36 = _PY3 and _sys.version_info[1] >= 6
+_PY36 = _sys.version_info[:2] >= (3, 6)
 
 from keyword import iskeyword as _iskeyword
 
 _intern = _sys.intern
-def _isidentifier(s):
-    return s.isidentifier()
 if _PY36:
     from typing import _type_check
 else:
@@ -82,7 +79,7 @@ def dataitem_offset(cls, i):
 def check_name(name):
     if not isinstance(name, str):
         raise TypeError('Type names and field names must be strings')
-    if not _isidentifier(name):
+    if not name.isidentifier():
         raise ValueError('Type names and field names must be valid '
                          'identifiers: %r' % name)
     if _iskeyword(name):
@@ -115,3 +112,5 @@ def collect_info_from_bases(bases):
         annotations.update(ann)
         
     return fields, defaults, annotations
+
+del _sys

@@ -28,12 +28,6 @@
 #include "Python.h"
 #include <string.h>
 
-#ifndef Py_RETURN_NOTIMPLEMENTED
-/* Macro for returning Py_NotImplemented from a function */
-#define Py_RETURN_NOTIMPLEMENTED \
-    return Py_INCREF(Py_NotImplemented), Py_NotImplemented
-#endif
-
 #define PyMutableTuple_GET_ITEM(op, i) (((PyMutableTupleObject *)(op))->ob_item[i])
 #define PyMutableTuple_SET_ITEM(op, i, v) (((PyMutableTupleObject *)(op))->ob_item[i] = v)
 
@@ -41,24 +35,6 @@
 #define PyMutableTuple_CheckExact(op) (Py_TYPE(op) == &PyMutableTuple_Type)
 
 #define IGS_GET_INDEX(op) ((struct mutabletuple_itemgetset_object*)op)->i
-
-// #if PY_MAJOR_VERSION == 2
-// static PyObject *
-// _PyObject_GetBuiltin(const char *name)
-// {
-//     PyObject *mod_name, *mod, *attr;
-
-//     mod_name = PyUnicode_FromString("__builtin__");   /* borrowed */
-//     if (mod_name == NULL)
-//         return NULL;
-//     mod = PyImport_Import(mod_name);
-//     if (mod == NULL)
-//         return NULL;
-//     attr = PyObject_GetAttrString(mod, name);
-//     Py_DECREF(mod);
-//     return attr;
-// }
-// #endif
 
 #define DEFERRED_ADDRESS(addr) 0
 
@@ -223,22 +199,14 @@ mutabletuple_repr(PyObject *dd)
     n = PyTuple_GET_SIZE(dd);
 
     if (n == 0) {
-// #if PY_MAJOR_VERSION >= 3
         result = PyUnicode_FromString("mutabletuple()\0");
-// #else
-//         result = PyString_FromString("mutabletuple()\0");
-// #endif
         return result;
     }
 
     if (n == 1) {
         v = PyTuple_GET_ITEM(dd, 0);
         baserepr = PyObject_Repr(v);
-// #if PY_MAJOR_VERSION >= 3
         result = PyUnicode_FromFormat("mutabletuple(%U)", baserepr);
-// #else
-//         result = PyString_FromFormat("mutabletuple(%s)", PyString_AS_STRING(baserepr));
-// #endif
         return result;
     }    
     
@@ -246,11 +214,7 @@ mutabletuple_repr(PyObject *dd)
     if (baserepr == NULL)
         return NULL;
 
-// #if PY_MAJOR_VERSION >= 3
     result = PyUnicode_FromFormat("mutabletuple%U", baserepr);
-// #else
-//     result = PyString_FromFormat("mutabletuple%s", PyString_AS_STRING(baserepr));
-// #endif
     Py_DECREF(baserepr);
     return result;
 }
@@ -469,26 +433,12 @@ mutabletuple_subscript(PyMutableTupleObject* self, PyObject* item)
     else if (PySlice_Check(item)) {
         Py_ssize_t start, stop, step, slicelength;
 
-// #if PY_MAJOR_VERSION >= 3
         if (PySlice_GetIndicesEx(item, (PyTuple_GET_SIZE(self)), &start, &stop, &step, &slicelength) < 0) {
             return NULL;
         }
-// #else
-//         if (PySlice_GetIndicesEx(((PySliceObject*)item), (PyTuple_GET_SIZE(self)), &start, &stop, &step, &slicelength) < 0)  {
-//             return NULL;
-//         }
-// #endif
-                
         return mutabletuple_slice(self, start, stop);
     }
-    else {
-
-// #if PY_MAJOR_VERSION >= 3
-        if (PyUnicode_Check(item))
-// #else
-//         if (PyString_Check(item))
-// #endif
-      {
+    else if (PyUnicode_Check(item)) {
             PyObject *ob = PyObject_GetAttr((PyObject*)self, item);
             
             if (ob == NULL) {
@@ -497,13 +447,12 @@ mutabletuple_subscript(PyMutableTupleObject* self, PyObject* item)
             }
             //Py_INCREF(ob);
             return ob;
-        }
-        else {
-            PyErr_Format(PyExc_TypeError,
-                         "subscript must be integer, slice or string, but not %.200s",
-                         Py_TYPE(item)->tp_name);
-            return NULL;
-        }
+    }
+    else {
+        PyErr_Format(PyExc_TypeError,
+                     "subscript must be integer, slice or string, but not %.200s",
+                     Py_TYPE(item)->tp_name);
+        return NULL;
     }
 }
 
@@ -521,40 +470,26 @@ mutabletuple_ass_subscript(PyMutableTupleObject* self, PyObject* item, PyObject*
     else if (PySlice_Check(item)) {
         Py_ssize_t start, stop, step, slicelength;
 
-// #if PY_MAJOR_VERSION >= 3
         if (PySlice_GetIndicesEx(item, (Py_SIZE(self)), &start, &stop, &step, &slicelength) < 0) {
             return -1; 
         }
-// #else
-//         if (PySlice_GetIndicesEx(((PySliceObject*)item), (Py_SIZE(self)), &start, &stop, &step, &slicelength) < 0) {
-//             return -1;
-//         }
-// #endif
         return mutabletuple_ass_slice(self, start, stop, value);
     }
-    else {
+    else if (PyUnicode_Check(item)) {
+        int res = PyObject_SetAttr((PyObject*)self, item, value);
 
-// #if PY_MAJOR_VERSION >= 3
-        if (PyUnicode_Check(item)) 
-// #else
-//         if (PyString_Check(item)) 
-// #endif
-       {
-            int res = PyObject_SetAttr((PyObject*)self, item, value);
-            
-            if (res == -1) {
-                PyErr_Format(PyExc_KeyError, "Invalid key");
-                return res;
-            }
-            return 0;
+        if (res == -1) {
+            PyErr_Format(PyExc_KeyError, "Invalid key");
+            return res;
         }
-        else {
-            PyErr_Format(PyExc_TypeError,
-                         "indices must be integers, not %.200s",
-                         Py_TYPE(item)->tp_name);
-            return -1;
-        }
-    }    
+        return 0;
+    }
+    else {
+        PyErr_Format(PyExc_TypeError,
+                     "indices must be integers, not %.200s",
+                     Py_TYPE(item)->tp_name);
+        return -1;
+    }
 }
 
 static PyObject *
@@ -942,20 +877,20 @@ PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(
 static PyObject *
 mutabletupleiter_reduce(mutabletupleiterobject *it) //, PyObject *Py_UNUSED(ignore))
 {
-// #if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
     _Py_IDENTIFIER(iter);
     if (it->it_seq)
         return Py_BuildValue("N(O)n", _PyEval_GetBuiltinId(&PyId_iter),
                              it->it_seq, it->it_index);
     else
         return Py_BuildValue("N(())", _PyEval_GetBuiltinId(&PyId_iter));
-// #else
-//     if (it->it_seq)
-//         return Py_BuildValue("N(O)n", _PyObject_GetBuiltin("iter"),
-//                              it->it_seq, it->it_index);
-//     else
-//         return Py_BuildValue("N(())", _PyObject_GetBuiltin("iter"));
-// #endif
+#else
+    if (it->it_seq)
+        return Py_BuildValue("N(O)n", _PyObject_GetBuiltin("iter"),
+                             it->it_seq, it->it_index);
+    else
+        return Py_BuildValue("N(())", _PyObject_GetBuiltin("iter"));
+#endif
 }
 
 PyDoc_STRVAR(mutabletupleiter_reduce_doc, "D.__reduce__()");
@@ -966,11 +901,7 @@ mutabletupleiter_setstate(mutabletupleiterobject *it, PyObject *state)
 {
     Py_ssize_t index;
 
-// #if PY_MAJOR_VERSION >= 3    
     index = PyLong_AsSsize_t(state);
-// #else
-//     index = PyNumber_AsSsize_t(state, NULL);
-// #endif
     if (index == -1 && PyErr_Occurred())
         return NULL;
     if (it->it_seq != NULL) {
@@ -1264,7 +1195,6 @@ static struct PyModuleDef mutabletuplemodule = {
 };
 // #endif
 
-// #if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC
 PyInit_mutabletuple(void)
 {
@@ -1326,47 +1256,3 @@ PyInit_mutabletuple(void)
 
     return m;
 }
-// #else
-// PyMODINIT_FUNC
-// initmutabletuple(void)
-// {
-//     PyObject *m;
-    
-//     m = Py_InitModule3("recordclass.mutabletuple", NULL, mutabletuplemodule_doc);
-//     if (m == NULL)
-//         return;
-//     Py_XINCREF(m);
-
-//     if (PyType_Ready(&PyMutableTuple_Type) < 0)
-//          Py_FatalError("Can't initialize mutabletuple type");
-
-//     if (PyType_Ready(&PyImmutableTuple_Type) < 0)
-//          Py_FatalError("Can't initialize mutabletuplereadonly type");
-    
-//     if (PyType_Ready(&mutabletuple_itemgetset_Type) < 0)
-//         Py_FatalError("Can't initialize mutabletuple_itemgetset type");
-
-//     if (PyType_Ready(&ItemGet_Type) < 0)
-//         Py_FatalError("Can't initialize mutabletuple_itemget type");
-
-//     if (PyType_Ready(&PyMutableTupleIter_Type) < 0)
-//         Py_FatalError("Can't initialize mutabletuple iter type");
-
-//     Py_INCREF(&PyMutableTuple_Type);
-//     PyModule_AddObject(m, "mutabletuple", (PyObject *)&PyMutableTuple_Type);
-
-//     Py_INCREF(&PyImmutableTuple_Type);
-//     PyModule_AddObject(m, "immutabletuple", (PyObject *)&PyImmutableTuple_Type);
-        
-//     Py_INCREF(&mutabletuple_itemgetset_Type);
-//     PyModule_AddObject(m, "mutabletuple_itemgetset", (PyObject *)&mutabletuple_itemgetset_Type);
-
-//     Py_INCREF(&ItemGet_Type);
-//     PyModule_AddObject(m, "mutabletuple_itemget", (PyObject *)&ItemGet_Type);
-    
-//     Py_INCREF(&PyMutableTupleIter_Type);
-//     PyModule_AddObject(m, "mutabletupleiter", (PyObject *)&PyMutableTupleIter_Type);
-
-//     return;
-// }
-// #endif

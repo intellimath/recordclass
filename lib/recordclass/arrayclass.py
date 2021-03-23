@@ -26,14 +26,9 @@ from .utils import dataslot_offset
 from .utils import check_name, collect_info_from_bases
 
 import sys as _sys
-_PY3 = _sys.version_info[0] >= 3
-_PY36 = _PY3 and _sys.version_info[1] >= 6
-
-from keyword import iskeyword as _iskeyword
+_PY36 = _sys.version_info[:2] >= (3, 6)
 
 _intern = _sys.intern
-def _isidentifier(s):
-    return s.isidentifier()
 if _PY36:
     from typing import _type_check
 else:
@@ -88,15 +83,7 @@ def make_arrayclass(typename, fields=0, namespace=None,
     if gc:
         _enable_gc(cls)
 
-#     if module is None:
-#         try:
-#             module = _sys._getframe(1).f_globals.get('__name__', '__main__')
-#         except (AttributeError, ValueError):
-#             module = None
-#     if module is not None:
-#         cls.__module__ = module
-
     return cls
 
-ilitetuple = make_arrayclass('ilitetuple', varsize=True, hashable=True, readonly=True)
+litetuple = make_arrayclass('ilitetuple', varsize=True, hashable=True, readonly=True)
 mlitetuple = make_arrayclass('mlitetuple', varsize=True, hashable=False)

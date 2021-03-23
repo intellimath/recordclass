@@ -251,8 +251,6 @@ class recordclasstype(type):
             tp_cls.tp_is_gc = NULL
             tp_cls.tp_clear = NULL
             tp_cls.tp_traverse = NULL
-            
-        
 
 #         if not getattr(cls, '__hash__', None) or tp_cls.tp_hash != NULL:
 #             if hashable:

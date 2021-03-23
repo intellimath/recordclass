@@ -22,19 +22,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from keyword import iskeyword as _iskeyword
 from collections import namedtuple, OrderedDict
 from .utils import check_name
 
 import sys as _sys
 
 _intern = _sys.intern
-def _isidentifier(s):
-    return s.isidentifier()
-if _sys.version_info[1] >= 6:
+if _sys.version_info[:2] >= (3, 6):
     from typing import _type_check
 else:
-    _type_check = None
+    def _type_check(t, msg):
+        if isinstance(t, (type, str)):
+            return t
+        else:
+            raise TypeError('invalid type annotation', t)
 
 def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashable=True,
                    sequence=True, mapping=False, readonly=False,
@@ -178,3 +179,4 @@ def join_classes(name, classes, readonly=False, use_dict=False, gc=False,
     return structclass(name, _attrs, 
                        readonly=readonly, use_dict=use_dict, gc=gc, use_weakref=use_weakref, 
                        hashable=False, sequence=True, module=module)
+

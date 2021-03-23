@@ -33,11 +33,6 @@
 
 #define IsStr(op) PyUnicode_CheckExact(op)
 
-    // #ifndef Py_RETURN_NOTIMPLEMENTED
-    // #define Py_RETURN_NOTIMPLEMENTED \
-    //     return Py_INCREF(Py_NotImplemented), Py_NotImplemented
-    // #endif
-
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
 static PyObject **
@@ -2724,7 +2719,6 @@ static struct PyModuleDef dataobjectmodule = {
 };
 // #endif
 
-// #if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC
 PyInit__dataobject(void)
 {
@@ -2782,51 +2776,3 @@ PyInit__dataobject(void)
 
     return m;
 }
-// #else
-// PyMODINIT_FUNC
-// init_dataobject(void)
-// {
-//     PyObject *m;
-//     PyTypeObject *dtype;
-
-//     m = Py_InitModule3("recordclass._dataobject", dataobjectmodule_methods, dataobjectmodule_doc);
-//     if (m == NULL)
-//         return;
-//     Py_INCREF(m);
-
-//     dtype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
-//     __fix_type((PyObject*)&PyDataObject_Type, dtype);
-//     __fix_type((PyObject*)&PyDataTuple_Type, dtype);
-//     Py_DECREF(dtype);
-
-//     PyDataObject_Type.tp_base = &PyBaseObject_Type;
-//     Py_INCREF(&PyBaseObject_Type);
-//     if (PyType_Ready(&PyDataObject_Type) < 0)
-//          Py_FatalError("Can't initialize dataobject type");
-
-//     PyDataTuple_Type.tp_base = &PyDataObject_Type;
-//     Py_INCREF(&PyDataObject_Type);
-//     if (PyType_Ready(&PyDataTuple_Type) < 0)
-//         Py_FatalError("Can't initialize datatuple type");
-
-//     if (PyType_Ready(&PyDataObjectIter_Type) < 0)
-//         Py_FatalError("Can't initialize dataobjectiter type");
-
-//     if (PyType_Ready(&PyDataSlotGetSet_Type) < 0)
-//         Py_FatalError("Can't initialize dataslotgetset type");
-
-//     Py_INCREF(&PyDataObject_Type);
-//     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
-
-//     Py_INCREF(&PyDataTuple_Type);
-//     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);
-
-//     Py_INCREF(&PyDataObjectIter_Type);
-//     PyModule_AddObject(m, "dataobject_iterator", (PyObject *)&PyDataObjectIter_Type);
-
-//     Py_INCREF(&PyDataSlotGetSet_Type);
-//     PyModule_AddObject(m, "dataslotgetset", (PyObject *)&PyDataSlotGetSet_Type);
-
-//     return;
-// }
-// #endif
