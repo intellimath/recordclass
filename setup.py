@@ -25,7 +25,6 @@
 
 import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
-_PY3 = _sys.version_info[0] >= 3
 
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
@@ -79,12 +78,8 @@ else:
 
 description = """Mutable variants of tuple (mutabletuple) and collections.namedtuple (recordclass), which support assignments and more memory saving variants (dataobject, structclass, litelist, ...)."""
 
-if _PY3:
-    with open('README.md', encoding='utf-8') as f:
-        long_description = f.read()
-else:
-    with open('README.md') as f:
-        long_description = f.read()
+with open('README.md', encoding='utf-8') as f:
+    long_description = f.read()
     
     
 packages = ['recordclass', 'recordclass.test']
