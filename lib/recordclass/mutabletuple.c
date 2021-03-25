@@ -398,9 +398,12 @@ mutabletuple_ass_item(PyMutableTupleObject *a, Py_ssize_t i, PyObject *v)
 static PyObject *
 mutabletuple_item(PyMutableTupleObject *a, Py_ssize_t i)
 {
-    PyObject* v;
+    PyObject *v;
+    Py_ssize_t n = Py_SIZE(a);
     
-    if (i < 0 || i >= Py_SIZE(a)) {
+    if (i < 0)
+        i += n;
+    if (i < 0 || i >= n) {
         PyErr_SetString(PyExc_IndexError, "index out of range");
         return NULL;
     }
@@ -412,23 +415,23 @@ mutabletuple_item(PyMutableTupleObject *a, Py_ssize_t i)
 static PyObject*
 mutabletuple_subscript(PyMutableTupleObject* self, PyObject* item)
 {
-    if (PyIndex_Check(item)) {
-        PyObject *v;
-        Py_ssize_t i;
-        
-        i = PyNumber_AsSsize_t(item, PyExc_IndexError);
-        if (i < 0) {
-            if (i == -1 && PyErr_Occurred())
-                return NULL;            
-            i += Py_SIZE(self);
-        }
-        if (i < 0 || i >= Py_SIZE(self)) {
-            PyErr_SetString(PyExc_IndexError, "index out of range");
+    if (PyIndex_Check(item)) {        
+        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+        if (i == -1 && PyErr_Occurred())
             return NULL;
-        }
-        v = self->ob_item[i];
-        Py_INCREF(v);
-        return (PyObject*)v;
+        return mutabletuple_item(self, i);
+//         if (i < 0) {
+//             if (i == -1 && PyErr_Occurred())
+//                 return NULL;            
+//             i += Py_SIZE(self);
+//         }
+//         if (i < 0 || i >= Py_SIZE(self)) {
+//             PyErr_SetString(PyExc_IndexError, "index out of range");
+//             return NULL;
+//         }
+//         v = self->ob_item[i];
+//         Py_INCREF(v);
+//         return (PyObject*)v;
     }
     else if (PySlice_Check(item)) {
         Py_ssize_t start, stop, step, slicelength;

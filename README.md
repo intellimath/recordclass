@@ -5,16 +5,16 @@ It was started as a "proof of concept" for the problem of fast "mutable"
 alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on stackoverflow).
 It implements the type `mutabletuple`, which supports assignment operations, and factory function `recordclass` in order to create record-like classes &ndash; subclasses of the `mutabletuple`. The function `recordclass` is a variant of `collection.namedtuple`. It produces classes with the same API. It was evolved further in order to provide more memory saving, fast and flexible types for representation of data objects.
 
-Later **recordclass** started providing tools for creating data classes that do not participate in cyclic *garbage collection* (GC) mechanism, but support only *reference counting*.
+Later **recordclass** started providing tools for creating data classes that do not participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanizm for garbage collection.
 The instances of such classes have not `PyGC_Head` prefix in the memory, which decrease their size. For CPython 3.8 it saves 16 bytes, for CPython 3.4-3.7 it saves 24-32 bytes.
 This may make sense in cases where it is necessary to limit the size of objects as much as possible, provided that they will never be part of circular references in the application.
 For example, when an object represents a record with fields that represent simple values by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
 Another examples are non-recursive data structures in which all leaf elements represent simple values.
 Of course, in python, nothing prevents you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
 But in some cases, this can still be avoided provided that the developer understands
-what he is doing and uses such classes in the code with care.
+what he is doing and uses such classes in the code with care. Another option is using static analyzers together with type annotations.
 
-**First** ``` recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in cyclic GC by default (type flag `Py_TPFLAGS_HAVE_GC=0`). As the result the instance of such class need less memory. The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All `dataobject`-based classes doesn't support `namedtuple`-like API, but rather `attrs`/`dataclasses`-like API.
+**First** ``` recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in CGC by default (type flag `Py_TPFLAGS_HAVE_GC=0`). As the result the instance of such class need less memory. The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All `dataobject`-based classes doesn't support `namedtuple`-like API, but rather `attrs`/`dataclasses`-like API.
 
 **Second** it provide another one base class `datatuple` (special subclass of `dataobject`). It creates variable sized instance like subclasses of the `tuple`.
 
@@ -95,9 +95,9 @@ Example with `RecordClass` and typehints::
     Point(10, 20)
     
 
-Now by default `recordclass`-based class instances doesn't participate in cyclic GC and therefore  they are smaller than `namedtuple`-based ones. If one want to use in it scenarios with reference cycles then one have to use option `gc=``:
+Now by default `recordclass`-based class instances doesn't participate in CGC and therefore  they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`````gc=False` by default):
 
-    >>> Node = recordclass('Node', 'root, children', gc=1)
+    >>> Node = recordclass('Node', 'root, children', gc=True)
     
 or decorator ``@enable_gc` for `RecordClass`-based classes:
 
@@ -125,7 +125,7 @@ First load inventory::
 
     >>> sys.getsizeof() # the output below is for 64bit python
     32
-    >>> p.__sizeof__() == sys.getsizeof(p) # no additional space for cyclic GC support
+    >>> p.__sizeof__() == sys.getsizeof(p) # no additional space for CGC support
     True    
 
     >>> p.x, p.y = 10, 20
@@ -160,32 +160,14 @@ or
     >>> print(p)
     Point(x=1, y=2, color='white')
 
-Recordclasses and dataobject-based classes may be cached in order to reuse them without duplication::
 
-    from recordclass import RecordclassStorage
+## Memory footprint
 
-    >>> rs = RecordclassStorage()
-    >>> A = rs.recordclass("A", "x y")
-    >>> B = rs.recordclass("A", ["x", "y"])
-    >>> A is B
-    True
-
-    from recordclass import DataclassStorage
-
-    >>> ds = DataclassStorage()
-    >>> A = ds.make_dataclass("A", "x y")
-    >>> B = ds.make_dataclass("A", ["x", "y"])
-    >>> A is B
-    True
-
-
-## Comparisons
-
-The following table explain memory footprints of `recordclass`-, `recordclass2`-base objects:
+The following table explain memory footprints of `recordclass`-base and `dataobject`-base objects:
 
 | namedtuple    |  class/\_\_slots\_\_  |  recordclass   | dataclass  |
 | ------------- | ----------------- | -------------- | ------------- |
-|   $b+s+n*p$     |     $b+n*p$         |  $b+s+n*p$       |     $b+n*p-g$     |
+|   $g+b+s+n*p$     |     $g+b+n*p$         |  $b+s+n*p$       |     $b+n*p$     |
 
 where:
 
@@ -195,7 +177,7 @@ where:
  * p = sizeof(`PyObject*`)
  * g = sizeof(PyGC_Head)
 
-This is useful in that case when you absolutely sure that reference cycle isn't possible.
+This is useful in that case when you absolutely sure that reference cycle isn't supposed.
 For example, when all field values are instances of atomic types.
 As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.4-3.7) and by 16 bytes for cpython 3.8::
 
@@ -206,15 +188,18 @@ As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.
             self.b = b
             self.c = c
 
-    R_gc = recordclass('R_gc', 'a b c', gc=1)
+    R_gc = recordclass('R_gc', 'a b c', gc=True)
     R_nogc = recordclass('R_nogc', 'a b c')
+    DO = make_dataclass('R_do', 'a b c')
 
     s = S(1,2,3)
     r_gc = R_gc(1,2,3)
     r_nogc = R_nogc(1,2,3)
-    for o in (s, r_gc, r_nogc):
-        print(sys.getsizeof(o))
-    64 64 40
+    do = DO(1,2,3)
+    for o in (s, r_gc, r_nogc, do):
+        print(sys.getsizeof(o), end=' ')
+    print
+    56 64 48 32
 
 Here are also table with some performance counters:
 
