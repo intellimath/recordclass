@@ -2008,6 +2008,7 @@ static void dataslotgetset_dealloc(PyObject *o) {
 #endif
 }
 
+#define dataobject_refitem_by_offset(op, offset) ((PyObject**)((char*)op + offset))
 #define dataobject_item_by_offset(op, offset) (*((PyObject**)((char*)op + offset)))
 #define dataobject_ass_item_by_offset(op, offset, val) (*((PyObject**)((char*)op + offset))=val)
 #define self_igs ((dataslotgetset_object *)self)
@@ -2026,7 +2027,7 @@ static PyObject* dataslotgetset_get(PyObject *self, PyObject *obj, PyObject *typ
 }
 
 static int dataslotgetset_set(PyObject *self, PyObject *obj, PyObject *value) {
-    PyObject *v;
+    PyObject **v;
 
     if (value == NULL) {
         PyErr_SetString(PyExc_NotImplementedError, "__delete__");
@@ -2041,12 +2042,12 @@ static int dataslotgetset_set(PyObject *self, PyObject *obj, PyObject *value) {
         return -1;
     }
 
-    v = dataobject_item_by_offset(obj, self_igs->offset);
-    Py_DECREF(v);
+    v = dataobject_refitem_by_offset(obj, self_igs->offset);
+    Py_DECREF(*v);
 
-    dataobject_ass_item_by_offset(obj, self_igs->offset, value);
-
+    *v = value;
     Py_INCREF(value);
+
     return 0;
 }
 
