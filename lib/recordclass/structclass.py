@@ -114,7 +114,6 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
         'iterable':sequence,
         'use_dict':use_dict,
         'use_weakref':use_weakref,
-        'readonly':readonly,
         'hashable':hashable,
         'gc':gc,
     }

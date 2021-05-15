@@ -28,7 +28,6 @@ from .mutabletuple import mutabletuple, immutabletuple, mutabletuple_itemgetset,
 from .recordobject import recordclasstype
 from collections import namedtuple, OrderedDict
 
-
 import sys as _sys
 
 _intern = _sys.intern
