@@ -94,37 +94,54 @@ class mutabletupleTest(unittest.TestCase):
     def test_iterator_pickle(self):
         # Userlist iterators don't support pickling yet since
         # they are based on generators.
-        data = self.type2test([4, 5, 6, 7])
+        data = self.type2test(4, 5, 6, 7)
         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             itorg = iter(data)
             d = pickle.dumps(itorg, proto)
             it = pickle.loads(d)
             self.assertEqual(type(itorg), type(it))
-            self.assertEqual(self.type2test(*it), self.type2test(data))
+            self.assertEqual(self.type2test(*it), data)
 
         it = pickle.loads(d)
         next(it)
-        d = pickle.dumps(it)
-        self.assertEqual(self.type2test(*it), self.type2test(data)[1:])
+        d1 = pickle.dumps(it)
+        self.assertEqual(self.type2test(*it), data[1:])
+        
+    def test_reduce(self):
+        t = mutabletuple(1,2,3)
+        tp, args = t.__reduce__()
+        self.assertEqual(tp, type(t))
+        self.assertEqual(args, (1,2,3))
+    
+        t2 = tp(*args)
+        self.assertEqual(t, t2)
         
     def test_reversed(self):
         t = mutabletuple(1,2,3)
         tr = mutabletuple(*reversed(t))
         self.assertEqual(tr, mutabletuple(3,2,1))
 
-#     def test_reversed_pickle(self):
-#         data = self.type2test(4, 5, 6, 7)
-#         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
-#             itorg = reversed(data)
-#             d = pickle.dumps(itorg, proto)
-#             it = pickle.loads(d)
-#             self.assertEqual(type(itorg), type(it))
-#             self.assertEqual(self.type2test(*it), self.type2test(*reversed(data)))
+    def test_reversed_pickle(self):
+        data = self.type2test(4, 5, 6, 7)
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            itorg = reversed(data)
+            d = pickle.dumps(itorg, proto)
+            it = pickle.loads(d)
+            self.assertEqual(type(itorg), type(it))
+            self.assertEqual(self.type2test(*it), self.type2test(*reversed(data)))
     
-#             it = pickle.loads(d)
-#             next(it)
-#             d = pickle.dumps(it, proto)
-#             self.assertEqual(self.type2test(*it), self.type2test(*reversed(data))[1:])
+            it = pickle.loads(d)
+            next(it)
+            d = pickle.dumps(it, proto)
+            self.assertEqual(self.type2test(*it), self.type2test(*reversed(data))[1:])
+
+    def test_pickle(self):
+        data = self.type2test(4, 5, 6, 7)
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            d = pickle.dumps(data, proto)
+            it = pickle.loads(d)
+            self.assertEqual(type(data), type(it))
+            self.assertEqual(it, data)
 
     def test_no_comdat_folding(self):
         # Issue 8847: In the PGO build, the MSVC linker's COMDAT folding

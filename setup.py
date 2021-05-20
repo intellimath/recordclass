@@ -42,8 +42,8 @@ if use_cython:
 
 ext_modules = [
     Extension(
-        "recordclass.mutabletuple",
-        ["lib/recordclass/mutabletuple.c"],
+        "recordclass._mutabletuple",
+        ["lib/recordclass/_mutabletuple.c"],
         extra_compile_args = extra_compile_args,
     ),
     Extension(

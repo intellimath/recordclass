@@ -115,26 +115,11 @@ mutabletuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return (PyObject*)newobj;
 }
 
-static PyObject *
-mutabletuple_getnewargs(PyMutableTupleObject *ob)
-{
-    PyObject *v;
-    PyTupleObject *res;
-    Py_ssize_t i, n = Py_SIZE(ob);
-
-    res = (PyTupleObject*)PyTuple_New(n);
-
-    if (res == NULL)
-        return NULL;
-
-    for (i = n; --i >= 0; ) {
-        v = PyTuple_GET_ITEM(ob, i);
-        PyTuple_SET_ITEM(res, i, v);
-        Py_INCREF(v);
-    }
-
-    return (PyObject*)res;
-}
+// static PyObject *
+// mutabletuple_getnewargs(PyMutableTupleObject *ob)
+// {
+//     return PySequence_Tuple((PyObject*)ob);    
+// }
 
 static int
 mutabletuple_clear(PyMutableTupleObject *op)
@@ -204,7 +189,7 @@ mutabletuple_repr(PyObject *dd)
     }
 
     if (n == 1) {
-        v = PyTuple_GET_ITEM(dd, 0);
+        v = PyMutableTuple_GET_ITEM(dd, 0);
         baserepr = PyObject_Repr(v);
         result = PyUnicode_FromFormat("mutabletuple(%U)", baserepr);
         return result;
@@ -436,7 +421,7 @@ mutabletuple_subscript(PyMutableTupleObject* self, PyObject* item)
     else if (PySlice_Check(item)) {
         Py_ssize_t start, stop, step, slicelength;
 
-        if (PySlice_GetIndicesEx(item, (PyTuple_GET_SIZE(self)), &start, &stop, &step, &slicelength) < 0) {
+        if (PySlice_GetIndicesEx(item, (Py_SIZE(self)), &start, &stop, &step, &slicelength) < 0) {
             return NULL;
         }
         return mutabletuple_slice(self, start, stop);
@@ -673,15 +658,13 @@ mutabletuple_reduce(PyObject *ob)
 {
     PyObject *args;
     PyObject *result;
-    PyObject *tmp;
 
-    tmp = PySequence_Tuple(ob);
-    args = PyTuple_Pack(1, tmp);
-    Py_DECREF(tmp);
+    args = PySequence_Tuple(ob);
     if (args == NULL)
         return NULL;
-    
-    result = PyTuple_Pack(2, &PyMutableTuple_Type, args);
+
+    result = PyTuple_Pack(2, Py_TYPE(ob), args);
+
     Py_DECREF(args);
     return result;
 }
@@ -710,7 +693,7 @@ mutabletuple_hash(PyObject *v)
 }
 
 static PyMethodDef mutabletuple_methods[] = {
-    {"__getnewargs__",          (PyCFunction)mutabletuple_getnewargs,  METH_NOARGS},
+//     {"__getnewargs__",          (PyCFunction)mutabletuple_getnewargs,  METH_NOARGS},
         /*{"copy", (PyCFunction)mutabletuple_copy, METH_NOARGS, mutabletuple_copy_doc},*/
     {"__copy__", (PyCFunction)mutabletuple_copy, METH_NOARGS, mutabletuple_copy_doc},
     {"__len__", (PyCFunction)mutabletuple_len, METH_NOARGS, mutabletuple_len_doc},
@@ -724,7 +707,7 @@ mutabletuple_iter(PyObject *seq);
 
 static PyTypeObject PyMutableTuple_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
-    "recordclass.mutabletuple.mutabletuple",          /* tp_name */
+    "recordclass._mutabletuple.mutabletuple",          /* tp_name */
     sizeof(PyMutableTupleObject) - sizeof(PyObject*),      /* tp_basicsize */
     sizeof(PyObject*),                              /* tp_itemsize */
     /* methods */
@@ -769,7 +752,7 @@ static PyTypeObject PyMutableTuple_Type = {
 
 static PyTypeObject PyImmutableTuple_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
-    "recordclass.mutabletuple.immutabletuple",          /* tp_name */
+    "recordclass._mutabletuple.immutabletuple",          /* tp_name */
     sizeof(PyMutableTupleObject) - sizeof(PyObject*),      /* tp_basicsize */
     sizeof(PyObject*),                              /* tp_itemsize */
     /* methods */
@@ -817,7 +800,7 @@ static PyTypeObject PyImmutableTuple_Type = {
 typedef struct {
     PyObject_HEAD
     Py_ssize_t it_index;
-    PyTupleObject *it_seq; /* Set to NULL when iterator is exhausted */
+    PyMutableTupleObject *it_seq; /* Set to NULL when iterator is exhausted */
 } mutabletupleiterobject;
 
 static void
@@ -845,17 +828,16 @@ mutabletupleiter_clear(mutabletupleiterobject *it)
 static PyObject *
 mutabletupleiter_next(mutabletupleiterobject *it)
 {
-    PyTupleObject *seq;
+    PyMutableTupleObject *seq;
     PyObject *item;
 
 //     assert(it != NULL);
     seq = it->it_seq;
     if (seq == NULL)
         return NULL;
-//     assert(PyTuple_Check(seq));
 
-    if (it->it_index < PyTuple_GET_SIZE(seq)) {
-        item = PyTuple_GET_ITEM(seq, it->it_index);
+    if (it->it_index < Py_SIZE(seq)) {
+        item = PyMutableTuple_GET_ITEM(seq, it->it_index);
         Py_INCREF(item);
         ++it->it_index;
         return item;
@@ -871,9 +853,11 @@ mutabletupleiter_len(mutabletupleiterobject *it)
 {
     Py_ssize_t len = 0;
     if (it->it_seq)
-        len = PyTuple_GET_SIZE(it->it_seq) - it->it_index;
+        len = Py_SIZE(it->it_seq) - it->it_index;
     return PyLong_FromSsize_t(len);
 }
+
+PyTypeObject PyMutableTupleIter_Type;
 
 PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(it)).");
 
@@ -929,7 +913,7 @@ static PyMethodDef mutabletupleiter_methods[] = {
 
 PyTypeObject PyMutableTupleIter_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
-    "recordclass.mutabletuple.mutabletuple_iterator",                           /* tp_name */
+    "recordclass._mutabletuple.mutabletuple_iterator",                           /* tp_name */
     sizeof(mutabletupleiterobject),                    /* tp_basicsize */
     0,                                          /* tp_itemsize */
     /* methods */
@@ -969,8 +953,12 @@ mutabletuple_iter(PyObject *seq)
     if (it == NULL)
         return NULL;
     it->it_index = 0;
-    it->it_seq = (PyTupleObject *)seq;
-    Py_INCREF(seq);
+    if (seq) {
+        it->it_seq = (PyMutableTupleObject*)seq;
+        Py_INCREF(seq);
+    } else
+        it->it_seq = (PyMutableTupleObject*)PyMutableTuple_New(&PyMutableTuple_Type, 0);
+
     PyObject_GC_Track(it);
     return (PyObject *)it;
 }
@@ -1045,7 +1033,7 @@ static int mutabletuple_itemgetset_set(PyObject *self, PyObject *obj, PyObject *
 
 static PyTypeObject mutabletuple_itemgetset_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
-    "recordclass.mutabletuple.mutabletuple_itemgetset", /*tp_name*/
+    "recordclass._mutabletuple.mutabletuple_itemgetset", /*tp_name*/
     sizeof(struct mutabletuple_itemgetset_object), /*tp_basicsize*/
     0, /*tp_itemsize*/
     mutabletuple_itemgetset_dealloc, /*tp_dealloc*/
@@ -1187,7 +1175,7 @@ static struct PyModuleDef mutabletuplemodule = {
 //   #else
     PyModuleDef_HEAD_INIT,
 //   #endif
-    "recordclass.mutabletuple",
+    "recordclass._mutabletuple",
     mutabletuplemodule_doc,
     -1,
     mutabletuplemodule_methods,
@@ -1199,7 +1187,7 @@ static struct PyModuleDef mutabletuplemodule = {
 // #endif
 
 PyMODINIT_FUNC
-PyInit_mutabletuple(void)
+PyInit__mutabletuple(void)
 {
     PyObject *m;
     
@@ -1254,7 +1242,7 @@ PyInit_mutabletuple(void)
     PyModule_AddObject(m, "mutabletuple_itemget", (PyObject *)&ItemGet_Type);
     
     Py_INCREF(&PyMutableTupleIter_Type);    
-    PyModule_AddObject(m, "mutabletupleiter", (PyObject *)&PyMutableTupleIter_Type);
+    PyModule_AddObject(m, "mutabletuple_iterator", (PyObject *)&PyMutableTupleIter_Type);
     
 
     return m;

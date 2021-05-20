@@ -24,7 +24,7 @@
 
 from keyword import iskeyword as _iskeyword
 
-from .mutabletuple import mutabletuple, immutabletuple, mutabletuple_itemgetset, mutabletuple_itemget
+from ._mutabletuple import mutabletuple, immutabletuple, mutabletuple_itemgetset, mutabletuple_itemget
 from .recordobject import recordclasstype
 from collections import namedtuple, OrderedDict
 
@@ -218,8 +218,11 @@ def __new__(_cls, {1}):
         class_namespace['__hash__'] = __hash__
 
     for method in (__new__, _make, _replace,
-                   __repr__, _asdict, __getnewargs__,
-                   __reduce__, __getstate__):
+                   __repr__, _asdict, 
+                   __getnewargs__,
+                   __reduce__, 
+                   __getstate__
+                  ):
         method.__qualname__ = typename + "." + method.__name__
         
     _make = classmethod(_make)
