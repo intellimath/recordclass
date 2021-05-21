@@ -41,7 +41,7 @@ else:
 def make_dataclass(typename, fields=None, bases=None, namespace=None,
                    use_dict=False, use_weakref=False, hashable=True,
                    sequence=False, mapping=False, iterable=False, readonly=False,
-                   defaults=None, module=None, argsonly=False, fast_new=False, gc=False):
+                   defaults=None, module=None, fast_new=False, gc=False):
 
     from ._dataobject import _clsconfig, _enable_gc
     from ._dataobject import dataobject
@@ -85,7 +85,6 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
     options = {
         'readonly':readonly,
         'defaults':defaults,
-        'argsonly':argsonly,
         'sequence':sequence,
         'mapping':mapping,
         'iterable':iterable,
@@ -168,7 +167,7 @@ def asdict(ob):
 #     make_class = make_dataclass
 
 def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False,
-                 use_weakref=False, hashable=True, sequence=False, argsonly=False, iterable=False, module=None):
+                 use_weakref=False, hashable=True, sequence=False, fast_new=False, iterable=False, module=None):
 
     from ._dataobject import dataobject
 

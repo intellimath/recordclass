@@ -75,7 +75,6 @@ class datatype(type):
         sequence = options.get('sequence', False)
         mapping = options.get('mapping', False)
         iterable = options.get('iterable', True)
-        argsonly = options.get('argsonly', False)
         fast_new = options.get('fast_new', False)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
@@ -139,7 +138,7 @@ class datatype(type):
             _annotations.update(annotations)
             annotations = _annotations
 
-            if fields and not fast_new and (not argsonly or defaults) and '__new__' not in ns:
+            if fields and (not fast_new or defaults) and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
 
