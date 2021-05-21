@@ -12,10 +12,6 @@ from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_
 
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
 TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
-# TPickleV5 = make_dataclass("TPickleV5", ('x','y','z'), varsize=True)
-# TPickleV6 = make_dataclass("TPickleV6", ('x','y','z'), varsize=True, use_dict=True)
-# TPickleV7 = make_dataclass("TPickleV7", ('x','y','z'), varsize=True)
-# TPickleV8 = make_dataclass("TPickleV8", ('x','y','z'), varsize=True, use_dict=True)
 
 
 ##########################################################################
@@ -246,7 +242,7 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a3.z, 3)
 
     def test_keyword_args_defaults2(self):
-        A = make_dataclass("A", ('x', 'y', 'z'), argsonly=True)
+        A = make_dataclass("A", ('x', 'y', 'z'), fast_new=True)
 
         a1 = A(x=1)
         self.assertEqual(repr(a1), "A(x=1, y=None, z=None)")
@@ -284,7 +280,7 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a3.z, 3)
         
     def test_missing_args(self):
-        A = make_dataclass("A", ("a", "b", "c"), argsonly=True, sequence=True)
+        A = make_dataclass("A", ("a", "b", "c"), fast_new=True, sequence=True)
         a=A(1)
         self.assertEqual(a[0], 1)
         self.assertEqual(a[1], None)

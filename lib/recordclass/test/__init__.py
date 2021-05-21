@@ -4,7 +4,6 @@ from recordclass.test.test_mutabletuple import *
 from recordclass.test.test_recordclass import *
 from recordclass.test.test_arrayclass import *
 from recordclass.test.test_dataobject import *
-# from recordclass.test.test_datatuple import *
 from recordclass.test.test_structclass import *
 from recordclass.test.test_litelist import *
 
