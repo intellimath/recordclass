@@ -44,7 +44,7 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
                    defaults=None, module=None, argsonly=False, fast_new=False, gc=False):
 
     from ._dataobject import _clsconfig, _enable_gc
-    from ._dataobject import dataobject #, datatuple
+    from ._dataobject import dataobject
     from .datatype import datatype
 
     annotations = {}
@@ -81,9 +81,6 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
             raise TypeError('Got more default values than fields')
     else:
         defaults = None
-
-#     if varsize:
-#         sequence = True
 
     options = {
         'readonly':readonly,
@@ -123,16 +120,9 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
 
     if bases:
         base0 = bases[0]
-#         if varsize:
-#             if not isinstance(base0, datatuple):
-#                 raise TypeError("First base class should be subclass of datatuple")
-#         else:
         if not isinstance(base0, dataobject):
             raise TypeError("First base class should be subclass of dataobject")
     else:
-#         if varsize:
-#             bases = (datatuple,)
-#         else:
         bases = (dataobject,)
 
     if module is None:
@@ -180,13 +170,10 @@ def asdict(ob):
 def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False,
                  use_weakref=False, hashable=True, sequence=False, argsonly=False, iterable=False, module=None):
 
-    from ._dataobject import dataobject #, datatuple
+    from ._dataobject import dataobject
 
     if not all(issubclass(cls, dataobject) for cls in classes):
         raise TypeError('All arguments should be child of dataobject')
-#     for cls in classes:
-#         if isinstance(cls, datatuple):
-#             raise TypeError('The class', cls, 'should not be a subclass of datatuple')
     if not all(hasattr(cls, '__fields__') for cls in classes):
         raise TypeError('Some of the base classes has not __fields__')
 

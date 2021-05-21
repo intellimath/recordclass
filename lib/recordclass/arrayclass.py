@@ -45,15 +45,12 @@ def make_arrayclass(typename, fields=0, namespace=None,
              hashable=False, readonly=False, gc=False,
              module=None):
 
-    from ._dataobject import dataobject, _enable_gc #, datatuple
+    from ._dataobject import dataobject, _enable_gc
     from .datatype import datatype
     
     if not isinstance(fields, int_type):
         raise TypeError("argument fields is not integer")
         
-#     if varsize:
-#         bases = (datatuple,)
-#     else:
     bases = (dataobject,)        
 
     options = {
@@ -84,6 +81,3 @@ def make_arrayclass(typename, fields=0, namespace=None,
         _enable_gc(cls)
 
     return cls
-
-# litetuple = make_arrayclass('ilitetuple', varsize=True, hashable=True, readonly=True)
-# mlitetuple = make_arrayclass('mlitetuple', varsize=True, hashable=False)
