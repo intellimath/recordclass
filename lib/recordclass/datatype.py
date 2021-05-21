@@ -86,10 +86,10 @@ class datatype(type):
         if not bases:
             raise TypeError("The base class in not specified")
 
-        if bases[0].__itemsize__:
-            varsize = True
-        else:
-            varsize = False
+#         if bases[0].__itemsize__:
+#             varsize = True
+#         else:
+#             varsize = False
 
         annotations = ns.get('__annotations__', {})
 
@@ -108,9 +108,9 @@ class datatype(type):
         else:
             fields = [_intern(check_name(fn)) for fn in fields]
 
-        if varsize:
-            sequence = True
-            iterable = True
+#         if varsize:
+#             sequence = True
+#             iterable = True
 
         if sequence or mapping:
             iterable = True
@@ -149,7 +149,7 @@ class datatype(type):
             annotations = _annotations
 
             if fields and not fast_new and (not argsonly or defaults) and '__new__' not in ns:
-                __new__ = _make_new_function(typename, fields, defaults, annotations, varsize, use_dict)
+                __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
 
                 ns['__new__'] = __new__
@@ -164,7 +164,7 @@ class datatype(type):
                 readonly_fields = set()
 
             for i, name in enumerate(fields):
-                offset = dataslot_offset(i, n_fields, varsize)
+                offset = dataslot_offset(i, n_fields)
                 if name in readonly_fields:
                     ns[name] = dataslotgetset(offset, True)
                 else:
@@ -189,7 +189,7 @@ class datatype(type):
             if annotations:
                 cls.__annotations__ = annotations
 
-            cls.__doc__ = _make_cls_doc(cls, typename, fields, defaults, varsize, use_dict)
+            cls.__doc__ = _make_cls_doc(cls, typename, fields, defaults, use_dict)
 
         _dataobject_type_init(cls)
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
@@ -197,9 +197,9 @@ class datatype(type):
 
         return cls
 
-def _make_new_function(typename, fields, defaults, annotations, varsize, use_dict):
+def _make_new_function(typename, fields, defaults, annotations, use_dict):
 
-    from ._dataobject import dataobject, datatuple
+    from ._dataobject import dataobject #, datatuple
 
     if fields and defaults:
         fields2 = [f for f in fields if f not in defaults] + [f for f in fields if f in defaults]
@@ -208,30 +208,30 @@ def _make_new_function(typename, fields, defaults, annotations, varsize, use_dic
     fields2 = tuple(fields2)
 
     if use_dict:
-        if varsize:
-            new_func_template = \
-"""
-def __new__(_cls_, {2}, *args, **kw):
-    'Create new instance: {0}({1}, *args, **kw)'
-    return _method_new(_cls_, {1}, *args, **kw)
-"""
-        else:
-            new_func_template = \
+#         if varsize:
+#             new_func_template = \
+# """
+# def __new__(_cls_, {2}, *args, **kw):
+#     'Create new instance: {0}({1}, *args, **kw)'
+#     return _method_new(_cls_, {1}, *args, **kw)
+# """
+#         else:
+        new_func_template = \
 """
 def __new__(_cls_, {2}, **kw):
     'Create new instance: {0}({1}, **kw)'
     return _method_new(_cls_, {1}, **kw)
 """
     else:
-        if varsize:
-            new_func_template = \
-"""
-def __new__(_cls_, {2}, *args):
-    'Create new instance: {0}({1}, *args)'
-    return _method_new(_cls_, {1}, *args)
-"""
-        else:
-            new_func_template = \
+#         if varsize:
+#             new_func_template = \
+# """
+# def __new__(_cls_, {2}, *args):
+#     'Create new instance: {0}({1}, *args)'
+#     return _method_new(_cls_, {1}, *args)
+# """
+#         else:
+        new_func_template = \
 """
 def __new__(_cls_, {2}):
     'Create new instance: {0}({1})'
@@ -239,10 +239,10 @@ def __new__(_cls_, {2}):
 """
     new_func_def = new_func_template.format(typename, ', '.join(fields), ', '.join(fields2))
 
-    if varsize:
-        _method_new = datatuple.__new__
-    else:
-        _method_new = dataobject.__new__
+#     if varsize:
+#         _method_new = datatuple.__new__
+#     else:
+    _method_new = dataobject.__new__
 
     namespace = dict(_method_new=_method_new)
 
@@ -259,9 +259,9 @@ def __new__(_cls_, {2}):
 
     return __new__
 
-def _make_cls_doc(cls, typename, fields, defaults, varsize, use_dict):
+def _make_cls_doc(cls, typename, fields, defaults, use_dict):
 
-    from ._dataobject import dataobject, datatuple
+    from ._dataobject import dataobject #, datatuple
 
     if fields and defaults:
         fields2 = [f for f in fields if f not in defaults] + ["%s=%r" % (f, defaults[f]) for f in fields if f in defaults]
@@ -270,14 +270,14 @@ def _make_cls_doc(cls, typename, fields, defaults, varsize, use_dict):
     fields2 = tuple(fields2)
 
     if use_dict:
-        if varsize:
-            template = "{0}({2}, *args, **kw)\n--\nCreate class instance"
-        else:
+#         if varsize:
+#             template = "{0}({2}, *args, **kw)\n--\nCreate class instance"
+#         else:
             template = "{0}({2}, **kw)\n--\nCreate class instance"
     else:
-        if varsize:
-            template = "{0}({2}, *args)\n--\nCreate class instance"
-        else:
+#         if varsize:
+#             template = "{0}({2}, *args)\n--\nCreate class instance"
+#         else:
             template = "{0}({2})\n--\nCreate class instance"
     doc = template.format(typename, ', '.join(fields), ', '.join(fields2))
 

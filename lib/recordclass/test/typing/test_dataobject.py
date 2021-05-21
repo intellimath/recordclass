@@ -7,7 +7,7 @@ import gc
 import weakref
 
 from recordclass import make_dataclass, datatype #, DataclassStorage
-from recordclass import dataobject, datatuple
+from recordclass import dataobject #, datatuple
 from recordclass import asdict, clsconfig, enable_gc
 
 _t = ()

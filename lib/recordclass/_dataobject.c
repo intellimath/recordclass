@@ -1009,645 +1009,645 @@ static PyTypeObject PyDataObject_Type = {
 
 /////////////// datatuple /////////////////////////////////
 
-static PyObject *
-datatuple_alloc(PyTypeObject *type, Py_ssize_t n_items)
-{
-    PyObject *op;
-    Py_ssize_t size = _PyObject_VAR_SIZE(type, n_items+1);
-    int is_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
-
-    if (is_gc)
-        op = _PyObject_GC_Malloc(size);
-    else
-        op = (PyObject *)PyObject_MALLOC(size);
-
-    if (op == NULL)
-        return PyErr_NoMemory();
-
-    memset(op, '\0', size);
-
-    Py_SIZE(op) = n_items;
-
-    Py_TYPE(op) = type;
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_INCREF(type);
-
-    _Py_NewReference(op);
-
-    if (is_gc)
-        PyObject_GC_Track(op);
-
-    return op;
-}
-
-static PyObject*
-datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    PyObject *op;
-    Py_ssize_t n_slots, n_items;
-    PyTupleObject *tmp;
-    Py_ssize_t n, n_args;
-    PyObject **items, **pp;
-    PyObject *v;
-
-    if (PyTuple_CheckExact(args)) {
-        tmp = (PyTupleObject*)args;
-        Py_INCREF(args);
-    } else {
-        tmp = (PyTupleObject*)PySequence_Tuple(args);
-        if (tmp == NULL) {
-            return NULL;
-        }
-    }
-
-    n_args = PyTuple_GET_SIZE(tmp);
-
-    n_slots = PyDataTuple_NUMSLOTS(type);
-    n_items = n_args - n_slots;
-    if (n_items < 0) {
-        PyErr_SetString(PyExc_TypeError,
-                        "number of the arguments should be greater or equal than the number of slots");
-        Py_DECREF(tmp);
-        return NULL;
-    }
-
-    op = type->tp_alloc(type, n_items);
-
-    pp = tmp->ob_item;
-    if (n_slots) {
-        n = n_slots;
-        items = PyDataTuple_SLOTS(op);
-        while (n-- > 0) {
-            v = *(pp++);
-            Py_INCREF(v);
-            *(items++) = v;
-        }
-    }
-
-    if (n_items) {
-        n = n_items;
-        items = PyDataTuple_ITEMS(type, op);
-        while (n-- > 0) {
-            v = *(pp++);
-            Py_INCREF(v);
-            *(items++) = v;
-        }
-    }
-
-    Py_DECREF(tmp);
-
-    if (kwds) {
-        if (type->tp_dictoffset) {
-            PyObject *dict = PyDataObject_GetDict(op);
-
-            if (PyDict_Update(dict, kwds) == -1) {
-                PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
-                Py_DECREF(dict);
-                return NULL;
-            }
-            Py_DECREF(dict);
-        } else {
-            PyErr_SetString(PyExc_TypeError, "invalid kwargs");
-            return NULL;
-        }
-    }
-
-
-    return op;
-}
-
-static int
-datatuple_clear(PyObject *op)
-{
-    PyTypeObject *type = Py_TYPE(op);
-    Py_ssize_t n_slots, n_items;
-    PyObject **items;
-
-    if (type->tp_weaklistoffset)
-        PyObject_ClearWeakRefs(op);
-
-    if (type->tp_dictoffset) {
-        PyObject **dictptr = PyObject_GetDictPtr(op);
-        if (dictptr && *dictptr)
-            Py_CLEAR(*dictptr);
-    }
-
-    n_slots = PyDataTuple_NUMSLOTS(type);
-
-    items = PyDataTuple_SLOTS(op);
-    if (n_slots) {
-        while (n_slots-- > 0) {
-            Py_CLEAR(*items);
-            items++;
-        }
-    }
-
-    n_items = Py_SIZE(op);
-    if (n_items) {
-        items = PyDataTuple_ITEMS(type, op);
-        while (n_items-- > 0) {
-            Py_CLEAR(*items);
-            items++;
-        }
-    }
-
-    return 0;
-}
-
-static void
-datatuple_xdecref(PyObject *op)
-{
-    PyTypeObject *type = Py_TYPE(op);
-    Py_ssize_t n_slots, n_items;
-    PyObject **items;
-
-    if (type->tp_weaklistoffset)
-        PyObject_ClearWeakRefs(op);
-
-    if (type->tp_dictoffset) {
-        PyObject **dictptr = PyObject_GetDictPtr(op);
-        if (dictptr && *dictptr)
-            Py_XDECREF(*dictptr);
-    }
-
-    n_slots = PyDataTuple_NUMSLOTS(type);
-
-    items = PyDataTuple_SLOTS(op);
-    if (n_slots) {
-        while (n_slots-- > 0) {
-            Py_XDECREF(*items);
-            items++;
-        }
-    }
-
-    n_items = Py_SIZE(op);
-    if (n_items) {
-        items = PyDataTuple_ITEMS(type, op);
-        while (n_items-- > 0) {
-            Py_XDECREF(*items);
-            items++;
-        }
-    }
-}
-
-static void
-datatuple_dealloc(PyObject *op)
-{
-    PyTypeObject *tp = Py_TYPE(op);
-
-    if (PyType_IS_GC(tp)) {
-        PyObject_GC_UnTrack(op);
-    }
-
-    datatuple_xdecref(op);
-
-    if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_DECREF(tp);
-
-    tp->tp_free((PyObject *)op);
-}
-
-static int
-datatuple_traverse(PyObject *op, visitproc visit, void *arg)
-{
-    Py_ssize_t n_slots, n_items;
-    PyObject **items;
-    PyTypeObject *type = Py_TYPE(op);
-
-    n_slots = PyDataTuple_NUMSLOTS(type);
-    n_items = Py_SIZE(op);
-
-    if (n_slots) {
-        items = PyDataTuple_SLOTS(op);
-        while (n_slots--) {
-            Py_VISIT(*items);
-            items++;
-        }
-    }
-
-    if (n_items) {
-        items = PyDataTuple_ITEMS(type, op);
-        while (n_items--) {
-            Py_VISIT(*items);
-            items++;
-        }
-    }
-
-    if (type->tp_dictoffset) {
-        PyObject **dictptr = PyObject_GetDictPtr(op);
-        if (dictptr && *dictptr)
-            Py_VISIT(*dictptr);
-    }
-
-    return 0;
-}
-
-
-static PyObject *
-datatuple_item(PyObject *op, Py_ssize_t i)
-{
-    PyTypeObject *type = Py_TYPE(op);
-    PyObject **items;
-    PyObject *v;
-
-    Py_ssize_t n_slots = PyDataTuple_NUMSLOTS(type);
-    Py_ssize_t n_items = PyDataTuple_NUMITEMS(op);
-    Py_ssize_t n = n_slots + n_items;
-
-    if (i < 0)
-        i += n;
-    if (i < 0 || i >= n) {
-        PyErr_SetString(PyExc_IndexError, "index out of range");
-        return NULL;
-    }
-
-    if (i < n_slots) {
-        items = PyDataTuple_SLOTS(op);
-    } else {
-        items = PyDataTuple_ITEMS(type, op);
-        i -= n_slots;
-    }
-
-    v = items[i];
-    Py_INCREF(v);
-    return v;
-}
-
-static int
-datatuple_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
-{
-    Py_ssize_t n = Py_SIZE(op);
-    PyObject **items;
-    PyTypeObject *type = Py_TYPE(op);
-    PyObject* old_val;
-
-    Py_ssize_t n_slots = PyDataTuple_NUMSLOTS(type);
-    Py_ssize_t n_items = PyDataTuple_NUMITEMS(op);
-
-    n = n_slots + n_items;
-
-    if (i < 0)
-        i += n;
-    if (i < 0 || i >= n) {
-        PyErr_SetString(PyExc_IndexError, "index out of range");
-        return -1;
-    }
-
-    if (i < n_slots) {
-        items = PyDataTuple_SLOTS(op);
-    } else {
-        items = PyDataTuple_ITEMS(type, op);
-        i -= n_slots;
-    }
-
-    items += i;
-
-    old_val = *items;
-    if (old_val)
-        Py_DECREF(old_val);
-    Py_INCREF(val);
-    *items = val;
-    return 0;
-}
-
-static PyObject*
-datatuple_subscript(PyObject* op, PyObject* item)
-{
-    return PyObject_GetAttr(op, item);
-}
-
-static int
-datatuple_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
-{
-    return PyObject_SetAttr(op, item, val);
-}
-
-static int
-datatuple_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
-{
-    if (PyIndex_Check(item)) {
-        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
-        if (i == -1 && PyErr_Occurred())
-            return -1;
-
-        return datatuple_ass_item(op, i, val);
-    } else
-        return PyObject_SetAttr(op, item, val);
-}
-
-static PyObject*
-datatuple_subscript2(PyObject* op, PyObject* item)
-{
-    if (PyIndex_Check(item)) {
-        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
-        if (i == -1 && PyErr_Occurred())
-            return NULL;
-
-        return datatuple_item(op, i);
-    } else
-        return PyObject_GetAttr(op, item);
-}
-
-
-PyDoc_STRVAR(datatuple_len_doc,
-"T.__len__() -- len of T");
-
-static Py_ssize_t
-datatuple_len(PyObject *op)
-{
-    PyTypeObject *type = Py_TYPE(op);
-    Py_ssize_t n;
-
-    n = PyDataTuple_NUMSLOTS(type);
-    if (type->tp_itemsize)
-        n += Py_SIZE(op);
-
-    return n;
-}
-
-PySequenceMethods datatuple_as_sequence0 = {
-    (lenfunc)datatuple_len,                          /* sq_length */
-    0,                                              /* sq_concat */
-    0,                                              /* sq_repeat */
-    0,                    /* sq_item */
-    0,                                              /* sq_slice */
-    0,             /* sq_ass_item */
-    0,                                              /* sq_ass_slice */
-    0,                                              /* sq_contains */
-};
-
-
-PySequenceMethods datatuple_as_sequence = {
-    (lenfunc)datatuple_len,                          /* sq_length */
-    0,                                              /* sq_concat */
-    0,                                              /* sq_repeat */
-    (ssizeargfunc)datatuple_item,                    /* sq_item */
-    0,                                              /* sq_slice */
-    (ssizeobjargproc)datatuple_ass_item,             /* sq_ass_item */
-    0,                                              /* sq_ass_slice */
-    0,                                              /* sq_contains */
-};
-
-PySequenceMethods datatuple_as_sequence_ro = {
-    (lenfunc)datatuple_len,                          /* sq_length */
-    0,                                              /* sq_concat */
-    0,                                              /* sq_repeat */
-    (ssizeargfunc)datatuple_item,                    /* sq_item */
-    0,                                              /* sq_slice */
-    0,             /* sq_ass_item */
-    0,                                              /* sq_ass_slice */
-    0,                                              /* sq_contains */
-};
-
-PyMappingMethods datatuple_as_mapping0 = {
-    (lenfunc)datatuple_len,                          /* mp_len */
-    0,                 /* mp_subscr */
-    0,          /* mp_ass_subscr */
-};
-
-PyMappingMethods datatuple_as_mapping = {
-    (lenfunc)datatuple_len,                          /* mp_len */
-    (binaryfunc)datatuple_subscript,                 /* mp_subscr */
-    (objobjargproc)datatuple_ass_subscript,          /* mp_ass_subscr */
-};
-
-PyMappingMethods datatuple_as_mapping_ro = {
-    (lenfunc)datatuple_len,                          /* mp_len */
-    (binaryfunc)datatuple_subscript,                 /* mp_subscr */
-    0,          /* mp_ass_subscr */
-};
-
-PyMappingMethods datatuple_as_mapping2 = {
-    (lenfunc)datatuple_len,                          /* mp_len */
-    (binaryfunc)datatuple_subscript2,                 /* mp_subscr */
-    (objobjargproc)datatuple_ass_subscript2,          /* mp_ass_subscr */
-};
-
-PyMappingMethods datatuple_as_mapping2_ro = {
-    (lenfunc)datatuple_len,                          /* mp_len */
-    (binaryfunc)datatuple_subscript2,                 /* mp_subscr */
-    0,          /* mp_ass_subscr */
-};
-
-PyDoc_STRVAR(datatuple_copy_doc,
-"T.__copy__() -- copy of T");
-
-static PyObject *
-datatuple_copy(PyObject* op)
-{
-    PyTypeObject *type = Py_TYPE(op);
-    PyObject *new_op = type->tp_alloc(type, Py_SIZE(op));
-
-    Py_ssize_t i, n = datatuple_len(op);
-
-    for(i=0; i<n; i++) {
-        PyObject *v;
-
-        v = datatuple_item(op, i);
-        if (!v) {
-            Py_DECREF(new_op);
-            return NULL;
-        }
-        if (datatuple_ass_item(new_op, i, v) < 0) {
-            Py_DECREF(v);
-            Py_DECREF(new_op);
-            return NULL;
-        }
-        Py_DECREF(v);
-    }
-
-    if (type->tp_dictoffset) {
-        PyObject **dictptr = PyObject_GetDictPtr(op);
-        PyObject *dict = *dictptr;
-
-        PyObject **new_dictptr = PyObject_GetDictPtr(new_op);
-        PyObject *new_dict;
-
-        if (dict) {
-            new_dict = PyDict_New();
-            if (!new_dict) {
-                PyErr_SetString(PyExc_TypeError, "failed to create new dict");
-                return NULL;
-            }
-            *new_dictptr = new_dict;
-        }
-        else {
-            *new_dictptr = NULL;
-        }
-
-        if (dict && new_dict) {
-            if (PyDict_Update(new_dict, dict) < 0) {
-                PyErr_SetString(PyExc_TypeError, "dict update failed");
-                Py_DECREF(new_dict);
-                return NULL;
-            }
-        }
-    }
-
-    return new_op;
-}
-
-PyDoc_STRVAR(datatuple_getnewargs_doc,
-"T.__getnewargs__()");
-
 // static PyObject *
-// datatuple_getnewargs(PyObject *op)
+// datatuple_alloc(PyTypeObject *type, Py_ssize_t n_items)
 // {
-//     PyTypeObject *type = Py_TYPE(op);
-//     Py_ssize_t i, n_slots = PyDataTuple_NUMSLOTS(type);
-//     Py_ssize_t n_items = Py_SIZE(op);
-//     PyObject *args, *tail;
+//     PyObject *op;
+//     Py_ssize_t size = _PyObject_VAR_SIZE(type, n_items+1);
+//     int is_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
+
+//     if (is_gc)
+//         op = _PyObject_GC_Malloc(size);
+//     else
+//         op = (PyObject *)PyObject_MALLOC(size);
+
+//     if (op == NULL)
+//         return PyErr_NoMemory();
+
+//     memset(op, '\0', size);
+
+//     Py_SIZE(op) = n_items;
+
+//     Py_TYPE(op) = type;
+//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+//         Py_INCREF(type);
+
+//     _Py_NewReference(op);
+
+//     if (is_gc)
+//         PyObject_GC_Track(op);
+
+//     return op;
+// }
+
+// static PyObject*
+// datatuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+// {
+//     PyObject *op;
+//     Py_ssize_t n_slots, n_items;
+//     PyTupleObject *tmp;
+//     Py_ssize_t n, n_args;
+//     PyObject **items, **pp;
 //     PyObject *v;
 
-//     args = PyTuple_New(n_slots+1);
-//     if (args == NULL)
-//         return NULL;
-
-//     for (i=0; i<n_slots; i++) {
-//         v = datatuple_slot(op, i);
-//         if (!v) {
-//             Py_DECREF(args);
+//     if (PyTuple_CheckExact(args)) {
+//         tmp = (PyTupleObject*)args;
+//         Py_INCREF(args);
+//     } else {
+//         tmp = (PyTupleObject*)PySequence_Tuple(args);
+//         if (tmp == NULL) {
 //             return NULL;
 //         }
-//         PyTuple_SET_ITEM(args, i, v);
 //     }
 
-//     tail = PyTuple_New(n_items);
-//     if (tail == NULL) {
-//         Py_DECREF(args);
+//     n_args = PyTuple_GET_SIZE(tmp);
+
+//     n_slots = PyDataTuple_NUMSLOTS(type);
+//     n_items = n_args - n_slots;
+//     if (n_items < 0) {
+//         PyErr_SetString(PyExc_TypeError,
+//                         "number of the arguments should be greater or equal than the number of slots");
+//         Py_DECREF(tmp);
 //         return NULL;
 //     }
 
-//     if (n_items > 0) {
-//         for (i=0; i<n_items; i++) {
-//             v = datatuple_item(op, n_slots+i);
-//             if (!v) {
-//                 Py_DECREF(args);
+//     op = type->tp_alloc(type, n_items);
+
+//     pp = tmp->ob_item;
+//     if (n_slots) {
+//         n = n_slots;
+//         items = PyDataTuple_SLOTS(op);
+//         while (n-- > 0) {
+//             v = *(pp++);
+//             Py_INCREF(v);
+//             *(items++) = v;
+//         }
+//     }
+
+//     if (n_items) {
+//         n = n_items;
+//         items = PyDataTuple_ITEMS(type, op);
+//         while (n-- > 0) {
+//             v = *(pp++);
+//             Py_INCREF(v);
+//             *(items++) = v;
+//         }
+//     }
+
+//     Py_DECREF(tmp);
+
+//     if (kwds) {
+//         if (type->tp_dictoffset) {
+//             PyObject *dict = PyDataObject_GetDict(op);
+
+//             if (PyDict_Update(dict, kwds) == -1) {
+//                 PyErr_SetString(PyExc_TypeError, "__dict__ update is failed");
+//                 Py_DECREF(dict);
 //                 return NULL;
 //             }
-//             PyTuple_SET_ITEM(tail, i, v);
+//             Py_DECREF(dict);
+//         } else {
+//             PyErr_SetString(PyExc_TypeError, "invalid kwargs");
+//             return NULL;
 //         }
 //     }
 
-//     PyTuple_SET_ITEM(args, n_slots, tail);
 
-
-//     return args;
+//     return op;
 // }
 
-PyDoc_STRVAR(datatuple_reduce_doc,
-"T.__reduce__()");
+// static int
+// datatuple_clear(PyObject *op)
+// {
+//     PyTypeObject *type = Py_TYPE(op);
+//     Py_ssize_t n_slots, n_items;
+//     PyObject **items;
+
+//     if (type->tp_weaklistoffset)
+//         PyObject_ClearWeakRefs(op);
+
+//     if (type->tp_dictoffset) {
+//         PyObject **dictptr = PyObject_GetDictPtr(op);
+//         if (dictptr && *dictptr)
+//             Py_CLEAR(*dictptr);
+//     }
+
+//     n_slots = PyDataTuple_NUMSLOTS(type);
+
+//     items = PyDataTuple_SLOTS(op);
+//     if (n_slots) {
+//         while (n_slots-- > 0) {
+//             Py_CLEAR(*items);
+//             items++;
+//         }
+//     }
+
+//     n_items = Py_SIZE(op);
+//     if (n_items) {
+//         items = PyDataTuple_ITEMS(type, op);
+//         while (n_items-- > 0) {
+//             Py_CLEAR(*items);
+//             items++;
+//         }
+//     }
+
+//     return 0;
+// }
+
+// static void
+// datatuple_xdecref(PyObject *op)
+// {
+//     PyTypeObject *type = Py_TYPE(op);
+//     Py_ssize_t n_slots, n_items;
+//     PyObject **items;
+
+//     if (type->tp_weaklistoffset)
+//         PyObject_ClearWeakRefs(op);
+
+//     if (type->tp_dictoffset) {
+//         PyObject **dictptr = PyObject_GetDictPtr(op);
+//         if (dictptr && *dictptr)
+//             Py_XDECREF(*dictptr);
+//     }
+
+//     n_slots = PyDataTuple_NUMSLOTS(type);
+
+//     items = PyDataTuple_SLOTS(op);
+//     if (n_slots) {
+//         while (n_slots-- > 0) {
+//             Py_XDECREF(*items);
+//             items++;
+//         }
+//     }
+
+//     n_items = Py_SIZE(op);
+//     if (n_items) {
+//         items = PyDataTuple_ITEMS(type, op);
+//         while (n_items-- > 0) {
+//             Py_XDECREF(*items);
+//             items++;
+//         }
+//     }
+// }
+
+// static void
+// datatuple_dealloc(PyObject *op)
+// {
+//     PyTypeObject *tp = Py_TYPE(op);
+
+//     if (PyType_IS_GC(tp)) {
+//         PyObject_GC_UnTrack(op);
+//     }
+
+//     datatuple_xdecref(op);
+
+//     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
+//         Py_DECREF(tp);
+
+//     tp->tp_free((PyObject *)op);
+// }
+
+// static int
+// datatuple_traverse(PyObject *op, visitproc visit, void *arg)
+// {
+//     Py_ssize_t n_slots, n_items;
+//     PyObject **items;
+//     PyTypeObject *type = Py_TYPE(op);
+
+//     n_slots = PyDataTuple_NUMSLOTS(type);
+//     n_items = Py_SIZE(op);
+
+//     if (n_slots) {
+//         items = PyDataTuple_SLOTS(op);
+//         while (n_slots--) {
+//             Py_VISIT(*items);
+//             items++;
+//         }
+//     }
+
+//     if (n_items) {
+//         items = PyDataTuple_ITEMS(type, op);
+//         while (n_items--) {
+//             Py_VISIT(*items);
+//             items++;
+//         }
+//     }
+
+//     if (type->tp_dictoffset) {
+//         PyObject **dictptr = PyObject_GetDictPtr(op);
+//         if (dictptr && *dictptr)
+//             Py_VISIT(*dictptr);
+//     }
+
+//     return 0;
+// }
+
 
 // static PyObject *
-// datatuple_reduce(PyObject *ob)
+// datatuple_item(PyObject *op, Py_ssize_t i)
 // {
-//     PyObject *args;
-//     PyObject *result;
-//     PyTypeObject *tp = Py_TYPE(ob);
-//     PyObject *kw = NULL;
-//     PyObject **dictptr;
+//     PyTypeObject *type = Py_TYPE(op);
+//     PyObject **items;
+//     PyObject *v;
 
-//     args = dataobject_getnewargs(ob);
-//     if (args == NULL)
+//     Py_ssize_t n_slots = PyDataTuple_NUMSLOTS(type);
+//     Py_ssize_t n_items = PyDataTuple_NUMITEMS(op);
+//     Py_ssize_t n = n_slots + n_items;
+
+//     if (i < 0)
+//         i += n;
+//     if (i < 0 || i >= n) {
+//         PyErr_SetString(PyExc_IndexError, "index out of range");
 //         return NULL;
-
-//     if (tp->tp_dictoffset) {
-//         dictptr = PyObject_GetDictPtr(tp, ob);
-//         if (dictptr) {
-//             kw = *dictptr;
-//             if (kw) Py_INCREF(kw);
-//         }
 //     }
-//     if (kw) {
-//         result = PyTuple_Pack(3, Py_TYPE(ob), args, kw);
-// //         Py_DECREF(kw);
-//     } else
-//         result = PyTuple_Pack(2, Py_TYPE(ob), args);
-// //     Py_DECREF(args);
 
-//     return result;
+//     if (i < n_slots) {
+//         items = PyDataTuple_SLOTS(op);
+//     } else {
+//         items = PyDataTuple_ITEMS(type, op);
+//         i -= n_slots;
+//     }
+
+//     v = items[i];
+//     Py_INCREF(v);
+//     return v;
+// }
+
+// static int
+// datatuple_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
+// {
+//     Py_ssize_t n = Py_SIZE(op);
+//     PyObject **items;
+//     PyTypeObject *type = Py_TYPE(op);
+//     PyObject* old_val;
+
+//     Py_ssize_t n_slots = PyDataTuple_NUMSLOTS(type);
+//     Py_ssize_t n_items = PyDataTuple_NUMITEMS(op);
+
+//     n = n_slots + n_items;
+
+//     if (i < 0)
+//         i += n;
+//     if (i < 0 || i >= n) {
+//         PyErr_SetString(PyExc_IndexError, "index out of range");
+//         return -1;
+//     }
+
+//     if (i < n_slots) {
+//         items = PyDataTuple_SLOTS(op);
+//     } else {
+//         items = PyDataTuple_ITEMS(type, op);
+//         i -= n_slots;
+//     }
+
+//     items += i;
+
+//     old_val = *items;
+//     if (old_val)
+//         Py_DECREF(old_val);
+//     Py_INCREF(val);
+//     *items = val;
+//     return 0;
+// }
+
+// static PyObject*
+// datatuple_subscript(PyObject* op, PyObject* item)
+// {
+//     return PyObject_GetAttr(op, item);
+// }
+
+// static int
+// datatuple_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
+// {
+//     return PyObject_SetAttr(op, item, val);
+// }
+
+// static int
+// datatuple_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
+// {
+//     if (PyIndex_Check(item)) {
+//         Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+//         if (i == -1 && PyErr_Occurred())
+//             return -1;
+
+//         return datatuple_ass_item(op, i, val);
+//     } else
+//         return PyObject_SetAttr(op, item, val);
+// }
+
+// static PyObject*
+// datatuple_subscript2(PyObject* op, PyObject* item)
+// {
+//     if (PyIndex_Check(item)) {
+//         Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+//         if (i == -1 && PyErr_Occurred())
+//             return NULL;
+
+//         return datatuple_item(op, i);
+//     } else
+//         return PyObject_GetAttr(op, item);
 // }
 
 
-static PyMethodDef datatuple_methods[] = {
-    {"__copy__", (PyCFunction)datatuple_copy, METH_NOARGS, datatuple_copy_doc},
-    {"__len__", (PyCFunction)datatuple_len, METH_NOARGS, datatuple_len_doc},
-    {"__sizeof__",      (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
-    {"__reduce__",      (PyCFunction)dataobject_reduce, METH_NOARGS, datatuple_reduce_doc},
-    {"__getstate__",      (PyCFunction)dataobject_getstate, METH_NOARGS, dataobject_getstate_doc},
-    {"__getnewargs__",      (PyCFunction)dataobject_getnewargs, METH_NOARGS, datatuple_getnewargs_doc},
-    {"__setstate__",      (PyCFunction)dataobject_setstate, METH_O, dataobject_setstate_doc},
-    {NULL}
-};
+// PyDoc_STRVAR(datatuple_len_doc,
+// "T.__len__() -- len of T");
 
-PyDoc_STRVAR(datatuple_doc,
-"datatuple(...) --> datatuple\n\n\
-");
+// static Py_ssize_t
+// datatuple_len(PyObject *op)
+// {
+//     PyTypeObject *type = Py_TYPE(op);
+//     Py_ssize_t n;
 
-static PyTypeObject PyDataTuple_Type = {
-    PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
-    "recordclass._dataobject.datatuple",        /* tp_name */
-    sizeof(PyVarObject),                   /* tp_basicsize */
-    sizeof(PyObject*),                    /* tp_itemsize */
-    /* methods */
-    (destructor)datatuple_dealloc,           /* tp_dealloc */
-    0,                                      /* tp_print */
-    0,                                      /* tp_getattr */
-    0,                                      /* tp_setattr */
-    0,                                      /* tp_reserved */
-    dataobject_repr,                                      /* tp_repr */
-    0,                                      /* tp_as_number */
-    0,                  /* tp_as_sequence */
-    &datatuple_as_mapping0,                   /* tp_as_mapping */
-    dataobject_hash,                          /* tp_hash */
-    0,                                      /* tp_call */
-    0,                                      /* tp_str */
-    PyObject_GenericGetAttr,                /* tp_getattro */
-    PyObject_GenericSetAttr,                /* tp_setattro */
-    0,                                      /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
-                                            /* tp_flags */
-    datatuple_doc,                           /* tp_doc */
-    datatuple_traverse,                      /* tp_traverse */
-    datatuple_clear,                         /* tp_clear */
-    dataobject_richcompare,                   /* tp_richcompare */
-    0,                                      /* tp_weaklistoffset*/
-    dataobject_iter,                                      /* tp_iter */
-    0,                                      /* tp_iternext */
-    datatuple_methods,                       /* tp_methods */
-    0,                                      /* tp_members */
-    0,                                      /* tp_getset */
-    DEFERRED_ADDRESS(&PyDataObject_Type),   /* tp_base */
-    0,                                      /* tp_memoryslots */
-    0,                                      /* tp_descr_get */
-    0,                                      /* tp_descr_set */
-    0,                                      /* tp_memoryslotsoffset */
-    0,                                      /* tp_init */
-    datatuple_alloc,                         /* tp_alloc */
-    datatuple_new,                           /* tp_new */
-    dataobject_free,                          /* tp_free */
-    0                                       /* tp_is_gc */
-};
+//     n = PyDataTuple_NUMSLOTS(type);
+//     if (type->tp_itemsize)
+//         n += Py_SIZE(op);
+
+//     return n;
+// }
+
+// PySequenceMethods datatuple_as_sequence0 = {
+//     (lenfunc)datatuple_len,                          /* sq_length */
+//     0,                                              /* sq_concat */
+//     0,                                              /* sq_repeat */
+//     0,                    /* sq_item */
+//     0,                                              /* sq_slice */
+//     0,             /* sq_ass_item */
+//     0,                                              /* sq_ass_slice */
+//     0,                                              /* sq_contains */
+// };
+
+
+// PySequenceMethods datatuple_as_sequence = {
+//     (lenfunc)datatuple_len,                          /* sq_length */
+//     0,                                              /* sq_concat */
+//     0,                                              /* sq_repeat */
+//     (ssizeargfunc)datatuple_item,                    /* sq_item */
+//     0,                                              /* sq_slice */
+//     (ssizeobjargproc)datatuple_ass_item,             /* sq_ass_item */
+//     0,                                              /* sq_ass_slice */
+//     0,                                              /* sq_contains */
+// };
+
+// PySequenceMethods datatuple_as_sequence_ro = {
+//     (lenfunc)datatuple_len,                          /* sq_length */
+//     0,                                              /* sq_concat */
+//     0,                                              /* sq_repeat */
+//     (ssizeargfunc)datatuple_item,                    /* sq_item */
+//     0,                                              /* sq_slice */
+//     0,             /* sq_ass_item */
+//     0,                                              /* sq_ass_slice */
+//     0,                                              /* sq_contains */
+// };
+
+// PyMappingMethods datatuple_as_mapping0 = {
+//     (lenfunc)datatuple_len,                          /* mp_len */
+//     0,                 /* mp_subscr */
+//     0,          /* mp_ass_subscr */
+// };
+
+// PyMappingMethods datatuple_as_mapping = {
+//     (lenfunc)datatuple_len,                          /* mp_len */
+//     (binaryfunc)datatuple_subscript,                 /* mp_subscr */
+//     (objobjargproc)datatuple_ass_subscript,          /* mp_ass_subscr */
+// };
+
+// PyMappingMethods datatuple_as_mapping_ro = {
+//     (lenfunc)datatuple_len,                          /* mp_len */
+//     (binaryfunc)datatuple_subscript,                 /* mp_subscr */
+//     0,          /* mp_ass_subscr */
+// };
+
+// PyMappingMethods datatuple_as_mapping2 = {
+//     (lenfunc)datatuple_len,                          /* mp_len */
+//     (binaryfunc)datatuple_subscript2,                 /* mp_subscr */
+//     (objobjargproc)datatuple_ass_subscript2,          /* mp_ass_subscr */
+// };
+
+// PyMappingMethods datatuple_as_mapping2_ro = {
+//     (lenfunc)datatuple_len,                          /* mp_len */
+//     (binaryfunc)datatuple_subscript2,                 /* mp_subscr */
+//     0,          /* mp_ass_subscr */
+// };
+
+// PyDoc_STRVAR(datatuple_copy_doc,
+// "T.__copy__() -- copy of T");
+
+// static PyObject *
+// datatuple_copy(PyObject* op)
+// {
+//     PyTypeObject *type = Py_TYPE(op);
+//     PyObject *new_op = type->tp_alloc(type, Py_SIZE(op));
+
+//     Py_ssize_t i, n = datatuple_len(op);
+
+//     for(i=0; i<n; i++) {
+//         PyObject *v;
+
+//         v = datatuple_item(op, i);
+//         if (!v) {
+//             Py_DECREF(new_op);
+//             return NULL;
+//         }
+//         if (datatuple_ass_item(new_op, i, v) < 0) {
+//             Py_DECREF(v);
+//             Py_DECREF(new_op);
+//             return NULL;
+//         }
+//         Py_DECREF(v);
+//     }
+
+//     if (type->tp_dictoffset) {
+//         PyObject **dictptr = PyObject_GetDictPtr(op);
+//         PyObject *dict = *dictptr;
+
+//         PyObject **new_dictptr = PyObject_GetDictPtr(new_op);
+//         PyObject *new_dict;
+
+//         if (dict) {
+//             new_dict = PyDict_New();
+//             if (!new_dict) {
+//                 PyErr_SetString(PyExc_TypeError, "failed to create new dict");
+//                 return NULL;
+//             }
+//             *new_dictptr = new_dict;
+//         }
+//         else {
+//             *new_dictptr = NULL;
+//         }
+
+//         if (dict && new_dict) {
+//             if (PyDict_Update(new_dict, dict) < 0) {
+//                 PyErr_SetString(PyExc_TypeError, "dict update failed");
+//                 Py_DECREF(new_dict);
+//                 return NULL;
+//             }
+//         }
+//     }
+
+//     return new_op;
+// }
+
+// PyDoc_STRVAR(datatuple_getnewargs_doc,
+// "T.__getnewargs__()");
+
+// // static PyObject *
+// // datatuple_getnewargs(PyObject *op)
+// // {
+// //     PyTypeObject *type = Py_TYPE(op);
+// //     Py_ssize_t i, n_slots = PyDataTuple_NUMSLOTS(type);
+// //     Py_ssize_t n_items = Py_SIZE(op);
+// //     PyObject *args, *tail;
+// //     PyObject *v;
+
+// //     args = PyTuple_New(n_slots+1);
+// //     if (args == NULL)
+// //         return NULL;
+
+// //     for (i=0; i<n_slots; i++) {
+// //         v = datatuple_slot(op, i);
+// //         if (!v) {
+// //             Py_DECREF(args);
+// //             return NULL;
+// //         }
+// //         PyTuple_SET_ITEM(args, i, v);
+// //     }
+
+// //     tail = PyTuple_New(n_items);
+// //     if (tail == NULL) {
+// //         Py_DECREF(args);
+// //         return NULL;
+// //     }
+
+// //     if (n_items > 0) {
+// //         for (i=0; i<n_items; i++) {
+// //             v = datatuple_item(op, n_slots+i);
+// //             if (!v) {
+// //                 Py_DECREF(args);
+// //                 return NULL;
+// //             }
+// //             PyTuple_SET_ITEM(tail, i, v);
+// //         }
+// //     }
+
+// //     PyTuple_SET_ITEM(args, n_slots, tail);
+
+
+// //     return args;
+// // }
+
+// PyDoc_STRVAR(datatuple_reduce_doc,
+// "T.__reduce__()");
+
+// // static PyObject *
+// // datatuple_reduce(PyObject *ob)
+// // {
+// //     PyObject *args;
+// //     PyObject *result;
+// //     PyTypeObject *tp = Py_TYPE(ob);
+// //     PyObject *kw = NULL;
+// //     PyObject **dictptr;
+
+// //     args = dataobject_getnewargs(ob);
+// //     if (args == NULL)
+// //         return NULL;
+
+// //     if (tp->tp_dictoffset) {
+// //         dictptr = PyObject_GetDictPtr(tp, ob);
+// //         if (dictptr) {
+// //             kw = *dictptr;
+// //             if (kw) Py_INCREF(kw);
+// //         }
+// //     }
+// //     if (kw) {
+// //         result = PyTuple_Pack(3, Py_TYPE(ob), args, kw);
+// // //         Py_DECREF(kw);
+// //     } else
+// //         result = PyTuple_Pack(2, Py_TYPE(ob), args);
+// // //     Py_DECREF(args);
+
+// //     return result;
+// // }
+
+
+// static PyMethodDef datatuple_methods[] = {
+//     {"__copy__", (PyCFunction)datatuple_copy, METH_NOARGS, datatuple_copy_doc},
+//     {"__len__", (PyCFunction)datatuple_len, METH_NOARGS, datatuple_len_doc},
+//     {"__sizeof__",      (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
+//     {"__reduce__",      (PyCFunction)dataobject_reduce, METH_NOARGS, datatuple_reduce_doc},
+//     {"__getstate__",      (PyCFunction)dataobject_getstate, METH_NOARGS, dataobject_getstate_doc},
+//     {"__getnewargs__",      (PyCFunction)dataobject_getnewargs, METH_NOARGS, datatuple_getnewargs_doc},
+//     {"__setstate__",      (PyCFunction)dataobject_setstate, METH_O, dataobject_setstate_doc},
+//     {NULL}
+// };
+
+// PyDoc_STRVAR(datatuple_doc,
+// "datatuple(...) --> datatuple\n\n\
+// ");
+
+// static PyTypeObject PyDataTuple_Type = {
+//     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
+//     "recordclass._dataobject.datatuple",        /* tp_name */
+//     sizeof(PyVarObject),                   /* tp_basicsize */
+//     sizeof(PyObject*),                    /* tp_itemsize */
+//     /* methods */
+//     (destructor)datatuple_dealloc,           /* tp_dealloc */
+//     0,                                      /* tp_print */
+//     0,                                      /* tp_getattr */
+//     0,                                      /* tp_setattr */
+//     0,                                      /* tp_reserved */
+//     dataobject_repr,                                      /* tp_repr */
+//     0,                                      /* tp_as_number */
+//     0,                  /* tp_as_sequence */
+//     &datatuple_as_mapping0,                   /* tp_as_mapping */
+//     dataobject_hash,                          /* tp_hash */
+//     0,                                      /* tp_call */
+//     0,                                      /* tp_str */
+//     PyObject_GenericGetAttr,                /* tp_getattro */
+//     PyObject_GenericSetAttr,                /* tp_setattro */
+//     0,                                      /* tp_as_buffer */
+//     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+//                                             /* tp_flags */
+//     datatuple_doc,                           /* tp_doc */
+//     datatuple_traverse,                      /* tp_traverse */
+//     datatuple_clear,                         /* tp_clear */
+//     dataobject_richcompare,                   /* tp_richcompare */
+//     0,                                      /* tp_weaklistoffset*/
+//     dataobject_iter,                                      /* tp_iter */
+//     0,                                      /* tp_iternext */
+//     datatuple_methods,                       /* tp_methods */
+//     0,                                      /* tp_members */
+//     0,                                      /* tp_getset */
+//     DEFERRED_ADDRESS(&PyDataObject_Type),   /* tp_base */
+//     0,                                      /* tp_memoryslots */
+//     0,                                      /* tp_descr_get */
+//     0,                                      /* tp_descr_set */
+//     0,                                      /* tp_memoryslotsoffset */
+//     0,                                      /* tp_init */
+//     datatuple_alloc,                         /* tp_alloc */
+//     datatuple_new,                           /* tp_new */
+//     dataobject_free,                          /* tp_free */
+//     0                                       /* tp_is_gc */
+// };
 
 //////////////////////////////////////////////////
 
 static PyObject*
 do_getitem(PyObject *op, Py_ssize_t i) {
-    PyTypeObject *type = Py_TYPE(op);
+//     PyTypeObject *type = Py_TYPE(op);
 
-    if (type->tp_itemsize)
-        return datatuple_item(op, i);
-    else
+//     if (type->tp_itemsize)
+//         return datatuple_item(op, i);
+//     else
         return dataobject_item(op, i);
 }
 
 static Py_ssize_t
 do_getlen(PyObject *op) {
-    PyTypeObject *type = Py_TYPE(op);
+//     PyTypeObject *type = Py_TYPE(op);
 
-    if (type->tp_itemsize)
-        return datatuple_len(op);
-    else
+//     if (type->tp_itemsize)
+//         return datatuple_len(op);
+//     else
         return dataobject_len(op);
 
 }
@@ -1805,9 +1805,9 @@ dataobjectiter_next(dataobjectiterobject *it)
     PyObject *op = it->it_seq;
 
     if (it->it_index < it->it_len) {
-        if (Py_TYPE(op)->tp_itemsize)
-            item = datatuple_item(op, it->it_index);
-        else
+//         if (Py_TYPE(op)->tp_itemsize)
+//             item = datatuple_item(op, it->it_index);
+//         else
             item = dataobject_item(op, it->it_index);
         it->it_index++;
         return item;
@@ -2283,20 +2283,20 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
 
     tp_base = tp->tp_base;
 
-    if (!tp->tp_itemsize) {
+//     if (!tp->tp_itemsize) {
         if ((tp_base != &PyDataObject_Type) && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
             PyErr_SetString(PyExc_TypeError, "the type should be dataobject or it's subtype");
             return NULL;
         }
-    } else {
-        if ((tp_base != &PyDataTuple_Type) && !PyType_IsSubtype(tp_base, &PyDataTuple_Type)) {
-            PyErr_SetString(PyExc_TypeError, "the type should be datatuple or it's subtype");
-            return NULL;
-        }
+//     } else {
+//         if ((tp_base != &PyDataTuple_Type) && !PyType_IsSubtype(tp_base, &PyDataTuple_Type)) {
+//             PyErr_SetString(PyExc_TypeError, "the type should be datatuple or it's subtype");
+//             return NULL;
+//         }
 
-    }
+//     }
 
-    if (!tp->tp_itemsize) {
+//     if (!tp->tp_itemsize) {
         if (sq) {
             if (mp) {
                 tp->tp_as_sequence = NULL;
@@ -2319,30 +2319,30 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
                 tp->tp_as_mapping = NULL;
             }
         }
-    } else {
-        if (sq) {
-            if (mp) {
-                tp->tp_as_sequence = NULL;
-                tp->tp_as_mapping = &datatuple_as_mapping2;
-                if (ro)
-                   tp->tp_as_mapping = &datatuple_as_mapping2_ro;
-            } else {
-                tp->tp_as_sequence = &datatuple_as_sequence;
-                tp->tp_as_mapping = NULL;
-                if (ro)
-                   tp->tp_as_sequence = &datatuple_as_sequence_ro;
-            }
-        } else {
-            tp->tp_as_sequence = NULL;
-            if (mp) {
-                tp->tp_as_mapping = &datatuple_as_mapping;
-                if (ro)
-                   tp->tp_as_mapping = &datatuple_as_mapping_ro;
-            } else {
-                tp->tp_as_mapping = NULL;
-            }
-        }
-    }
+//     } else {
+//         if (sq) {
+//             if (mp) {
+//                 tp->tp_as_sequence = NULL;
+//                 tp->tp_as_mapping = &datatuple_as_mapping2;
+//                 if (ro)
+//                    tp->tp_as_mapping = &datatuple_as_mapping2_ro;
+//             } else {
+//                 tp->tp_as_sequence = &datatuple_as_sequence;
+//                 tp->tp_as_mapping = NULL;
+//                 if (ro)
+//                    tp->tp_as_sequence = &datatuple_as_sequence_ro;
+//             }
+//         } else {
+//             tp->tp_as_sequence = NULL;
+//             if (mp) {
+//                 tp->tp_as_mapping = &datatuple_as_mapping;
+//                 if (ro)
+//                    tp->tp_as_mapping = &datatuple_as_mapping_ro;
+//             } else {
+//                 tp->tp_as_mapping = NULL;
+//             }
+//         }
+//     }
 
     Py_RETURN_NONE;
 }
@@ -2452,7 +2452,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     PyObject *fields, *dict;
     int n_fields;
     int has_fields;
-    int is_varsize;
+//     int is_varsize;
 
     if (Py_SIZE(args) != 1) {
         PyErr_SetString(PyExc_TypeError, "number of arguments != 1");
@@ -2490,21 +2490,21 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 //     if (tp_base != &PyDataObject_Type && tp_base != &PyDataTuple_Type)
 //         printf("ops\n");
 
-    if (PyObject_IsSubclass((PyObject*)tp_base, (PyObject*)&PyDataTuple_Type)) {
-        tp->tp_basicsize = sizeof(PyVarObject);
-        tp->tp_itemsize = sizeof(PyObject*);
-        is_varsize = 1;
-    } else {
+//     if (PyObject_IsSubclass((PyObject*)tp_base, (PyObject*)&PyDataTuple_Type)) {
+//         tp->tp_basicsize = sizeof(PyVarObject);
+//         tp->tp_itemsize = sizeof(PyObject*);
+//         is_varsize = 1;
+//     } else {
         if (PyObject_IsSubclass((PyObject*)tp_base, (PyObject*)&PyDataObject_Type)) {
             tp->tp_basicsize = sizeof(PyObject);
             tp->tp_itemsize = 0;
-            is_varsize = 0;
+//             is_varsize = 0;
         } else {
             PyErr_SetString(PyExc_TypeError,
                             "common base class should be dataobject, datatuple or subclass");
             return NULL;
         }
-    }
+//     }
 
     if (n_fields >= 0) {
         tp->tp_basicsize += n_fields * sizeof(PyObject*);
@@ -2516,9 +2516,9 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_dictoffset = tp_base->tp_dictoffset;
     tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
 
-    if (is_varsize)
-        tp->tp_alloc = datatuple_alloc;
-    else
+//     if (is_varsize)
+//         tp->tp_alloc = datatuple_alloc;
+//     else
         tp->tp_alloc = dataobject_alloc;
 
     dict = PyObject_GetAttrString(cls, "__dict__");
@@ -2526,15 +2526,15 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     __new__ = PyMapping_HasKeyString(dict, "__new__");
 
     if(!__new__ || !has_fields) {
-        if (is_varsize)
-            tp->tp_new = datatuple_new;
-        else
+//         if (is_varsize)
+//             tp->tp_new = datatuple_new;
+//         else
             tp->tp_new = dataobject_new;
     }
 
-    if (is_varsize)
-        tp->tp_dealloc = datatuple_dealloc;
-    else
+//     if (is_varsize)
+//         tp->tp_dealloc = datatuple_dealloc;
+//     else
         tp->tp_dealloc = dataobject_dealloc;
     tp->tp_free = dataobject_free;
 
@@ -2595,13 +2595,13 @@ dataobject_enable_gc(PyObject *module, PyObject *args)
 
     type = (PyTypeObject*)cls;
     type->tp_flags |= Py_TPFLAGS_HAVE_GC;
-    if (type->tp_itemsize) {
-        type->tp_traverse = datatuple_traverse;
-        type->tp_clear = datatuple_clear;
-    } else {
+//     if (type->tp_itemsize) {
+//         type->tp_traverse = datatuple_traverse;
+//         type->tp_clear = datatuple_clear;
+//     } else {
         type->tp_traverse = dataobject_traverse;
         type->tp_clear = dataobject_clear;
-    }
+//     }
 
     PyType_Modified(type);
 
@@ -2738,7 +2738,7 @@ PyInit__dataobject(void)
 
     dtype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
     __fix_type((PyObject*)&PyDataObject_Type, dtype);
-    __fix_type((PyObject*)&PyDataTuple_Type, dtype);
+//     __fix_type((PyObject*)&PyDataTuple_Type, dtype);
     Py_DECREF(dtype);
 
     PyDataObject_Type.tp_base = &PyBaseObject_Type;
@@ -2749,13 +2749,13 @@ PyInit__dataobject(void)
     if (PyType_Ready(&PyDataObject_Type) < 0)
         Py_FatalError("Can't initialize dataobject type");
 
-    PyDataTuple_Type.tp_base = &PyDataObject_Type;
-    Py_INCREF(&PyDataObject_Type);
-#if PY_VERSION_HEX == 0x03080000
-    PyDataTuple_Type.tp_vectorcall_offset = 0
-#endif
-    if (PyType_Ready(&PyDataTuple_Type) < 0)
-        Py_FatalError("Can't initialize datatuple type");
+//     PyDataTuple_Type.tp_base = &PyDataObject_Type;
+//     Py_INCREF(&PyDataObject_Type);
+// #if PY_VERSION_HEX == 0x03080000
+//     PyDataTuple_Type.tp_vectorcall_offset = 0
+// #endif
+//     if (PyType_Ready(&PyDataTuple_Type) < 0)
+//         Py_FatalError("Can't initialize datatuple type");
 
     if (PyType_Ready(&PyDataObjectIter_Type) < 0)
         Py_FatalError("Can't initialize dataobjectiter type");
@@ -2766,8 +2766,8 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
 
-    Py_INCREF(&PyDataTuple_Type);
-    PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);
+//     Py_INCREF(&PyDataTuple_Type);
+//     PyModule_AddObject(m, "datatuple", (PyObject *)&PyDataTuple_Type);
 
     Py_INCREF(&PyDataObjectIter_Type);
     PyModule_AddObject(m, "dataobject_iterator", (PyObject *)&PyDataObjectIter_Type);

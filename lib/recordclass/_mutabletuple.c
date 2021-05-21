@@ -24,7 +24,7 @@
 #undef Py_LIMITED_API
 #endif
 
-/*#include "pyconfig.h"*/
+#include "pyconfig.h"
 #include "Python.h"
 #include <string.h>
 
@@ -660,8 +660,8 @@ mutabletuple_reduce(PyObject *ob)
     PyObject *result;
 
     args = PySequence_Tuple(ob);
-    if (args == NULL)
-        return NULL;
+//     if (args == NULL)
+//         return NULL;
 
     result = PyTuple_Pack(2, Py_TYPE(ob), args);
 

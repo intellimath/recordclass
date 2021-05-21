@@ -158,13 +158,13 @@ def structclass(typename, fields=None, use_dict=False, use_weakref=False, hashab
 def join_classes(name, classes, readonly=False, use_dict=False, gc=False, 
                  use_weakref=False, hashable=True, sequence=True, module=None):
     
-    from ._dataobject import dataobject, datatuple
+    from ._dataobject import dataobject #, datatuple
     
     if not all(issubclass(cls, dataobject) for cls in classes):
         raise TypeError('All arguments should be child of dataobject')
-    for cls in classes:
-        if isinstance(cls, datatuple):
-            raise TypeError('The class', cls, 'should not be a subclass of datatuple')
+#     for cls in classes:
+#         if isinstance(cls, datatuple):
+#             raise TypeError('The class', cls, 'should not be a subclass of datatuple')
     if not all(hasattr(cls, '__fields__') for cls in classes):
         raise TypeError('Some of the base classes has not __fields__')
 

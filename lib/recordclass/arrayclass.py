@@ -41,20 +41,20 @@ else:
 int_type = type(1)
     
 def make_arrayclass(typename, fields=0, namespace=None, 
-             varsize=False, use_dict=False, use_weakref=False,
+             use_dict=False, use_weakref=False,
              hashable=False, readonly=False, gc=False,
              module=None):
 
-    from ._dataobject import dataobject, datatuple, _enable_gc
+    from ._dataobject import dataobject, _enable_gc #, datatuple
     from .datatype import datatype
     
     if not isinstance(fields, int_type):
         raise TypeError("argument fields is not integer")
         
-    if varsize:
-        bases = (datatuple,)
-    else:
-        bases = (dataobject,)        
+#     if varsize:
+#         bases = (datatuple,)
+#     else:
+    bases = (dataobject,)        
 
     options = {
         'use_dict':use_dict, 'use_weakref':use_weakref, 'hashable':hashable, 
@@ -85,5 +85,5 @@ def make_arrayclass(typename, fields=0, namespace=None,
 
     return cls
 
-litetuple = make_arrayclass('ilitetuple', varsize=True, hashable=True, readonly=True)
-mlitetuple = make_arrayclass('mlitetuple', varsize=True, hashable=False)
+# litetuple = make_arrayclass('ilitetuple', varsize=True, hashable=True, readonly=True)
+# mlitetuple = make_arrayclass('mlitetuple', varsize=True, hashable=False)

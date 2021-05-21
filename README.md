@@ -16,13 +16,11 @@ what he is doing and uses such classes in the code with care. Another option is 
 
 **First** ``` recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in CGC by default (type flag `Py_TPFLAGS_HAVE_GC=0`). As the result the instance of such class need less memory. The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All `dataobject`-based classes doesn't support `namedtuple`-like API, but rather `attrs`/`dataclasses`-like API.
 
-**Second** it provide another one base class `datatuple` (special subclass of `dataobject`). It creates variable sized instance like subclasses of the `tuple`.
+**Second** it provide factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names.
 
-**Third** it provide factory function `make_dataclass` for creation of subclasses of `dataobject` or ``datatuple` with the specified field names.
+**Three** it provide factory function `structclass` for creation of subclasses of `dataobject` with `namedtuple`-like API.
 
-**Four** it provide factory function `structclass` for creation of subclasses of `dataobject` with `namedtuple`-like API.
-
-**Six** it provide the class `lightlist`, which considers as list-like *light* container in order to save memory.
+**Four** it provide the class `lightlist`, which considers as list-like *light* container in order to save memory.
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
@@ -211,6 +209,12 @@ Here are also table with some performance counters:
 
 
 ### Changes:
+
+### 0.15
+
+* From now library supports only Python 3.
+* Drop datatuple based classes.
+* Improve logic of __reduce__ for mutabletuple.
 
 #### 0.14.3:
 
