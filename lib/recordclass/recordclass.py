@@ -72,8 +72,6 @@ def recordclass(typename, fields,
     else:
         baseclass = mutabletuple
     
-    # Validate the field names.  At the user's option, either generate an error
-    # message or automatically replace the field name with a valid name.
     if isinstance(fields, str):
         field_names = fields.replace(',', ' ').split()
         annotations = None
@@ -85,7 +83,7 @@ def recordclass(typename, fields,
             if type(fn) is tuple:
                 n, t = fn
                 n = str(n)
-                if _type_check:
+                if _type_check is not None:
                     t = _type_check(t, msg)
                 annotations[n] = t
                 field_names.append(n)

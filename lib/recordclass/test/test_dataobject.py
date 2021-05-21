@@ -25,7 +25,7 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
-#         self.assertEqual(sys.getsizeof(a), 32)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+2*ref_size)
         with self.assertRaises(TypeError):     
             weakref.ref(a)
         with self.assertRaises(AttributeError):     
@@ -303,7 +303,6 @@ class dataobjectTest(unittest.TestCase):
 
     def test_missing_args4(self):
         A = make_dataclass("A", ('a','b','c'), defaults=(-1,), fast_new=True)
-        print(A.__new__)
         a=A(1, 2)
         self.assertEqual(a.a, 1)
         self.assertEqual(a.b, 2)
