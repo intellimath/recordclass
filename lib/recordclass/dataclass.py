@@ -47,7 +47,7 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     from ._dataobject import dataobject
     from .datatype import datatype
 
-    fields, annotations, defaults = process_fields(typename, fields, defaults, rename, invalid_names)
+    fields, annotations, defaults = process_fields(fields, defaults, rename, invalid_names)
     typename = check_name(typename)
 
     options = {

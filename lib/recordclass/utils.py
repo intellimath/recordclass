@@ -71,7 +71,7 @@ def dataitem_offset(cls, i):
     tp_basicsize = cls.__basicsize__
     return tp_basicsize + i*ref_size
 
-def process_fields(typename, fields, defaults, rename, invalid_names):
+def process_fields(fields, defaults, rename, invalid_names):
     annotations = {}
     msg = "in iterable (f0, t0), (f1, t1), ... each t must be a type"
     if isinstance(fields, str):
