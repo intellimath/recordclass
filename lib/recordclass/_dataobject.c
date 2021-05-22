@@ -172,7 +172,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         }
     }
 
-    n_args = PyTuple_GET_SIZE(tmp);
+    n_args = Py_SIZE(tmp);
 
     n_slots = PyDataObject_NUMSLOTS(type);
     if (n_args > n_slots) {
@@ -213,9 +213,16 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 PyObject *fname = PyTuple_GET_ITEM(fields, n_slots-j);
                 PyObject *value = PyDict_GetItem(defaults, fname);
                 
-                if (!value) {
-                    Py_INCREF(Py_None);
-                    *(items++) = Py_None;
+                if (!value && !kwds) {
+                    PyErr_Format(PyExc_TypeError,
+                                    "Missing argument: %S", fname);
+                    Py_DECREF(fields);
+                    Py_DECREF(defaults);
+                    Py_DECREF(tmp);
+                    return NULL;
+                    
+//                     Py_INCREF(Py_None);
+//                     *(items++) = Py_None;
                 } else {
                     Py_INCREF(value);
                     *(items++) = value;                    

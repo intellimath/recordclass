@@ -303,10 +303,9 @@ class dataobjectTest(unittest.TestCase):
 
     def test_missing_args4(self):
         A = make_dataclass("A", ('a','b','c'), defaults=(-1,), fast_new=True)
-        a=A(1, 2)
-        self.assertEqual(a.a, 1)
-        self.assertEqual(a.b, 2)
-        self.assertEqual(a.c, -1)
+#         a=A(1)
+        with self.assertRaises(TypeError):     
+            a=A(1)
 
     def test_missing_args5(self):
         A = make_dataclass("A", ('a','b','c'), defaults=(-1,-2), fast_new=True)

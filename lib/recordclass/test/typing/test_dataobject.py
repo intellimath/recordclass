@@ -56,7 +56,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
-#         self.assertEqual(sys.getsizeof(a), 32)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
         with self.assertRaises(TypeError):     
             weakref.ref(a)
         with self.assertRaises(AttributeError):     
@@ -79,7 +79,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         self.assertEqual(A.__fields__, ('x', 'y'))
-#         self.assertEqual(sys.getsizeof(a), 32)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
         with self.assertRaises(TypeError):     
             weakref.ref(a)
         with self.assertRaises(AttributeError):     

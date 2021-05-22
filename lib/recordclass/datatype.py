@@ -138,11 +138,13 @@ class datatype(type):
             _annotations.update(annotations)
             annotations = _annotations
 
-            if fields and (not fast_new or defaults) and '__new__' not in ns:
+            if fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
 
                 ns['__new__'] = __new__
+            else:
+                print('*')
 
         if has_fields:
             if readonly:
