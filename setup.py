@@ -42,11 +42,6 @@ if use_cython:
 
 ext_modules = [
     Extension(
-        "recordclass._mutabletuple",
-        ["lib/recordclass/_mutabletuple.c"],
-        extra_compile_args = extra_compile_args,
-    ),
-    Extension(
         "recordclass._dataobject",
         ["lib/recordclass/_dataobject.c"],
         extra_compile_args = extra_compile_args,
@@ -55,32 +50,21 @@ ext_modules = [
 
 if use_cython:
     ext_modules.append(Extension(
-        "recordclass.recordobject",
-        ["lib/recordclass/recordobject.pyx"],
-        extra_compile_args = extra_compile_args,
-    ))
-    ext_modules.append(Extension(
         "recordclass.litelist",
         ["lib/recordclass/litelist.pyx"],
         extra_compile_args = extra_compile_args,
     ))
 else:
     ext_modules.append(Extension(
-        "recordclass.recordobject",
-        ["lib/recordclass/recordobject.c"],
-        extra_compile_args = extra_compile_args,
-    ))
-    ext_modules.append(Extension(
         "recordclass.litelist",
         ["lib/recordclass/litelist.c"],
         extra_compile_args = extra_compile_args,
     ))
 
-description = """Mutable variants of tuple (mutabletuple) and collections.namedtuple (recordclass), which support assignments and more memory saving variants (dataobject, structclass, litelist, ...)."""
+description = """Mutable variant of collections.namedtuple -- recordclass.recordclass, which support assignments, and extra memory saving variants: recordclass.dataclass, recordclass.structclass."""
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
-    
     
 packages = ['recordclass', 'recordclass.test']
 if _PY36:
@@ -106,7 +90,7 @@ setup(
     long_description_content_type='text/markdown',
 #     description_content_type='text/plain',
     platforms='Linux, Mac OS X, Windows',
-    keywords=['namedtuple', 'recordclass', 'dataobject', 'structclass', 'mutable tuple'],
+    keywords=['namedtuple', 'recordclass', 'dataclass', 'structclass', 'dataobject'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

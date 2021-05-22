@@ -1,6 +1,6 @@
 # {{LICENCE}}
 
-from recordclass.test.test_mutabletuple import *
+# from recordclass.test.test_mutabletuple import *
 from recordclass.test.test_recordclass import *
 from recordclass.test.test_arrayclass import *
 from recordclass.test.test_dataobject import *

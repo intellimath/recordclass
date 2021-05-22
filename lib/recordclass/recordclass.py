@@ -22,11 +22,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from keyword import iskeyword as _iskeyword
-
-from ._mutabletuple import mutabletuple, immutabletuple, mutabletuple_itemgetset, mutabletuple_itemget
-from .recordobject import recordclasstype
 from collections import namedtuple, OrderedDict
+from .utils import check_name
+from keyword import iskeyword as _iskeyword
 
 import sys as _sys
 
@@ -34,12 +32,11 @@ _intern = _sys.intern
 if _sys.version_info[:2] >= (3, 6):
     from typing import _type_check
 else:
-    _type_check = None
-
-_repr_template = '{name}=%r'
-
-_itemgetseters = {}
-_itemgeters = {}
+    def _type_check(t, msg):
+        if isinstance(t, (type, str)):
+            return t
+        else:
+            raise TypeError('invalid type annotation', t)
 
 def recordclass(typename, fields, 
                 rename=False, defaults=None, readonly=False, hashable=False, gc=False,
@@ -66,32 +63,35 @@ def recordclass(typename, fields,
     >>> p._replace(x=100)               # _replace() is like str.replace() but targets named fields
     Point(x=100, y=22)
     """
-
-    if readonly:
-        baseclass = immutabletuple
-    else:
-        baseclass = mutabletuple
     
+    from ._dataobject import _clsconfig, _enable_gc
+    from ._dataobject import dataobject
+    from .datatype import datatype
+
+    annotations = {}
     if isinstance(fields, str):
         field_names = fields.replace(',', ' ').split()
-        annotations = None
+        field_names = [fn.strip() for fn in field_names]
     else:
-        msg = "recordclass('Name', [(f0, t0), (f1, t1), ...]); each t must be a type"
-        annotations = {}
+        msg = "make_dataclass('Name', [(f0, t0), (f1, t1), ...]); each t must be a type"
         field_names = []
-        for fn in fields:
-            if type(fn) is tuple:
-                n, t = fn
-                n = str(n)
-                if _type_check is not None:
-                    t = _type_check(t, msg)
-                annotations[n] = t
-                field_names.append(n)
-            else:
-                field_names.append(str(fn))
-
-    typename = _intern(str(typename))
-
+        if isinstance(fields, dict):
+            for fn, tp in fields.items():
+                tp = _type_check(tp, msg)
+                check_name(fn)
+                fn = _intern(fn)
+                annotations[fn] = tp
+                field_names.append(fn)
+        else:
+            for fn in fields:
+                if type(fn) is tuple:
+                    fn, tp = fn
+                    tp = _type_check(tp, msg)
+                    annotations[fn] = tp
+                check_name(fn)
+                fn = _intern(fn)
+                field_names.append(fn)
+                
     if rename:
         seen = set()
         for index, name in enumerate(field_names):
@@ -101,7 +101,7 @@ def recordclass(typename, fields,
                 or name in seen):
                     field_names[index] = '_%d' % index
             seen.add(name)
-
+                
     for name in [typename] + field_names:
         if type(name) != str:
             raise TypeError('Type names and field names must be strings')
@@ -119,54 +119,21 @@ def recordclass(typename, fields,
         if name in seen:
             raise ValueError('Encountered duplicate field name: %r' % name)
         seen.add(name)
-
-    if defaults is not None:
-        defaults = tuple(defaults)
-        if len(defaults) > len(field_names):
-            raise TypeError('Got more default values than field names')
-        field_defaults = dict(reversed(list(zip(reversed(field_names),
-                                                reversed(defaults)))))
-    else:
-        field_defaults = {}
-
-    field_names = tuple(map(_intern, field_names))
-    
+        
     n_fields = len(field_names)
-    arg_list = ', '.join(field_names)
-    repr_fmt=', '.join(_repr_template.format(name=name) for name in field_names)
+    typename = check_name(typename)
 
-    if readonly:
-        new_func_template = """\
-def __new__(_cls, {1}):
-    'Create new instance of {0}({1})'
-    return _method_new(_cls, ({1}))
-"""
-        _method_new = immutabletuple.__new__
-    else:
-        new_func_template = """\
-def __new__(_cls, {1}):
-    'Create new instance: {0}({1})'
-    return _method_new(_cls, {1})
-"""
-        _method_new = mutabletuple.__new__
-
-    new_func_def = new_func_template.format(typename, arg_list)
-    
-    # Execute the template string in a temporary namespace and support
-    # tracing utilities by setting a value for frame.f_globals['__name__']
-    namespace = dict(_method_new=_method_new)
-    
-    code = compile(new_func_def, "", "exec")
-    eval(code, namespace)
-    
-    __new__ = namespace['__new__']
     if defaults is not None:
-        __new__.__defaults__ = defaults
-    if annotations:
-        __new__.__annotations__ = annotations
-    
+        n_fields = len(field_names)
+        defaults = tuple(defaults)
+        n_defaults = len(defaults)
+        if n_defaults > n_fields:
+            raise TypeError('Got more default values than fields')
+    else:
+        defaults = None
+        
     def _make(_cls, iterable):
-        ob = _method_new(_cls, *iterable)
+        ob = _cls(*iterable)
         if len(ob) != n_fields:
             raise TypeError('Expected %s arguments, got %s' % (n_fields, len(ob)))
         return ob
@@ -186,64 +153,53 @@ def __new__(_cls, {1}):
             return _self
     
     _replace.__doc__ = 'Return a new %s object replacing specified fields with new values' % typename
-
-    def __repr__(self):
-        'Return a nicely formatted representation string'
-        return self.__class__.__name__ + "(" + (repr_fmt % tuple(self)) + ")" 
     
     def _asdict(self):
         'Return a new OrderedDict which maps field names to their values.'
         return OrderedDict(zip(self.__fields__, self))
         
-    def __getnewargs__(self):
-        'Return self as a plain tuple.  Used by copy and pickle.'
-        return tuple(self)
+    for method in (_make, _replace, _asdict,):
+        method.__qualname__ = typename + "." + method.__name__        
         
-    def __getstate__(self):
-        'Exclude the OrderedDict from pickling'
-        return None
-        
-    def __reduce__(self):
-        'Reduce'
-        return type(self), tuple(self)
+    _make = classmethod(_make)        
+
+    options = {
+        'readonly':readonly,
+        'defaults':defaults,
+        'argsonly':False,
+        'sequence':True,
+        'mapping':False,
+        'iterable':True,
+#         'use_dict':use_dict,
+#         'use_weakref':use_weakref,
+        'hashable':hashable,
+        'gc':gc,
+    }
     
-    class_namespace = {}    
-
-    if hashable and not readonly:
-        def __hash__(self):
-            return hash(tuple(self))
-        __hash__.__qualname__ = typename + "." + "__hash__"
-        class_namespace['__hash__'] = __hash__
-
-    for method in (__new__, _make, _replace,
-                   __repr__, _asdict, 
-                   __getnewargs__,
-                   __reduce__, 
-                   __getstate__
-                  ):
-        method.__qualname__ = typename + "." + method.__name__
+    if readonly:
+        options['hashable'] = True
         
-    _make = classmethod(_make)
+    ns = {'_make': _make, '_replace': _replace, '_asdict': _asdict,
+          '__doc__': typename+'('+ ', '.join(field_names) +')',
+         '__module__':module}
 
-    if readonly:
-        _cache = _itemgeters
-    else:
-        _cache = _itemgetseters
-    for index, name in enumerate(field_names):
-        try:
-            item_object = _cache[index]
-        except KeyError:
-            if readonly:
-                item_object = mutabletuple_itemget(index)
-            else:
-                item_object = mutabletuple_itemgetset(index)
-            #doc = 'Alias for field number ' + str(index)
-            _cache[index] = item_object
-        class_namespace[name] = item_object
+    if defaults:
+        for i in range(-n_defaults, 0):
+            fname = field_names[i]
+            val = defaults[i]
+            ns[fname] = val
 
-    __options__ = {'hashable':hashable, 'gc':gc}
-    if readonly:
-        __options__['hashable'] = True
+#     if use_dict and '__dict__' not in field_names:
+#         field_names.append('__dict__')
+#     if use_weakref and '__weakref__' not in field_names:
+#         field_names.append('__weakref__')
+
+    ns['__options__'] = options
+    ns['__fields__'] = field_names
+    if annotations:
+        ns['__annotations__'] = annotations
+
+    bases = (dataobject,)
 
     if module is None:
         try:
@@ -251,43 +207,12 @@ def __new__(_cls, {1}):
         except (AttributeError, ValueError):
             pass
         
-    class_namespace.update({
-        '__slots__': (),
-        '__doc__': typename+'('+arg_list+')',
-        '__fields__': field_names,
-        '__new__': __new__,
-        '_make': _make,
-        '_replace': _replace,
-        '__repr__': __repr__,
-        '_asdict': _asdict,
-        '__getnewargs__': __getnewargs__,
-        '__getstate__': __getstate__,
-        '__reduce__': __reduce__,
-        '__dict__': property(_asdict),
-        '__options__': __options__,
-        '__module__': module,
-    })
-
-    _result = recordclasstype(typename, (baseclass,), class_namespace)    
-    if annotations:
-        _result.__annotations__ = annotations
-        
-    return _result
-
-
-# class RecordclassStorage:
+    ns['__module__'] = module
     
-#     def __init__(self):
-#         self._storage = {}
-#     #
-#     def clear_storage(self):
-#         self._storage.clear()
-#     #
-#     def recordclass(self, name, fields):
-#         fields = tuple(fields)
-#         key = (name, fields)
-#         cls = self._storage.get(key, None)
-#         if cls is None:
-#             cls = recordclass(name, fields)
-#             self._storage[(name, fields)] = cls
-#         return cls
+    cls = datatype(typename, bases, ns)
+    
+    if gc:
+        _enable_gc(cls)
+        
+    return cls
+

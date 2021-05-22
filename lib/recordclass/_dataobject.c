@@ -884,20 +884,20 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
     return result;
 }
 
-PyDoc_STRVAR(dataobject_getnewargs_doc,
-"T.__getnewargs__()");
+// PyDoc_STRVAR(dataobject_getnewargs_doc,
+// "T.__getnewargs__()");
 
-static PyObject *
-dataobject_getnewargs(PyObject *ob)
-{
-    PyObject *args;
+// static PyObject *
+// dataobject_getnewargs(PyObject *ob)
+// {
+//     PyObject *args;
 
-    args = _astuple(ob);
-    if (args == NULL)
-        return NULL;
+//     args = _astuple(ob);
+//     if (args == NULL)
+//         return NULL;
 
-    return args;
-}
+//     return args;
+// }
 
 PyDoc_STRVAR(dataobject_getstate_doc,
 "T.__getstate__()");
@@ -960,7 +960,7 @@ static PyMethodDef dataobject_methods[] = {
     {"__sizeof__",      (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
     {"__reduce__",      (PyCFunction)dataobject_reduce, METH_NOARGS, dataobject_reduce_doc},
     {"__getstate__",      (PyCFunction)dataobject_getstate, METH_NOARGS, dataobject_getstate_doc},
-    {"__getnewargs__",      (PyCFunction)dataobject_getnewargs, METH_NOARGS, dataobject_getnewargs_doc},
+//     {"__getnewargs__",      (PyCFunction)dataobject_getnewargs, METH_NOARGS, dataobject_getnewargs_doc},
     {"__setstate__",      (PyCFunction)dataobject_setstate, METH_O, dataobject_setstate_doc},
     {NULL}
 };
@@ -1687,8 +1687,8 @@ _set_hashable(PyObject *cls, PyObject *hashable) {
 
     if (state)
         tp->tp_hash = dataobject_hash;
-    else
-        tp->tp_hash = NULL;
+//     else
+//         tp->tp_hash = NULL;
 
     Py_RETURN_NONE;
 }
