@@ -41,13 +41,13 @@ else:
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None,
                    use_dict=False, use_weakref=False, hashable=True,
                    sequence=False, mapping=False, iterable=False, readonly=False,
-                   module=None, fast_new=False, rename=False, gc=False):
+                   module=None, fast_new=False, rename=False, invalid_names=(), gc=False):
 
     from ._dataobject import _clsconfig, _enable_gc
     from ._dataobject import dataobject
     from .datatype import datatype
 
-    fields, annotations, defaults = process_fields(typename, fields, defaults)
+    fields, annotations, defaults = process_fields(typename, fields, defaults, rename, invalid_names)
     typename = check_name(typename)
 
     options = {
