@@ -38,32 +38,17 @@ else:
         else:
             raise TypeError('invalid type annotation', t)
 
-def make_dataclass(typename, fields=None, bases=None, namespace=None,
+def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None,
                    use_dict=False, use_weakref=False, hashable=True,
                    sequence=False, mapping=False, iterable=False, readonly=False,
-                   defaults=None, module=None, fast_new=False, gc=False):
+                   module=None, fast_new=False, rename=False, gc=False):
 
     from ._dataobject import _clsconfig, _enable_gc
     from ._dataobject import dataobject
     from .datatype import datatype
 
-    fields, annotations = process_fields(fields)
+    fields, annotations, defaults = process_fields(typename, fields, defaults)
     typename = check_name(typename)
-    
-    seen = set()
-    for fn in fields:
-        if fn in seen:
-            raise ValueError('duplicate name ' + fn)
-        seen.add(fn)
-
-    if defaults is not None:
-        n_fields = len(fields)
-        defaults = tuple(defaults)
-        n_defaults = len(defaults)
-        if n_defaults > n_fields:
-            raise TypeError('Got more default values than fields')
-    else:
-        defaults = None
 
     options = {
         'readonly':readonly,
@@ -83,12 +68,14 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
         ns = {}
     else:
         ns = namespace.copy()
+        
+    n_fields = len(fields)
+    n_defaults = len(defaults) if defaults else 0
 
     if defaults:
         for i in range(-n_defaults, 0):
             fname = fields[i]
-            val = defaults[i]
-            ns[fname] = val
+            ns[fname] = defaults[i]
 
     if use_dict and '__dict__' not in fields:
         fields.append('__dict__')

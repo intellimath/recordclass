@@ -23,24 +23,12 @@
 # THE SOFTWARE.
 
 from collections import namedtuple, OrderedDict
-from .utils import check_name
-from keyword import iskeyword as _iskeyword
 from .dataclass import make_dataclass
 
 import sys as _sys
 
-# _intern = _sys.intern
-# if _sys.version_info[:2] >= (3, 6):
-#     from typing import _type_check
-# else:
-#     def _type_check(t, msg):
-#         if isinstance(t, (type, str)):
-#             return t
-#         else:
-#             raise TypeError('invalid type annotation', t)
-
-def recordclass(typename, fields, 
-                rename=False, defaults=None, readonly=False, hashable=False, gc=False,
+def recordclass(typename, fields, defaults=None, 
+                rename=False, readonly=False, hashable=False, gc=False,
                 use_dict=False, use_weakref=False, fast_new=False, module=None):
     """Returns a new subclass of array with named fields.
 
@@ -108,9 +96,9 @@ def recordclass(typename, fields,
     else:
         _module = module
     
-    return make_dataclass(typename, fields, namespace=ns,
+    return make_dataclass(typename, fields, defaults=defaults, namespace=ns,
                     use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
                     sequence=True, mapping=False, iterable=True, 
-                    readonly=readonly, defaults=defaults, module=_module, fast_new=fast_new, gc=False)
+                    readonly=readonly, module=_module, fast_new=fast_new, gc=False)
     
 

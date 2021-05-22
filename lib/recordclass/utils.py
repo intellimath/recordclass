@@ -70,7 +70,7 @@ def dataitem_offset(cls, i):
     tp_basicsize = cls.__basicsize__
     return tp_basicsize + i*ref_size
 
-def process_fields(fields):
+def process_fields(typename, fields, defaults):
     annotations = {}
     msg = "in iterable (f0, t0), (f1, t1), ... each t must be a type"
     if isinstance(fields, str):
@@ -95,7 +95,23 @@ def process_fields(fields):
                 fn = _intern(fn)
                 field_names.append(fn)
         fields = field_names
-    return fields, annotations
+        
+    seen = set()
+    for fn in fields:
+        if fn in seen:
+            raise ValueError('duplicate name ' + fn)
+        seen.add(fn)
+
+    if defaults is not None:
+        n_fields = len(fields)
+        defaults = tuple(defaults)
+        n_defaults = len(defaults)
+        if n_defaults > n_fields:
+            raise TypeError('Got more default values than fields')
+    else:
+        defaults = None
+        
+    return fields, annotations, defaults
 
 def check_name(name):
     if not isinstance(name, str):
