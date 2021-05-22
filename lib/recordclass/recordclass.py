@@ -25,22 +25,23 @@
 from collections import namedtuple, OrderedDict
 from .utils import check_name
 from keyword import iskeyword as _iskeyword
+from .dataclass import make_dataclass
 
 import sys as _sys
 
-_intern = _sys.intern
-if _sys.version_info[:2] >= (3, 6):
-    from typing import _type_check
-else:
-    def _type_check(t, msg):
-        if isinstance(t, (type, str)):
-            return t
-        else:
-            raise TypeError('invalid type annotation', t)
+# _intern = _sys.intern
+# if _sys.version_info[:2] >= (3, 6):
+#     from typing import _type_check
+# else:
+#     def _type_check(t, msg):
+#         if isinstance(t, (type, str)):
+#             return t
+#         else:
+#             raise TypeError('invalid type annotation', t)
 
 def recordclass(typename, fields, 
                 rename=False, defaults=None, readonly=False, hashable=False, gc=False,
-                module=None):
+                use_dict=False, use_weakref=False, fast_new=False, module=None):
     """Returns a new subclass of array with named fields.
 
     >>> Point = recordclass('Point', 'x y')
@@ -64,85 +65,15 @@ def recordclass(typename, fields,
     Point(x=100, y=22)
     """
     
-    from ._dataobject import _clsconfig, _enable_gc
-    from ._dataobject import dataobject
-    from .datatype import datatype
-
-    annotations = {}
-    if isinstance(fields, str):
-        field_names = fields.replace(',', ' ').split()
-        field_names = [fn.strip() for fn in field_names]
-    else:
-        msg = "make_dataclass('Name', [(f0, t0), (f1, t1), ...]); each t must be a type"
-        field_names = []
-        if isinstance(fields, dict):
-            for fn, tp in fields.items():
-                tp = _type_check(tp, msg)
-                check_name(fn)
-                fn = _intern(fn)
-                annotations[fn] = tp
-                field_names.append(fn)
-        else:
-            for fn in fields:
-                if type(fn) is tuple:
-                    fn, tp = fn
-                    tp = _type_check(tp, msg)
-                    annotations[fn] = tp
-                check_name(fn)
-                fn = _intern(fn)
-                field_names.append(fn)
-                
-    if rename:
-        seen = set()
-        for index, name in enumerate(field_names):
-            if (not name.isidentifier()
-                or _iskeyword(name)
-                or name.startswith('_')
-                or name in seen):
-                    field_names[index] = '_%d' % index
-            seen.add(name)
-                
-    for name in [typename] + field_names:
-        if type(name) != str:
-            raise TypeError('Type names and field names must be strings')
-        if not name.isidentifier():
-            raise ValueError('Type names and field names must be valid '
-                             'identifiers: %r' % name)
-        if _iskeyword(name):
-            raise ValueError('Type names and field names cannot be a '
-                             'keyword: %r' % name)
-    seen = set()
-    for name in field_names:
-        if name.startswith('_') and not rename:
-            raise ValueError('Field names cannot start with an underscore: '
-                             '%r' % name)
-        if name in seen:
-            raise ValueError('Encountered duplicate field name: %r' % name)
-        seen.add(name)
-        
-    n_fields = len(field_names)
-    typename = check_name(typename)
-
-    if defaults is not None:
-        n_fields = len(field_names)
-        defaults = tuple(defaults)
-        n_defaults = len(defaults)
-        if n_defaults > n_fields:
-            raise TypeError('Got more default values than fields')
-    else:
-        defaults = None
-        
     def _make(_cls, iterable):
         ob = _cls(*iterable)
-        if len(ob) != n_fields:
-            raise TypeError('Expected %s arguments, got %s' % (n_fields, len(ob)))
         return ob
     
     _make.__doc__ = 'Make a new %s object from a sequence or iterable' % typename
 
     if readonly:
         def _replace(_self, **kwds):
-            result = _self._make((kwds.pop(name) for name in field_names))
+            result = _self._make((kwds.pop(name) for name in self.__fields__))
             if kwds:
                 raise ValueError('Got unexpected field names: %r' % list(kwds))
             return result
@@ -163,56 +94,23 @@ def recordclass(typename, fields,
         
     _make = classmethod(_make)        
 
-    options = {
-        'readonly':readonly,
-        'defaults':defaults,
-        'argsonly':False,
-        'sequence':True,
-        'mapping':False,
-        'iterable':True,
-#         'use_dict':use_dict,
-#         'use_weakref':use_weakref,
-        'hashable':hashable,
-        'gc':gc,
-    }
-    
-    if readonly:
-        options['hashable'] = True
-        
-    ns = {'_make': _make, '_replace': _replace, '_asdict': _asdict,
-          '__doc__': typename+'('+ ', '.join(field_names) +')',
-         '__module__':module}
-
-    if defaults:
-        for i in range(-n_defaults, 0):
-            fname = field_names[i]
-            val = defaults[i]
-            ns[fname] = val
-
-#     if use_dict and '__dict__' not in field_names:
-#         field_names.append('__dict__')
-#     if use_weakref and '__weakref__' not in field_names:
-#         field_names.append('__weakref__')
-
-    ns['__options__'] = options
-    ns['__fields__'] = field_names
-    if annotations:
-        ns['__annotations__'] = annotations
-
-    bases = (dataobject,)
+    ns = {
+            '_make': _make, 
+            '_replace': _replace, 
+            '_asdict': _asdict,
+         }
 
     if module is None:
         try:
-            module = _sys._getframe(1).f_globals.get('__name__', '__main__')
+            _module = _sys._getframe(1).f_globals.get('__name__', '__main__')
         except (AttributeError, ValueError):
             pass
-        
-    ns['__module__'] = module
+    else:
+        _module = module
     
-    cls = datatype(typename, bases, ns)
+    return make_dataclass(typename, fields, namespace=ns,
+                    use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
+                    sequence=True, mapping=False, iterable=True, 
+                    readonly=readonly, defaults=defaults, module=_module, fast_new=fast_new, gc=False)
     
-    if gc:
-        _enable_gc(cls)
-        
-    return cls
 

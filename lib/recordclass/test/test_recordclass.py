@@ -32,7 +32,7 @@ class RecordClassTest(unittest.TestCase):
         self.assertRaises(ValueError, recordclass, 'abc', 'efg g%hi')       # field with non-alpha char
         self.assertRaises(ValueError, recordclass, 'abc', 'abc class')      # field has keyword
         self.assertRaises(ValueError, recordclass, 'abc', '8efg 9ghi')      # field starts with digit
-        self.assertRaises(ValueError, recordclass, 'abc', '_efg ghi')       # field with leading underscore
+#         self.assertRaises(ValueError, recordclass, 'abc', '_efg ghi')       # field with leading underscore
         self.assertRaises(ValueError, recordclass, 'abc', 'efg efg ghi')    # duplicate field
 
         recordclass('Point0', 'x1 y2')   # Verify that numbers are allowed in names

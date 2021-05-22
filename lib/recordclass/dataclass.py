@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .utils import dataslot_offset
+from .utils import dataslot_offset, process_fields
 from .utils import check_name, collect_info_from_bases
 
 import sys as _sys
@@ -47,31 +47,14 @@ def make_dataclass(typename, fields=None, bases=None, namespace=None,
     from ._dataobject import dataobject
     from .datatype import datatype
 
-    annotations = {}
-    if isinstance(fields, str):
-        fields = fields.replace(',', ' ').split()
-        fields = [fn.strip() for fn in fields]
-    else:
-        msg = "make_dataclass('Name', [(f0, t0), (f1, t1), ...]); each t must be a type"
-        field_names = []
-        if isinstance(fields, dict):
-            for fn, tp in fields.items():
-                tp = _type_check(tp, msg)
-                check_name(fn)
-                fn = _intern(fn)
-                annotations[fn] = tp
-                field_names.append(fn)
-        else:
-            for fn in fields:
-                if type(fn) is tuple:
-                    fn, tp = fn
-                    tp = _type_check(tp, msg)
-                    annotations[fn] = tp
-                check_name(fn)
-                fn = _intern(fn)
-                field_names.append(fn)
-        fields = field_names
+    fields, annotations = process_fields(fields)
     typename = check_name(typename)
+    
+    seen = set()
+    for fn in fields:
+        if fn in seen:
+            raise ValueError('duplicate name ' + fn)
+        seen.add(fn)
 
     if defaults is not None:
         n_fields = len(fields)

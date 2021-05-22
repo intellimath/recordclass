@@ -70,6 +70,33 @@ def dataitem_offset(cls, i):
     tp_basicsize = cls.__basicsize__
     return tp_basicsize + i*ref_size
 
+def process_fields(fields):
+    annotations = {}
+    msg = "in iterable (f0, t0), (f1, t1), ... each t must be a type"
+    if isinstance(fields, str):
+        fields = fields.replace(',', ' ').split()
+        fields = [fn.strip() for fn in fields]
+    else:
+        field_names = []
+        if isinstance(fields, dict):
+            for fn, tp in fields.items():
+                tp = _type_check(tp, msg)
+                check_name(fn)
+                fn = _intern(fn)
+                annotations[fn] = tp
+                field_names.append(fn)
+        else:
+            for fn in fields:
+                if type(fn) is tuple:
+                    fn, tp = fn
+                    tp = _type_check(tp, msg)
+                    annotations[fn] = tp
+                check_name(fn)
+                fn = _intern(fn)
+                field_names.append(fn)
+        fields = field_names
+    return fields, annotations
+
 def check_name(name):
     if not isinstance(name, str):
         raise TypeError('Type names and field names must be strings')

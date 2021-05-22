@@ -143,8 +143,8 @@ class datatype(type):
                 __new__.__qualname__ = typename + '.' + '__new__'
 
                 ns['__new__'] = __new__
-            else:
-                print('*')
+#             else:
+#                 print('*')
 
         if has_fields:
             if readonly:
