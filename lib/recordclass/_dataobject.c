@@ -213,16 +213,19 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 PyObject *fname = PyTuple_GET_ITEM(fields, n_slots-j);
                 PyObject *value = PyDict_GetItem(defaults, fname);
                 
-                if (!value && !kwds) {
+                if (!value) {
+                    if (kwds) {
+                        if (!PyMapping_HasKey(kwds, fname))
+                            goto miss_arg;
+                    } else 
+                        goto miss_arg;
+miss_arg:               
                     PyErr_Format(PyExc_TypeError,
                                     "Missing argument: %S", fname);
                     Py_DECREF(fields);
                     Py_DECREF(defaults);
                     Py_DECREF(tmp);
-                    return NULL;
-                    
-//                     Py_INCREF(Py_None);
-//                     *(items++) = Py_None;
+                    return NULL;                            
                 } else {
                     Py_INCREF(value);
                     *(items++) = value;                    
