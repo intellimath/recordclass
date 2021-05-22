@@ -22,7 +22,6 @@
 
 import collections
 from recordclass import recordclass
-from recordclass import structclass
 from typing import _type_check
 
 import sys as _sys
@@ -105,86 +104,3 @@ class RecordClass(metaclass=RecordClassMeta):
             raise TypeError("Either list of fields or keywords"
                             " can be provided to RecordClass, not both")
         return _make_recordclass(typename, fields)
-
-
-def _make_structclass(name, types, readonly=False, use_dict=False, gc=False, 
-                            use_weakref=False, hashable=False):
-    msg = "StructClass('Name', [(f0, t0), (f1, t1), ...]); each t must be a type"
-    types = [(n, _type_check(t, msg)) for n, t in types]
-    
-    module = None
-    try:
-        module = _sys._getframe(2).f_globals.get('__name__', '__main__')
-    except (AttributeError, ValueError):
-        pass
-    
-#     print('mod:', module)
-    
-    struct_cls = structclass(name, [n for n, _ in types], 
-                             readonly=readonly, use_dict=use_dict, gc=gc, 
-                             use_weakref=use_weakref, hashable=hashable, module=module)
-    struct_cls.__annotations__ = dict(types)
-#     try:
-#         struct_cls.__module__ = _sys._getframe(2).f_globals.get('__name__', '__main__')
-#     except (AttributeError, ValueError):
-#         pass
-    return struct_cls
-    
-class StructClassMeta(type):
-    def __new__(cls, typename, bases, ns):
-        if ns.get('_root', False):
-            return super().__new__(cls, typename, bases, ns)
-        types = ns.get('__annotations__', {})
-
-        options = ns.pop('__options__', {})
-        readonly = options.get('readonly', False)
-        use_dict = options.get('use_dict', False)
-        use_weakref = options.get('use_weakref', False)
-        hashable = options.get('hashable', False)
-        
-        if 'gc' in options:
-            gc = options.get('gc')
-        else:
-            gc = 0        
-        
-        defaults = []
-        defaults_dict = {}
-        for field_name in types:
-            if field_name in ns:
-                default_value = ns[field_name]
-                defaults.append(default_value)
-                defaults_dict[field_name] = default_value
-            elif defaults:
-                raise TypeError("Non-default recordclass field {field_name} cannot "
-                                "follow default field(s) {default_names}"
-                                .format(field_name=field_name,
-                                        default_names=', '.join(defaults_dict.keys())))
-        
-        struct_cls = _make_structclass(typename, types.items(),
-                            readonly=readonly, use_dict=use_dict, gc=gc, 
-                            use_weakref=use_weakref, hashable=hashable)
-
-        if defaults:
-            struct_cls.__new__.__defaults__ = tuple(defaults)
-        if types:
-            struct_cls.__new__.__annotations__ = collections.OrderedDict(types)
-        #struct_cls._field_defaults = defaults_dict
-        # update from user namespace without overriding special recordclass attributes
-        for name in ns:
-            if name in _excluded:
-                raise AttributeError("Cannot overwrite RecordClass attribute " + name)
-            elif name not in _special and name not in struct_cls.__fields__:
-                setattr(struct_cls, name, ns[name])
-
-        return struct_cls
-
-class StructClass(metaclass=StructClassMeta):
-    _root = True
-
-    def __new__(self, typename, fields=None, **kwargs):
-        if fields is None:
-            fields = kwargs.items()
-        elif kwargs:
-            raise TypeError("Either list of fields or keywords"
-                            " can be provided to RecordClass, not both")            
-        return _make_structclass(typename, fields)

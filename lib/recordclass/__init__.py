@@ -38,6 +38,6 @@ from .arrayclass import make_arrayclass
 from .litelist import litelist
 
 if _PY36:
-    from .typing import RecordClass, StructClass
+    from .typing import RecordClass
 
 __version__ = '0.15'
