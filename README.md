@@ -3,28 +3,24 @@
 **Recordclass** is [MIT Licensed](http://opensource.org/licenses/MIT) python library.
 It was started as a "proof of concept" for the problem of fast "mutable"
 alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on stackoverflow).
-It implements the type `mutabletuple`, which supports assignment operations, and factory function `recordclass` in order to create record-like classes &ndash; subclasses of the `mutabletuple`. The function `recordclass` is a variant of `collection.namedtuple`. It produces classes with the same API. It was evolved further in order to provide more memory saving, fast and flexible types for representation of data objects.
+It implements a factory function `recordclass` (a variant of `collection.namedtuple`) in order to create record-like classes with the same API as  `collection.namedtuple`. It was evolved further in order to provide more memory saving, fast and flexible type.
 
-Later **recordclass** started providing tools for creating data classes that do not participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanizm for garbage collection.
-The instances of such classes have not `PyGC_Head` prefix in the memory, which decrease their size. For CPython 3.8 it saves 16 bytes, for CPython 3.4-3.7 it saves 24-32 bytes.
+Later **recordclass** library started to provide record-like classes that do not participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanizm for garbage collection.
+The instances of such classes have not `PyGC_Head` prefix in the memory, which decrease their size.
 This may make sense in cases where it is necessary to limit the size of objects as much as possible, provided that they will never be part of circular references in the application.
 For example, when an object represents a record with fields that represent simple values by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
 Another examples are non-recursive data structures in which all leaf elements represent simple values.
 Of course, in python, nothing prevents you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
 But in some cases, this can still be avoided provided that the developer understands
-what he is doing and uses such classes in the code with care. Another option is using static analyzers together with type annotations.
+what he is doing and uses such classes in the code with care. Another option is a use of static analyzers together with type annotations.
 
-**First** ``` recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in CGC by default (type flag `Py_TPFLAGS_HAVE_GC=0`). As the result the instance of such class need less memory. The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All `dataobject`-based classes doesn't support `namedtuple`-like API, but rather `attrs`/`dataclasses`-like API.
+**First** ``` recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in CGC by default (type flag `Py_TPFLAGS_HAVE_GC=0`). As the result the instance of such class need less memory. TIt's memory footprint is similar to memory footprint of instances of the classes with `__slots__` . The difference is equal to the size of ``PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All `dataobject`-based classes doesn't support `namedtuple`-like API, but rather `attrs`/`dataclasses`-like API.
 
-**Second** it provide factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names.
+**Second** it provide a factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names. These subclasses support `attrs`/`dataclasses`-like API.
 
-**Three** it provide factory function `structclass` for creation of subclasses of `dataobject` with `namedtuple`-like API.
-
-**Four** it provide the class `lightlist`, which considers as list-like *light* container in order to save memory.
+**Three** it provide the class `lightlist`, which considers as list-like *light* container in order to save memory.
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
-
-> Note that starting from  0.13 it is a git-based repository. The old hg-based repository is [here](https://bitbucket.org/intellimath/recordclass_old).  
 
 Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/intellimath/recordclass/raw/master/examples/what_is_recordclass.ipynb).
 
@@ -70,7 +66,7 @@ Example with `recordclass`:
     >>> p.x, p.y = 10, 20
     >>> print(p)
     Point(10, 20)
-    >>> sys.getsizeof(p) # the output below is for 64bit cpython3.7
+    >>> sys.getsizeof(p) # the output below is for 64bit cpython3.9
     40
 
 Example with `RecordClass` and typehints::
@@ -93,11 +89,11 @@ Example with `RecordClass` and typehints::
     Point(10, 20)
     
 
-Now by default `recordclass`-based class instances doesn't participate in CGC and therefore  they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`````gc=False` by default):
+Now by default `recordclass`-based class instances doesn't participate in CGC and therefore  they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`gc=False` by default):
 
     >>> Node = recordclass('Node', 'root, children', gc=True)
     
-or decorator ``@enable_gc` for `RecordClass`-based classes:
+or decorator `@enable_gc` for `RecordClass`-based classes:
 
     @recordclass.enable_gc
     class Node(RecordClass):
@@ -163,7 +159,7 @@ or
 
 The following table explain memory footprints of `recordclass`-base and `dataobject`-base objects:
 
-| namedtuple    |  class/\_\_slots\_\_  |  recordclass   | dataclass  |
+| namedtuple    |  class with \_\_slots\_\_  |  recordclass   | dataobject |
 | ------------- | ----------------- | -------------- | ------------- |
 |   $g+b+s+n*p$     |     $g+b+n*p$         |  $b+s+n*p$       |     $b+n*p$     |
 
@@ -201,7 +197,7 @@ As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.
 
 Here are also table with some performance counters:
 
-|         | namedtuple    |  class/\_\_slots\_\_  |  recordclass   | dataobject  |
+|         | namedtuple    |  class with \_\_slots\_\_  |  recordclass   | dataobject  |
 | ------- | ------------- | ----------------- | -------------- | ------------- |
 |   `new`   |    320±6 ns  |     411±8 ns    |   406±8 ns   |    113±1 ns  |
 | `getattr` |   35.6±0.7 ns |    20.8±0.4 ns   |   26.8±1.8 ns |   27.7±2.3 ns |
@@ -214,7 +210,8 @@ Here are also table with some performance counters:
 
 * From now library supports only Python 3.
 * Drop datatuple based classes.
-* Improve logic of __reduce__ for mutabletuple.
+* Drop the mutabletuple type.
+* Drop the structclass factory in favour of make_dataclass
 
 #### 0.14.3:
 

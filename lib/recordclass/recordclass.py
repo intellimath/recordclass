@@ -98,8 +98,9 @@ def recordclass(typename, fields, defaults=None,
     
     invalid_names = ('_make', '_replace', '_asdict')
     return make_dataclass(typename, fields, defaults=defaults, namespace=ns,
-                    use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
-                    sequence=True, mapping=False, iterable=True, rename=rename, invalid_names=invalid_names,
-                    readonly=readonly, module=_module, fast_new=fast_new, gc=False)
+                use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
+                sequence=True, mapping=False, iterable=True, rename=rename,
+                invalid_names=invalid_names, readonly=readonly, module=_module, 
+                fast_new=fast_new, gc=False)
     
 
