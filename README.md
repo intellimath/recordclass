@@ -14,8 +14,7 @@ Of course, in python, nothing prevents you from “shooting yourself in the foot
 But in some cases, this can still be avoided provided that the developer understands
 what he is doing and uses such classes in the code with care. Another option is a use of static analyzers together with type annotations.
 
-**First** ``` recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in CGC by default (type flag `Py_TPFLAGS_HAVE_GC=0`). As the result the instance of such class need less memory. TIt's memory footprint is similar to memory footprint of instances of the classes with `__slots__` . The difference is equal to the size of ``PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All `dataobject`-based classes doesn't support `namedtuple`-like API, but rather `attrs`/`dataclasses`-like API.
-
+**First** `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in CGC by default. As the result the instance of such class need less memory. It's memory footprint is similar to memory footprint of instances of the classes with `__slots__` . The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All subclasses of `dataobject` created with class statement support `attrs`/`dataclasses`-like API.
 **Second** it provide a factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names. These subclasses support `attrs`/`dataclasses`-like API.
 
 **Three** it provide the class `lightlist`, which considers as list-like *light* container in order to save memory.
