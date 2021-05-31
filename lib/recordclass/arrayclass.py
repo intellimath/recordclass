@@ -25,6 +25,8 @@
 from .utils import dataslot_offset
 from .utils import check_name, collect_info_from_bases
 
+__all__ = 'make_arrayclass', 
+
 import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
 

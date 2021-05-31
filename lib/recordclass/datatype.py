@@ -25,6 +25,8 @@
 from .utils import dataslot_offset
 from .utils import check_name, collect_info_from_bases
 
+__all__ = 'clsconfig', 'enable_gc', 'datatype'
+
 import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
 
@@ -143,8 +145,6 @@ class datatype(type):
                 __new__.__qualname__ = typename + '.' + '__new__'
 
                 ns['__new__'] = __new__
-#             else:
-#                 print('*')
 
         if has_fields:
             if readonly:
@@ -249,5 +249,3 @@ def _make_cls_doc(cls, typename, fields, defaults, use_dict):
     doc = template.format(typename, ', '.join(fields), ', '.join(fields2))
 
     return doc
-
-del _sys

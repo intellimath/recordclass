@@ -24,6 +24,8 @@ import collections
 from recordclass import recordclass
 from typing import _type_check
 
+__all__ = 'RecordClass',
+
 import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
 

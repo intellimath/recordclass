@@ -25,6 +25,8 @@
 from collections import namedtuple, OrderedDict
 from .dataclass import make_dataclass
 
+__all__ = 'recordclass', 
+
 import sys as _sys
 
 def recordclass(typename, fields, defaults=None, 
