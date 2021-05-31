@@ -117,6 +117,10 @@ def asdict(ob):
     _getattr = getattr
     return {fn:_getattr(ob, fn) for fn in ob.__class__.__fields__}
 
+def astuple(ob):
+    from ._dataobject import _astuple
+    return _astuple(ob)
+
 # class DataclassStorage:
 #     #
 #     def __init__(self):

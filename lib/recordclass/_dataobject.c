@@ -2006,7 +2006,7 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 "dataobject module provide `dataobject` class.");
 
 static PyMethodDef dataobjectmodule_methods[] = {
-    {"astuple", astuple, METH_VARARGS, astuple_doc},
+    {"_astuple", astuple, METH_VARARGS, astuple_doc},
     {"_enable_gc", dataobject_enable_gc, METH_VARARGS, enable_gc_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},

@@ -6,7 +6,7 @@ import sys
 import gc
 import weakref
 
-from recordclass import make_dataclass, make_arrayclass, datatype, asdict, join_dataclasses
+from recordclass import make_dataclass, make_arrayclass, datatype, asdict, astuple, join_dataclasses
 from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
@@ -383,6 +383,18 @@ class dataobjectTest(unittest.TestCase):
         a = A(x=1,y=2)
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
+
+    def test_dataclass_asdict(self):
+        A = make_dataclass("A", {'x':int, 'y':int})
+        a = A(x=1,y=2)
+        d = asdict(a)
+        self.assertEqual(d, {'x':1, 'y':2})
+        
+    def test_dataclass_astuple(self):
+        A = make_dataclass("A", {'x':int, 'y':int})
+        a = A(x=1,y=2)
+        t = astuple(a)
+        self.assertEqual(t, (1, 2))
 
     def test_refleak_on_assignemnt_do(self):
         Test = make_dataclass("Test", "x")
