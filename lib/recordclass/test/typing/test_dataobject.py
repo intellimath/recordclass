@@ -7,8 +7,8 @@ import gc
 import weakref
 
 from recordclass import make_dataclass, datatype #, DataclassStorage
-from recordclass import dataobject #, datatuple
-from recordclass import asdict, clsconfig, enable_gc
+from recordclass import dataobject
+from recordclass import asdict, clsconfig
 
 _t = ()
 _t1 = (1,)
@@ -496,7 +496,7 @@ class DataObjectTest3(unittest.TestCase):
         class A(dataobject):
             __fields__ = 'x', 'y', 'z'
         
-        @enable_gc
+        @clsconfig(gc=True)
         class B(dataobject):
             __fields__ = 'x', 'y', 'z'
             

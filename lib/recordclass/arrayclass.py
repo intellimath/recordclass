@@ -36,7 +36,7 @@ def make_arrayclass(typename, fields=0, namespace=None,
              hashable=False, readonly=False, gc=False,
              module=None):
 
-    from ._dataobject import dataobject, _enable_gc
+    from ._dataobject import dataobject
     from .datatype import datatype
     
     if not isinstance(fields, int_type):
@@ -69,8 +69,5 @@ def make_arrayclass(typename, fields=0, namespace=None,
     ns['__module__'] = module
     
     cls = datatype(typename, bases, ns)
-
-    if gc:
-        _enable_gc(cls)
 
     return cls

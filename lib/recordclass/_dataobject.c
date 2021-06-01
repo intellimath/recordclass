@@ -1885,21 +1885,10 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(enable_gc_doc,
-"Enable GC for specified (var)dataobject class");
-
 static PyObject *
-dataobject_enable_gc(PyObject *module, PyObject *args)
+_enable_gc(PyObject *cls)
 {
-    PyObject *cls;
     PyTypeObject *type;
-
-    if (Py_SIZE(args) > 1) {
-        PyErr_SetString(PyExc_TypeError, "too many arguments");
-        return NULL;
-    }
-
-    cls = PyTuple_GET_ITEM(args, 0);
 
     if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
         PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of type");
@@ -1966,12 +1955,16 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     PyObject *use_weakref = PyMapping_GetItemString(kw, "use_weakref");
     PyObject *iterable = PyMapping_GetItemString(kw, "iterable");
     PyObject *hashable = PyMapping_GetItemString(kw, "hashable");
+    PyObject *gc = PyMapping_GetItemString(kw, "gc");
 
     _collection_protocol(cls, sequence, mapping, readonly);
     _set_dictoffset(cls, use_dict);
     _set_weaklistoffset(cls, use_weakref);
     _set_hashable(cls, hashable);
     _set_iterable(cls, iterable);
+    
+    if (PyObject_IsTrue(gc))
+        _enable_gc(cls);
 
     PyType_Modified((PyTypeObject*)cls);
 
@@ -1982,6 +1975,7 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     Py_XDECREF(use_weakref);
     Py_XDECREF(iterable);
     Py_XDECREF(hashable);
+    Py_XDECREF(gc);
 
     Py_RETURN_NONE;
 }
@@ -2007,7 +2001,7 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 
 static PyMethodDef dataobjectmodule_methods[] = {
     {"_astuple", astuple, METH_VARARGS, astuple_doc},
-    {"_enable_gc", dataobject_enable_gc, METH_VARARGS, enable_gc_doc},
+//     {"_enable_gc", dataobject_enable_gc, METH_VARARGS, enable_gc_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
     {0, 0, 0, 0}

@@ -26,7 +26,7 @@ del _sys
 
 from .recordclass import recordclass
 
-from .datatype import datatype, clsconfig, enable_gc
+from .datatype import datatype, clsconfig
 
 from ._dataobject import dataobject
 
@@ -41,3 +41,5 @@ if _PY36:
     from .typing import RecordClass
 
 __version__ = '0.15'
+
+del _PY36

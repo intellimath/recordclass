@@ -43,19 +43,14 @@ else:
 int_type = type(1)
 
 def clsconfig(sequence=False, mapping=False, readonly=False,
-              use_dict=False, use_weakref=False, iterable=True, hashable=False):
+              use_dict=False, use_weakref=False, iterable=True, hashable=False, gc=False):
     from ._dataobject import _clsconfig
     def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                   use_weakref=use_weakref, iterable=iterable, hashable=hashable)
+                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc)
         return cls
     return func
-
-def enable_gc(cls):
-    from ._dataobject import _enable_gc
-    _enable_gc(cls)
-    return cls
 
 def _matching_annotations_and_defaults(annotations, defaults):
     args = True
@@ -80,6 +75,7 @@ class datatype(type):
         fast_new = options.get('fast_new', False)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
+        gc = options.get('gc', False)
 
         use_dict = False
         use_weakref = False
@@ -185,7 +181,7 @@ class datatype(type):
 
         _dataobject_type_init(cls)
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                   use_weakref=use_weakref, iterable=iterable, hashable=hashable)
+                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc)
 
         return cls
 

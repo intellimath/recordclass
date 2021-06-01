@@ -45,7 +45,6 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
                    sequence=False, mapping=False, iterable=False, readonly=False,
                    module=None, fast_new=False, rename=False, invalid_names=(), gc=False):
 
-    from ._dataobject import _clsconfig, _enable_gc
     from ._dataobject import dataobject
     from .datatype import datatype
 
@@ -105,9 +104,6 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     ns['__module__'] = module
 
     cls = datatype(typename, bases, ns)
-
-    if gc:
-        _enable_gc(cls)
 
     return cls
 
