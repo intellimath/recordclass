@@ -22,23 +22,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .utils import dataslot_offset
-from .utils import check_name, collect_info_from_bases
-
 __all__ = 'make_arrayclass', 
 
 import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
 
 _intern = _sys.intern
-if _PY36:
-    from typing import _type_check
-else:
-    def _type_check(t, msg):
-        if isinstance(t, (type, str)):
-            return t
-        else:
-            raise TypeError('invalid type annotation', t)    
 
 int_type = type(1)
     
@@ -60,6 +49,8 @@ def make_arrayclass(typename, fields=0, namespace=None,
         'sequence':True, 'iterable':True, 'readonly':readonly, 'gc':gc,
         'fast_new':True,
     }
+    
+    typename = _intern(typename)
 
     if namespace is None:
         ns = {}

@@ -2,22 +2,50 @@
 
 **Recordclass** is [MIT Licensed](http://opensource.org/licenses/MIT) python library.
 It was started as a "proof of concept" for the problem of fast "mutable"
-alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on stackoverflow).
-It implements a factory function `recordclass` (a variant of `collection.namedtuple`) in order to create record-like classes with the same API as  `collection.namedtuple`. It was evolved further in order to provide more memory saving, fast and flexible type.
+alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on [stackoverflow](https://stackoverflow.com)).
+It implements a factory function `recordclass` (a variant of `collection.namedtuple`) in order to create record-like classes with the same API as  `collection.namedtuple`.
+It was evolved further in order to provide more memory saving, fast and flexible types.
 
-Later **recordclass** library started to provide record-like classes that do not participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanizm for garbage collection.
-The instances of such classes have not `PyGC_Head` prefix in the memory, which decrease their size.
+Later **recordclass** library started to provide record-like classes that do not participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanism for garbage collection.
+The instances of such classes havn't `PyGC_Head` prefix in the memory, which decrease their size.
 This may make sense in cases where it is necessary to limit the size of objects as much as possible, provided that they will never be part of circular references in the application.
 For example, when an object represents a record with fields that represent simple values by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
-Another examples are non-recursive data structures in which all leaf elements represent simple values.
-Of course, in python, nothing prevents you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
-But in some cases, this can still be avoided provided that the developer understands
-what he is doing and uses such classes in the code with care. Another option is a use of static analyzers together with type annotations.
 
-**First** `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  doesn't participate in CGC by default. As the result the instance of such class need less memory. It's memory footprint is similar to memory footprint of instances of the classes with `__slots__` . The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All subclasses of `dataobject` created with class statement support `attrs`/`dataclasses`-like API.
-**Second** it provide a factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names. These subclasses support `attrs`/`dataclasses`-like API.
+Consider a class with type hints:
 
-**Three** it provide the class `lightlist`, which considers as list-like *light* container in order to save memory.
+    class Point:
+        x: int
+        y: int
+
+By contract instances of the class `Point` have attributes `x` and `y` with values of `int` type.
+Assigning of values of different types should be considered as a bug.
+
+Another examples are non-recursive data structures in which all leaf element represent value of the atomic type.
+Of course, in python, nothing prevent you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
+But in many cases, this can still be avoided provided that the developer understands what he is doing and uses such classes in the code with care.
+Another option is a use of static analyzers together with type annotations.
+
+**First**, `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  will not participate in CGC by default. As the result the instance of such class need less memory. It's memory footprint is similar to memory footprint of instances of the classes with `__slots__` . The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All subclasses of `dataobject` created by `class statement` support `attrs`/`dataclasses`-like API.
+
+**Second**, it provide a factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names. These subclasses support `attrs`/`dataclasses`-like API.
+For example:
+
+    >>> Point = make_dataclass('Point', 'x y')
+    >>> p = Point(1, 2)
+    >>> p.y = -1
+    >>> print(p.x, p.y)
+    1 -1
+
+**Three**, it provide a factory function `make_arrayclass` in order to create subclass of `dataobject` wich can consider as array of simple values.
+For example:
+
+    >>> Pair = make_array(2)
+    >>> p = Pair(2, 3)
+    >>> p[1] = -1
+    >>> print(p[0], p[1])
+    2 -1
+
+**Four**, it provide the class `lightlist`, which considers as list-like *light* container in order to save memory.
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
@@ -172,7 +200,7 @@ where:
 
 This is useful in that case when you absolutely sure that reference cycle isn't supposed.
 For example, when all field values are instances of atomic types.
-As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.4-3.7) and by 16 bytes for cpython 3.8::
+As a result the size of the instance is decre	ased by 24-32 bytes (for cpython 3.4-3.7) and by 16 bytes for cpython 3.8::
 
     class S:
         __slots__ = ('a','b','c')
