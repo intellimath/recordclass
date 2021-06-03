@@ -210,7 +210,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             fields = PyMapping_GetItemString(dict, "__fields__");
             
             while (j) {
-                PyObject *fname = PyTuple_GET_ITEM(fields, n_slots-j);
+                PyObject *fname = PyTuple_GetItem(fields, n_slots-j);
                 PyObject *value = PyDict_GetItem(defaults, fname);
                 
                 if (!value) {
@@ -569,8 +569,8 @@ dataobject_len(PyObject *op)
     Py_ssize_t n;
 
     n = PyDataObject_NUMSLOTS(type);
-    if (type->tp_itemsize)
-        n += Py_SIZE(op);
+//     if (type->tp_itemsize)
+//         n += Py_SIZE(op);
 
     return n;
 }
@@ -645,15 +645,15 @@ PyDoc_STRVAR(dataobject_sizeof_doc,
 static PyObject *
 dataobject_sizeof(PyObject *self)
 {
-    PyTypeObject *tp;
-    Py_ssize_t res;
+    PyTypeObject *tp = Py_TYPE(self);
+//     Py_ssize_t res;
 
-    tp = Py_TYPE(self);
-    res = tp->tp_basicsize;
-    if (tp->tp_itemsize)
-        res += Py_SIZE(self) * sizeof(PyObject*);
+//     tp = Py_TYPE(self);
+//     res = tp->tp_basicsize;
+//     if (tp->tp_itemsize)
+//         res += Py_SIZE(self) * sizeof(PyObject*);
 
-    return PyLong_FromSsize_t(res);
+    return PyLong_FromSsize_t(tp->tp_basicsize);
 }
 
 PyDoc_STRVAR(dataobject_copy_doc,
