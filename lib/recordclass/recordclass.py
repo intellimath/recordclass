@@ -77,7 +77,7 @@ def recordclass(typename, fields, defaults=None,
     
     def _asdict(self):
         'Return a new OrderedDict which maps field names to their values.'
-        return OrderedDict(zip(self.__fields__, self))
+        return dict(zip(self.__fields__, self))
         
     for method in (_make, _replace, _asdict,):
         method.__qualname__ = typename + "." + method.__name__        
