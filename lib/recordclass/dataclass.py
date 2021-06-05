@@ -25,7 +25,7 @@
 from .utils import dataslot_offset, process_fields
 from .utils import check_name, collect_info_from_bases
 
-__all__ = 'make_dataclass', 'join_dataclasses', 'astuple', 'asdict'
+__all__ = 'make_dataclass', 'join_dataclasses', 'astuple', 'asdict', 'DataclassStorage'
 
 import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
@@ -118,26 +118,26 @@ def astuple(ob):
     from ._dataobject import _astuple
     return _astuple(ob)
 
-# class DataclassStorage:
-#     #
-#     def __init__(self):
-#         self._storage = {}
-#     #
-#     def clear_storage(self):
-#         self._storage.clear()
-#     #
-#     def make_dataclass(self, name, fields):
-#         if type(fields) is str:
-#             fields = fields.replace(',', ' ').split()
-#             fields = [fn.strip() for fn in fields]
-#         fields = tuple(fields)
-#         key = (name, fields)
-#         cls = self._storage.get(key, None)
-#         if cls is None:
-#             cls = make_dataclass(name, fields)
-#             self._storage[key] = cls
-#         return cls
-#     make_class = make_dataclass
+class DataclassStorage:
+    #
+    def __init__(self):
+        self._storage = {}
+    #
+    def clear_storage(self):
+        self._storage.clear()
+    #
+    def make_dataclass(self, name, fields, defaults=None, **kw):
+        if type(fields) is str:
+            fields = fields.replace(',', ' ').split()
+            fields = [fn.strip() for fn in fields]
+        fields = tuple(fields)
+        key = (name, fields)
+        cls = self._storage.get(key, None)
+        if cls is None:
+            cls = make_dataclass(name, fields, defaults, **kw)
+            self._storage[key] = cls
+        return cls
+    make_class = make_dataclass
 
 def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False,
                  use_weakref=False, hashable=True, sequence=False, fast_new=False, iterable=False, module=None):

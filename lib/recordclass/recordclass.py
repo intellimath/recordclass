@@ -25,7 +25,7 @@
 from collections import namedtuple, OrderedDict
 from .dataclass import make_dataclass
 
-__all__ = 'recordclass', 
+__all__ = 'recordclass', 'RecordclassStorage'
 
 import sys as _sys
 
@@ -106,3 +106,23 @@ def recordclass(typename, fields, defaults=None,
                 fast_new=fast_new, gc=False)
     
 
+
+class RecordclassStorage:
+    #
+    def __init__(self):
+        self._storage = {}
+    #
+    def clear_storage(self):
+        self._storage.clear()
+    #
+    def recordclass(self, name, fields, defaults=None, **kw):
+        if type(fields) is str:
+            fields = fields.replace(',', ' ').split()
+            fields = [fn.strip() for fn in fields]
+        fields = tuple(fields)
+        key = (name, fields)
+        cls = self._storage.get(key, None)
+        if cls is None:
+            cls = recordclass(name, fields, defaults, **kw)
+            self._storage[key] = cls
+        return cls
