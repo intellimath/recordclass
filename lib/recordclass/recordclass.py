@@ -22,8 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from collections import namedtuple, OrderedDict
-from .dataclass import make_dataclass
+from collections import namedtuple
 
 __all__ = 'recordclass', 'RecordclassStorage'
 
@@ -54,6 +53,7 @@ def recordclass(typename, fields, defaults=None,
     >>> p._replace(x=100)               # _replace() is like str.replace() but targets named fields
     Point(x=100, y=22)
     """
+    from .dataclass import make_dataclass
     
     def _make(_cls, iterable):
         ob = _cls(*iterable)
