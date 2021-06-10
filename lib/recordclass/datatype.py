@@ -80,9 +80,6 @@ class datatype(type):
         use_weakref = options.get('use_weakref', False)
         gc = options.get('gc', False)
 
-#         use_dict = False
-#         use_weakref = False
-
         if not bases:
             raise TypeError("The base class in not specified")
 
@@ -232,8 +229,6 @@ def __new__(_cls_, {2}):
     return __new__
 
 def _make_cls_doc(cls, typename, fields, defaults, use_dict):
-
-    from ._dataobject import dataobject #, datatuple
 
     if fields and defaults:
         fields2 = [f for f in fields if f not in defaults] + ["%s=%r" % (f, defaults[f]) for f in fields if f in defaults]
