@@ -25,7 +25,7 @@
 from .utils import dataslot_offset
 from .utils import check_name, collect_info_from_bases
 
-__all__ = 'clsconfig', 'enable_gc', 'datatype'
+__all__ = 'clsconfig', 'datatype'
 
 import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
@@ -44,7 +44,9 @@ int_type = type(1)
 
 def clsconfig(sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=True, hashable=False, gc=False):
+
     from ._dataobject import _clsconfig
+
     def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
@@ -64,6 +66,7 @@ def _matching_annotations_and_defaults(annotations, defaults):
 class datatype(type):
 
     def __new__(metatype, typename, bases, ns):
+
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
         options = ns.pop('__options__', {})
@@ -77,8 +80,8 @@ class datatype(type):
         use_weakref = options.get('use_weakref', False)
         gc = options.get('gc', False)
 
-        use_dict = False
-        use_weakref = False
+#         use_dict = False
+#         use_weakref = False
 
         if not bases:
             raise TypeError("The base class in not specified")
