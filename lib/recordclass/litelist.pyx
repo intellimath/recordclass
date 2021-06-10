@@ -278,6 +278,9 @@ cdef class litelistiter:
         self.op = op
         self.i = 0
         
+    def __length_hint__(self):
+        return self.op.size
+        
     def __next__(self):
         if self.i < self.op.size:
             v = self.op[self.i]

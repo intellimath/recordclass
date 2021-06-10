@@ -1397,10 +1397,11 @@ static PyObject *__pyx_pf_11recordclass_8litelist_8litelist_24__sizeof__(struct 
 static int __pyx_pf_11recordclass_8litelist_8litelist_26__nonzero__(struct PyLiteListObject *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_11recordclass_8litelist_8litelist_28__iter__(struct PyLiteListObject *__pyx_v_self); /* proto */
 static int __pyx_pf_11recordclass_8litelist_12litelistiter___init__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self, struct PyLiteListObject *__pyx_v_op); /* proto */
-static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_4__iter__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_6__reduce_cython__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_8__setstate_cython__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self, PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__length_hint__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_4__next__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_6__iter__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_8__reduce_cython__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_10__setstate_cython__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self, PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_11recordclass_8litelist___pyx_unpickle_litelistiter(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_tp_new_11recordclass_8litelist_litelist(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_11recordclass_8litelist_litelistiter(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -4196,7 +4197,7 @@ static int __pyx_pf_11recordclass_8litelist_12litelistiter___init__(struct __pyx
  *         self.op = op
  *         self.i = 0             # <<<<<<<<<<<<<<
  * 
- *     def __next__(self):
+ *     def __length_hint__(self):
  */
   __pyx_v_self->i = 0;
 
@@ -4217,25 +4218,89 @@ static int __pyx_pf_11recordclass_8litelist_12litelistiter___init__(struct __pyx
 /* "recordclass/litelist.pyx":281
  *         self.i = 0
  * 
- *     def __next__(self):             # <<<<<<<<<<<<<<
- *         if self.i < self.op.size:
- *             v = self.op[self.i]
+ *     def __length_hint__(self):             # <<<<<<<<<<<<<<
+ *         return self.op.size
+ * 
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_3__next__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_3__next__(PyObject *__pyx_v_self) {
+static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_3__length_hint__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_11recordclass_8litelist_12litelistiter_2__length_hint__[] = "litelistiter.__length_hint__(self)";
+static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_3__length_hint__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__next__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(((struct __pyx_obj_11recordclass_8litelist_litelistiter *)__pyx_v_self));
+  __Pyx_RefNannySetupContext("__length_hint__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_11recordclass_8litelist_12litelistiter_2__length_hint__(((struct __pyx_obj_11recordclass_8litelist_litelistiter *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self) {
+static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__length_hint__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__length_hint__", 0);
+
+  /* "recordclass/litelist.pyx":282
+ * 
+ *     def __length_hint__(self):
+ *         return self.op.size             # <<<<<<<<<<<<<<
+ * 
+ *     def __next__(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyInt_FromSsize_t(__pyx_v_self->op->size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 282, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "recordclass/litelist.pyx":281
+ *         self.i = 0
+ * 
+ *     def __length_hint__(self):             # <<<<<<<<<<<<<<
+ *         return self.op.size
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("recordclass.litelist.litelistiter.__length_hint__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "recordclass/litelist.pyx":284
+ *         return self.op.size
+ * 
+ *     def __next__(self):             # <<<<<<<<<<<<<<
+ *         if self.i < self.op.size:
+ *             v = self.op[self.i]
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_5__next__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_5__next__(PyObject *__pyx_v_self) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__next__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_11recordclass_8litelist_12litelistiter_4__next__(((struct __pyx_obj_11recordclass_8litelist_litelistiter *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_4__next__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self) {
   PyObject *__pyx_v_v = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -4246,7 +4311,7 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(struc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__next__", 0);
 
-  /* "recordclass/litelist.pyx":282
+  /* "recordclass/litelist.pyx":285
  * 
  *     def __next__(self):
  *         if self.i < self.op.size:             # <<<<<<<<<<<<<<
@@ -4256,19 +4321,19 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(struc
   __pyx_t_1 = ((__pyx_v_self->i < __pyx_v_self->op->size) != 0);
   if (likely(__pyx_t_1)) {
 
-    /* "recordclass/litelist.pyx":283
+    /* "recordclass/litelist.pyx":286
  *     def __next__(self):
  *         if self.i < self.op.size:
  *             v = self.op[self.i]             # <<<<<<<<<<<<<<
  *             self.i += 1
  *             return v
  */
-    __pyx_t_2 = __Pyx_GetItemInt(((PyObject *)__pyx_v_self->op), __pyx_v_self->i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 283, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_GetItemInt(((PyObject *)__pyx_v_self->op), __pyx_v_self->i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 286, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_v_v = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "recordclass/litelist.pyx":284
+    /* "recordclass/litelist.pyx":287
  *         if self.i < self.op.size:
  *             v = self.op[self.i]
  *             self.i += 1             # <<<<<<<<<<<<<<
@@ -4277,7 +4342,7 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(struc
  */
     __pyx_v_self->i = (__pyx_v_self->i + 1);
 
-    /* "recordclass/litelist.pyx":285
+    /* "recordclass/litelist.pyx":288
  *             v = self.op[self.i]
  *             self.i += 1
  *             return v             # <<<<<<<<<<<<<<
@@ -4289,7 +4354,7 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(struc
     __pyx_r = __pyx_v_v;
     goto __pyx_L0;
 
-    /* "recordclass/litelist.pyx":282
+    /* "recordclass/litelist.pyx":285
  * 
  *     def __next__(self):
  *         if self.i < self.op.size:             # <<<<<<<<<<<<<<
@@ -4298,7 +4363,7 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(struc
  */
   }
 
-  /* "recordclass/litelist.pyx":287
+  /* "recordclass/litelist.pyx":290
  *             return v
  *         else:
  *             raise StopIteration             # <<<<<<<<<<<<<<
@@ -4307,11 +4372,11 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(struc
  */
   /*else*/ {
     __Pyx_Raise(__pyx_builtin_StopIteration, 0, 0, 0);
-    __PYX_ERR(0, 287, __pyx_L1_error)
+    __PYX_ERR(0, 290, __pyx_L1_error)
   }
 
-  /* "recordclass/litelist.pyx":281
- *         self.i = 0
+  /* "recordclass/litelist.pyx":284
+ *         return self.op.size
  * 
  *     def __next__(self):             # <<<<<<<<<<<<<<
  *         if self.i < self.op.size:
@@ -4330,7 +4395,7 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(struc
   return __pyx_r;
 }
 
-/* "recordclass/litelist.pyx":289
+/* "recordclass/litelist.pyx":292
  *             raise StopIteration
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -4339,24 +4404,24 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_2__next__(struc
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_5__iter__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_5__iter__(PyObject *__pyx_v_self) {
+static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_7__iter__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_7__iter__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__iter__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_11recordclass_8litelist_12litelistiter_4__iter__(((struct __pyx_obj_11recordclass_8litelist_litelistiter *)__pyx_v_self));
+  __pyx_r = __pyx_pf_11recordclass_8litelist_12litelistiter_6__iter__(((struct __pyx_obj_11recordclass_8litelist_litelistiter *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_4__iter__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self) {
+static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_6__iter__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__iter__", 0);
 
-  /* "recordclass/litelist.pyx":290
+  /* "recordclass/litelist.pyx":293
  * 
  *     def __iter__(self):
  *         return self             # <<<<<<<<<<<<<<
@@ -4367,7 +4432,7 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_4__iter__(struc
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "recordclass/litelist.pyx":289
+  /* "recordclass/litelist.pyx":292
  *             raise StopIteration
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -4389,20 +4454,20 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_4__iter__(struc
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_7__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_11recordclass_8litelist_12litelistiter_6__reduce_cython__[] = "litelistiter.__reduce_cython__(self)";
-static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_7__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_9__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_11recordclass_8litelist_12litelistiter_8__reduce_cython__[] = "litelistiter.__reduce_cython__(self)";
+static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_9__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_11recordclass_8litelist_12litelistiter_6__reduce_cython__(((struct __pyx_obj_11recordclass_8litelist_litelistiter *)__pyx_v_self));
+  __pyx_r = __pyx_pf_11recordclass_8litelist_12litelistiter_8__reduce_cython__(((struct __pyx_obj_11recordclass_8litelist_litelistiter *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_6__reduce_cython__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self) {
+static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_8__reduce_cython__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self) {
   PyObject *__pyx_v_state = 0;
   PyObject *__pyx_v__dict = 0;
   int __pyx_v_use_setstate;
@@ -4630,20 +4695,20 @@ static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_6__reduce_cytho
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_9__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static char __pyx_doc_11recordclass_8litelist_12litelistiter_8__setstate_cython__[] = "litelistiter.__setstate_cython__(self, __pyx_state)";
-static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_9__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_11__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static char __pyx_doc_11recordclass_8litelist_12litelistiter_10__setstate_cython__[] = "litelistiter.__setstate_cython__(self, __pyx_state)";
+static PyObject *__pyx_pw_11recordclass_8litelist_12litelistiter_11__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_11recordclass_8litelist_12litelistiter_8__setstate_cython__(((struct __pyx_obj_11recordclass_8litelist_litelistiter *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+  __pyx_r = __pyx_pf_11recordclass_8litelist_12litelistiter_10__setstate_cython__(((struct __pyx_obj_11recordclass_8litelist_litelistiter *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_8__setstate_cython__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_11recordclass_8litelist_12litelistiter_10__setstate_cython__(struct __pyx_obj_11recordclass_8litelist_litelistiter *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -5338,12 +5403,13 @@ static int __pyx_tp_clear_11recordclass_8litelist_litelistiter(PyObject *o) {
   return 0;
 }
 
-static PyObject *__pyx_specialmethod___pyx_pw_11recordclass_8litelist_12litelistiter_3__next__(PyObject *self, CYTHON_UNUSED PyObject *arg) {return __pyx_pw_11recordclass_8litelist_12litelistiter_3__next__(self);}
+static PyObject *__pyx_specialmethod___pyx_pw_11recordclass_8litelist_12litelistiter_5__next__(PyObject *self, CYTHON_UNUSED PyObject *arg) {return __pyx_pw_11recordclass_8litelist_12litelistiter_5__next__(self);}
 
 static PyMethodDef __pyx_methods_11recordclass_8litelist_litelistiter[] = {
-  {"__next__", (PyCFunction)__pyx_specialmethod___pyx_pw_11recordclass_8litelist_12litelistiter_3__next__, METH_NOARGS|METH_COEXIST, 0},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_11recordclass_8litelist_12litelistiter_7__reduce_cython__, METH_NOARGS, __pyx_doc_11recordclass_8litelist_12litelistiter_6__reduce_cython__},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_11recordclass_8litelist_12litelistiter_9__setstate_cython__, METH_O, __pyx_doc_11recordclass_8litelist_12litelistiter_8__setstate_cython__},
+  {"__length_hint__", (PyCFunction)__pyx_pw_11recordclass_8litelist_12litelistiter_3__length_hint__, METH_NOARGS, __pyx_doc_11recordclass_8litelist_12litelistiter_2__length_hint__},
+  {"__next__", (PyCFunction)__pyx_specialmethod___pyx_pw_11recordclass_8litelist_12litelistiter_5__next__, METH_NOARGS|METH_COEXIST, 0},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_11recordclass_8litelist_12litelistiter_9__reduce_cython__, METH_NOARGS, __pyx_doc_11recordclass_8litelist_12litelistiter_8__reduce_cython__},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_11recordclass_8litelist_12litelistiter_11__setstate_cython__, METH_O, __pyx_doc_11recordclass_8litelist_12litelistiter_10__setstate_cython__},
   {0, 0, 0, 0}
 };
 
@@ -5383,8 +5449,8 @@ static PyTypeObject __pyx_type_11recordclass_8litelist_litelistiter = {
   __pyx_tp_clear_11recordclass_8litelist_litelistiter, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
-  __pyx_pw_11recordclass_8litelist_12litelistiter_5__iter__, /*tp_iter*/
-  __pyx_pw_11recordclass_8litelist_12litelistiter_3__next__, /*tp_iternext*/
+  __pyx_pw_11recordclass_8litelist_12litelistiter_7__iter__, /*tp_iter*/
+  __pyx_pw_11recordclass_8litelist_12litelistiter_5__next__, /*tp_iternext*/
   __pyx_methods_11recordclass_8litelist_litelistiter, /*tp_methods*/
   0, /*tp_members*/
   0, /*tp_getset*/
@@ -5511,7 +5577,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 61, __pyx_L1_error)
   __pyx_builtin_IndexError = __Pyx_GetBuiltinName(__pyx_n_s_IndexError); if (!__pyx_builtin_IndexError) __PYX_ERR(0, 101, __pyx_L1_error)
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 118, __pyx_L1_error)
-  __pyx_builtin_StopIteration = __Pyx_GetBuiltinName(__pyx_n_s_StopIteration); if (!__pyx_builtin_StopIteration) __PYX_ERR(0, 287, __pyx_L1_error)
+  __pyx_builtin_StopIteration = __Pyx_GetBuiltinName(__pyx_n_s_StopIteration); if (!__pyx_builtin_StopIteration) __PYX_ERR(0, 290, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
