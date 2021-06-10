@@ -98,7 +98,8 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
         cdef Py_ssize_t j
         
         if self.allocated < i + n - 1:
-            raise TypeError('The slice is too large')
+            raise IndexError('The slice is too large')
+
         for j in range(n):
             op.items[j] = self.items[i+j]
             
@@ -107,6 +108,9 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
     cdef object set_slice(self, Py_ssize_t i, Py_ssize_t n, vals):
         cdef Py_ssize_t j
             
+        if self.allocated < i + n - 1:
+            raise IndexError('The slice is too large')
+
         tpl = PySequence_Fast(vals, "Invalid arguments")
         size = Py_SIZE(<PyObject*>tpl)
         
