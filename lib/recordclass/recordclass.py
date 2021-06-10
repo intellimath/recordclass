@@ -84,10 +84,9 @@ def recordclass(typename, fields, defaults=None,
         
     _make = classmethod(_make)        
 
-    ns = {
-            '_make': _make, 
-            '_replace': _replace, 
-            '_asdict': _asdict,
+    ns = { '_make': _make, 
+           '_replace': _replace, 
+           '_asdict': _asdict,
          }
 
     if module is None:
@@ -97,15 +96,13 @@ def recordclass(typename, fields, defaults=None,
             pass
     else:
         _module = module
-    
+
     invalid_names = ('_make', '_replace', '_asdict')
     return make_dataclass(typename, fields, defaults=defaults, namespace=ns,
                 use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
                 sequence=True, mapping=False, iterable=True, rename=rename,
                 invalid_names=invalid_names, readonly=readonly, module=_module, 
                 fast_new=fast_new, gc=False)
-    
-
 
 class RecordclassStorage:
     #
