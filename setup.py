@@ -61,7 +61,7 @@ else:
         extra_compile_args = extra_compile_args,
     ))
 
-description = """Mutable variant of collections.namedtuple -- recordclass.recordclass, which support assignments, and extra memory saving variants."""
+description = """Mutable variant of collections.namedtuple -- recordclass.recordclass, which support assignments, and other memory saving variants."""
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
