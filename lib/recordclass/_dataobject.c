@@ -127,8 +127,8 @@ static PyObject *
 dataobject_alloc(PyTypeObject *type, Py_ssize_t n_items)
 {
     PyObject *op;
-    Py_ssize_t size = _PyObject_SIZE(type);
-    int is_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
+    Py_ssize_t const size = _PyObject_SIZE(type);
+    int const is_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
 
     if (is_gc)
         op = _PyObject_GC_Malloc(size);
@@ -156,7 +156,8 @@ static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyObject *op;
-    Py_ssize_t n_slots, j;
+    Py_ssize_t const n_slots = PyDataObject_NUMSLOTS(type); 
+    Py_ssize_t j;
     PyTupleObject *tmp;
     Py_ssize_t n_args;
     PyObject **items, **pp;
@@ -174,7 +175,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     n_args = Py_SIZE(tmp);
 
-    n_slots = PyDataObject_NUMSLOTS(type);
     if (n_args > n_slots) {
         PyErr_SetString(PyExc_TypeError,
                         "number of the arguments should not be greater than the number of the slots");
@@ -372,7 +372,7 @@ dataobject_item(PyObject *op, Py_ssize_t i)
     PyObject **items;
     PyObject *v;
 
-    Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
+    const Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
 
     if (i < 0)
         i += n;
@@ -392,7 +392,7 @@ dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
     PyObject **items;
 
-    Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
+    const Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
 
     if (i < 0)
         i += n;
@@ -456,7 +456,8 @@ dataobject_hash(PyObject *op)
 {
     unsigned long x;
     long y;
-    Py_ssize_t i, len = dataobject_len(op);
+    Py_ssize_t i;
+    const Py_ssize_t len = dataobject_len(op);
     long mult = _PyHASH_MULTIPLIER;
     PyObject *o;
 
@@ -481,7 +482,7 @@ static PyObject *
 dataobject_richcompare(PyObject *v, PyObject *w, int op)
 {
     Py_ssize_t i, k;
-    Py_ssize_t vlen, wlen;
+    Py_ssize_t vlen = dataobject_len(v), wlen = dataobject_len(w);
     PyObject *vv;
     PyObject *ww;
     PyObject *ret;
@@ -489,8 +490,8 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
     if (!(Py_TYPE(v) == Py_TYPE(w)) || (!PyObject_IsSubclass((PyObject*)Py_TYPE(w), (PyObject*)Py_TYPE(v))))
         Py_RETURN_NOTIMPLEMENTED;
 
-    vlen = dataobject_len(v);
-    wlen = dataobject_len(w);
+//     vlen = dataobject_len(v);
+//     wlen = dataobject_len(w);
 
     if ((vlen != wlen) && (op == Py_EQ || op == Py_NE)) {
         PyObject *res;
@@ -566,13 +567,13 @@ static Py_ssize_t
 dataobject_len(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
-    Py_ssize_t n;
+//     Py_ssize_t n;
 
-    n = PyDataObject_NUMSLOTS(type);
+    return PyDataObject_NUMSLOTS(type);
 //     if (type->tp_itemsize)
 //         n += Py_SIZE(op);
 
-    return n;
+//     return n;
 }
 
 static PySequenceMethods dataobject_as_sequence0 = {
