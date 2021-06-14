@@ -123,6 +123,7 @@ class RecordClassTest(unittest.TestCase):
         self.assertEqual(p, Point._make([11, 22]))                          # test _make classmethod
         self.assertEqual(p.__fields__, ('x', 'y'))                             # test __fields__ attribute
         self.assertEqual(p._replace(x=1), Point(1, 22))                          # test _replace method
+        self.assertRaises(AttributeError, eval, 'p._replace(z=1)', locals())          # inval keyword argument
         self.assertEqual(p._asdict(), dict(x=1, y=22))                     # test _asdict method
 #         self.assertEqual(vars(p), p._asdict())                              # verify that vars() works
 
@@ -138,6 +139,11 @@ class RecordClassTest(unittest.TestCase):
         Point = recordclass('Point', ('x', 'y'))
         p = Point(x=11, y=22)
         self.assertEqual(repr(p), 'Point(x=11, y=22)')
+        
+    def test_readonly_instance(self):
+        Point = recordclass('Point', ('x', 'y'), readonly=True)
+        p = Point(11, 22)
+        self.assertRaises(AttributeError, eval, 'p._replace(z=1)', locals())          # inval keyword argument
         
 #     def test_nogc(self):
 #         Point = recordclass('Point', 'x y')

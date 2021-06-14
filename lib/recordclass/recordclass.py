@@ -53,19 +53,20 @@ def recordclass(typename, fields, defaults=None,
     >>> p._replace(x=100)               # _replace() is like str.replace() but targets named fields
     Point(x=100, y=22)
     """
-    from .dataclass import make_dataclass
+    from .dataclass import make_dataclass, asdict
     
     def _make(_cls, iterable):
         ob = _cls(*iterable)
         return ob
     
-    _make.__doc__ = 'Make a new %s object from a sequence or iterable' % typename
+    _make.__doc__ = f'Make a new {typename} object from a sequence or iterable'
 
     if readonly:
         def _replace(_self, **kwds):
-            result = _self._make((kwds.pop(name) for name in self.__fields__))
+            result = _self._make(map(kwds.pop, _self.__fields__, _self))
             if kwds:
-                raise ValueError('Got unexpected field names: %r' % list(kwds))
+                kwnames = tuple(kwds)
+                raise AttributeError(f'Got unexpected field names: {kwnames}')
             return result
     else:
         def _replace(_self, **kwds):
@@ -73,11 +74,11 @@ def recordclass(typename, fields, defaults=None,
                 setattr(_self, name, val)
             return _self
     
-    _replace.__doc__ = 'Return a new %s object replacing specified fields with new values' % typename
+    _replace.__doc__ = f'Return a new {typename} object replacing specified fields with new values'
     
     def _asdict(self):
-        'Return a new OrderedDict which maps field names to their values.'
-        return dict(zip(self.__fields__, self))
+        'Return a new dict which maps field names to their values.'
+        return asdict(self)
         
     for method in (_make, _replace, _asdict,):
         method.__qualname__ = typename + "." + method.__name__        
