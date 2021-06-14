@@ -27,7 +27,6 @@ from typing import _type_check
 __all__ = 'RecordClass',
 
 import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
 
 _excluded = ('__new__', '__init__', '__slots__', '__getnewargs__',
              '__fields__', '_field_defaults', '_field_types',
@@ -44,8 +43,6 @@ def _make_recordclass(name, types, readonly=False, hashable=False):
         module = _sys._getframe(2).f_globals.get('__name__', '__main__')
     except (AttributeError, ValueError):
         pass
-    
-#     print('mod:', module)
     
     rec_cls = recordclass(name, [n for n, t in types], readonly=readonly, hashable=hashable, module=module)
     rec_cls.__annotations__ = dict(types)

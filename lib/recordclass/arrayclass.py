@@ -25,7 +25,6 @@
 __all__ = 'make_arrayclass', 
 
 import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
 
 _intern = _sys.intern
 
