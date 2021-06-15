@@ -79,12 +79,12 @@ def recordclass(typename, fields, defaults=None,
     def _asdict(self):
         'Return a new dict which maps field names to their values.'
         return asdict(self)
-        
+
     for method in (_make, _replace, _asdict,):
         method.__qualname__ = typename + "." + method.__name__        
         
-    _make = classmethod(_make)        
-
+    _make = classmethod(_make)
+    
     ns = { '_make': _make, 
            '_replace': _replace, 
            '_asdict': _asdict,

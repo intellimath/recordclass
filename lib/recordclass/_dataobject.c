@@ -23,6 +23,7 @@
 #ifdef Py_LIMITED_API
 #undef Py_LIMITED_API
 #endif
+// #define Py_LIMITED_API 1
 
 #include "Python.h"
 #include <string.h>
@@ -712,144 +713,144 @@ dataobject_copy(PyObject* op)
     return new_op;
 }
 
-static PyObject *
-dataobject_repr(PyObject *self)
-{
-    Py_ssize_t i, n, n_fs = 0;
-    _PyUnicodeWriter writer;
-    PyObject *fs;
-    PyTypeObject *tp = Py_TYPE(self);
-    PyObject *tp_name = PyObject_GetAttrString((PyObject*)tp, "__name__");
-    PyObject *text;
+// static PyObject *
+// dataobject_repr(PyObject *self)
+// {
+//     Py_ssize_t i, n, n_fs = 0;
+//     _PyUnicodeWriter writer;
+//     PyObject *fs;
+//     PyTypeObject *tp = Py_TYPE(self);
+//     PyObject *tp_name = PyObject_GetAttrString((PyObject*)tp, "__name__");
+//     PyObject *text;
 
-    fs = PyObject_GetAttrString(self, "__fields__");
-    if (fs) {
-        if (Py_TYPE(fs) == &PyTuple_Type) {
-            n_fs = PyObject_Length(fs);
-        } else {
-            n_fs = (Py_ssize_t)PyNumber_AsSsize_t(fs, PyExc_IndexError);
-            if (n_fs < 0) {
-                Py_DECREF(fs);
-                Py_DECREF(tp_name);
-                return NULL;
-            }
-            n_fs = 0;
-        }
-    } else
-        PyErr_Clear();
+//     fs = PyObject_GetAttrString(self, "__fields__");
+//     if (fs) {
+//         if (Py_TYPE(fs) == &PyTuple_Type) {
+//             n_fs = PyObject_Length(fs);
+//         } else {
+//             n_fs = (Py_ssize_t)PyNumber_AsSsize_t(fs, PyExc_IndexError);
+//             if (n_fs < 0) {
+//                 Py_DECREF(fs);
+//                 Py_DECREF(tp_name);
+//                 return NULL;
+//             }
+//             n_fs = 0;
+//         }
+//     } else
+//         PyErr_Clear();
 
-    n = dataobject_len(self);
-    if (n == 0) {
-        PyObject *s = PyUnicode_FromString("()");
-        text = PyUnicode_Concat(tp_name, s);
-        Py_DECREF(s);
-        Py_DECREF(tp_name);
-        return text;
-    }
+//     n = dataobject_len(self);
+//     if (n == 0) {
+//         PyObject *s = PyUnicode_FromString("()");
+//         text = PyUnicode_Concat(tp_name, s);
+//         Py_DECREF(s);
+//         Py_DECREF(tp_name);
+//         return text;
+//     }
 
-    i = Py_ReprEnter((PyObject *)self);
-    if (i != 0) {
-        Py_DECREF(tp_name);
-        return i > 0 ? PyUnicode_FromString("(...)") : NULL;
-    }
+//     i = Py_ReprEnter((PyObject *)self);
+//     if (i != 0) {
+//         Py_DECREF(tp_name);
+//         return i > 0 ? PyUnicode_FromString("(...)") : NULL;
+//     }
 
-    _PyUnicodeWriter_Init(&writer);
-    writer.overallocate = 1;
-    if (n > 1) {
-        /* "(" + "1" + ", 2" * (len - 1) + ")" */
-        writer.min_length = 1 + 1 + (2 + 1) * (n-1) + 1;
-    }
-    else {
-        /* "(1,)" */
-        writer.min_length = 4;
-    }
+//     _PyUnicodeWriter_Init(&writer);
+//     writer.overallocate = 1;
+//     if (n > 1) {
+//         /* "(" + "1" + ", 2" * (len - 1) + ")" */
+//         writer.min_length = 1 + 1 + (2 + 1) * (n-1) + 1;
+//     }
+//     else {
+//         /* "(1,)" */
+//         writer.min_length = 4;
+//     }
 
-    if (_PyUnicodeWriter_WriteStr(&writer, tp_name) < 0)
-        goto error;
+//     if (_PyUnicodeWriter_WriteStr(&writer, tp_name) < 0)
+//         goto error;
 
-    Py_DECREF(tp_name);
+//     Py_DECREF(tp_name);
 
-    if (_PyUnicodeWriter_WriteChar(&writer, '(') < 0)
-        goto error;
+//     if (_PyUnicodeWriter_WriteChar(&writer, '(') < 0)
+//         goto error;
 
-    /* Do repr() on each element. */
-    for (i = 0; i < n; ++i) {
-        PyObject *s, *ob;
-        PyObject *fn;
+//     /* Do repr() on each element. */
+//     for (i = 0; i < n; ++i) {
+//         PyObject *s, *ob;
+//         PyObject *fn;
 
-        if (n_fs > 0 && i < n_fs) {
-            fn = PyTuple_GET_ITEM(fs, i);
-            Py_INCREF(fn);
-            if (_PyUnicodeWriter_WriteStr(&writer, fn) < 0) {
-                Py_DECREF(fn);
-                goto error;
-            }
-            Py_DECREF(fn);
-            if (_PyUnicodeWriter_WriteChar(&writer, '=') < 0)
-                goto error;
-        }
+//         if (n_fs > 0 && i < n_fs) {
+//             fn = PyTuple_GET_ITEM(fs, i);
+//             Py_INCREF(fn);
+//             if (_PyUnicodeWriter_WriteStr(&writer, fn) < 0) {
+//                 Py_DECREF(fn);
+//                 goto error;
+//             }
+//             Py_DECREF(fn);
+//             if (_PyUnicodeWriter_WriteChar(&writer, '=') < 0)
+//                 goto error;
+//         }
 
-        ob = dataobject_item(self, i);
-        if (ob == NULL)
-            goto error;
+//         ob = dataobject_item(self, i);
+//         if (ob == NULL)
+//             goto error;
 
-        s = PyObject_Repr(ob);
-        if (s == NULL) {
-            Py_DECREF(ob);
-            goto error;
-        }
+//         s = PyObject_Repr(ob);
+//         if (s == NULL) {
+//             Py_DECREF(ob);
+//             goto error;
+//         }
 
-        if (_PyUnicodeWriter_WriteStr(&writer, s) < 0) {
-            Py_DECREF(s);
-            Py_DECREF(ob);
-            goto error;
-        }
-        Py_DECREF(s);
-        Py_DECREF(ob);
+//         if (_PyUnicodeWriter_WriteStr(&writer, s) < 0) {
+//             Py_DECREF(s);
+//             Py_DECREF(ob);
+//             goto error;
+//         }
+//         Py_DECREF(s);
+//         Py_DECREF(ob);
 
-        if (i < n-1) {
-            if (_PyUnicodeWriter_WriteASCIIString(&writer, ", ", 2) < 0)
-                goto error;
-        }
-    }
+//         if (i < n-1) {
+//             if (_PyUnicodeWriter_WriteASCIIString(&writer, ", ", 2) < 0)
+//                 goto error;
+//         }
+//     }
 
-    Py_XDECREF(fs);
+//     Py_XDECREF(fs);
 
-    if (tp->tp_dictoffset) {
-        PyObject *dict = PyObject_GetAttrString(self, "__dict__");
-        PyObject *s;
+//     if (tp->tp_dictoffset) {
+//         PyObject *dict = PyObject_GetAttrString(self, "__dict__");
+//         PyObject *s;
 
-        if (dict) {
-            if (PyObject_IsTrue(dict)) {
-                if (_PyUnicodeWriter_WriteASCIIString(&writer, ", **", 4) < 0)
-                    goto error;
-                s = PyObject_Repr(dict);
-                if (_PyUnicodeWriter_WriteStr(&writer, s) < 0) {
-                    Py_DECREF(s);
-                    Py_DECREF(dict);
-                    goto error;
-                }
-                Py_DECREF(s);
-            }
-            Py_DECREF(dict);
-        }
-    }
+//         if (dict) {
+//             if (PyObject_IsTrue(dict)) {
+//                 if (_PyUnicodeWriter_WriteASCIIString(&writer, ", **", 4) < 0)
+//                     goto error;
+//                 s = PyObject_Repr(dict);
+//                 if (_PyUnicodeWriter_WriteStr(&writer, s) < 0) {
+//                     Py_DECREF(s);
+//                     Py_DECREF(dict);
+//                     goto error;
+//                 }
+//                 Py_DECREF(s);
+//             }
+//             Py_DECREF(dict);
+//         }
+//     }
 
-    writer.overallocate = 0;
+//     writer.overallocate = 0;
 
-    if (_PyUnicodeWriter_WriteChar(&writer, ')') < 0)
-        goto error;
+//     if (_PyUnicodeWriter_WriteChar(&writer, ')') < 0)
+//         goto error;
 
-    Py_ReprLeave((PyObject *)self);
-    return _PyUnicodeWriter_Finish(&writer);
+//     Py_ReprLeave((PyObject *)self);
+//     return _PyUnicodeWriter_Finish(&writer);
 
-error:
-    Py_XDECREF(fs);
+// error:
+//     Py_XDECREF(fs);
 
-    _PyUnicodeWriter_Dealloc(&writer);
-    Py_ReprLeave((PyObject *)self);
-    return NULL;
-}
+//     _PyUnicodeWriter_Dealloc(&writer);
+//     Py_ReprLeave((PyObject *)self);
+//     return NULL;
+// }
 
 PyDoc_STRVAR(dataobject_reduce_doc,
 "T.__reduce__()");
@@ -984,7 +985,7 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_getattr */
     0,                                      /* tp_setattr */
     0,                                      /* tp_reserved */
-    dataobject_repr,                           /* tp_repr */
+    0,                           /* tp_repr */
     0,                                      /* tp_as_number */
     0,                  /* tp_as_sequence */
     &dataobject_as_mapping0,                   /* tp_as_mapping */

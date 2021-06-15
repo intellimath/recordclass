@@ -87,6 +87,22 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     ns['__fields__'] = fields
     if annotations:
         ns['__annotations__'] = annotations
+        
+#     if fast_new or not defaults:
+#         def __repr__(self):
+#             args = ', '.join(repr(o) for o in self)
+#             return f'{typename}({args})'
+#     else:
+    def __repr__(self):
+        args = ', '.join(("%s=%r" % (name, getattr(self, name))) for name in self.__class__.__fields__)
+        if '__dict__' in  fields and self.__dict__:
+            kw = self.__dict__
+            return f'{typename}({args}, **{kw})'
+        else:
+            return f'{typename}({args})'
+    __repr__.__qual_name__ =  f'{typename}.__repr__'
+    ns['__repr__'] = __repr__
+    ns['__str__'] = __repr__
 
     if bases:
         base0 = bases[0]

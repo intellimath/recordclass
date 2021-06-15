@@ -58,6 +58,14 @@ def make_arrayclass(typename, fields=0, namespace=None,
 
     ns['__options__'] = options
     ns['__fields__'] = fields
+    
+    def __repr__(_self):
+        return typename + '(' + \
+               ', '.join(repr(o) for o in _self) + ')'
+    __repr__.__qual_name__ =  f'{typename}.__repr__' 
+    ns['__repr__'] = __repr__
+    ns['__str__'] = __repr__
+    
 
     if module is None:
         try:

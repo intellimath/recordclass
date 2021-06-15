@@ -158,6 +158,21 @@ class datatype(type):
                 else:
                     ns[name] = dataslotgetset(offset)
 
+        if '__repr__' not in ns:
+            def __repr__(self):
+                args = ', '.join((name + '=' + repr(getattr(self, name))) for name in self.__class__.__fields__) 
+                kw = getattr(self, '__dict__', None)
+                if kw:
+                    return f'{typename}({args}, **{kw})'
+                else:
+                    return f'{typename}({args})'
+            __repr__.__qual_name__ =  f'{typename}.__repr__'
+
+            ns['__repr__'] = __repr__
+
+            if '__str__' not in ns:
+                ns['__str__'] = __repr__
+
         module = ns.get('__module__', None)
         if module is None:
             try:

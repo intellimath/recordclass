@@ -167,7 +167,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
-#         self.assertEqual(sys.getsizeof(a), 48)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+(2+2)*ptr_size)
         self.assertNotEqual(A.__dictoffset__, 0)
         self.assertNotEqual(A.__weakrefoffset__, 0)
         weakref.ref(a)
@@ -175,6 +175,7 @@ class DataObjectTest3(unittest.TestCase):
         
         a.z = 3
         self.assertEqual(a.z, a.__dict__['z'])
+        self.assertEqual(repr(a), "A(x=1, y=2, **{'z': 3})")
         #a = None
         
     def test_subclass_tp(self):
@@ -224,7 +225,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(c.z, 3)
         self.assertEqual(asdict(c), {'x':1, 'y':2, 'z':3})
         self.assertEqual(C.__annotations__, {'x':int, 'y':int, 'z':int})
-#         self.assertEqual(sys.getsizeof(c), 40)
+        self.assertEqual(sys.getsizeof(c), pyobject_size+3*ptr_size)
         with self.assertRaises(TypeError):     
             weakref.ref(c)
         with self.assertRaises(AttributeError):     

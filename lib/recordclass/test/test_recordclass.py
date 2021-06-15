@@ -21,7 +21,6 @@ class RecordClassTest(unittest.TestCase):
         Point = recordclass('Point', 'x y')
         self.assertEqual(Point.__name__, 'Point')
         self.assertEqual(Point.__doc__.split('\n')[0], 'Point(x, y)')
-#         self.assertEqual(Point.__slots__, ())
         self.assertEqual(Point.__module__, __name__)
         self.assertEqual(Point.__fields__, ('x', 'y'))
 
