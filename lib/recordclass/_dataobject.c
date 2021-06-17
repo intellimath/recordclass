@@ -1740,7 +1740,10 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     if (PyTuple_Check(fields)) {
         n_fields = PyTuple_GET_SIZE(fields);
-        has_fields = 1;
+        if (n_fields > 0)
+            has_fields = 1;
+        else
+            has_fields = 0;
     } else {
         n_fields = PyNumber_AsSsize_t(fields, PyExc_IndexError);
         if (n_fields == -1 && PyErr_Occurred()) {

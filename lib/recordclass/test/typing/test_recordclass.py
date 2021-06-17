@@ -55,7 +55,10 @@ class RecordClassTypingTest(unittest.TestCase):
         self.assertEqual(tmp.__annotations__, {'a': int, 'b': str, 'c': typing.List[int]})
 
     def test_recordclass_basics(self):
-        Emp = RecordClass('Emp', [('name', str), ('id', int)])
+        class Emp(RecordClass):
+            name:str
+            id:int
+#         Emp = RecordClass('Emp', [('name', str), ('id', int)])
         #self.assertIsSubclass(Emp, memoryslots)
         joe = Emp('Joe', 42)
         jim = Emp(name='Jim', id=1)
@@ -113,7 +116,6 @@ class NonDefaultAfterDefault(RecordClass):
     y: int
 """)
 
-    #@skipUnless(PY36, 'Python 3.6 required')
     def test_annotation_usage_with_methods(self):
         self.assertEqual(XMeth(1).double(), 2)
         self.assertEqual(XMeth(42).x, XMeth(42)[0])
@@ -138,7 +140,10 @@ class XMethBad2(RecordClass):
 
     #@skipUnless(PY36, 'Python 3.6 required')
     def test_recordclass_keyword_usage(self):
-        LocalEmployee = RecordClass("LocalEmployee", name=str, age=int)
+        class LocalEmployee(RecordClass):
+            name:str
+            age:int
+#         LocalEmployee = RecordClass("LocalEmployee", name=str, age=int)
         nick = LocalEmployee('Nick', 25)
 #         self.assertIsInstance(nick, memoryslots)
         self.assertEqual(nick.name, 'Nick')
@@ -174,14 +179,14 @@ class XMethBad2(RecordClass):
         b = B(1,2)
         hash(b)
         
-    def test_pickle(self):
-        global Emp  # pickle wants to reference the class by name
-        Emp = RecordClass('Emp', [('name', str), ('id', int)])
-        jane = Emp('jane', 37)
-        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
-            z = pickle.dumps(jane, proto)
-            jane2 = pickle.loads(z)
-            self.assertEqual(jane2, jane)
+#     def test_pickle(self):
+#         global Emp  # pickle wants to reference the class by name
+#         Emp = RecordClass('Emp', [('name', str), ('id', int)])
+#         jane = Emp('jane', 37)
+#         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+#             z = pickle.dumps(jane, proto)
+#             jane2 = pickle.loads(z)
+#             self.assertEqual(jane2, jane)
 
     def test_pickle2(self):
         global Emp2

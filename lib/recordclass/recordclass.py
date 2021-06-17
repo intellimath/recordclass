@@ -24,7 +24,7 @@
 
 from collections import namedtuple
 
-__all__ = 'recordclass', 'RecordclassStorage'
+__all__ = 'recordclass'
 
 import sys as _sys
 
