@@ -933,7 +933,7 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_reserved */
     0,                           /* tp_repr */
     0,                                      /* tp_as_number */
-    0,                  /* tp_as_sequence */
+    &dataobject_as_sequence,                  /* tp_as_sequence */
 //     &dataobject_as_mapping0,                   /* tp_as_mapping */
     0,                   /* tp_as_mapping */
     dataobject_hash,                          /* tp_hash */

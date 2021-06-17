@@ -1,6 +1,6 @@
 """Unit tests for recordclass.py."""
 import unittest, doctest, operator
-from recordclass import recordclass
+from recordclass.typing import RecordClass
 
 try:
     from test import support
@@ -9,7 +9,7 @@ except:
 
 import pickle
 import typing
-from recordclass import RecordClass
+from recordclass import dataobject
 import sys as _sys
 
 class CoolEmployee(RecordClass):
@@ -130,22 +130,12 @@ class XMethBad(RecordClass):
         return 'no chance for this'
 """)
 
-        with self.assertRaises(AttributeError):
-            exec("""
-class XMethBad2(RecordClass):
-    x: int
-    def _source(self):
-        return 'no chance for this as well'
-""")
-
-    #@skipUnless(PY36, 'Python 3.6 required')
     def test_recordclass_keyword_usage(self):
         class LocalEmployee(RecordClass):
             name:str
             age:int
-#         LocalEmployee = RecordClass("LocalEmployee", name=str, age=int)
+
         nick = LocalEmployee('Nick', 25)
-#         self.assertIsInstance(nick, memoryslots)
         self.assertEqual(nick.name, 'Nick')
         self.assertEqual(LocalEmployee.__name__, 'LocalEmployee')
         self.assertEqual(LocalEmployee.__fields__, ('name', 'age'))

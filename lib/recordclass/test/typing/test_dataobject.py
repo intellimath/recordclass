@@ -555,15 +555,16 @@ class DataObjectTest3(unittest.TestCase):
     def test_copy_defaults_tp(self):
         import copy
 
-        class A(dataobject):
-            x:int=0
-            y:int
+        with self.assertRaises(TypeError):        
+            class A(dataobject):
+                x:int=0
+                y:int
                 
-        a=A(x=1,y=2)
-        b = copy.copy(a)
-        self.assertEqual(a, b)
-        c = copy.deepcopy(a)
-        self.assertEqual(a, c)
+#         a=A(x=1,y=2)
+#         b = copy.copy(a)
+#         self.assertEqual(a, b)
+#         c = copy.deepcopy(a)
+#         self.assertEqual(a, c)
         
     def test_signature_tp(self):
         class A(dataobject):

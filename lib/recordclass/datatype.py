@@ -55,13 +55,15 @@ def clsconfig(sequence=False, mapping=False, readonly=False,
     return func
 
 def _matching_annotations_and_defaults(annotations, defaults):
-    args = True
+    first_default = 0
     for name, val in annotations.items():
         if name in defaults:
-            args = False
+            first_default = 1
         else:
-            if not args:
-                defaults[name] = None
+            if first_default:
+                raise TypeError('Simple argument after argument with default value')
+#             if not args:
+#                 defaults[name] = None
 
 class datatype(type):
 
