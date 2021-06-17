@@ -578,16 +578,16 @@ dataobject_len(PyObject *op)
 //     return n;
 }
 
-static PySequenceMethods dataobject_as_sequence0 = {
-    (lenfunc)dataobject_len,                          /* sq_length */
-    0,                                              /* sq_concat */
-    0,                                              /* sq_repeat */
-    0,                    /* sq_item */
-    0,                                              /* sq_slice */
-    0,             /* sq_ass_item */
-    0,                                              /* sq_ass_slice */
-    0,                                              /* sq_contains */
-};
+// static PySequenceMethods dataobject_as_sequence0 = {
+//     (lenfunc)dataobject_len,                          /* sq_length */
+//     0,                                              /* sq_concat */
+//     0,                                              /* sq_repeat */
+//     0,                    /* sq_item */
+//     0,                                              /* sq_slice */
+//     0,             /* sq_ass_item */
+//     0,                                              /* sq_ass_slice */
+//     0,                                              /* sq_contains */
+// };
 
 static PySequenceMethods dataobject_as_sequence = {
     (lenfunc)dataobject_len,                          /* sq_length */
@@ -611,11 +611,11 @@ static PySequenceMethods dataobject_as_sequence_ro = {
     0,                                              /* sq_contains */
 };
 
-static PyMappingMethods dataobject_as_mapping0 = {
-    (lenfunc)dataobject_len,                          /* mp_len */
-    0,                 /* mp_subscr */
-    0,          /* mp_ass_subscr */
-};
+// static PyMappingMethods dataobject_as_mapping0 = {
+//     (lenfunc)dataobject_len,                          /* mp_len */
+//     0,                 /* mp_subscr */
+//     0,          /* mp_ass_subscr */
+// };
 
 static PyMappingMethods dataobject_as_mapping = {
     (lenfunc)dataobject_len,                          /* mp_len */
@@ -989,7 +989,8 @@ static PyTypeObject PyDataObject_Type = {
     0,                           /* tp_repr */
     0,                                      /* tp_as_number */
     0,                  /* tp_as_sequence */
-    &dataobject_as_mapping0,                   /* tp_as_mapping */
+//     &dataobject_as_mapping0,                   /* tp_as_mapping */
+    0,                   /* tp_as_mapping */
     dataobject_hash,                          /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
@@ -1666,7 +1667,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
                tp->tp_as_sequence = &dataobject_as_sequence_ro;
         }
     } else {
-        tp->tp_as_sequence = &dataobject_as_sequence0;
+        tp->tp_as_sequence = NULL; //&dataobject_as_sequence0;
         if (mp) {
             tp->tp_as_mapping = &dataobject_as_mapping;
             if (ro)
