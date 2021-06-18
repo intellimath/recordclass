@@ -55,42 +55,7 @@ def recordclass(typename, fields, defaults=None,
     """
     from .dataclass import make_dataclass
     
-#     def _make(_cls, iterable):
-#         ob = _cls(*iterable)
-#         return ob
-    
-#     _make.__doc__ = f'Make a new {typename} object from a sequence or iterable'
-
-#     if readonly:
-#         def _replace(_self, **kwds):
-#             result = _self._make(map(kwds.pop, _self.__fields__, _self))
-#             if kwds:
-#                 kwnames = tuple(kwds)
-#                 raise AttributeError(f'Got unexpected field names: {kwnames}')
-#             return result
-#     else:
-#         def _replace(_self, **kwds):
-#             for name, val in kwds.items():
-#                 setattr(_self, name, val)
-#             return _self
-    
-#     _replace.__doc__ = f'Return a new {typename} object replacing specified fields with new values'
-    
-#     def _asdict(self):
-#         'Return a new dict which maps field names to their values.'
-#         return asdict(self)
-
-#     for method in (_make, _replace, _asdict,):
-#         method.__qualname__ = typename + "." + method.__name__        
-        
-#     _make = classmethod(_make)
-    
-#     ns = { '_make': _make, 
-#            '_replace': _replace, 
-#            '_asdict': _asdict,
-#          }
-
-        if module is None:
+    if module is None:
         try:
             _module = _sys._getframe(1).f_globals.get('__name__', '__main__')
         except (AttributeError, ValueError):
