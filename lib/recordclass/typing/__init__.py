@@ -46,10 +46,6 @@ def _make_recordclass(name, types, readonly=False, hashable=False):
     
     rec_cls = recordclass(name, [n for n, t in types], readonly=readonly, hashable=hashable, module=module)
     rec_cls.__annotations__ = dict(types)
-#     try:
-#         rec_cls.__module__ = _sys._getframe(2).f_globals.get('__name__', '__main__')
-#     except (AttributeError, ValueError):
-#         pass
     return rec_cls
 
 class RecordClassMeta(type):
