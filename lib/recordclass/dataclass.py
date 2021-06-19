@@ -27,18 +27,17 @@ from .utils import check_name, collect_info_from_bases
 
 __all__ = 'make_dataclass', 'join_dataclasses', 'astuple', 'asdict', 'DataclassStorage'
 
-import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
+# _PY36 = _sys.version_info[:2] >= (3, 6)
 
-_intern = _sys.intern
-if _PY36:
-    from typing import _type_check
-else:
-    def _type_check(t, msg):
-        if isinstance(t, (type, str)):
-            return t
-        else:
-            raise TypeError('invalid type annotation', t)
+# _intern = _sys.intern
+# if _PY36:
+#     from typing import _type_check
+# else:
+#     def _type_check(t, msg):
+#         if isinstance(t, (type, str)):
+#             return t
+#         else:
+#             raise TypeError('invalid type annotation', t)
 
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None,
                    use_dict=False, use_weakref=False, hashable=True,
@@ -47,6 +46,7 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 
     from ._dataobject import dataobject
     from .datatype import datatype
+    import sys as _sys
 
     if nmtpl_api:
         invalid_names = invalid_names + ('_make', '_replace', '_asdict')
