@@ -91,3 +91,11 @@ class RecordClassMeta(type):
 
 class RecordClass(metaclass=RecordClassMeta):
     _root = True
+
+    def __new__(self, typename, fields=None, **kwargs):
+        if fields is None:
+            fields = kwargs.items()
+        elif kwargs:
+            raise TypeError("Either list of fields or keywords"
+                            " can be provided to RecordClass, not both")
+        return _make_recordclass(typename, fields)
