@@ -92,7 +92,7 @@ class RecordClassMeta(type):
 class RecordClass(metaclass=RecordClassMeta):
     _root = True
 
-    def __new__(self, typename, fields=None, **kwargs):
+    def __new__(cls, typename, fields=None, **kwargs):
         if fields is None:
             fields = kwargs.items()
         elif kwargs:

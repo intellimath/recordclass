@@ -22,11 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from collections import namedtuple
-
-__all__ = 'recordclass'
-
-import sys as _sys
+__all__ = 'recordclass', 'RecordclassStorage'
 
 def recordclass(typename, fields, defaults=None, 
                 rename=False, readonly=False, hashable=False, gc=False,
@@ -54,6 +50,7 @@ def recordclass(typename, fields, defaults=None,
     Point(x=100, y=22)
     """
     from .dataclass import make_dataclass
+    import sys as _sys
     
     if module is None:
         try:
