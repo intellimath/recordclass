@@ -11,21 +11,21 @@ The instances of such classes havn't `PyGC_Head` prefix in the memory, which dec
 This may make sense in cases where it is necessary to limit the size of objects as much as possible, provided that they will never be part of circular references in the application.
 For example, when an object represents a record with fields that represent simple values by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
 
-Consider a class with type hints:
+For example, consider a class with type hints:
 
     class Point:
         x: int
         y: int
 
 By contract instances of the class `Point` have attributes `x` and `y` with values of `int` type.
-Assigning of values of different types should be considered as a bug.
+Assigning of values of a different types should be considered as a bug.
 
 Another examples are non-recursive data structures in which all leaf element represent value of the atomic type.
 Of course, in python, nothing prevent you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
 But in many cases, this can still be avoided provided that the developer understands what he is doing and uses such classes in the code with care.
 Another option is a use of static analyzers together with type annotations.
 
-**First**, `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  will not participate in CGC by default. As the result the instance of such class need less memory. It's memory footprint is similar to memory footprint of instances of the classes with `__slots__` . The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All subclasses of `dataobject` created by `class statement` support `attrs`/`dataclasses`-like API.
+**First**, `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  will not participate in CGC by default. As the result the instance of such class need less memory. It's memory footprint is similar to memory footprint of instances of the classes with `__slots__`. The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All subclasses of `dataobject` created by `class statement` support `attrs`/`dataclasses`-like API.
 
 **Second**, it provide a factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names. These subclasses support `attrs`/`dataclasses`-like API.
 For example:
@@ -42,15 +42,14 @@ For example:
     >>> Pair = make_array(2)
     >>> p = Pair(2, 3)
     >>> p[1] = -1
-    >>> print(p[0], p[1])
-    2 -1
+    >>> print(p)
+    Pair(2, -1)
 
 **Four**, it provide the class `lightlist`, which considers as list-like *light* container in order to save memory.
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
 Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/intellimath/recordclass/raw/master/examples/what_is_recordclass.ipynb).
-
 
 ## Quick start
 
@@ -90,9 +89,9 @@ Example with `recordclass`:
     Point(1, 2)
     >>> print(p.x, p.y)
     1 2             
-    >>> p.x, p.y = 10, 20
+    >>> p.x, p.y = 1, 2
     >>> print(p)
-    Point(10, 20)
+    Point(1, 2)
     >>> sys.getsizeof(p) # the output below is for 64bit cpython3.9
     40
 
@@ -111,18 +110,17 @@ Example with `RecordClass` and typehints::
     Point(1, 2)
     >>> print(p.x, p.y)
     1 2
-    >>> p.x, p.y = 10, 20
+    >>> p.x, p.y = 1, 2
     >>> print(p)
-    Point(10, 20)
+    Point(1, 2)
+
+Now by default `recordclass`-based class instances doesn't participate in CGC and therefore they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`gc=False` by default):
+
+    >>> Node = recordclass('Node', 'root children', gc=True)
     
+or decorator:
 
-Now by default `recordclass`-based class instances doesn't participate in CGC and therefore  they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`gc=False` by default):
-
-    >>> Node = recordclass('Node', 'root, children', gc=True)
-    
-or decorator `@enable_gc` for `RecordClass`-based classes:
-
-    @recordclass.enable_gc
+    @clsconfig(gc=True)
     class Node(RecordClass):
          root: 'Node'
          chilren: list
@@ -181,7 +179,6 @@ or
     >>> print(p)
     Point(x=1, y=2, color='white')
 
-
 ## Memory footprint
 
 The following table explain memory footprints of `recordclass`-base and `dataobject`-base objects:
@@ -230,12 +227,11 @@ Here are also table with some performance counters (python 3.9, debian linux, x8
 | `getattr` |   23.6±0.3 ns |    24.7±0.9 ns   |   23.0±0.2 ns |   23.1±0.7 ns |
 | `setattr` |               |     27.6±0.8 ns  |   26.8±0.4 ns |   26.57±0.4 ns |
 
-
 ### Changes:
 
 ### 0.15
 
-* From now library supports only Python 3.
+* Now library supports only Python >=3.6
 * Add a function `astuple` to dataclass.py for transformation instances of dataobject-based subclasses to a tuple.
 * Drop datatuple based classes.
 * Drop the mutabletuple type.

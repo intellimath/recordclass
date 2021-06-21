@@ -27,27 +27,25 @@ __all__ = 'recordclass', 'RecordclassStorage'
 def recordclass(typename, fields, defaults=None, 
                 rename=False, readonly=False, hashable=False, gc=False,
                 use_dict=False, use_weakref=False, fast_new=False, module=None):
-    """Returns a new subclass of array with named fields.
+    """Returns a new class with named fields, small memory footprint and namedtuple-lie API.
 
     >>> Point = recordclass('Point', 'x y')
     >>> Point.__doc__                   # docstring for the new class
     'Point(x, y)'
-    >>> p = Point(11, y=22)             # instantiate with positional args or keywords
+    >>> p = Point(1,2)                  # instantiate with positional args or keywords
+    >>> print(p)
+    Point(x=1, y=2)
     >>> p[0] + p[1]                     # indexable like a plain tuple
-    33
+    3
     >>> x, y = p                        # unpack like a regular tuple
     >>> x, y
-    (11, 22)
+    (1, 2)
     >>> p.x + p.y                       # fields also accessable by name
-    33
+    3
     >>> d = p._asdict()                 # convert to a dictionary
-    >>> d.x
-    11
-    >>> d.x = 33                        # assign new value
+    >>> d['y'] =-1                      # assign new value
     >>> Point(**d)                      # convert from a dictionary
-    Point(x=11, y=22)
-    >>> p._replace(x=100)               # _replace() is like str.replace() but targets named fields
-    Point(x=100, y=22)
+    Point(x=1, y=-1)
     """
     from .dataclass import make_dataclass
     import sys as _sys

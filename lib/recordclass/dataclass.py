@@ -27,23 +27,30 @@ from .utils import check_name, collect_info_from_bases
 
 __all__ = 'make_dataclass', 'join_dataclasses', 'astuple', 'asdict', 'DataclassStorage'
 
-# _PY36 = _sys.version_info[:2] >= (3, 6)
-
-# _intern = _sys.intern
-# if _PY36:
-#     from typing import _type_check
-# else:
-#     def _type_check(t, msg):
-#         if isinstance(t, (type, str)):
-#             return t
-#         else:
-#             raise TypeError('invalid type annotation', t)
-
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None,
                    use_dict=False, use_weakref=False, hashable=True,
                    sequence=False, mapping=False, iterable=False, readonly=False, nmtpl_api=False,
                    module=None, fast_new=False, rename=False, invalid_names=(), gc=False):
 
+    """Returns a new class with named fields and small memory footprint.
+
+    >>> from recordclass import make_dataclass, asdict
+    >>> Point = make_dataclass('Point', 'x y')
+    >>> Point.__doc__                   # docstring for the new class
+    'Point(x, y)'
+    >>> p = Point(1, 2)                 # instantiate with positional args or keywords
+    >>> p[0] + p[1]                     # indexable like a plain tuple
+    3
+    >>> x, y = p                        # unpack like a regular tuple
+    >>> x, y
+    (1, 2)
+    >>> p.x + p.y                       # fields also accessable by name
+    3
+    >>> d = asdict()                    # convert to a dictionary
+    >>> d['y'] = 3                         # assign new value
+    >>> Point(**d)                      # convert from a dictionary
+    Point(x=1, y=-1)
+    """
     from ._dataobject import dataobject
     from .datatype import datatype
     import sys as _sys
@@ -200,7 +207,7 @@ def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False,
     from ._dataobject import dataobject
 
     if not all(issubclass(cls, dataobject) for cls in classes):
-        raise TypeError('All arguments should be child of dataobject')
+        raise TypeError('All arguments should be children of dataobject')
     if not all(hasattr(cls, '__fields__') for cls in classes):
         raise TypeError('Some of the base classes has not __fields__')
 
