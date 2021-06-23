@@ -497,8 +497,8 @@ class DataObjectTest3(unittest.TestCase):
         class A(dataobject):
             __fields__ = 'x', 'y', 'z'
         
-        @clsconfig(gc=True)
-        class B(dataobject):
+#         @clsconfig(gc=True)
+        class B(dataobject, gc=True):
             __fields__ = 'x', 'y', 'z'
             
         a = A(1,2,3)

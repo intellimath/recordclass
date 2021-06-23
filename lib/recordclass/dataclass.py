@@ -72,7 +72,7 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
         'readonly':readonly,
         'hashable':hashable,
         'fast_new':fast_new,
-        'gc':gc,
+#         'gc':gc,
     }
     
     if namespace is None:
@@ -165,7 +165,7 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 
     ns['__module__'] = module
 
-    cls = datatype(typename, bases, ns)
+    cls = datatype(typename, bases, ns, gc=gc)
 
     return cls
 

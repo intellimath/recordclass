@@ -1904,6 +1904,8 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
         _enable_gc(cls);
 
     PyType_Modified((PyTypeObject*)cls);
+//     ((PyTypeObject*)cls)->tp_flags &= ~Py_TPFLAGS_READY;
+//     PyType_Ready((PyTypeObject*)cls);
 
     Py_XDECREF(sequence);
     Py_XDECREF(mapping);

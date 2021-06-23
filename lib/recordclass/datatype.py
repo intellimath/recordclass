@@ -28,7 +28,7 @@ from .utils import check_name, collect_info_from_bases
 __all__ = 'clsconfig', 'datatype'
 
 import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
+# _PY36 = _sys.version_info[:2] >= (3, 6)
 
 _intern = _sys.intern
 from typing import _type_check
@@ -60,7 +60,7 @@ def _matching_annotations_and_defaults(annotations, defaults):
 
 class datatype(type):
 
-    def __new__(metatype, typename, bases, ns):
+    def __new__(metatype, typename, bases, ns, gc=False):
 
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
@@ -73,7 +73,8 @@ class datatype(type):
         fast_new = options.get('fast_new', False)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
-        gc = options.get('gc', False)
+        if gc in options:
+            gc = options['gc']
 
         if not bases:
             raise TypeError("The base class in not specified")
