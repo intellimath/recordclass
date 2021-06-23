@@ -390,8 +390,14 @@ class dataobjectTest(unittest.TestCase):
         d = asdict(a)
         self.assertEqual(d, {'x':1, 'y':2})
         
-    def test_dataclass_astuple(self):
+    def test_dataclass_astuple_fail(self):
         A = make_dataclass("A", {'x':int, 'y':int})
+        a = A(x=1,y=2)
+        with self.assertRaises(TypeError):
+            t = astuple(a)
+
+    def test_dataclass_astuple(self):
+        A = make_dataclass("A", {'x':int, 'y':int}, iterable=True)
         a = A(x=1,y=2)
         t = astuple(a)
         self.assertEqual(t, (1, 2))

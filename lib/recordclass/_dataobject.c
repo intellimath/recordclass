@@ -1842,9 +1842,6 @@ _enable_gc(PyObject *cls)
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(astuple_doc,
-"Fast factory for creation of dataobject instances");
-
 static PyObject *
 _astuple(PyObject *op)
 {
@@ -1861,23 +1858,26 @@ _astuple(PyObject *op)
     return tpl;
 }
 
-static PyObject *
-astuple(PyObject *module, PyObject *args)
-{
-    PyObject *op;
-    PyTypeObject *type;
+// PyDoc_STRVAR(astuple_doc,
+// "Fast factory for creation of dataobject instances");
 
-    op = PyTuple_GET_ITEM(args, 0);
-    type = Py_TYPE(op);
+// static PyObject *
+// astuple(PyObject *module, PyObject *args)
+// {
+//     PyObject *op;
+//     PyTypeObject *type;
 
-    if (type != &PyDataObject_Type &&
-        !PyType_IsSubtype(type, &PyDataObject_Type)) {
-            PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
-            return NULL;
-    }
+//     op = PyTuple_GET_ITEM(args, 0);
+//     type = Py_TYPE(op);
 
-    return _astuple(op);
-}
+//     if (type != &PyDataObject_Type &&
+//         !PyType_IsSubtype(type, &PyDataObject_Type)) {
+//             PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
+//             return NULL;
+//     }
+
+//     return _astuple(op);
+// }
 
 PyDoc_STRVAR(clsconfig_doc,
 "Configure some class aspects");
@@ -1904,8 +1904,6 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
         _enable_gc(cls);
 
     PyType_Modified((PyTypeObject*)cls);
-//     ((PyTypeObject*)cls)->tp_flags &= ~Py_TPFLAGS_READY;
-//     PyType_Ready((PyTypeObject*)cls);
 
     Py_XDECREF(sequence);
     Py_XDECREF(mapping);
@@ -1939,7 +1937,7 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 "dataobject module provide `dataobject` class.");
 
 static PyMethodDef dataobjectmodule_methods[] = {
-    {"_astuple", astuple, METH_VARARGS, astuple_doc},
+//     {"_astuple", astuple, METH_VARARGS, astuple_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
     {0, 0, 0, 0}

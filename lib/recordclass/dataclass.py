@@ -72,7 +72,6 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
         'readonly':readonly,
         'hashable':hashable,
         'fast_new':fast_new,
-#         'gc':gc,
     }
     
     if namespace is None:
@@ -177,8 +176,7 @@ def asdict(ob):
     return {fn:_getattr(ob, fn) for fn in fields}
 
 def astuple(ob):
-    from ._dataobject import _astuple
-    return _astuple(ob)
+    return tuple(iter(ob))
 
 class DataclassStorage:
     #
