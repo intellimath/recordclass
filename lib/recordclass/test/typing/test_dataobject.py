@@ -552,19 +552,26 @@ class DataObjectTest3(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
                 
-    def test_copy_defaults_tp(self):
+    def test_invalid_defaults_tp(self):
         import copy
 
         with self.assertRaises(TypeError):        
             class A(dataobject):
                 x:int=0
                 y:int
-                
-#         a=A(x=1,y=2)
-#         b = copy.copy(a)
-#         self.assertEqual(a, b)
-#         c = copy.deepcopy(a)
-#         self.assertEqual(a, c)
+
+    def test_copy_tp(self):
+        import copy
+
+        class A(dataobject):
+            x:int
+            y:int
+                    
+        a=A(x=1,y=2)
+        b = copy.copy(a)
+        self.assertEqual(a, b)
+        c = copy.deepcopy(a)
+        self.assertEqual(a, c)
         
     def test_signature_tp(self):
         class A(dataobject):
