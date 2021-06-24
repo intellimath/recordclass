@@ -352,6 +352,19 @@ class dataobjectTest(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
 
+    def test_pickle4(self):
+        p = TPickle3(10, 20, 30)
+#         p.a = 1
+#         p.b = 2
+#         print(tuple(iter(p)))
+        for module in (pickle,):
+            loads = getattr(module, 'loads')
+            dumps = getattr(module, 'dumps')
+            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+                tmp = dumps(p, protocol)
+                q = loads(tmp)
+                self.assertEqual(p, q)
+                
     def test_iter2(self):
         A = make_dataclass("A", ('x', 'y', 'z'))
         a=A(1, 2.0, "a")

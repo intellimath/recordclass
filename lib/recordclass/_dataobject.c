@@ -59,7 +59,7 @@ PyDataObject_GetDict(PyObject *obj)
     }
     dict = *dictptr;
     if (dict == NULL) {
-//         *dictptr = dict = PyDict_New();
+        *dictptr = dict = PyDict_New();
         dict = PyDict_New();
         if (dict == NULL) {
             PyErr_SetString(PyExc_TypeError, "can't create dict");
@@ -833,8 +833,11 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
     if (tp->tp_dictoffset) {
         dictptr = PyObject_GetDictPtr(ob);
         if (dictptr) {
-            kw = PyDict_New();
-            PyDict_Update(kw, *dictptr);
+            PyObject *d = *dictptr;
+            if (d) {
+                kw = PyDict_New();
+                PyDict_Update(kw, *dictptr);
+            }
         }
     }
     if (kw) {
