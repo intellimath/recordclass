@@ -60,7 +60,6 @@ PyDataObject_GetDict(PyObject *obj)
     dict = *dictptr;
     if (dict == NULL) {
         *dictptr = dict = PyDict_New();
-        dict = PyDict_New();
         if (dict == NULL) {
             PyErr_SetString(PyExc_TypeError, "can't create dict");
             return NULL;
