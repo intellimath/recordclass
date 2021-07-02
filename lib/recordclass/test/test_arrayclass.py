@@ -179,6 +179,13 @@ class arrayobjectTest(unittest.TestCase):
         A = make_arrayclass("A", fields=3, hashable=True)
         a=A(1, 2.0, "a")
         hash(a)
+        
+    def test_arrayclass_asdict(self):
+        from recordclass import asdict
+        A = make_arrayclass("A", 3)
+        a = A()
+        with self.assertRaises(TypeError):
+            t = asdict(a)        
 
     def test_missing_args(self):
         A = make_arrayclass("A", fields=3)

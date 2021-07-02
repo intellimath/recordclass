@@ -397,6 +397,12 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
 
+    def test_empty_fields_asdict(self):
+        A = make_dataclass("A", ())
+        a = A()
+        d = asdict(a)
+        self.assertEqual(d, {})
+        
     def test_dataclass_asdict(self):
         A = make_dataclass("A", {'x':int, 'y':int})
         a = A(x=1,y=2)
