@@ -171,9 +171,8 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 make_class = make_dataclass
 
 def asdict(ob):
-    _getattr = getattr
-    fields = ob.__class__.__fields__
-    return {fn:_getattr(ob,fn) for fn in fields}
+    from ._dataobject import _asdict
+    return _asdict(ob)
 
 def astuple(ob):
     from ._dataobject import _astuple

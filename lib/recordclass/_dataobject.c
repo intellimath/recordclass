@@ -1859,8 +1859,65 @@ _astuple(PyObject *op)
     return tpl;
 }
 
+static PyObject *
+_asdict(PyObject *op)
+{
+    Py_ssize_t i;
+    PyObject *fn, *v;
+    
+    PyObject *fields = PyObject_GetAttrString((PyObject*)Py_TYPE(op), "__fields__");
+
+    if (!fields)
+        return NULL;
+
+    if (!PyObject_IsInstance(fields, (PyObject*)&PyTuple_Type)) {
+        PyErr_SetString(PyExc_TypeError, "__fields__ should be a tuple");
+        return NULL;
+    }
+    
+    PyObject *dict = PyDict_New();
+    Py_ssize_t n = Py_SIZE(fields);
+
+    if (n == 0) {
+        Py_DECREF(fields);
+        return dict;
+    }
+        
+    for (i=0; i<n; i++) {
+        fn = PyTuple_GetItem(fields, i);
+        v = dataobject_item(op, i);
+        PyDict_SetItem(dict, fn, v);
+    }
+    
+    Py_DECREF(fields);
+    return dict;
+    
+}
+
+PyDoc_STRVAR(asdict_doc,
+"Convert object to dict");
+
+static PyObject *
+asdict(PyObject *module, PyObject *args)
+{
+    PyObject *op;
+    PyTypeObject *type;
+
+    op = PyTuple_GET_ITEM(args, 0);
+    type = Py_TYPE(op);
+
+    if (type != &PyDataObject_Type &&
+        !PyType_IsSubtype(type, &PyDataObject_Type)) {
+            PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
+            return NULL;
+    }
+
+    return _asdict(op);
+}
+
+
 PyDoc_STRVAR(astuple_doc,
-"Fast factory for creation of dataobject instances");
+"Convert object to a tuple");
 
 static PyObject *
 astuple(PyObject *module, PyObject *args)
@@ -1938,6 +1995,7 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 "dataobject module provide `dataobject` class.");
 
 static PyMethodDef dataobjectmodule_methods[] = {
+    {"_asdict", asdict, METH_VARARGS, asdict_doc},
     {"_astuple", astuple, METH_VARARGS, astuple_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},

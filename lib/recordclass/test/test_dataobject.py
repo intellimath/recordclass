@@ -416,6 +416,8 @@ class dataobjectTest(unittest.TestCase):
         a = A(x=1,y=2)
         t = astuple(a)
         self.assertEqual(t, (1, 2))
+        d = asdict(a)
+        self.assertEqual(d, {'x':1, 'y':2})
 
     def test_refleak_on_assignemnt_do(self):
         Test = make_dataclass("Test", "x")
