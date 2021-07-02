@@ -39,15 +39,15 @@ def make_arrayclass(typename, fields=0, namespace=None,
     
     if not isinstance(fields, int_type):
         raise TypeError("argument fields is not integer")
-        
-    bases = (dataobject,)        
+
+    bases = (dataobject,)
 
     options = {
         'use_dict':False, 'use_weakref':use_weakref, 'hashable':hashable, 
         'sequence':True, 'iterable':True, 'readonly':readonly, 'gc':gc,
         'fast_new':True,
     }
-    
+
     typename = _intern(typename)
 
     if namespace is None:
@@ -57,23 +57,22 @@ def make_arrayclass(typename, fields=0, namespace=None,
 
     ns['__options__'] = options
     ns['__fields__'] = fields
-    
+
     def __repr__(_self):
         return typename + '(' + \
                ', '.join(repr(o) for o in _self) + ')'
     __repr__.__qual_name__ =  f'{typename}.__repr__' 
     ns['__repr__'] = __repr__
-    ns['__str__'] = __repr__
-    
+    ns['__str__'] = __repr__    
 
     if module is None:
         try:
             module = _sys._getframe(1).f_globals.get('__name__', '__main__')
         except (AttributeError, ValueError):
             pass
-        
+
     ns['__module__'] = module
-    
+
     cls = datatype(typename, bases, ns)
 
     return cls

@@ -406,8 +406,10 @@ class dataobjectTest(unittest.TestCase):
     def test_dataclass_astuple_fail(self):
         A = make_dataclass("A", {'x':int, 'y':int})
         a = A(x=1,y=2)
-        with self.assertRaises(TypeError):
-            t = astuple(a)
+#         with self.assertRaises(TypeError):
+#             t = astuple(a)
+        t = astuple(a)
+        self.assertEqual(t, (1, 2))
 
     def test_dataclass_astuple(self):
         A = make_dataclass("A", {'x':int, 'y':int}, iterable=True)

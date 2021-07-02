@@ -1859,26 +1859,26 @@ _astuple(PyObject *op)
     return tpl;
 }
 
-// PyDoc_STRVAR(astuple_doc,
-// "Fast factory for creation of dataobject instances");
+PyDoc_STRVAR(astuple_doc,
+"Fast factory for creation of dataobject instances");
 
-// static PyObject *
-// astuple(PyObject *module, PyObject *args)
-// {
-//     PyObject *op;
-//     PyTypeObject *type;
+static PyObject *
+astuple(PyObject *module, PyObject *args)
+{
+    PyObject *op;
+    PyTypeObject *type;
 
-//     op = PyTuple_GET_ITEM(args, 0);
-//     type = Py_TYPE(op);
+    op = PyTuple_GET_ITEM(args, 0);
+    type = Py_TYPE(op);
 
-//     if (type != &PyDataObject_Type &&
-//         !PyType_IsSubtype(type, &PyDataObject_Type)) {
-//             PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
-//             return NULL;
-//     }
+    if (type != &PyDataObject_Type &&
+        !PyType_IsSubtype(type, &PyDataObject_Type)) {
+            PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
+            return NULL;
+    }
 
-//     return _astuple(op);
-// }
+    return _astuple(op);
+}
 
 PyDoc_STRVAR(clsconfig_doc,
 "Configure some class aspects");
@@ -1938,7 +1938,7 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 "dataobject module provide `dataobject` class.");
 
 static PyMethodDef dataobjectmodule_methods[] = {
-//     {"_astuple", astuple, METH_VARARGS, astuple_doc},
+    {"_astuple", astuple, METH_VARARGS, astuple_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
     {0, 0, 0, 0}
