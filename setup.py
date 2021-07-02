@@ -23,9 +23,6 @@
 # THE SOFTWARE.
 #
 
-import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
-
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
@@ -65,11 +62,11 @@ description = """Mutable variant of collections.namedtuple -- recordclass.record
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
-    
-packages = ['recordclass', 'recordclass.test']
-if _PY36:
-    packages.append('recordclass.test.typing')
-    packages.append('recordclass.typing')
+
+packages = [ 'recordclass', 
+             'recordclass.test',
+             'recordclass.test.typing',
+             'recordclass.typing']
 
 setup(
     name = 'recordclass',

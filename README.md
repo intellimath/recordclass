@@ -18,9 +18,9 @@ For example, consider a class with type hints:
         y: int
 
 By contract instances of the class `Point` have attributes `x` and `y` with values of `int` type.
-Assigning of values of a different types should be considered as a bug.
+Assigning of values of a different types should be considered as a violation of the contract.
 
-Another examples are non-recursive data structures in which all leaf element represent value of the atomic type.
+Another examples are non-recursive data structures in which all leaf elements represent a value of an atomic type.
 Of course, in python, nothing prevent you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
 But in many cases, this can still be avoided provided that the developer understands what he is doing and uses such classes in the code with care.
 Another option is a use of static analyzers together with type annotations.
@@ -39,7 +39,7 @@ For example:
 **Three**, it provide a factory function `make_arrayclass` in order to create subclass of `dataobject` wich can consider as array of simple values.
 For example:
 
-    >>> Pair = make_array(2)
+    >>> Pair = make_arrayclass(2)
     >>> p = Pair(2, 3)
     >>> p[1] = -1
     >>> print(p)

@@ -31,8 +31,7 @@ _intern = _sys.intern
 int_type = type(1)
     
 def make_arrayclass(typename, fields=0, namespace=None, 
-             use_dict=False, use_weakref=False,
-             hashable=False, readonly=False, gc=False,
+             use_weakref=False, hashable=False, readonly=False, gc=False,
              module=None):
 
     from ._dataobject import dataobject
@@ -44,7 +43,7 @@ def make_arrayclass(typename, fields=0, namespace=None,
     bases = (dataobject,)        
 
     options = {
-        'use_dict':use_dict, 'use_weakref':use_weakref, 'hashable':hashable, 
+        'use_dict':False, 'use_weakref':use_weakref, 'hashable':hashable, 
         'sequence':True, 'iterable':True, 'readonly':readonly, 'gc':gc,
         'fast_new':True,
     }

@@ -28,10 +28,8 @@ from .utils import check_name, collect_info_from_bases
 __all__ = 'clsconfig', 'datatype'
 
 import sys as _sys
-# _PY36 = _sys.version_info[:2] >= (3, 6)
 
 _intern = _sys.intern
-from typing import _type_check
 
 int_type = type(1)
 
@@ -43,20 +41,18 @@ def clsconfig(sequence=False, mapping=False, readonly=False,
     def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc)
+                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc)
         return cls
     return func
 
 def _matching_annotations_and_defaults(annotations, defaults):
     first_default = 0
-    for name, val in annotations.items():
+    for name in annotations:
         if name in defaults:
             first_default = 1
         else:
             if first_default:
                 raise TypeError('Simple argument after argument with default value')
-#             if not args:
-#                 defaults[name] = None
 
 class datatype(type):
 
@@ -192,7 +188,7 @@ class datatype(type):
 
         _dataobject_type_init(cls)
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc)
+                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc)
 
         return cls
 

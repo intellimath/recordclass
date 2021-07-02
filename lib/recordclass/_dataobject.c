@@ -25,7 +25,6 @@
 #endif
 
 #include "Python.h"
-#include <string.h>
 
 #include "_dataobject.h"
 
