@@ -57,9 +57,9 @@ cdef litelist make_empty(Py_ssize_t size):
     
     op.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
     op.size = op.allocated = size
-#     p = op.items
+    p = op.items
     for i in range(size):
-        op.items[i] = NULL
+        p[i] = NULL
         
     return <litelist>op
     

@@ -1494,12 +1494,14 @@ static CYTHON_INLINE Py_ssize_t __pyx_f_11recordclass_8litelist_resize(Py_ssize_
 static struct PyLiteListObject *__pyx_f_11recordclass_8litelist_make_empty(Py_ssize_t __pyx_v_size) {
   struct PyLiteListObject *__pyx_v_op = 0;
   Py_ssize_t __pyx_v_i;
+  PyObject **__pyx_v_p;
   struct PyLiteListObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  Py_ssize_t __pyx_t_2;
+  PyObject **__pyx_t_2;
   Py_ssize_t __pyx_t_3;
   Py_ssize_t __pyx_t_4;
+  Py_ssize_t __pyx_t_5;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -1522,7 +1524,7 @@ static struct PyLiteListObject *__pyx_f_11recordclass_8litelist_make_empty(Py_ss
  * 
  *     op.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))             # <<<<<<<<<<<<<<
  *     op.size = op.allocated = size
- * #     p = op.items
+ *     p = op.items
  */
   __pyx_v_op->items = ((PyObject **)PyObject_Malloc((__pyx_v_size * (sizeof(PyObject *)))));
 
@@ -1530,36 +1532,46 @@ static struct PyLiteListObject *__pyx_f_11recordclass_8litelist_make_empty(Py_ss
  * 
  *     op.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
  *     op.size = op.allocated = size             # <<<<<<<<<<<<<<
- * #     p = op.items
+ *     p = op.items
  *     for i in range(size):
  */
   __pyx_v_op->size = __pyx_v_size;
   __pyx_v_op->allocated = __pyx_v_size;
 
+  /* "recordclass/litelist.pyx":60
+ *     op.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
+ *     op.size = op.allocated = size
+ *     p = op.items             # <<<<<<<<<<<<<<
+ *     for i in range(size):
+ *         p[i] = NULL
+ */
+  __pyx_t_2 = __pyx_v_op->items;
+  __pyx_v_p = __pyx_t_2;
+
   /* "recordclass/litelist.pyx":61
  *     op.size = op.allocated = size
- * #     p = op.items
+ *     p = op.items
  *     for i in range(size):             # <<<<<<<<<<<<<<
- *         op.items[i] = NULL
+ *         p[i] = NULL
  * 
  */
-  __pyx_t_2 = __pyx_v_size;
-  __pyx_t_3 = __pyx_t_2;
-  for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
-    __pyx_v_i = __pyx_t_4;
+  __pyx_t_3 = __pyx_v_size;
+  __pyx_t_4 = __pyx_t_3;
+  for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
+    __pyx_v_i = __pyx_t_5;
 
     /* "recordclass/litelist.pyx":62
- * #     p = op.items
+ *     p = op.items
  *     for i in range(size):
- *         op.items[i] = NULL             # <<<<<<<<<<<<<<
+ *         p[i] = NULL             # <<<<<<<<<<<<<<
  * 
  *     return <litelist>op
  */
-    (__pyx_v_op->items[__pyx_v_i]) = NULL;
+    (__pyx_v_p[__pyx_v_i]) = NULL;
   }
 
   /* "recordclass/litelist.pyx":64
- *         op.items[i] = NULL
+ *         p[i] = NULL
  * 
  *     return <litelist>op             # <<<<<<<<<<<<<<
  * 

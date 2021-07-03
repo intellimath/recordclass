@@ -658,11 +658,6 @@ dataobject_copy(PyObject* op)
                 PyErr_SetString(PyExc_TypeError, "it is failed to make copy of the dict");
                 return NULL;
             }
-
-            if (PyDict_Update(new_dict, dict) < 0) {
-                PyErr_SetString(PyExc_TypeError, "dict update failed");
-                return NULL;
-            }
             *new_dictptr = new_dict;
         }
         else {
@@ -833,8 +828,7 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
         if (dictptr) {
             PyObject *d = *dictptr;
             if (d) {
-                kw = PyDict_New();
-                PyDict_Update(kw, *dictptr);
+                kw = PyDict_Copy(d);
             }
         }
     }
@@ -863,8 +857,7 @@ dataobject_getstate(PyObject *ob) {
         if (dictptr) {
             kw = *dictptr;
             if (kw) {
-                PyObject *d = PyDict_Copy(kw);
-                return d;
+                return PyDict_Copy(kw);
             }
         }
     }
