@@ -43,6 +43,11 @@ ext_modules = [
         ["lib/recordclass/_dataobject.c"],
         extra_compile_args = extra_compile_args,
     ),
+    Extension(
+        "recordclass.litetuple",
+        ["lib/recordclass/litetuple.c"],
+        extra_compile_args = extra_compile_args,
+    ),
 ]
 
 if use_cython:

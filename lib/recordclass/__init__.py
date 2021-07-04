@@ -36,6 +36,7 @@ from .dataclass import asdict, astuple, DataclassStorage
 from .arrayclass import make_arrayclass
 
 from .litelist import litelist
+from .litetuple import litetuple, mlitetuple
 
 if _PY36:
     from .typing import RecordClass
