@@ -175,16 +175,16 @@ class datatype(type):
         else:
             pass
 
-        cls = type.__new__(metatype, typename, bases, ns)
-
         if has_fields:
-            cls.__fields__ = fields
+            ns['__fields__'] = fields
             if defaults:
-                cls.__defaults__ = defaults
+                ns['__defaults__'] = defaults
             if annotations:
-                cls.__annotations__ = annotations
+                ns['__annotations__'] = annotations
 
-            cls.__doc__ = _make_cls_doc(cls, typename, fields, defaults, use_dict)
+            ns['__doc__'] = _make_cls_doc(typename, fields, defaults, use_dict)
+        
+        cls = type.__new__(metatype, typename, bases, ns)
 
         _dataobject_type_init(cls)
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
@@ -235,7 +235,7 @@ def __new__(_cls_, {2}):
 
     return __new__
 
-def _make_cls_doc(cls, typename, fields, defaults, use_dict):
+def _make_cls_doc(typename, fields, defaults, use_dict):
 
     if fields and defaults:
         fields2 = [f for f in fields if f not in defaults] + ["%s=%r" % (f, defaults[f]) for f in fields if f in defaults]

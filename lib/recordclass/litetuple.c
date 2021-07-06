@@ -38,13 +38,10 @@ static PyTypeObject PyMLiteTuple_Type;
 #define PyLiteTuple_CheckExact(op) (Py_TYPE(op) == &PyLiteTuple_Type || Py_TYPE(op) == &PyMLiteTuple_Type)
 #define PyLiteTuple_Check(op) (PyLiteTuple_CheckExact(op) || PyObject_IsInstance(op, (PyObject*)&PyLiteTuple_Type) || PyObject_IsInstance(op, (PyObject*)&PyMLiteTuple_Type))
 
-// #define IGS_GET_INDEX(op) ((struct litetuple_itemgetset_object*)op)->i
-
 #define DEFERRED_ADDRESS(addr) 0
 
 static PyTypeObject PyLiteTuple_Type;
 typedef PyTupleObject PyLiteTupleObject;
-// typedef PyTupleObject PyLiteTupleReadonlyObject;
 
 static PyObject *
 PyLiteTuple_New(PyTypeObject *tp, Py_ssize_t size)
@@ -98,7 +95,6 @@ litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (type == &PyLiteTuple_Type) {
         newobj = (PyLiteTupleObject*)PyLiteTuple_New(type, n);
     } else {
-        //assert(PyType_IsSubtype(type, &PyLiteTuple_Type));
         newobj = (PyLiteTupleObject*)(type->tp_alloc(type, n));
         if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
             Py_INCREF(type);
