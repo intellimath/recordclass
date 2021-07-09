@@ -44,17 +44,16 @@ static PyTypeObject PyLiteTuple_Type;
 typedef PyTupleObject PyLiteTupleObject;
 
 static PyObject *
-PyLiteTuple_New(PyTypeObject *tp, Py_ssize_t size)
+PyLiteTuple_New(PyTypeObject *tp, const Py_ssize_t size)
 {
     PyLiteTupleObject *op;
-    int is_gc;
+    const int is_gc = PyType_IS_GC(tp);
     
     if (size < 0) {
         PyErr_BadInternalCall();
         return NULL;
     }
     
-    is_gc = PyType_IS_GC(tp);
     if (is_gc)
         op = (PyLiteTupleObject*)_PyObject_GC_NewVar(tp, size);
     else
@@ -74,9 +73,8 @@ static PyObject *
 litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyTupleObject *tmp; 
-    PyLiteTupleObject *newobj;
-    Py_ssize_t i, n;
-    PyObject *item;
+//     PyLiteTupleObject *newobj;
+    Py_ssize_t i;
 
     if (args == NULL)
         return PyLiteTuple_New(type, 0);
@@ -90,9 +88,9 @@ litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             return NULL;        
     }
 
-    n = PyTuple_GET_SIZE(tmp);
+    const Py_ssize_t n = PyTuple_GET_SIZE(tmp);
 
-    newobj = (PyLiteTupleObject*)PyLiteTuple_New(type, n);
+    PyLiteTupleObject *newobj = (PyLiteTupleObject*)PyLiteTuple_New(type, n);
 
     if (newobj == NULL) {
         Py_DECREF(tmp);
@@ -100,7 +98,7 @@ litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     }
 
     for (i = n; --i >= 0; ) {
-        item = PyTuple_GET_ITEM(tmp, i);
+        PyObject *item = PyTuple_GET_ITEM(tmp, i);
         newobj->ob_item[i] = item;
         Py_INCREF(item);
     }
@@ -114,7 +112,8 @@ litetuple_getnewargs(PyLiteTupleObject *ob)
 {
     PyObject *v;
     PyTupleObject *res;
-    Py_ssize_t i, n = Py_SIZE(ob);
+    Py_ssize_t i;
+    const Py_ssize_t n = Py_SIZE(ob);
 
     res = (PyTupleObject*)PyTuple_New(n);
 
@@ -187,10 +186,8 @@ litetuple_repr(PyObject *dd)
 {
     PyObject *baserepr;
     PyObject *v, *result;
-    Py_ssize_t n;
+    const Py_ssize_t n = Py_SIZE(dd);
         
-    n = PyTuple_GET_SIZE(dd);
-
     if (n == 0) {
         result = PyUnicode_FromString("litetuple()\0");
         return result;
@@ -279,13 +276,8 @@ litetuple_slice(PyLiteTupleObject *a, Py_ssize_t ilow, Py_ssize_t ihigh)
         ihigh = Py_SIZE(a);
     if (ihigh < ilow)
         ihigh = ilow;
-//     if (ilow == 0 && ihigh == Py_SIZE(a) && Py_TYPE(a) == &PyLiteTuple_Type) {
-//         Py_INCREF(a);
-//         return (PyObject*)a;
-//     }
 
     len = ihigh - ilow;
-//     printf("%d %d %d\n", ilow, ihigh, len);
 
     np = (PyLiteTupleObject*)PyLiteTuple_New(Py_TYPE(a), len);
     if (np == NULL)
@@ -366,7 +358,7 @@ static int
 litetuple_ass_item(PyLiteTupleObject *a, Py_ssize_t i, PyObject *v)
 {
     PyObject *old_value;
-    Py_ssize_t n = Py_SIZE(a);
+    const Py_ssize_t n = Py_SIZE(a);
     
     if (i < 0)
         i += n;
@@ -390,7 +382,7 @@ static PyObject *
 litetuple_item(PyLiteTupleObject *a, Py_ssize_t i)
 {
     PyObject *v;
-    Py_ssize_t n = Py_SIZE(a);
+    const Py_ssize_t n = Py_SIZE(a);
     
     if (i < 0)
         i += n;
