@@ -104,14 +104,15 @@ def process_fields(fields, defaults, rename, invalid_names):
             raise ValueError('duplicate name ' + fn)
         seen.add(fn)
 
-    if defaults is not None:
-        n_fields = len(fields)
-        defaults = tuple(defaults)
-        n_defaults = len(defaults)
-        if n_defaults > n_fields:
-            raise TypeError('Got more default values than fields')
-    else:
-        defaults = None
+    if defaults is None:
+        defaults = {}
+    n_defaults = len(defaults)
+    n_fields = len(fields)
+    if n_defaults > n_fields:
+        raise TypeError('Got more default values than fields')
+
+    if isinstance(defaults, (tuple,list)) and n_defaults > 0:
+        defaults = {fields[i]:defaults[i] for i in range(-n_defaults,0)}
         
     return fields, annotations, defaults
 

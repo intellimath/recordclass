@@ -321,7 +321,12 @@ class DataObjectTest3(unittest.TestCase):
                 
         class B(A):
             x:int=0
+
+        self.assertEqual(A.__fields__, ('x', 'y'))
+        self.assertEqual(A.__defaults__, {})
                 
+        self.assertEqual(B.__fields__, ('x', 'y'))
+        self.assertEqual(B.__defaults__, {'x':0})
         b = B(1)
         self.assertEqual(b.x, 0)
         self.assertEqual(b.y, 1)
@@ -461,6 +466,7 @@ class DataObjectTest3(unittest.TestCase):
             __fields__ = 'z',
             z = 400
         
+        self.assertEqual(B.__fields__, ('x','y','z'))
         a1 = B()
         self.assertEqual(a1.x, 100)
         self.assertEqual(a1.y, 200)

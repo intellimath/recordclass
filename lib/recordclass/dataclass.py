@@ -82,10 +82,11 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     n_fields = len(fields)
     n_defaults = len(defaults) if defaults else 0
 
-    if defaults:
-        for i in range(-n_defaults, 0):
-            fname = fields[i]
-            ns[fname] = defaults[i]
+#     defaults2 = {}
+#     if defaults:
+#         for i in range(-n_defaults, 0):
+#             fname = fields[i]
+#             defaults2[fname] = defaults[i]
 
     if use_dict and '__dict__' not in fields:
         fields.append('__dict__')
@@ -94,8 +95,8 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 
     ns['__options__'] = options
     ns['__fields__'] = fields
-    if annotations:
-        ns['__annotations__'] = annotations
+    ns['__annotations__'] = annotations
+    ns['__defaults__'] = defaults
         
 #     if fast_new or not defaults:
 #         def __repr__(self):

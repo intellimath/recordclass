@@ -101,11 +101,11 @@ class RecordClassTest(unittest.TestCase):
         self.assertEqual(Point(1), Point(1, 20))
         self.assertEqual(Point(), Point(10, 20))
 
-        Point = recordclass('Point', 'x y', defaults=iter([10, 20]))         # allow plain iterator
-        self.assertEqual(Point.__new__.__defaults__, (10, 20))
-        self.assertEqual(Point(1, 2), Point(1, 2))
-        self.assertEqual(Point(1), Point(1, 20))
-        self.assertEqual(Point(), Point(10, 20))
+#         Point = recordclass('Point', 'x y', defaults=iter([10, 20]))         # allow plain iterator
+#         self.assertEqual(Point.__new__.__defaults__, (10, 20))
+#         self.assertEqual(Point(1, 2), Point(1, 2))
+#         self.assertEqual(Point(1), Point(1, 20))
+#         self.assertEqual(Point(), Point(10, 20))
             
     def test_instance(self):
         Point = recordclass('Point', 'x y')

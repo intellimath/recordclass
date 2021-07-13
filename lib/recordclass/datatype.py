@@ -116,7 +116,10 @@ class datatype(type):
 
             _fields, _defaults, _annotations = collect_info_from_bases(bases)
 
-            defaults = {f:ns[f] for f in fields if f in ns}
+            if '__defaults__' in ns:
+                defaults = ns['__defaults__']
+            else:
+                defaults = {f:ns[f] for f in fields if f in ns}
             _matching_annotations_and_defaults(annotations, defaults)
 
             if fields:
@@ -186,10 +189,8 @@ class datatype(type):
 
         if has_fields:
             ns['__fields__'] = fields
-            if defaults:
-                ns['__defaults__'] = defaults
-            if annotations:
-                ns['__annotations__'] = annotations
+            ns['__defaults__'] = defaults
+            ns['__annotations__'] = annotations
 
             ns['__doc__'] = _make_cls_doc(typename, fields, defaults, use_dict)
         
@@ -206,7 +207,8 @@ def _make_new_function(typename, fields, defaults, annotations, use_dict):
     from ._dataobject import dataobject
 
     if fields and defaults:
-        fields2 = [f for f in fields if f not in defaults] + [f for f in fields if f in defaults]
+        fields2 = [fn for fn in fields if fn not in defaults] + \
+                  ["%s=%r" % (fn,defaults[fn]) for fn in fields if fn in defaults]
     else:
         fields2 = fields
     fields2 = tuple(fields2)
@@ -215,14 +217,14 @@ def _make_new_function(typename, fields, defaults, annotations, use_dict):
         new_func_template = \
 """
 def __new__(_cls_, {2}, **kw):
-    'Create new instance: {0}({1}, **kw)'
+    'Create new instance: {0}({2}, **kw)'
     return _method_new(_cls_, {1}, **kw)
 """
     else:
         new_func_template = \
 """
 def __new__(_cls_, {2}):
-    'Create new instance: {0}({1})'
+    'Create new instance: {0}({2})'
     return _method_new(_cls_, {1})
 """
     new_func_def = new_func_template.format(typename, ', '.join(fields), ', '.join(fields2))
@@ -236,9 +238,6 @@ def __new__(_cls_, {2}):
 
     __new__ = namespace['__new__']
 
-    if defaults:
-        default_vals = tuple(defaults[f] for f in fields2 if f in defaults)
-        __new__.__defaults__ = default_vals
     if annotations:
         __new__.__annotations__ = annotations
 
@@ -247,7 +246,8 @@ def __new__(_cls_, {2}):
 def _make_cls_doc(typename, fields, defaults, use_dict):
 
     if fields and defaults:
-        fields2 = [f for f in fields if f not in defaults] + ["%s=%r" % (f, defaults[f]) for f in fields if f in defaults]
+        fields2 = [f for f in fields if f not in defaults] + \
+                  ["%s=%r" % (f, defaults[f]) for f in fields if f in defaults]
     else:
         fields2 = fields
     fields2 = tuple(fields2)
