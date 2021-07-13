@@ -1031,14 +1031,14 @@ PyInit__litetuple(void)
     if (PyType_Ready(&PyLiteTupleIter_Type) < 0)
         Py_FatalError("Can't initialize litetuple iter type");
     
-#if PY_VERSION_HEX >= 0x03080000
-    if (PyLiteTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-        PyLiteTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-    if (PyMLiteTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-        PyMLiteTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-    if (PyLiteTupleIter_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-        PyLiteTupleIter_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-#endif
+// #if PY_VERSION_HEX >= 0x03080000
+//     if (PyLiteTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+//         PyLiteTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+//     if (PyMLiteTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+//         PyMLiteTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+//     if (PyLiteTupleIter_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
+//         PyLiteTupleIter_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
+// #endif
     
     Py_INCREF(&PyLiteTuple_Type);
     PyModule_AddObject(m, "litetuple", (PyObject *)&PyLiteTuple_Type);

@@ -2032,9 +2032,9 @@ PyInit__dataobject(void)
 
     PyDataObject_Type.tp_base = &PyBaseObject_Type;
     Py_INCREF(&PyBaseObject_Type);
-#if PY_VERSION_HEX == 0x03080000
-    PyDataObject_Type.tp_vectorcall_offset = 0
-#endif
+// #if PY_VERSION_HEX == 0x03080000
+//     PyDataObject_Type.tp_vectorcall_offset = 0
+// #endif
     if (PyType_Ready(&PyDataObject_Type) < 0)
         Py_FatalError("Can't initialize dataobject type");
 
