@@ -997,7 +997,7 @@ static PyMethodDef litetuplemodule_methods[] = {
 
 static struct PyModuleDef litetuplemodule = {
     PyModuleDef_HEAD_INIT,
-    "recordclass.litetuple",
+    "recordclass._litetuple",
     litetuplemodule_doc,
     -1,
     litetuplemodule_methods,
@@ -1008,7 +1008,7 @@ static struct PyModuleDef litetuplemodule = {
 };
 
 PyMODINIT_FUNC
-PyInit_litetuple(void)
+PyInit__litetuple(void)
 {
     PyObject *m;
     

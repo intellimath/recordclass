@@ -44,8 +44,8 @@ ext_modules = [
         extra_compile_args = extra_compile_args,
     ),
     Extension(
-        "recordclass.litetuple",
-        ["lib/recordclass/litetuple.c"],
+        "recordclass._litetuple",
+        ["lib/recordclass/_litetuple.c"],
         extra_compile_args = extra_compile_args,
     ),
 ]

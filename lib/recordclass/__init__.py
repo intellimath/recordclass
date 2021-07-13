@@ -20,10 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
-del _sys
-
 from .recordclass import recordclass, RecordclassStorage
 
 from .datatype import datatype, clsconfig
@@ -36,11 +32,8 @@ from .dataclass import asdict, astuple, DataclassStorage
 from .arrayclass import make_arrayclass
 
 from .litelist import litelist
-from .litetuple import litetuple, mlitetuple
+from ._litetuple import litetuple, mlitetuple
 
-if _PY36:
-    from .typing import RecordClass
+from .typing import RecordClass
 
 __version__ = '0.15'
-
-del _PY36

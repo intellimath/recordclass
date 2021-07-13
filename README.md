@@ -231,10 +231,10 @@ Here are also table with some performance counters (python 3.9, debian linux, x8
 
 ### 0.15
 
-* Now library supports only Python >=3.6
+* Now library supports only Python >= 3.6
 * Add a function `astuple` to dataclass.py for transformation instances of dataobject-based subclasses to a tuple.
 * Drop datatuple based classes.
-* Drop the mutabletuple type.
+* Drop the mutabletuple types in favour of litetuple types.
 * Drop the structclass factory in favour of make_dataclass
 
 #### 0.14.3:
