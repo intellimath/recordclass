@@ -54,6 +54,9 @@ def _matching_annotations_and_defaults(annotations, defaults):
             if first_default:
                 raise TypeError('Simple argument after argument with default value')
 
+_ds_cache = {}
+_ds_ro_cache = {}
+                
 class datatype(type):
 
     def __new__(metatype, typename, bases, ns, gc=False):
@@ -146,9 +149,15 @@ class datatype(type):
             for i, name in enumerate(fields):
                 offset = dataslot_offset(i, n_fields)
                 if name in readonly_fields:
-                    ns[name] = dataslotgetset(offset, True)
+                    ds = _ds_ro_cache.get(offset, None)
                 else:
-                    ns[name] = dataslotgetset(offset)
+                    ds = _ds_cache.get(offset, None)
+                if ds is None:
+                    if name in readonly_fields:
+                        ds = dataslotgetset(offset, True)
+                    else:
+                        ds = dataslotgetset(offset)
+                ns[name] = ds
 
         if '__repr__' not in ns:
             def __repr__(self):
