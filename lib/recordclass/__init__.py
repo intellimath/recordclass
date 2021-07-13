@@ -20,9 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .recordclass import recordclass, RecordclassStorage
 
 from .datatype import datatype, clsconfig
+
+from .recordclass import recordclass, RecordclassStorage
 
 from ._dataobject import dataobject
 

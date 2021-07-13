@@ -2030,8 +2030,8 @@ PyInit__dataobject(void)
     __fix_type((PyObject*)&PyDataObject_Type, dtype);
     Py_DECREF(dtype);
 
-    PyDataObject_Type.tp_base = &PyBaseObject_Type;
-    Py_INCREF(&PyBaseObject_Type);
+//     PyDataObject_Type.tp_base = &PyBaseObject_Type;
+//     Py_INCREF(&PyBaseObject_Type);
 // #if PY_VERSION_HEX == 0x03080000
 //     PyDataObject_Type.tp_vectorcall_offset = 0
 // #endif
