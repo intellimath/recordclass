@@ -100,20 +100,18 @@ _PyObject_GetObject(const char *modname, const char *name)
     PyObject *mname;
     PyObject *mod, *ob;
 
-    mname = PyUnicode_FromString(modname);   /* borrowed */
+    mname = PyUnicode_FromString(modname);
     if (mname == NULL)
         return NULL;
     mod = PyImport_Import(mname);
-    if (mod == NULL) {
-        Py_DECREF(mname);
+    if (mod == NULL)
         return NULL;
-    }
-    Py_DECREF(mname);    
     ob = PyObject_GetAttrString(mod, name);
     if (ob == NULL) {
         Py_DECREF(mod);
         return NULL;
     }
+    Py_DECREF(mname);    
     Py_DECREF(mod);
     return ob;
 }

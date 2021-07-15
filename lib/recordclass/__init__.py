@@ -28,6 +28,8 @@ from .recordclass import recordclass, RecordclassStorage
 from ._dataobject import dataobject
 
 from .dataclass import make_dataclass, make_class, join_dataclasses
+structclass = make_dataclass
+
 from .dataclass import asdict, astuple, DataclassStorage
 
 from .arrayclass import make_arrayclass
