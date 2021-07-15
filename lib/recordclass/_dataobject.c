@@ -221,7 +221,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                         value = Py_None;
                     }
                 }
-//                 Py_INCREF(value);
                 *(items++) = value;                                            
                 j--;
             }            

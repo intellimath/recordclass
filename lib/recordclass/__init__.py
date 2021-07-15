@@ -22,18 +22,13 @@
 
 
 from .datatype import datatype, clsconfig
-
-from .recordclass import recordclass, RecordclassStorage
-
 from ._dataobject import dataobject
+from .recordclass import recordclass, RecordclassStorage
 
 from .dataclass import make_dataclass, make_class, join_dataclasses
 structclass = make_dataclass
-
 from .dataclass import asdict, astuple, DataclassStorage
-
 from .arrayclass import make_arrayclass
-
 from .litelist import litelist
 from ._litetuple import litetuple, mlitetuple
 mutabletuple = mlitetuple
