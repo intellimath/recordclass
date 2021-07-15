@@ -100,12 +100,6 @@ class RecordClassTest(unittest.TestCase):
         self.assertEqual(Point(1, 2), Point(1, 2))
         self.assertEqual(Point(1), Point(1, 20))
         self.assertEqual(Point(), Point(10, 20))
-
-#         Point = recordclass('Point', 'x y', defaults=iter([10, 20]))         # allow plain iterator
-#         self.assertEqual(Point.__new__.__defaults__, (10, 20))
-#         self.assertEqual(Point(1, 2), Point(1, 2))
-#         self.assertEqual(Point(1), Point(1, 20))
-#         self.assertEqual(Point(), Point(10, 20))
             
     def test_instance(self):
         Point = recordclass('Point', 'x y')
@@ -144,9 +138,13 @@ class RecordClassTest(unittest.TestCase):
         p = Point(11, 22)
         self.assertRaises(AttributeError, eval, 'p._replace(z=1)', locals())          # inval keyword argument
         
-#     def test_nogc(self):
-#         Point = recordclass('Point', 'x y')
-#         Point_nogc = recordclass('Point_nogc', 'x y', gc=False)
+    def test_gc(self):
+        Point = recordclass('Point', 'x y')
+        Point_gc = recordclass('Point_gc', 'x y', gc=True)
+        a = Point(1,2)
+        b = Point_gc(1,2)
+        print(a, b)
+        self.assertEqual(tuple(a), tuple(b))
 
     def test_tupleness(self):
         Point = recordclass('Point', 'x y')
