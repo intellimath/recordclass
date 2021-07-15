@@ -100,9 +100,8 @@ _PyObject_GetObject(const char *modname, const char *name)
     PyObject *mod, *ob;
 
     mod = PyImport_ImportModule(modname);
-    if (mod == NULL) {
+    if (mod == NULL)
         return NULL;
-    }
     ob = PyObject_GetAttrString(mod, name);
     if (ob == NULL) {
         Py_DECREF(mod);

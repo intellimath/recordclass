@@ -34,6 +34,7 @@ from .arrayclass import make_arrayclass
 
 from .litelist import litelist
 from ._litetuple import litetuple, mlitetuple
+mutabletuple = mlitetuple
 
 from .typing import RecordClass
 
