@@ -143,7 +143,6 @@ class RecordClassTest(unittest.TestCase):
         Point_gc = recordclass('Point_gc', 'x y', gc=True)
         a = Point(1,2)
         b = Point_gc(1,2)
-        print(a, b)
         self.assertEqual(tuple(a), tuple(b))
 
     def test_tupleness(self):
