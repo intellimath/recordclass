@@ -95,23 +95,23 @@ PyDataObject_GetDict(PyObject *obj)
 // }
 
 static PyObject *
-_PyObject_GetObject(const char *modname, const char *name)
+_PyObject_GetObject(const char *modname_c, const char *attrname_c)
 {
-    PyObject *mname;
+    PyObject *modname;
     PyObject *mod, *ob;
 
-    mname = PyUnicode_FromString(modname);
-    if (mname == NULL)
+    modname = PyUnicode_FromString(modname_c);
+    if (modname == NULL)
         return NULL;
-    mod = PyImport_Import(mname);
+    mod = PyImport_Import(modname);
     if (mod == NULL)
         return NULL;
-    ob = PyObject_GetAttrString(mod, name);
+    ob = PyObject_GetAttrString(mod, attrname_c);
     if (ob == NULL) {
         Py_DECREF(mod);
         return NULL;
     }
-    Py_DECREF(mname);    
+    Py_DECREF(modname);    
     Py_DECREF(mod);
     return ob;
 }
