@@ -215,10 +215,10 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 PyObject *fname = PyTuple_GetItem(fields, n_slots-j);
                 PyObject *value = PyDict_GetItem(defaults, fname);
                 
-                if (!value) {
-                    Py_INCREF(Py_None);
-                    value = Py_None;                    
-                }
+                if (!value)
+                    value = Py_None;
+
+                Py_INCREF(value);
                 *(items++) = value; 
                 j--;
             }            
