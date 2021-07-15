@@ -184,46 +184,43 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     items = PyDataObject_SLOTS(op);
     pp = tmp->ob_item;
-    j = 0;
+    j = n_slots;
     while (n_args--) {
         v = *(pp++);
         Py_INCREF(v);
         *(items++) = v;
-        j++;
+        j--;
     }
+    
+//     while (j--) {
+//         Py_INCREF(Py_None);
+//         *(items++) = Py_None;        
+//     }
 
-    if (j < n_slots) {
+    if (j) {
         PyObject **dictptr = PyObject_GetDictPtr(type);
         PyObject *dict = *dictptr;
-        PyObject *defaults = NULL;
-        PyObject *fields = NULL;
         
         if (!PyMapping_HasKeyString(dict, "__defaults__")) {
-            while (j < n_slots) {
+            while (j) {
                 Py_INCREF(Py_None);
                 *(items++) = Py_None;
-                j++;
+                j--;
             }            
         } else {
-            defaults = PyMapping_GetItemString(dict, "__defaults__");
-            fields = PyMapping_GetItemString(dict, "__fields__");
+            PyObject *fields = PyMapping_GetItemString(dict, "__fields__");
+            PyObject *defaults = PyMapping_GetItemString(dict, "__defaults__");
             
-            while (j < n_slots) {
-                PyObject *fname = PyTuple_GetItem(fields, j);
-                PyObject *value = NULL;
-                
-                if (kwds)
-                    value = PyDict_GetItem(kwds, fname);
+            while (j) {
+                PyObject *fname = PyTuple_GetItem(fields, n_slots-j);
+                PyObject *value = PyDict_GetItem(defaults, fname);
                 
                 if (!value) {
-                    value = PyDict_GetItem(defaults, fname);
-                    if (!value) {
-                        Py_INCREF(Py_None);
-                        value = Py_None;
-                    }
+                    Py_INCREF(Py_None);
+                    value = Py_None;                    
                 }
-                *(items++) = value;                                            
-                j++;
+                *(items++) = value; 
+                j--;
             }            
             Py_DECREF(fields);
             Py_DECREF(defaults);
