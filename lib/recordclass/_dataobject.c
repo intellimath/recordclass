@@ -97,18 +97,18 @@ PyDataObject_GetDict(PyObject *obj)
 static PyObject *
 _PyObject_GetObject(const char *modname, const char *name)
 {
-    PyObject *mod_name;
+    PyObject *mname;
     PyObject *mod, *ob;
 
-    mod_name = PyUnicode_FromString(modname);   /* borrowed */
-    if (mod_name == NULL)
+    mname = PyUnicode_FromString(modname);   /* borrowed */
+    if (mname == NULL)
         return NULL;
-    mod = PyImport_Import(mod_name);
+    mod = PyImport_Import(mname);
     if (mod == NULL) {
-        Py_DECREF(mod_name);
+        Py_DECREF(mname);
         return NULL;
     }
-    Py_DECREF(mod_name);    
+    Py_DECREF(mname);    
     ob = PyObject_GetAttrString(mod, name);
     if (ob == NULL) {
         Py_DECREF(mod);
