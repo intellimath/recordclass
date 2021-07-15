@@ -184,31 +184,32 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     items = PyDataObject_SLOTS(op);
     pp = tmp->ob_item;
-    j = n_slots;
+    j = 0;
     while (n_args--) {
         v = *(pp++);
         Py_INCREF(v);
         *(items++) = v;
-        j--;
+        j++;
     }
 
-    if (j) {
+    if (j < n_slots) {
         PyObject **dictptr = PyObject_GetDictPtr(type);
         PyObject *dict = *dictptr;
         PyObject *defaults = NULL;
         PyObject *fields = NULL;
         
         if (!PyMapping_HasKeyString(dict, "__defaults__")) {
-            while (j--) {
+            while (j < n_slots) {
                 Py_INCREF(Py_None);
                 *(items++) = Py_None;
+                j++;
             }            
         } else {
             defaults = PyMapping_GetItemString(dict, "__defaults__");
             fields = PyMapping_GetItemString(dict, "__fields__");
             
-            while (j) {
-                PyObject *fname = PyTuple_GetItem(fields, n_slots-j);
+            while (j < n_slots) {
+                PyObject *fname = PyTuple_GetItem(fields, j);
                 PyObject *value = NULL;
                 
                 if (kwds)
@@ -222,7 +223,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                     }
                 }
                 *(items++) = value;                                            
-                j--;
+                j++;
             }            
             Py_DECREF(fields);
             Py_DECREF(defaults);
