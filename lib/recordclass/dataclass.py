@@ -190,8 +190,9 @@ class DataclassStorage:
     def make_dataclass(self, name, fields, defaults=None, **kw):
         if type(fields) is str:
             fields = fields.replace(',', ' ').split()
-            fields = [fn.strip() for fn in fields]
-        fields = tuple(fields)
+            fields = ' '.join(fn.strip() for fn in fields)
+        else:
+            fields = ' '.join(fields)
         key = (name, fields)
         cls = self._storage.get(key, None)
         if cls is None:
