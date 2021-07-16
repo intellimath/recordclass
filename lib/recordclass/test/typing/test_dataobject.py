@@ -617,7 +617,25 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
             
+    def test_missing_args1_tp(self):
+        class A(dataobject, fast_new=True):
+            __fields__ = 'a','b','c'
+
+        a=A(1)
+        self.assertEqual(a.a, 1)
+        self.assertEqual(a.b, None)
+        self.assertEqual(a.c, None)
         
+    def test_missing_args2_tp(self):
+        class A(dataobject, fast_new=True):
+            __fields__ = 'a','b','c'
+            b = 2
+            c = 3
+
+        a=A(1)
+        self.assertEqual(a.a, 1)
+        self.assertEqual(a.b, 2)
+        self.assertEqual(a.c, 3)
                 
 def main():
     suite = unittest.TestSuite()
