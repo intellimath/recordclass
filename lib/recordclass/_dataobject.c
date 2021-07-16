@@ -1777,9 +1777,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_clear = NULL;
     tp->tp_is_gc = NULL;
 
-// #if PY_MAJOR_VERSION > 2
 //     tp->tp_finalize = NULL;
-// #endif
 
 #if PY_VERSION_HEX == 0x03080000
     tp->tp_vectorcall_offset = 0
