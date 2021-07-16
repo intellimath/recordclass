@@ -107,8 +107,10 @@ _PyObject_GetObject(const char *modname_c, const char *attrname_c)
     if (modname == NULL)
         return NULL;
     mod = PyImport_Import(modname);
-    if (mod == NULL)
+    if (mod == NULL) {
+        Py_DECREF(modname);    
         return NULL;
+    }
     ob = PyObject_GetAttrString(mod, attrname_c);
     if (ob == NULL) {
         Py_DECREF(mod);
@@ -265,8 +267,13 @@ dataobject_clear(PyObject *op)
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_GetDictPtr(op);
-        if (dictptr && *dictptr)
-            Py_CLEAR(*dictptr);
+        if (dictptr != NULL) {
+            PyObject *dict = *dictptr;
+            if (dict != NULL) {
+                Py_CLEAR(dict);
+                *dictptr = NULL;
+            }
+        }            
     }
 
     while (n_slots-- > 0) {
@@ -289,12 +296,22 @@ dataobject_xdecref(PyObject *op)
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_GetDictPtr(op);
-        if (dictptr && *dictptr)
-            Py_XDECREF(*dictptr);
+        if (dictptr != NULL) {
+            PyObject *dict = *dictptr;
+            if (dict != NULL) {
+                Py_DECREF(dict);
+                *dictptr = NULL;
+            }
+        }            
     }
 
     while (n_slots-- > 0) {
-        Py_XDECREF(*items);
+        PyObject *ob = *items;
+        if (ob != NULL) {
+            Py_DECREF(ob);
+            *items = NULL;
+        }
+//         Py_XDECREF(*items);
         items++;
     }
 
@@ -308,11 +325,15 @@ dataobject_dealloc(PyObject *op)
 
     if (PyType_IS_GC(type))
         PyObject_GC_UnTrack(op);
+    
+    Py_TRASHCAN_BEGIN(op, dataobject_dealloc)
 
     dataobject_xdecref(op);
-
+    
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_DECREF(type);
+
+    Py_TRASHCAN_END
 
     type->tp_free((PyObject *)op);
 }
