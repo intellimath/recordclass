@@ -51,11 +51,14 @@ PyDataObject_GetDictPtr(PyObject *ob) {
 static PyObject *
 PyDataObject_GetDict(PyObject *obj)
 {
-    PyObject *dict, **dictptr = PyDataObject_GetDictPtr(obj);
+    PyObject *dict;
+    PyObject **dictptr = PyDataObject_GetDictPtr(obj);
+    
     if (dictptr == NULL) {
         PyErr_SetString(PyExc_AttributeError, "This object has no __dict__");
         return NULL;
     }
+
     dict = *dictptr;
     if (dict == NULL) {
         *dictptr = dict = PyDict_New();
@@ -192,11 +195,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         j--;
     }
     
-//     while (j--) {
-//         Py_INCREF(Py_None);
-//         *(items++) = Py_None;        
-//     }
-
     if (j) {
         PyObject **dictptr = PyObject_GetDictPtr(type);
         PyObject *dict = *dictptr;
@@ -359,9 +357,6 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
 static PyObject *
 dataobject_item(PyObject *op, Py_ssize_t i)
 {
-    PyObject **items;
-    PyObject *v;
-
     const Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
 
     if (i < 0)
@@ -371,8 +366,8 @@ dataobject_item(PyObject *op, Py_ssize_t i)
         return NULL;
     }
 
-    items = PyDataObject_SLOTS(op);
-    v = items[i];
+    PyObject **items = PyDataObject_ITEMS(op);
+    PyObject *v = items[i];
     Py_INCREF(v);
     return v;
 }
@@ -381,7 +376,6 @@ static int
 dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
     const Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
-    PyObject **items;
 
     if (i < 0)
         i += n;
@@ -390,7 +384,7 @@ dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
         return -1;
     }
 
-    items = PyDataObject_SLOTS(op);
+    PyObject **items = PyDataObject_SLOTS(op);
 
     items += i;
 
@@ -416,7 +410,7 @@ static int
 dataobject_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
 {
     if (PyIndex_Check(item)) {
-        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+        const Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
         if (i == -1 && PyErr_Occurred())
             return -1;
         return dataobject_ass_item(op, i, val);
@@ -428,7 +422,7 @@ static PyObject*
 dataobject_subscript2(PyObject* op, PyObject* item)
 {
     if (PyIndex_Check(item)) {
-        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+        const Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
         if (i == -1 && PyErr_Occurred())
             return NULL;
         return dataobject_item(op, i);
@@ -818,16 +812,14 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
         dictptr = PyObject_GetDictPtr(ob);
         if (dictptr) {
             PyObject *d = *dictptr;
-            if (d) {
+            if (d)
                 kw = PyDict_Copy(d);
-            }
         }
     }
-    if (kw) {
+    if (kw)
         result = PyTuple_Pack(3, tp, args, kw);
-    } else {
+    else
         result = PyTuple_Pack(2, tp, args);
-    }
 
     Py_DECREF(args);
     Py_XDECREF(kw);
@@ -847,12 +839,10 @@ dataobject_getstate(PyObject *ob) {
         dictptr = PyObject_GetDictPtr(ob);
         if (dictptr) {
             kw = *dictptr;
-            if (kw) {
+            if (kw)
                 return PyDict_Copy(kw);
-            }
         }
     }
-
     Py_RETURN_NONE;
 }
 
@@ -1306,20 +1296,18 @@ static void dataslotgetset_dealloc(PyObject *o) {
 #define self_igs ((dataslotgetset_object *)self)
 
 static PyObject* dataslotgetset_get(PyObject *self, PyObject *obj, PyObject *type) {
-    PyObject *v;
 
     if (obj == NULL || obj == Py_None) {
         Py_INCREF(self);
         return self;
     }
 
-    v = dataobject_item_by_offset(obj, self_igs->offset);
+    PyObject *v = dataobject_item_by_offset(obj, self_igs->offset);
     Py_INCREF(v);
     return v;
 }
 
 static int dataslotgetset_set(PyObject *self, PyObject *obj, PyObject *value) {
-    PyObject **v;
 
     if (value == NULL) {
         PyErr_SetString(PyExc_NotImplementedError, "__delete__");
@@ -1334,11 +1322,11 @@ static int dataslotgetset_set(PyObject *self, PyObject *obj, PyObject *value) {
         return -1;
     }
 
-    v = dataobject_refitem_by_offset(obj, self_igs->offset);
+    PyObject **v = dataobject_refitem_by_offset(obj, self_igs->offset);
     Py_DECREF(*v);
 
-    *v = value;
     Py_INCREF(value);
+    *v = value;
 
     return 0;
 }
@@ -1352,7 +1340,7 @@ dataslotgetset_offset(PyObject *self)
 static PyObject*
 dataslotgetset_readonly(PyObject *self)
 {
-    return PyBool_FromLong((long)(((dataslotgetset_object*)self)->offset));
+    return PyBool_FromLong((long)(((dataslotgetset_object*)self)->readonly));
 }
 
 static PyGetSetDef dataslotgetset_getsets[] = {

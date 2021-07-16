@@ -1,4 +1,5 @@
 #define PyDataObject_SLOTS(op) (PyObject**)((char*)(op) + sizeof(PyObject))
+#define PyDataObject_ITEMS(op) (PyObject**)((char*)(op) + sizeof(PyObject))
 
 #define PyDataObject_NUMSLOTS(tp) ((tp->tp_basicsize - sizeof(PyObject))/sizeof(PyObject*)) - \
                                   (tp->tp_dictoffset?1:0) - \
