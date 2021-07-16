@@ -29,7 +29,7 @@ __all__ = 'make_dataclass', 'join_dataclasses', 'astuple', 'asdict', 'DataclassS
 
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None,
                    use_dict=False, use_weakref=False, hashable=True,
-                   sequence=False, mapping=False, iterable=False, readonly=False, nmtpl_api=False,
+                   sequence=False, mapping=False, iterable=True, readonly=False, nmtpl_api=False,
                    module=None, fast_new=False, rename=False, invalid_names=(), gc=False):
 
     """Returns a new class with named fields and small memory footprint.
@@ -201,7 +201,7 @@ class DataclassStorage:
     make_class = make_dataclass
 
 def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False,
-                 use_weakref=False, hashable=True, sequence=False, fast_new=False, iterable=False, module=None):
+                 use_weakref=False, hashable=True, sequence=False, fast_new=False, iterable=True, module=None):
 
     from ._dataobject import dataobject
 

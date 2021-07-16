@@ -34,7 +34,7 @@ _intern = _sys.intern
 int_type = type(1)
 
 def clsconfig(sequence=False, mapping=False, readonly=False,
-              use_dict=False, use_weakref=False, iterable=True, hashable=False, gc=False):
+              use_dict=False, use_weakref=False, iterable=True, hashable=True, gc=False):
 
     from ._dataobject import _clsconfig
 
@@ -59,7 +59,7 @@ _ds_ro_cache = {}
                 
 class datatype(type):
 
-    def __new__(metatype, typename, bases, ns, gc=False):
+    def __new__(metatype, typename, bases, ns, gc=False, fast_new=False):
 
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
@@ -69,11 +69,12 @@ class datatype(type):
         sequence = options.get('sequence', False)
         mapping = options.get('mapping', False)
         iterable = options.get('iterable', True)
-        fast_new = options.get('fast_new', False)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
-        if gc in options:
+        if 'gc' in options:
             gc = options['gc']
+        if 'fast_new' in options:
+            fast_new = options['fast_new']
 
         if not bases:
             raise TypeError("The base class in not specified")
