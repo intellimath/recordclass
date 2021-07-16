@@ -326,14 +326,22 @@ dataobject_dealloc(PyObject *op)
     if (PyType_IS_GC(type))
         PyObject_GC_UnTrack(op);
     
+#if PY_VERSION_HEX < 0x03080000
+    Py_TRASHCAN_SAFE_BEGIN(op)
+#else
     Py_TRASHCAN_BEGIN(op, dataobject_dealloc)
+#endif
 
     dataobject_xdecref(op);
     
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_DECREF(type);
 
+#if PY_VERSION_HEX < 0x03080000
+    Py_TRASHCAN_SAFE_END
+#else
     Py_TRASHCAN_END
+#endif
 
     type->tp_free((PyObject *)op);
 }
