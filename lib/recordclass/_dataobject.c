@@ -338,7 +338,7 @@ dataobject_dealloc(PyObject *op)
         Py_DECREF(type);
 
 #if PY_VERSION_HEX < 0x03080000
-    Py_TRASHCAN_SAFE_END
+    Py_TRASHCAN_SAFE_END(op)
 #else
     Py_TRASHCAN_END
 #endif
