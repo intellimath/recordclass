@@ -1134,6 +1134,9 @@ dataobjectiter_next(dataobjectiterobject *it)
 {
     PyObject *item;
     PyObject *op = it->it_seq;
+    
+    if (!it->it_seq)
+        return NULL;
 
     if (it->it_index < it->it_len) {
         item = dataobject_item(op, it->it_index);
@@ -2055,8 +2058,8 @@ PyInit__dataobject(void)
     if (PyType_Ready(&PyDataObject_Type) < 0)
         Py_FatalError("Can't initialize dataobject type");
 
-//     if (PyType_Ready(&PyDataObjectIter_Type) < 0)
-//         Py_FatalError("Can't initialize dataobjectiter type");
+    if (PyType_Ready(&PyDataObjectIter_Type) < 0)
+        Py_FatalError("Can't initialize dataobjectiter type");
 
     if (PyType_Ready(&PyDataSlotGetSet_Type) < 0)
         Py_FatalError("Can't initialize dataslotgetset type");
@@ -2064,8 +2067,8 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
 
-//     Py_INCREF(&PyDataObjectIter_Type);
-//     PyModule_AddObject(m, "dataobject_iterator", (PyObject *)&PyDataObjectIter_Type);
+    Py_INCREF(&PyDataObjectIter_Type);
+    PyModule_AddObject(m, "dataobjectiter", (PyObject *)&PyDataObjectIter_Type);
 
     Py_INCREF(&PyDataSlotGetSet_Type);
     PyModule_AddObject(m, "dataslotgetset", (PyObject *)&PyDataSlotGetSet_Type);
