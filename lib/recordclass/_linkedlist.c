@@ -9,7 +9,7 @@
 #else
 #define CYTHON_ABI "0_29_21"
 #define CYTHON_HEX_VERSION 0x001D15F0
-#define CYTHON_FUTURE_DIVISION 0
+#define CYTHON_FUTURE_DIVISION 1
 #include <stddef.h>
 #ifndef offsetof
   #define offsetof(type, member) ( (size_t) & ((type*)0) -> member )
@@ -821,7 +821,7 @@ static const char *__pyx_f[] = {
 struct LinkedItem;
 struct LinkedList;
 
-/* "recordclass/_linkedlist.pyx":4
+/* "recordclass/_linkedlist.pyx":35
  * 
  * @cython.no_gc
  * cdef public class linkeditem[object LinkedItem, type LinkedItemType]:             # <<<<<<<<<<<<<<
@@ -836,7 +836,7 @@ struct LinkedItem {
 
 __PYX_EXTERN_C DL_EXPORT(PyTypeObject) LinkedItemType;
 
-/* "recordclass/_linkedlist.pyx":8
+/* "recordclass/_linkedlist.pyx":39
  *     cdef linkedlist next
  * 
  * cdef public class linkedlist[object LinkedList, type LinkedListType]:             # <<<<<<<<<<<<<<
@@ -1108,28 +1108,6 @@ static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name);
 /* RaiseException.proto */
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
 
-/* GetItemInt.proto */
-#define __Pyx_GetItemInt(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
-    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
-    __Pyx_GetItemInt_Fast(o, (Py_ssize_t)i, is_list, wraparound, boundscheck) :\
-    (is_list ? (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL) :\
-               __Pyx_GetItemInt_Generic(o, to_py_func(i))))
-#define __Pyx_GetItemInt_List(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
-    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
-    __Pyx_GetItemInt_List_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
-    (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL))
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
-                                                              int wraparound, int boundscheck);
-#define __Pyx_GetItemInt_Tuple(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
-    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
-    __Pyx_GetItemInt_Tuple_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
-    (PyErr_SetString(PyExc_IndexError, "tuple index out of range"), (PyObject*)NULL))
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
-                                                              int wraparound, int boundscheck);
-static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j);
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
-                                                     int is_list, int wraparound, int boundscheck);
-
 /* HasAttr.proto */
 static CYTHON_INLINE int __Pyx_HasAttr(PyObject *, PyObject *);
 
@@ -1316,6 +1294,7 @@ static PyObject *__pyx_codeobj__4;
 
 /* Python wrapper */
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_1__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_11recordclass_11_linkedlist_10linkeditem___reduce_cython__[] = "linkeditem.__reduce_cython__(self)";
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_1__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -1565,6 +1544,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkeditem___reduce_cyth
 
 /* Python wrapper */
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_3__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static char __pyx_doc_11recordclass_11_linkedlist_10linkeditem_2__setstate_cython__[] = "linkeditem.__setstate_cython__(self, __pyx_state)";
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_3__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -1615,7 +1595,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkeditem_2__setstate_c
   return __pyx_r;
 }
 
-/* "recordclass/_linkedlist.pyx":12
+/* "recordclass/_linkedlist.pyx":43
  *     cdef linkeditem end
  *     #
  *     cpdef append(self, val):             # <<<<<<<<<<<<<<
@@ -1647,7 +1627,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_append); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 12, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_append); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 43, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append)) {
         __Pyx_XDECREF(__pyx_r);
@@ -1664,7 +1644,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_v_val) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_val);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 12, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 43, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_r = __pyx_t_2;
@@ -1685,19 +1665,19 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
     #endif
   }
 
-  /* "recordclass/_linkedlist.pyx":15
+  /* "recordclass/_linkedlist.pyx":46
  *         cdef linkeditem item
  * 
  *         item = linkeditem.__new__(linkeditem)             # <<<<<<<<<<<<<<
  *         item.val = val
  *         item.next = None
  */
-  __pyx_t_1 = ((PyObject *)__pyx_tp_new_11recordclass_11_linkedlist_linkeditem(((PyTypeObject *)__pyx_ptype_11recordclass_11_linkedlist_linkeditem), __pyx_empty_tuple, NULL)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 15, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_tp_new_11recordclass_11_linkedlist_linkeditem(((PyTypeObject *)__pyx_ptype_11recordclass_11_linkedlist_linkeditem), __pyx_empty_tuple, NULL)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 46, __pyx_L1_error)
   __Pyx_GOTREF(((PyObject *)__pyx_t_1));
   __pyx_v_item = ((struct LinkedItem *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "recordclass/_linkedlist.pyx":16
+  /* "recordclass/_linkedlist.pyx":47
  * 
  *         item = linkeditem.__new__(linkeditem)
  *         item.val = val             # <<<<<<<<<<<<<<
@@ -1710,7 +1690,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
   __Pyx_DECREF(__pyx_v_item->val);
   __pyx_v_item->val = __pyx_v_val;
 
-  /* "recordclass/_linkedlist.pyx":17
+  /* "recordclass/_linkedlist.pyx":48
  *         item = linkeditem.__new__(linkeditem)
  *         item.val = val
  *         item.next = None             # <<<<<<<<<<<<<<
@@ -1723,7 +1703,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
   __Pyx_DECREF(((PyObject *)__pyx_v_item->next));
   __pyx_v_item->next = ((struct LinkedList *)Py_None);
 
-  /* "recordclass/_linkedlist.pyx":18
+  /* "recordclass/_linkedlist.pyx":49
  *         item.val = val
  *         item.next = None
  *         if self.start is None:             # <<<<<<<<<<<<<<
@@ -1734,7 +1714,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
   __pyx_t_6 = (__pyx_t_5 != 0);
   if (__pyx_t_6) {
 
-    /* "recordclass/_linkedlist.pyx":19
+    /* "recordclass/_linkedlist.pyx":50
  *         item.next = None
  *         if self.start is None:
  *             self.start = item             # <<<<<<<<<<<<<<
@@ -1747,7 +1727,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
     __Pyx_DECREF(((PyObject *)__pyx_v_self->start));
     __pyx_v_self->start = __pyx_v_item;
 
-    /* "recordclass/_linkedlist.pyx":20
+    /* "recordclass/_linkedlist.pyx":51
  *         if self.start is None:
  *             self.start = item
  *             self.end = item             # <<<<<<<<<<<<<<
@@ -1760,7 +1740,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
     __Pyx_DECREF(((PyObject *)__pyx_v_self->end));
     __pyx_v_self->end = __pyx_v_item;
 
-    /* "recordclass/_linkedlist.pyx":18
+    /* "recordclass/_linkedlist.pyx":49
  *         item.val = val
  *         item.next = None
  *         if self.start is None:             # <<<<<<<<<<<<<<
@@ -1770,7 +1750,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
     goto __pyx_L3;
   }
 
-  /* "recordclass/_linkedlist.pyx":22
+  /* "recordclass/_linkedlist.pyx":53
  *             self.end = item
  *         else:
  *             self.end.next = item             # <<<<<<<<<<<<<<
@@ -1778,7 +1758,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
  *     cpdef extend(self, vals):
  */
   /*else*/ {
-    if (!(likely(((((PyObject *)__pyx_v_item)) == Py_None) || likely(__Pyx_TypeTest(((PyObject *)__pyx_v_item), __pyx_ptype_11recordclass_11_linkedlist_linkedlist))))) __PYX_ERR(1, 22, __pyx_L1_error)
+    if (!(likely(((((PyObject *)__pyx_v_item)) == Py_None) || likely(__Pyx_TypeTest(((PyObject *)__pyx_v_item), __pyx_ptype_11recordclass_11_linkedlist_linkedlist))))) __PYX_ERR(1, 53, __pyx_L1_error)
     __pyx_t_1 = ((PyObject *)__pyx_v_item);
     __Pyx_INCREF(__pyx_t_1);
     __Pyx_GIVEREF(__pyx_t_1);
@@ -1789,7 +1769,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
   }
   __pyx_L3:;
 
-  /* "recordclass/_linkedlist.pyx":12
+  /* "recordclass/_linkedlist.pyx":43
  *     cdef linkeditem end
  *     #
  *     cpdef append(self, val):             # <<<<<<<<<<<<<<
@@ -1816,6 +1796,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
 
 /* Python wrapper */
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append(PyObject *__pyx_v_self, PyObject *__pyx_v_val); /*proto*/
+static char __pyx_doc_11recordclass_11_linkedlist_10linkedlist_append[] = "linkedlist.append(self, val)";
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append(PyObject *__pyx_v_self, PyObject *__pyx_v_val) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -1836,7 +1817,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_append(struct
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("append", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_11recordclass_11_linkedlist_10linkedlist_append(__pyx_v_self, __pyx_v_val, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 12, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_11recordclass_11_linkedlist_10linkedlist_append(__pyx_v_self, __pyx_v_val, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -1853,7 +1834,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_append(struct
   return __pyx_r;
 }
 
-/* "recordclass/_linkedlist.pyx":24
+/* "recordclass/_linkedlist.pyx":55
  *             self.end.next = item
  *     #
  *     cpdef extend(self, vals):             # <<<<<<<<<<<<<<
@@ -1885,7 +1866,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_extend); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 24, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_extend); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 55, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend)) {
         __Pyx_XDECREF(__pyx_r);
@@ -1902,7 +1883,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_v_vals) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_vals);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 24, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 55, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_r = __pyx_t_2;
@@ -1923,7 +1904,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
     #endif
   }
 
-  /* "recordclass/_linkedlist.pyx":25
+  /* "recordclass/_linkedlist.pyx":56
  *     #
  *     cpdef extend(self, vals):
  *         for val in vals:             # <<<<<<<<<<<<<<
@@ -1934,26 +1915,26 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
     __pyx_t_1 = __pyx_v_vals; __Pyx_INCREF(__pyx_t_1); __pyx_t_5 = 0;
     __pyx_t_6 = NULL;
   } else {
-    __pyx_t_5 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_vals); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 25, __pyx_L1_error)
+    __pyx_t_5 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_vals); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 56, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_6 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 25, __pyx_L1_error)
+    __pyx_t_6 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 56, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_6)) {
       if (likely(PyList_CheckExact(__pyx_t_1))) {
         if (__pyx_t_5 >= PyList_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(1, 25, __pyx_L1_error)
+        __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(1, 56, __pyx_L1_error)
         #else
-        __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 25, __pyx_L1_error)
+        __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 56, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         #endif
       } else {
         if (__pyx_t_5 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(1, 25, __pyx_L1_error)
+        __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(1, 56, __pyx_L1_error)
         #else
-        __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 25, __pyx_L1_error)
+        __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 56, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         #endif
       }
@@ -1963,7 +1944,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(1, 25, __pyx_L1_error)
+          else __PYX_ERR(1, 56, __pyx_L1_error)
         }
         break;
       }
@@ -1972,18 +1953,18 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
     __Pyx_XDECREF_SET(__pyx_v_val, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "recordclass/_linkedlist.pyx":26
+    /* "recordclass/_linkedlist.pyx":57
  *     cpdef extend(self, vals):
  *         for val in vals:
  *             self.append(val)             # <<<<<<<<<<<<<<
  *     #
  *     def __dealloc__(self):
  */
-    __pyx_t_2 = ((struct __pyx_vtabstruct_11recordclass_11_linkedlist_linkedlist *)__pyx_v_self->__pyx_vtab)->append(__pyx_v_self, __pyx_v_val, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 26, __pyx_L1_error)
+    __pyx_t_2 = ((struct __pyx_vtabstruct_11recordclass_11_linkedlist_linkedlist *)__pyx_v_self->__pyx_vtab)->append(__pyx_v_self, __pyx_v_val, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 57, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "recordclass/_linkedlist.pyx":25
+    /* "recordclass/_linkedlist.pyx":56
  *     #
  *     cpdef extend(self, vals):
  *         for val in vals:             # <<<<<<<<<<<<<<
@@ -1993,7 +1974,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "recordclass/_linkedlist.pyx":24
+  /* "recordclass/_linkedlist.pyx":55
  *             self.end.next = item
  *     #
  *     cpdef extend(self, vals):             # <<<<<<<<<<<<<<
@@ -2020,6 +2001,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
 
 /* Python wrapper */
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend(PyObject *__pyx_v_self, PyObject *__pyx_v_vals); /*proto*/
+static char __pyx_doc_11recordclass_11_linkedlist_10linkedlist_2extend[] = "linkedlist.extend(self, vals)";
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend(PyObject *__pyx_v_self, PyObject *__pyx_v_vals) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -2040,7 +2022,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_2extend(struc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("extend", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(__pyx_v_self, __pyx_v_vals, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 24, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(__pyx_v_self, __pyx_v_vals, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2057,7 +2039,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_2extend(struc
   return __pyx_r;
 }
 
-/* "recordclass/_linkedlist.pyx":28
+/* "recordclass/_linkedlist.pyx":59
  *             self.append(val)
  *     #
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -2088,7 +2070,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_10linkedlist_4__dealloc__(struc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "recordclass/_linkedlist.pyx":32
+  /* "recordclass/_linkedlist.pyx":63
  *         cdef linkeditem next
  * 
  *         curr = self.start             # <<<<<<<<<<<<<<
@@ -2100,7 +2082,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_10linkedlist_4__dealloc__(struc
   __pyx_v_curr = ((struct LinkedItem *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "recordclass/_linkedlist.pyx":33
+  /* "recordclass/_linkedlist.pyx":64
  * 
  *         curr = self.start
  *         while curr is not None:             # <<<<<<<<<<<<<<
@@ -2112,20 +2094,20 @@ static void __pyx_pf_11recordclass_11_linkedlist_10linkedlist_4__dealloc__(struc
     __pyx_t_3 = (__pyx_t_2 != 0);
     if (!__pyx_t_3) break;
 
-    /* "recordclass/_linkedlist.pyx":34
+    /* "recordclass/_linkedlist.pyx":65
  *         curr = self.start
  *         while curr is not None:
  *             next = curr.next             # <<<<<<<<<<<<<<
  *             del curr
  *             curr = next
  */
-    if (!(likely(((((PyObject *)__pyx_v_curr->next)) == Py_None) || likely(__Pyx_TypeTest(((PyObject *)__pyx_v_curr->next), __pyx_ptype_11recordclass_11_linkedlist_linkeditem))))) __PYX_ERR(1, 34, __pyx_L1_error)
+    if (!(likely(((((PyObject *)__pyx_v_curr->next)) == Py_None) || likely(__Pyx_TypeTest(((PyObject *)__pyx_v_curr->next), __pyx_ptype_11recordclass_11_linkedlist_linkeditem))))) __PYX_ERR(1, 65, __pyx_L1_error)
     __pyx_t_1 = ((PyObject *)__pyx_v_curr->next);
     __Pyx_INCREF(__pyx_t_1);
     __Pyx_XDECREF_SET(__pyx_v_next, ((struct LinkedItem *)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "recordclass/_linkedlist.pyx":35
+    /* "recordclass/_linkedlist.pyx":66
  *         while curr is not None:
  *             next = curr.next
  *             del curr             # <<<<<<<<<<<<<<
@@ -2135,7 +2117,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_10linkedlist_4__dealloc__(struc
     __Pyx_DECREF(((PyObject *)__pyx_v_curr));
     __pyx_v_curr = NULL;
 
-    /* "recordclass/_linkedlist.pyx":36
+    /* "recordclass/_linkedlist.pyx":67
  *             next = curr.next
  *             del curr
  *             curr = next             # <<<<<<<<<<<<<<
@@ -2146,7 +2128,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_10linkedlist_4__dealloc__(struc
     __pyx_v_curr = __pyx_v_next;
   }
 
-  /* "recordclass/_linkedlist.pyx":28
+  /* "recordclass/_linkedlist.pyx":59
  *             self.append(val)
  *     #
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -2173,6 +2155,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_10linkedlist_4__dealloc__(struc
 
 /* Python wrapper */
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_7__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_11recordclass_11_linkedlist_10linkedlist_6__reduce_cython__[] = "linkedlist.__reduce_cython__(self)";
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_7__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -2422,6 +2405,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_6__reduce_cyt
 
 /* Python wrapper */
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_9__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static char __pyx_doc_11recordclass_11_linkedlist_10linkedlist_8__setstate_cython__[] = "linkedlist.__setstate_cython__(self, __pyx_state)";
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_9__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -2480,7 +2464,8 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_8__setstate_c
 
 /* Python wrapper */
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem = {"__pyx_unpickle_linkeditem", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem, METH_VARARGS|METH_KEYWORDS, 0};
+static char __pyx_doc_11recordclass_11_linkedlist___pyx_unpickle_linkeditem[] = "__pyx_unpickle_linkeditem(__pyx_type, long __pyx_checksum, __pyx_state)";
+static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem = {"__pyx_unpickle_linkeditem", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem, METH_VARARGS|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist___pyx_unpickle_linkeditem};
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v___pyx_type = 0;
   long __pyx_v___pyx_checksum;
@@ -2592,7 +2577,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist___pyx_unpickle_linkeditem(
     __Pyx_INCREF(__pyx_n_s_PickleError);
     __Pyx_GIVEREF(__pyx_n_s_PickleError);
     PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_PickleError);
-    __pyx_t_3 = __Pyx_Import(__pyx_n_s_pickle, __pyx_t_2, -1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 5, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_Import(__pyx_n_s_pickle, __pyx_t_2, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 5, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_3, __pyx_n_s_PickleError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 5, __pyx_L1_error)
@@ -2755,7 +2740,6 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkeditem__
   int __pyx_t_5;
   PyObject *__pyx_t_6 = NULL;
   PyObject *__pyx_t_7 = NULL;
-  PyObject *__pyx_t_8 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2772,9 +2756,9 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkeditem__
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(0, 12, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_11recordclass_11_linkedlist_linkedlist))))) __PYX_ERR(0, 12, __pyx_L1_error)
+  if (!(likely(((PyTuple_GET_ITEM(__pyx_v___pyx_state, 0)) == Py_None) || likely(__Pyx_TypeTest(PyTuple_GET_ITEM(__pyx_v___pyx_state, 0), __pyx_ptype_11recordclass_11_linkedlist_linkedlist))))) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_GET_ITEM(__pyx_v___pyx_state, 0);
+  __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v___pyx_result->next);
   __Pyx_DECREF(((PyObject *)__pyx_v___pyx_result->next));
@@ -2784,8 +2768,8 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkeditem__
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(0, 12, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_1 = PyTuple_GET_ITEM(__pyx_v___pyx_state, 1);
+  __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v___pyx_result->val);
   __Pyx_DECREF(__pyx_v___pyx_result->val);
@@ -2829,21 +2813,18 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkeditem__
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(0, 14, __pyx_L1_error)
     }
-    __pyx_t_6 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 14, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_8 = NULL;
+    __pyx_t_6 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
-      __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_7);
-      if (likely(__pyx_t_8)) {
+      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_7);
+      if (likely(__pyx_t_6)) {
         PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
-        __Pyx_INCREF(__pyx_t_8);
+        __Pyx_INCREF(__pyx_t_6);
         __Pyx_INCREF(function);
         __Pyx_DECREF_SET(__pyx_t_7, function);
       }
     }
-    __pyx_t_1 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6);
-    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_1 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_6, PyTuple_GET_ITEM(__pyx_v___pyx_state, 2)) : __Pyx_PyObject_CallOneArg(__pyx_t_7, PyTuple_GET_ITEM(__pyx_v___pyx_state, 2));
+    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -2872,7 +2853,6 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkeditem__
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_XDECREF(__pyx_t_8);
   __Pyx_AddTraceback("recordclass._linkedlist.__pyx_unpickle_linkeditem__set_state", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
@@ -2889,7 +2869,8 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkeditem__
 
 /* Python wrapper */
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist = {"__pyx_unpickle_linkedlist", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist, METH_VARARGS|METH_KEYWORDS, 0};
+static char __pyx_doc_11recordclass_11_linkedlist_2__pyx_unpickle_linkedlist[] = "__pyx_unpickle_linkedlist(__pyx_type, long __pyx_checksum, __pyx_state)";
+static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist = {"__pyx_unpickle_linkedlist", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist, METH_VARARGS|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_2__pyx_unpickle_linkedlist};
 static PyObject *__pyx_pw_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v___pyx_type = 0;
   long __pyx_v___pyx_checksum;
@@ -3001,7 +2982,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_2__pyx_unpickle_linkedlist
     __Pyx_INCREF(__pyx_n_s_PickleError);
     __Pyx_GIVEREF(__pyx_n_s_PickleError);
     PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_PickleError);
-    __pyx_t_3 = __Pyx_Import(__pyx_n_s_pickle, __pyx_t_2, -1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 5, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_Import(__pyx_n_s_pickle, __pyx_t_2, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 5, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_3, __pyx_n_s_PickleError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 5, __pyx_L1_error)
@@ -3164,7 +3145,6 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkedlist__
   int __pyx_t_5;
   PyObject *__pyx_t_6 = NULL;
   PyObject *__pyx_t_7 = NULL;
-  PyObject *__pyx_t_8 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -3181,9 +3161,9 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkedlist__
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(0, 12, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_11recordclass_11_linkedlist_linkeditem))))) __PYX_ERR(0, 12, __pyx_L1_error)
+  if (!(likely(((PyTuple_GET_ITEM(__pyx_v___pyx_state, 0)) == Py_None) || likely(__Pyx_TypeTest(PyTuple_GET_ITEM(__pyx_v___pyx_state, 0), __pyx_ptype_11recordclass_11_linkedlist_linkeditem))))) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_GET_ITEM(__pyx_v___pyx_state, 0);
+  __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v___pyx_result->end);
   __Pyx_DECREF(((PyObject *)__pyx_v___pyx_result->end));
@@ -3193,9 +3173,9 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkedlist__
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(0, 12, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_11recordclass_11_linkedlist_linkeditem))))) __PYX_ERR(0, 12, __pyx_L1_error)
+  if (!(likely(((PyTuple_GET_ITEM(__pyx_v___pyx_state, 1)) == Py_None) || likely(__Pyx_TypeTest(PyTuple_GET_ITEM(__pyx_v___pyx_state, 1), __pyx_ptype_11recordclass_11_linkedlist_linkeditem))))) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_GET_ITEM(__pyx_v___pyx_state, 1);
+  __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v___pyx_result->start);
   __Pyx_DECREF(((PyObject *)__pyx_v___pyx_result->start));
@@ -3239,21 +3219,18 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkedlist__
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(0, 14, __pyx_L1_error)
     }
-    __pyx_t_6 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 14, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_8 = NULL;
+    __pyx_t_6 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
-      __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_7);
-      if (likely(__pyx_t_8)) {
+      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_7);
+      if (likely(__pyx_t_6)) {
         PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
-        __Pyx_INCREF(__pyx_t_8);
+        __Pyx_INCREF(__pyx_t_6);
         __Pyx_INCREF(function);
         __Pyx_DECREF_SET(__pyx_t_7, function);
       }
     }
-    __pyx_t_1 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6);
-    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_1 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_6, PyTuple_GET_ITEM(__pyx_v___pyx_state, 2)) : __Pyx_PyObject_CallOneArg(__pyx_t_7, PyTuple_GET_ITEM(__pyx_v___pyx_state, 2));
+    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -3282,7 +3259,6 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkedlist__
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_XDECREF(__pyx_t_8);
   __Pyx_AddTraceback("recordclass._linkedlist.__pyx_unpickle_linkedlist__set_state", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
@@ -3319,8 +3295,8 @@ static void __pyx_tp_dealloc_11recordclass_11_linkedlist_linkeditem(PyObject *o)
 }
 
 static PyMethodDef __pyx_methods_11recordclass_11_linkedlist_linkeditem[] = {
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkeditem_1__reduce_cython__, METH_NOARGS, 0},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkeditem_3__setstate_cython__, METH_O, 0},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkeditem_1__reduce_cython__, METH_NOARGS, __pyx_doc_11recordclass_11_linkedlist_10linkeditem___reduce_cython__},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkeditem_3__setstate_cython__, METH_O, __pyx_doc_11recordclass_11_linkedlist_10linkeditem_2__setstate_cython__},
   {0, 0, 0, 0}
 };
 
@@ -3456,10 +3432,10 @@ static int __pyx_tp_clear_11recordclass_11_linkedlist_linkedlist(PyObject *o) {
 }
 
 static PyMethodDef __pyx_methods_11recordclass_11_linkedlist_linkedlist[] = {
-  {"append", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append, METH_O, 0},
-  {"extend", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend, METH_O, 0},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_7__reduce_cython__, METH_NOARGS, 0},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_9__setstate_cython__, METH_O, 0},
+  {"append", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append, METH_O, __pyx_doc_11recordclass_11_linkedlist_10linkedlist_append},
+  {"extend", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend, METH_O, __pyx_doc_11recordclass_11_linkedlist_10linkedlist_2extend},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_7__reduce_cython__, METH_NOARGS, __pyx_doc_11recordclass_11_linkedlist_10linkedlist_6__reduce_cython__},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_9__setstate_cython__, METH_O, __pyx_doc_11recordclass_11_linkedlist_10linkedlist_8__setstate_cython__},
   {0, 0, 0, 0}
 };
 
@@ -3688,29 +3664,29 @@ static int __Pyx_modinit_type_init_code(void) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
-  if (PyType_Ready(&LinkedItemType) < 0) __PYX_ERR(1, 4, __pyx_L1_error)
+  if (PyType_Ready(&LinkedItemType) < 0) __PYX_ERR(1, 35, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   LinkedItemType.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!LinkedItemType.tp_dictoffset && LinkedItemType.tp_getattro == PyObject_GenericGetAttr)) {
     LinkedItemType.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_linkeditem, (PyObject *)&LinkedItemType) < 0) __PYX_ERR(1, 4, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&LinkedItemType) < 0) __PYX_ERR(1, 4, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_linkeditem, (PyObject *)&LinkedItemType) < 0) __PYX_ERR(1, 35, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&LinkedItemType) < 0) __PYX_ERR(1, 35, __pyx_L1_error)
   __pyx_ptype_11recordclass_11_linkedlist_linkeditem = &LinkedItemType;
   __pyx_vtabptr_11recordclass_11_linkedlist_linkedlist = &__pyx_vtable_11recordclass_11_linkedlist_linkedlist;
   __pyx_vtable_11recordclass_11_linkedlist_linkedlist.append = (PyObject *(*)(struct LinkedList *, PyObject *, int __pyx_skip_dispatch))__pyx_f_11recordclass_11_linkedlist_10linkedlist_append;
   __pyx_vtable_11recordclass_11_linkedlist_linkedlist.extend = (PyObject *(*)(struct LinkedList *, PyObject *, int __pyx_skip_dispatch))__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend;
-  if (PyType_Ready(&LinkedListType) < 0) __PYX_ERR(1, 8, __pyx_L1_error)
+  if (PyType_Ready(&LinkedListType) < 0) __PYX_ERR(1, 39, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   LinkedListType.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!LinkedListType.tp_dictoffset && LinkedListType.tp_getattro == PyObject_GenericGetAttr)) {
     LinkedListType.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(LinkedListType.tp_dict, __pyx_vtabptr_11recordclass_11_linkedlist_linkedlist) < 0) __PYX_ERR(1, 8, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_linkedlist, (PyObject *)&LinkedListType) < 0) __PYX_ERR(1, 8, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&LinkedListType) < 0) __PYX_ERR(1, 8, __pyx_L1_error)
+  if (__Pyx_SetVtable(LinkedListType.tp_dict, __pyx_vtabptr_11recordclass_11_linkedlist_linkedlist) < 0) __PYX_ERR(1, 39, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_linkedlist, (PyObject *)&LinkedListType) < 0) __PYX_ERR(1, 39, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&LinkedListType) < 0) __PYX_ERR(1, 39, __pyx_L1_error)
   __pyx_ptype_11recordclass_11_linkedlist_linkedlist = &LinkedListType;
   __Pyx_RefNannyFinishContext();
   return 0;
@@ -3968,9 +3944,9 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":1
- * cimport cython             # <<<<<<<<<<<<<<
+ * # coding: utf-8             # <<<<<<<<<<<<<<
  * 
- * @cython.no_gc
+ * # cython: language_level=3
  */
   __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -4870,93 +4846,6 @@ bad:
     return;
 }
 #endif
-
-/* GetItemInt */
-static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
-    PyObject *r;
-    if (!j) return NULL;
-    r = PyObject_GetItem(o, j);
-    Py_DECREF(j);
-    return r;
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
-                                                              CYTHON_NCP_UNUSED int wraparound,
-                                                              CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    Py_ssize_t wrapped_i = i;
-    if (wraparound & unlikely(i < 0)) {
-        wrapped_i += PyList_GET_SIZE(o);
-    }
-    if ((!boundscheck) || likely(__Pyx_is_valid_index(wrapped_i, PyList_GET_SIZE(o)))) {
-        PyObject *r = PyList_GET_ITEM(o, wrapped_i);
-        Py_INCREF(r);
-        return r;
-    }
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-#else
-    return PySequence_GetItem(o, i);
-#endif
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
-                                                              CYTHON_NCP_UNUSED int wraparound,
-                                                              CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    Py_ssize_t wrapped_i = i;
-    if (wraparound & unlikely(i < 0)) {
-        wrapped_i += PyTuple_GET_SIZE(o);
-    }
-    if ((!boundscheck) || likely(__Pyx_is_valid_index(wrapped_i, PyTuple_GET_SIZE(o)))) {
-        PyObject *r = PyTuple_GET_ITEM(o, wrapped_i);
-        Py_INCREF(r);
-        return r;
-    }
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-#else
-    return PySequence_GetItem(o, i);
-#endif
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, int is_list,
-                                                     CYTHON_NCP_UNUSED int wraparound,
-                                                     CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS && CYTHON_USE_TYPE_SLOTS
-    if (is_list || PyList_CheckExact(o)) {
-        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyList_GET_SIZE(o);
-        if ((!boundscheck) || (likely(__Pyx_is_valid_index(n, PyList_GET_SIZE(o))))) {
-            PyObject *r = PyList_GET_ITEM(o, n);
-            Py_INCREF(r);
-            return r;
-        }
-    }
-    else if (PyTuple_CheckExact(o)) {
-        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyTuple_GET_SIZE(o);
-        if ((!boundscheck) || likely(__Pyx_is_valid_index(n, PyTuple_GET_SIZE(o)))) {
-            PyObject *r = PyTuple_GET_ITEM(o, n);
-            Py_INCREF(r);
-            return r;
-        }
-    } else {
-        PySequenceMethods *m = Py_TYPE(o)->tp_as_sequence;
-        if (likely(m && m->sq_item)) {
-            if (wraparound && unlikely(i < 0) && likely(m->sq_length)) {
-                Py_ssize_t l = m->sq_length(o);
-                if (likely(l >= 0)) {
-                    i += l;
-                } else {
-                    if (!PyErr_ExceptionMatches(PyExc_OverflowError))
-                        return NULL;
-                    PyErr_Clear();
-                }
-            }
-            return m->sq_item(o, i);
-        }
-    }
-#else
-    if (is_list || PySequence_Check(o)) {
-        return PySequence_GetItem(o, i);
-    }
-#endif
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-}
 
 /* HasAttr */
 static CYTHON_INLINE int __Pyx_HasAttr(PyObject *o, PyObject *n) {

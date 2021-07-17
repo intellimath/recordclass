@@ -7,7 +7,7 @@
 struct LinkedItem;
 struct LinkedList;
 
-/* "recordclass/_linkedlist.pyx":4
+/* "recordclass/_linkedlist.pyx":35
  * 
  * @cython.no_gc
  * cdef public class linkeditem[object LinkedItem, type LinkedItemType]:             # <<<<<<<<<<<<<<
@@ -20,7 +20,7 @@ struct LinkedItem {
   struct LinkedList *next;
 };
 
-/* "recordclass/_linkedlist.pyx":8
+/* "recordclass/_linkedlist.pyx":39
  *     cdef linkedlist next
  * 
  * cdef public class linkedlist[object LinkedList, type LinkedListType]:             # <<<<<<<<<<<<<<
