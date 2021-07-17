@@ -165,7 +165,7 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 
     ns['__module__'] = module
 
-    cls = datatype(typename, bases, ns, gc=gc)
+    cls = datatype(typename, bases, ns, gc=gc, fast_new=fast_new)
 
     return cls
 

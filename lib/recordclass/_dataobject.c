@@ -305,13 +305,12 @@ dataobject_xdecref(PyObject *op)
         }            
     }
 
-    while (n_slots-- > 0) {
+    while (n_slots--) {
         PyObject *ob = *items;
         if (ob != NULL) {
             Py_DECREF(ob);
             *items = NULL;
         }
-//         Py_XDECREF(*items);
         items++;
     }
 
@@ -322,26 +321,39 @@ static void
 dataobject_dealloc(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
+    const int is_gc = PyType_IS_GC(type);
 
-    if (PyType_IS_GC(type))
+    if (is_gc)
         PyObject_GC_UnTrack(op);
     
-#if PY_VERSION_HEX < 0x03080000
-    Py_TRASHCAN_SAFE_BEGIN(op)
-#else
-    Py_TRASHCAN_BEGIN(op, dataobject_dealloc)
-#endif
+// #if PY_VERSION_HEX < 0x03080000
+//     Py_TRASHCAN_SAFE_BEGIN(op)
+// #else
+//     Py_TRASHCAN_BEGIN(op, dataobject_dealloc)
+// #endif
+
+    if (type->tp_del) {
+        if (is_gc)
+            PyObject_GC_Track(op);
+
+        type->tp_del(op);
+        if (op->ob_refcnt > 0)
+            return;
+
+        if (is_gc)
+            PyObject_GC_UnTrack(op);
+    }
 
     dataobject_xdecref(op);
     
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_DECREF(type);
 
-#if PY_VERSION_HEX < 0x03080000
-    Py_TRASHCAN_SAFE_END(op)
-#else
-    Py_TRASHCAN_END
-#endif
+// #if PY_VERSION_HEX < 0x03080000
+//     Py_TRASHCAN_SAFE_END(op)
+// #else
+//     Py_TRASHCAN_END
+// #endif
 
     type->tp_free((PyObject *)op);
 }
@@ -1129,8 +1141,8 @@ dataobjectiter_next(dataobjectiterobject *it)
         return item;
     }
 
-    Py_DECREF(it->it_seq);
-    it->it_seq = NULL;
+//     Py_DECREF(it->it_seq);
+//     it->it_seq = NULL;
     return NULL;
 }
 
@@ -1641,14 +1653,13 @@ _set_hashable(PyObject *cls, PyObject *hashable) {
 static PyObject*
 _set_iterable(PyObject *cls, PyObject *iterable) {
     PyTypeObject *tp;
-    int state;
+    const int state = PyObject_IsTrue(iterable);
 
     tp = (PyTypeObject*)cls;
-    state = PyObject_IsTrue(iterable);
 
-    if (state)
+    if (!tp->tp_iter && state)
         tp->tp_iter = dataobject_iter;
-    else
+    if (tp->tp_iter && !state)
         tp->tp_iter = NULL;
 
     Py_RETURN_NONE;

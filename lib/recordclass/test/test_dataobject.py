@@ -379,6 +379,11 @@ class dataobjectTest(unittest.TestCase):
         a=A(1, 2.0, "a")
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
 
+    def test_iter3(self):
+        A = make_dataclass("A", ('x', 'y', 'z'))
+        a=A(1, 2.0, "a")
+        self.assertEqual(list(iter(a)), [1, 2.0, "a"])
+        
     def test_enable_gc(self):
         A = make_dataclass("A", ('x', 'y', 'z'))
         B = make_dataclass("B", ('x', 'y', 'z'), gc=True)

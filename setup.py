@@ -56,10 +56,20 @@ if use_cython:
         ["lib/recordclass/litelist.pyx"],
         extra_compile_args = extra_compile_args,
     ))
+    ext_modules.append(Extension(
+        "recordclass._linkedlist",
+        ["lib/recordclass/_linkedlist.pyx"],
+        extra_compile_args = extra_compile_args,
+    ))
 else:
     ext_modules.append(Extension(
         "recordclass.litelist",
         ["lib/recordclass/litelist.c"],
+        extra_compile_args = extra_compile_args,
+    ))
+    ext_modules.append(Extension(
+        "recordclass._linkedlist",
+        ["lib/recordclass/_linkedlist.c"],
         extra_compile_args = extra_compile_args,
     ))
 
