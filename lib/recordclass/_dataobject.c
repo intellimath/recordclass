@@ -332,7 +332,7 @@ dataobject_dealloc(PyObject *op)
 //     Py_TRASHCAN_BEGIN(op, dataobject_dealloc)
 // #endif
 
-    if (type->tp_del != NULL) {
+    if (type->tp_del) {
         if (is_gc)
             PyObject_GC_Track(op);
 
@@ -344,6 +344,17 @@ dataobject_dealloc(PyObject *op)
             PyObject_GC_UnTrack(op);
     }
 
+    if (type->tp_finalize) {
+        if (is_gc)
+            PyObject_GC_Track(op);
+
+        if(PyObject_CallFinalizerFromDealloc(op) < 0)
+            return;
+
+        if (is_gc)
+            PyObject_GC_UnTrack(op);
+    }
+    
     dataobject_xdecref(op);
     
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
