@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 
-// Copyright (c) «2015-2021» «Shibzukhov Zaur, szport at gmail dot com»
+// Copyright (c) «2021» «Shibzukhov Zaur, szport at gmail dot com»
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software - recordclass library - and associated documentation files 
@@ -24,9 +24,7 @@
 #undef Py_LIMITED_API
 #endif
 
-/*#include "pyconfig.h"*/
 #include "Python.h"
-#include <string.h>
 
 static PyTypeObject PyLiteTuple_Type;
 static PyTypeObject PyMLiteTuple_Type;
