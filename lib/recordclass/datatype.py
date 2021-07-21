@@ -34,14 +34,14 @@ _intern = _sys.intern
 int_type = type(1)
 
 def clsconfig(sequence=False, mapping=False, readonly=False,
-              use_dict=False, use_weakref=False, iterable=True, hashable=True, gc=False):
+              use_dict=False, use_weakref=False, iterable=True, hashable=True, gc=False, deep_dealloc=False):
 
     from ._dataobject import _clsconfig
 
     def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc)
+                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, deep_dealloc=deep_dealloc)
         return cls
     return func
 
@@ -71,6 +71,7 @@ class datatype(type):
         iterable = options.get('iterable', True)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
+        deep_dealloc = options.get('deep_dealloc', False)
         if 'gc' in options:
             gc = options['gc']
         if 'fast_new' in options:
@@ -199,7 +200,7 @@ class datatype(type):
 
         _dataobject_type_init(cls)
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc)
+                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, deep_dealloc=deep_dealloc)
 
         return cls
 

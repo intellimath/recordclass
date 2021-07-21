@@ -10,6 +10,8 @@
 #define PyDataObject_HAS_DICT(type) (type->tp_dictoffset != 0)
 #define PyDataObject_HAS_WEAKLIST(type) (type->tp_weaklistoffset != 0)
 
+#define Py_TP_BASE(o) (Py_TYPE(o)->tp_base)
+
 // typedef struct {
 //     PyObject ob_head;
 //     PyObject *ob_slot[1];

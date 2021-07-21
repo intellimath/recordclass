@@ -652,6 +652,32 @@ class DataObjectTest3(unittest.TestCase):
             del a
         
         self.assertEqual(count, 100)
+        
+    def test_deep_dealloc(self):
+        @clsconfig(deep_dealloc=True)
+        class LinkedItem(dataobject, fast_new=True):
+            val: object
+            next: 'LinkedItem'
+
+        class LinkedList(dataobject):
+            start: LinkedItem = None
+            end: LinkedItem = None
+
+            def append(self, val):
+                link = LinkedItem(val, None)
+                if self.start is None:
+                    self.start = link
+                else:
+                    self.end.next = link
+                self.end = link
+                
+        ll = LinkedList()
+        for i in range(100000):
+            ll.append(i)
+            
+        del ll
+
+
                 
 def main():
     suite = unittest.TestSuite()

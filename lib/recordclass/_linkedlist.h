@@ -36,7 +36,7 @@ struct LinkedList {
   struct LinkedItem *end;
 };
 
-/* "recordclass/_linkedlist.pyx":119
+/* "recordclass/_linkedlist.pyx":115
  * @cython.no_gc
  * @cython.final
  * cdef public class dlinkeditem[object DLinkedItem, type DLinkedItemType]:             # <<<<<<<<<<<<<<
@@ -50,7 +50,7 @@ struct DLinkedItem {
   struct LinkedItem *prev;
 };
 
-/* "recordclass/_linkedlist.pyx":125
+/* "recordclass/_linkedlist.pyx":121
  * 
  * @cython.final
  * cdef public class dlinkedlist[object DLinkedList, type DLinkedListType]:             # <<<<<<<<<<<<<<

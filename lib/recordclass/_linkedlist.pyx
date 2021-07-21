@@ -42,7 +42,6 @@ cdef public class linkedlist[object LinkedList, type LinkedListType]:
     cdef public linkeditem start
     cdef public linkeditem end
     #
-    @cython.nonecheck(False)
     cpdef append(self, val):
         cdef linkeditem item
 
@@ -68,7 +67,6 @@ cdef public class linkedlist[object LinkedList, type LinkedListType]:
             else:
                 self.end.next = item
     #
-    @cython.nonecheck(False)
     cpdef pop(self):
         cdef linkeditem start
 
@@ -81,7 +79,6 @@ cdef public class linkedlist[object LinkedList, type LinkedListType]:
             self.end = None
         return start
     #
-    @cython.nonecheck(False)
     def __dealloc__(self):
         cdef linkeditem curr
         cdef linkeditem next
@@ -102,7 +99,6 @@ cdef class iterlinkedlist:
     def __init__(self, linkedlist ll):
         self.node = ll.start
     
-    @cython.nonecheck(False)
     def __next__(self):
         cdef linkeditem node
 

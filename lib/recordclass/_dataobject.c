@@ -34,6 +34,8 @@
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
+static PyTypeObject PyDataObject_Type;
+
 static PyObject **
 PyDataObject_GetDictPtr(PyObject *ob) {
     PyTypeObject *tp = Py_TYPE(ob);
@@ -288,8 +290,6 @@ static int
 dataobject_xdecref(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
-    PyObject **items = PyDataObject_SLOTS(op);
-    Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
 
     if (type->tp_weaklistoffset)
         PyObject_ClearWeakRefs(op);
@@ -305,15 +305,17 @@ dataobject_xdecref(PyObject *op)
         }            
     }
 
+    PyObject **items = PyDataObject_SLOTS(op);
+    Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
+
     while (n_slots--) {
         PyObject *ob = *items;
-        if (ob != NULL) {
+        if (ob) {
             Py_DECREF(ob);
             *items = NULL;
         }
         items++;
     }
-
     return 0;
 }
 
@@ -332,35 +334,111 @@ dataobject_dealloc(PyObject *op)
 //     Py_TRASHCAN_BEGIN(op, dataobject_dealloc)
 // #endif
 
-    if (type->tp_finalize) {
-        if (is_gc)
-            PyObject_GC_Track(op);
+    if (is_gc)
+        PyObject_GC_Track(op);
 
-        if(PyObject_CallFinalizerFromDealloc(op) < 0)
-            return;
+    if(PyObject_CallFinalizerFromDealloc(op) < 0)
+        return;
 
-        if (is_gc)
-            PyObject_GC_UnTrack(op);
-    }
+    if (is_gc)
+        PyObject_GC_UnTrack(op);
     
-    dataobject_xdecref(op);
+    if (!is_gc)
+        dataobject_xdecref(op);
     
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_DECREF(type);
-
 // #if PY_VERSION_HEX < 0x03080000
 //     Py_TRASHCAN_SAFE_END(op)
 // #else
 //     Py_TRASHCAN_END
 // #endif
 
-    type->tp_free((PyObject *)op);
+//     type->tp_free((PyObject *)op);
+}
+
+static void
+dataobject_finalize(PyObject *op, PyObject *stack)
+{
+    PyTypeObject *type = Py_TYPE(op);
+    PyObject **items = PyDataObject_SLOTS(op);
+    Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
+    
+//     if (type->tp_weaklistoffset)
+//         PyObject_ClearWeakRefs(op);
+    
+//     if (type->tp_dictoffset) {
+//         PyObject **dictptr = PyDataObject_GetDictPtr(op);
+//         if (dictptr != NULL) {
+//             PyObject *dict = *dictptr;
+//             if (dict != NULL) {
+//                 Py_DECREF(dict);
+//                 *dictptr = NULL;
+//             }
+//         }            
+//     }
+
+//     printf("+\n");
+    while (n_slots--) {
+        PyObject *o = *items;
+        PyTypeObject *o_type = Py_TYPE(o);
+
+        if (o_type->tp_base == &PyDataObject_Type) {
+            if(PyList_Append(stack, o) < 0)
+                printf("failed to append\n");
+//             printf("*");
+        }
+
+        Py_DECREF(o);
+        Py_INCREF(Py_None);
+        *items = Py_None;
+        items++;
+    }
+
+//     printf("%i\n", (int)PyList_GET_SIZE(stack));
+//     type->tp_free((PyObject *)op);
+    
+    return;
+}
+
+static void
+dataobject_deep_dealloc(PyObject *ob) {
+    PyObject *stack = PyList_New(0);
+    PySequenceMethods *m = stack->ob_type->tp_as_sequence;
+    
+    int n_stack;
+        
+    dataobject_finalize(ob, stack);
+    dataobject_dealloc(ob);
+    n_stack = PyList_GET_SIZE(stack);
+//     printf("%i\n", n_stack);
+    while (n_stack) {
+//         printf("%i\n", n_stack);
+        PyObject *o = PyList_GET_ITEM(stack, 0);
+//         printf("refcnt: %i\n", (int)o->ob_refcnt);
+        if (o->ob_refcnt == 1)
+            dataobject_finalize(o, stack);
+
+        if(m->sq_ass_item(stack, 0, (PyObject *)NULL) < 0)
+            printf("failed to del\n");
+
+        n_stack = PyList_GET_SIZE(stack);
+
+        if (o->ob_refcnt > 1)
+            Py_DECREF(o);
+
+//         printf("refcnt: %i\n", (int)o->ob_refcnt);
+        if (o->ob_refcnt == 0)
+            dataobject_dealloc(o);            
+    }
+    Py_DECREF(stack);
 }
 
 static void
 dataobject_free(void *op)
 {
     PyTypeObject *type = Py_TYPE(op);
+
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_DECREF(type);
 
     if (PyType_IS_GC(type))
         PyObject_GC_Del((PyObject*)op);
@@ -1778,7 +1856,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         tp->tp_itemsize = 0;
     } else {
         PyErr_SetString(PyExc_TypeError,
-                        "common base class should be dataobject, datatuple or subclass");
+                        "common base class should be dataobject or subclass");
         return NULL;
     }
 
@@ -1850,10 +1928,34 @@ _enable_gc(PyObject *cls)
     type->tp_traverse = dataobject_traverse;
     type->tp_clear = dataobject_clear;
 
-    PyType_Modified(type);
+//     PyType_Modified(type);
 
     Py_RETURN_NONE;
 }
+
+static PyObject *
+_set_deep_dealloc(PyObject *cls, PyObject *state)
+{
+    PyTypeObject *type;
+    int have_gc;
+
+    if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
+        PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of type");
+        return NULL;
+    }
+
+    type = (PyTypeObject*)cls;
+    have_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
+    if (have_gc || !PyObject_IsTrue(state))
+        Py_RETURN_NONE;
+    
+    type->tp_dealloc = dataobject_deep_dealloc;
+
+//     PyType_Modified(type);
+
+    Py_RETURN_NONE;
+}
+
 
 static PyObject *
 _astuple(PyObject *op)
@@ -1963,15 +2065,18 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     PyObject *iterable = PyMapping_GetItemString(kw, "iterable");
     PyObject *hashable = PyMapping_GetItemString(kw, "hashable");
     PyObject *gc = PyMapping_GetItemString(kw, "gc");
+    PyObject *set_dd = PyMapping_GetItemString(kw, "deep_dealloc");
 
     _collection_protocol(cls, sequence, mapping, readonly);
     _set_dictoffset(cls, use_dict);
     _set_weaklistoffset(cls, use_weakref);
     _set_hashable(cls, hashable);
     _set_iterable(cls, iterable);
-    
+
     if (PyObject_IsTrue(gc))
         _enable_gc(cls);
+
+    _set_deep_dealloc(cls, set_dd);
 
     PyType_Modified((PyTypeObject*)cls);
 
@@ -1983,6 +2088,7 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     Py_XDECREF(iterable);
     Py_XDECREF(hashable);
     Py_XDECREF(gc);
+    Py_XDECREF(set_dd);
 
     Py_RETURN_NONE;
 }
