@@ -361,30 +361,13 @@ dataobject_finalize(PyObject *op, PyObject *stack)
     PyTypeObject *type = Py_TYPE(op);
     PyObject **items = PyDataObject_SLOTS(op);
     Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
-    
-//     if (type->tp_weaklistoffset)
-//         PyObject_ClearWeakRefs(op);
-    
-//     if (type->tp_dictoffset) {
-//         PyObject **dictptr = PyDataObject_GetDictPtr(op);
-//         if (dictptr != NULL) {
-//             PyObject *dict = *dictptr;
-//             if (dict != NULL) {
-//                 Py_DECREF(dict);
-//                 *dictptr = NULL;
-//             }
-//         }            
-//     }
 
-//     printf("+\n");
     while (n_slots--) {
         PyObject *o = *items;
-        PyTypeObject *o_type = Py_TYPE(o);
-
-        if (o_type->tp_base == &PyDataObject_Type) {
+        
+        if (o->ob_refcnt == 1 && Py_TYPE(o)->tp_base == &PyDataObject_Type) {
             if(PyList_Append(stack, o) < 0)
                 printf("failed to append\n");
-//             printf("*");
         }
 
         Py_DECREF(o);
@@ -392,9 +375,6 @@ dataobject_finalize(PyObject *op, PyObject *stack)
         *items = Py_None;
         items++;
     }
-
-//     printf("%i\n", (int)PyList_GET_SIZE(stack));
-//     type->tp_free((PyObject *)op);
     
     return;
 }
