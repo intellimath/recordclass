@@ -325,8 +325,8 @@ dataobject_dealloc(PyObject *op)
     PyTypeObject *type = Py_TYPE(op);
     const int is_gc = PyType_IS_GC(type);
 
-    if (is_gc)
-        PyObject_GC_UnTrack(op);
+//     if (is_gc)
+//         PyObject_GC_UnTrack(op);
     
 // #if PY_VERSION_HEX < 0x03080000
 //     Py_TRASHCAN_SAFE_BEGIN(op)
@@ -334,16 +334,15 @@ dataobject_dealloc(PyObject *op)
 //     Py_TRASHCAN_BEGIN(op, dataobject_dealloc)
 // #endif
 
-    if (is_gc)
-        PyObject_GC_Track(op);
+//     if (is_gc)
+//         PyObject_GC_Track(op);
 
     if(PyObject_CallFinalizerFromDealloc(op) < 0)
         return;
 
     if (is_gc)
         PyObject_GC_UnTrack(op);
-    
-    if (!is_gc)
+    else
         dataobject_xdecref(op);
     
 // #if PY_VERSION_HEX < 0x03080000
@@ -352,15 +351,14 @@ dataobject_dealloc(PyObject *op)
 //     Py_TRASHCAN_END
 // #endif
 
-//     type->tp_free((PyObject *)op);
+    type->tp_free((PyObject *)op);
 }
 
 static void
 dataobject_finalize(PyObject *op, PyObject *stack)
 {
-    PyTypeObject *type = Py_TYPE(op);
+    Py_ssize_t n_slots = PyDataObject_NUMSLOTS(Py_TYPE(op));
     PyObject **items = PyDataObject_SLOTS(op);
-    Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
 
     while (n_slots--) {
         PyObject *o = *items;
@@ -368,11 +366,10 @@ dataobject_finalize(PyObject *op, PyObject *stack)
         if (o->ob_refcnt == 1 && Py_TYPE(o)->tp_base == &PyDataObject_Type) {
             if(PyList_Append(stack, o) < 0)
                 printf("failed to append\n");
-        }
+        } else
+            Py_DECREF(o);
 
-        Py_DECREF(o);
-        Py_INCREF(Py_None);
-        *items = Py_None;
+        *items = NULL;
         items++;
     }
     
@@ -382,34 +379,61 @@ dataobject_finalize(PyObject *op, PyObject *stack)
 static void
 dataobject_deep_dealloc(PyObject *ob) {
     PyObject *stack = PyList_New(0);
-    PySequenceMethods *m = stack->ob_type->tp_as_sequence;
-    
+    PySequenceMethods *m = stack->ob_type->tp_as_sequence;    
     int n_stack;
         
     dataobject_finalize(ob, stack);
     dataobject_dealloc(ob);
-    n_stack = PyList_GET_SIZE(stack);
-//     printf("%i\n", n_stack);
-    while (n_stack) {
-//         printf("%i\n", n_stack);
-        PyObject *o = PyList_GET_ITEM(stack, 0);
-//         printf("refcnt: %i\n", (int)o->ob_refcnt);
-        if (o->ob_refcnt == 1)
-            dataobject_finalize(o, stack);
 
+    n_stack = PyList_GET_SIZE(stack);
+    while (n_stack) {
+        PyObject *op = PyList_GET_ITEM(stack, 0);
+
+//         PySequence_DelItem(stack, 0);
         if(m->sq_ass_item(stack, 0, (PyObject *)NULL) < 0)
             printf("failed to del\n");
+        
+        if (op->ob_refcnt == 1) {
+            Py_ssize_t n_slots = PyDataObject_NUMSLOTS(Py_TYPE(op));
+            PyObject **items = PyDataObject_SLOTS(op);
+
+            while (n_slots--) {
+                PyObject *o = *items;
+
+                if (o->ob_refcnt == 1 && Py_TYPE(o)->tp_base == &PyDataObject_Type) {
+                    if(PyList_Append(stack, o) < 0)
+                        printf("failed to append\n");
+                } else
+                    Py_DECREF(o);
+
+                *items = NULL;
+                items++;
+            }
+        
+        }
+//             dataobject_finalize(o, stack);
+
+//         {
+//         Py_ssize_t i, j;
+//         PyObject **ptr;
+//         ptr = ((PyListObject*)stack)->ob_item;
+//         Py_DECREF(*ptr);
+//         for(i=0, j=1; j<n_stack; i++, j++) {
+//             ptr[i] = ptr[j];
+//         }
+//         ptr[n_stack-1] = NULL;
+//         Py_SIZE(stack) = n_stack--;
+//         }
+        
+        if (op->ob_refcnt == 1) {
+            op->ob_refcnt--;
+            dataobject_dealloc(op);
+        } 
 
         n_stack = PyList_GET_SIZE(stack);
-
-        if (o->ob_refcnt > 1)
-            Py_DECREF(o);
-
-//         printf("refcnt: %i\n", (int)o->ob_refcnt);
-        if (o->ob_refcnt == 0)
-            dataobject_dealloc(o);            
     }
     Py_DECREF(stack);
+    
 }
 
 static void

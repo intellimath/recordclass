@@ -670,10 +670,13 @@ class DataObjectTest3(unittest.TestCase):
                 else:
                     self.end.next = link
                 self.end = link
+
+        self.assertEqual(LinkedItem.__base__, dataobject)
                 
         ll = LinkedList()
-        for i in range(100000):
+        for i in range(10):
             ll.append(i)
+            
             
         del ll
 
