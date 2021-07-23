@@ -379,12 +379,10 @@ static void
 dataobject_finalize(PyObject *ob) {
     PyObject *stack = PyList_New(0);
 //     PySequenceMethods *m = stack->ob_type->tp_as_sequence;    
-    int n_stack;
 
     dataobject_finalize_step(ob, stack);
-//     Py_DECREF(ob);
 
-    n_stack = PyList_GET_SIZE(stack);
+    int n_stack = PyList_GET_SIZE(stack);
     while (n_stack) {
         PyObject *op = PyList_GET_ITEM(stack, 0);
 
@@ -397,17 +395,17 @@ dataobject_finalize(PyObject *ob) {
 //         if(m->sq_ass_item(stack, 0, (PyObject *)NULL) < 0)
 //             printf("failed to del\n");
         {
-            Py_ssize_t i, j;
+            Py_ssize_t j;
             PyObject **ptr = ((PyListObject*)stack)->ob_item;
-
-            for(i=0, j=1; j<n_stack; i++, j++) {
-                ptr[i] = ptr[j];
+            
+            *ptr = NULL;
+            for(j=1; j<n_stack; j++) {
+                ptr[j-1] = ptr[j];
             }
-            ptr[n_stack-1] = NULL;
-            Py_SIZE(stack) = n_stack-1;
+            n_stack--;
+            ptr[n_stack] = NULL;
+            Py_SIZE(stack) = n_stack;
         }
-
-        n_stack = PyList_GET_SIZE(stack);
     }
     Py_DECREF(stack);
     
