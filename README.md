@@ -237,6 +237,7 @@ Here are also table with some performance counters (python 3.9, debian linux, x8
 * Drop datatuple based classes.
 * Define the mutabletuple type on top of litetuple types.
 * Make structclass an alias of make_dataclass.
+* Add option 'deep_dealloc' for deallocation of instances of dataobject-based recursive subclasses.
 
 #### 0.14.3:
 
