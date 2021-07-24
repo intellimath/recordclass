@@ -214,7 +214,7 @@ There is default more fast deallocation method (finalization mechanizm is used) 
 
 > Note that for classes with `gc=True` (cyclic GC is used) this method is disabled: the python's cyclic GC is used.
 
-For more detailed examples see notebook `example_datatypes`.
+For more detailed examples see notebook [example_datatypes](examples/example_datatypes.ipynb).
 
 
 ## Memory footprint
