@@ -212,7 +212,7 @@ But it can be resolved with `__dell__` method:
 
 There is default more fast deallocation method (finalization mechanizm is used) when  `deep_dealloc=True`.
 
-> Note that for classes with `gc=True` (cyclic GC is used) this method is disabled.
+> Note that for classes with `gc=True` (cyclic GC is used) this method is disabled: the python's cyclic GC is used.
 
 For more detailed examples see notebook `example_datatypes`.
 
