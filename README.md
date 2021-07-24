@@ -25,7 +25,7 @@ Of course, in python, nothing prevent you from “shooting yourself in the foot"
 But in many cases, this can still be avoided provided that the developer understands what he is doing and uses such classes in the code with care.
 Another option is a use of static analyzers together with type annotations.
 
-**First**, `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  will not participate in CGC by default. As the result the instance of such class need less memory. It's memory footprint is similar to memory footprint of instances of the classes with `__slots__`. The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All subclasses of `dataobject` created by `class statement` support `attrs`/`dataclasses`-like API.
+**First**, `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  will not participate in CGC by default. As the result the instance of such class need less memory. It's memory footprint is similar to memory footprint of instances of the classes with `__slots__`. The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All subclasses of `dataobject` created by `class statement` support `attrs`/`dataclasses`-like API. The `recordclass` factory create dataobject-based subclass with specified fields and support `namedtuple`-like API. By default it will not participate in CGC too.  
 
 **Second**, it provide a factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names. These subclasses support `attrs`/`dataclasses`-like API.
 For example:
@@ -142,7 +142,7 @@ First load inventory::
     >>> print(p)
     Point(x=1, y=2)
 
-    >>> sys.getsizeof() # the output below is for 64bit python
+    >>> sys.getsizeof() # the output below for 64bit python 3.8+
     32
     >>> p.__sizeof__() == sys.getsizeof(p) # no additional space for CGC support
     True    
@@ -187,8 +187,7 @@ There is option `deep_dealloc` (default value is `True`) for deallocation of rec
         val: object
         next: 'LinkedItem'
 
-    @clsconfig(deep_dealloc=True)
-    class LinkedList(dataobject):
+    class LinkedList(dataobject, deep_dealloc=True):
         start: LinkedItem = None
         end: LinkedItem = None
 
@@ -210,7 +209,7 @@ But it can be resolved with `__dell__` method:
             curr.next = None
             curr = next
 
-There is default more fast deallocation method (finalization mechanizm is used) when  `deep_dealloc=True`.
+There is default more fast deallocation method using finalization mechanizm when  `deep_dealloc=True`.
 
 > Note that for classes with `gc=True` (cyclic GC is used) this method is disabled: the python's cyclic GC is used.
 
@@ -223,7 +222,7 @@ The following table explain memory footprints of `recordclass`-base and `dataobj
 
 | namedtuple    |  class with \_\_slots\_\_  |  recordclass   | dataobject |
 | ------------- | ----------------- | -------------- | ------------- |
-|   $g+b+s+n*p$     |     $g+b+n*p$         |  $b+s+n*p$       |     $b+n*p$     |
+|   $g+b+s+n*p$     |     $g+b+n*p$         |  $b+n*p$       |     $b+n*p$     |
 
 where:
 
@@ -235,7 +234,7 @@ where:
 
 This is useful in that case when you absolutely sure that reference cycle isn't supposed.
 For example, when all field values are instances of atomic types.
-As a result the size of the instance is decre	ased by 24-32 bytes (for cpython 3.4-3.7) and by 16 bytes for cpython 3.8::
+As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.4-3.7) and by 16 bytes since cpython 3.8::
 
     class S:
         __slots__ = ('a','b','c')
@@ -255,7 +254,7 @@ As a result the size of the instance is decre	ased by 24-32 bytes (for cpython 3
     for o in (s, r_gc, r_nogc, do):
         print(sys.getsizeof(o), end=' ')
     print
-    56 64 48 32
+    56 56 40 40
 
 Here are also table with some performance counters (python 3.9, debian linux, x86-64):
 

@@ -654,12 +654,11 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(count, 100)
         
     def test_deep_dealloc(self):
-        @clsconfig(deep_dealloc=True)
         class LinkedItem(dataobject, fast_new=True):
             val: object
             next: 'LinkedItem'
 
-        class LinkedList(dataobject):
+        class LinkedList(dataobject, deep_dealloc=True):
             start: LinkedItem = None
             end: LinkedItem = None
 

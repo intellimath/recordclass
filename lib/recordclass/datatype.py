@@ -34,14 +34,16 @@ _intern = _sys.intern
 int_type = type(1)
 
 def clsconfig(sequence=False, mapping=False, readonly=False,
-              use_dict=False, use_weakref=False, iterable=True, hashable=True, gc=False, deep_dealloc=False):
+              use_dict=False, use_weakref=False, iterable=True, 
+              hashable=True, gc=False, deep_dealloc=False):
 
     from ._dataobject import _clsconfig
 
     def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, deep_dealloc=deep_dealloc)
+                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, 
+                        deep_dealloc=deep_dealloc)
         return cls
     return func
 
@@ -59,7 +61,7 @@ _ds_ro_cache = {}
                 
 class datatype(type):
 
-    def __new__(metatype, typename, bases, ns, gc=False, fast_new=False):
+    def __new__(metatype, typename, bases, ns, gc=False, fast_new=False, deep_dealloc=False):
 
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
@@ -71,11 +73,12 @@ class datatype(type):
         iterable = options.get('iterable', True)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
-        deep_dealloc = options.get('deep_dealloc', False)
         if 'gc' in options:
             gc = options['gc']
         if 'fast_new' in options:
             fast_new = options['fast_new']
+        if deep_dealloc in options:
+            deep_dealloc = options['deep_dealloc']
 
         if not bases:
             raise TypeError("The base class in not specified")
