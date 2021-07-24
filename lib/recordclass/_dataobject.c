@@ -368,17 +368,13 @@ dataobject_finalize_step(PyObject *op, PyObject *stack)
         } else
             Py_DECREF(o);
 
-        *items = NULL;
-        items++;
+        *(items++) = NULL;
     }
-    
-    return;
 }
 
 static void
 dataobject_finalize(PyObject *ob) {
     PyObject *stack = PyList_New(0);
-//     PySequenceMethods *m = stack->ob_type->tp_as_sequence;    
 
     dataobject_finalize_step(ob, stack);
 
@@ -391,9 +387,6 @@ dataobject_finalize(PyObject *ob) {
 
         Py_DECREF(op);
 
-//         PySequence_DelItem(stack, 0);
-//         if(m->sq_ass_item(stack, 0, (PyObject *)NULL) < 0)
-//             printf("failed to del\n");
         {
             Py_ssize_t j;
             PyObject **ptr = ((PyListObject*)stack)->ob_item;
@@ -408,7 +401,6 @@ dataobject_finalize(PyObject *ob) {
         }
     }
     Py_DECREF(stack);
-    
 }
 
 static void

@@ -178,6 +178,44 @@ or
     >>> p = CPoint(1,2)
     >>> print(p)
     Point(x=1, y=2, color='white')
+    
+### Using dataobject-based classes for recursive data without recursive links
+
+There is option `deep_dealloc` (default value is `True`) for deallocation of recursive datastructures. Let consider simple example:
+
+    class LinkedItem(dataobject, fast_new=True):
+        val: object
+        next: 'LinkedItem'
+
+    @clsconfig(deep_dealloc=True)
+    class LinkedList(dataobject):
+        start: LinkedItem = None
+        end: LinkedItem = None
+
+        def append(self, val):
+            link = LinkedItem(val, None)
+            if self.start is None:
+                self.start = link
+            else:
+                self.end.next = link
+            self.end = link
+
+Without `deep_dealloc=True` deallocation of the instance of `LinkedList` will be failed.
+But it can be resolved with `__dell__` method:
+
+    def __del__(self):
+        curr = self.start
+        while curr is not None:
+            next = curr.next
+            curr.next = None
+            curr = next
+
+There is default more fast deallocation method (finalization mechanizm is used) when  `deep_dealloc=True`.
+
+> Note that for classes with `gc=True` (cyclic GC is used) this method is disabled.
+
+For more detailed examples see notebook `example_datatypes`.
+
 
 ## Memory footprint
 
