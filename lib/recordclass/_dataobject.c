@@ -1963,16 +1963,18 @@ _astuple(PyObject *op)
 {
     const Py_ssize_t n = dataobject_LEN(op);
     Py_ssize_t i;
-    PyObject *tpl;
-    PyObject *v;
 
-    tpl = PyTuple_New(n);
+    PyTupleObject *tpl = (PyTupleObject*)PyTuple_New(n);
+    PyObject **tpl_items = tpl->ob_item;
+    PyObject **op_items = PyDataObject_ITEMS(op);
     for (i=0; i<n; i++) {
-        v = dataobject_ITEM(op, i);
+        PyObject *v = *(op_items++);
+//         v = dataobject_ITEM(op, i);
         Py_INCREF(v);
-        PyTuple_SET_ITEM(tpl, i, v);
+        *(tpl_items++) = v;
+//         PyTuple_SET_ITEM(tpl, i, v);
     }
-    return tpl;
+    return (PyObject*)tpl;
 }
 
 static PyObject *
