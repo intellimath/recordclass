@@ -403,7 +403,6 @@ dataobject_finalize(PyObject *ob) {
             Py_SIZE(stack) = n_stack;
         }
     }
-//     Py_DECREF(stack);
 }
 
 PyDoc_STRVAR(dataobject_len_doc,
