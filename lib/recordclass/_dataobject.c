@@ -658,49 +658,49 @@ dataobject_len(PyObject *op)
 }
 
 static PySequenceMethods dataobject_as_sequence = {
-    (lenfunc)dataobject_len,                          /* sq_length */
-    0,                                              /* sq_concat */
-    0,                                              /* sq_repeat */
-    (ssizeargfunc)dataobject_item,                    /* sq_item */
-    0,                                              /* sq_slice */
-    (ssizeobjargproc)dataobject_ass_item,             /* sq_ass_item */
-    0,                                              /* sq_ass_slice */
-    0,                                              /* sq_contains */
+    (lenfunc)dataobject_len,                /* sq_length */
+    0,                                      /* sq_concat */
+    0,                                      /* sq_repeat */
+    (ssizeargfunc)dataobject_item,          /* sq_item */
+    0,                                      /* sq_slice */
+    (ssizeobjargproc)dataobject_ass_item,   /* sq_ass_item */
+    0,                                      /* sq_ass_slice */
+    0,                                      /* sq_contains */
 };
 
 static PySequenceMethods dataobject_as_sequence_ro = {
-    (lenfunc)dataobject_len,                          /* sq_length */
-    0,                                              /* sq_concat */
-    0,                                              /* sq_repeat */
-    (ssizeargfunc)dataobject_item,                    /* sq_item */
-    0,                                              /* sq_slice */
-    0,             /* sq_ass_item */
-    0,                                              /* sq_ass_slice */
-    0,                                              /* sq_contains */
+    (lenfunc)dataobject_len,         /* sq_length */
+    0,                               /* sq_concat */
+    0,                               /* sq_repeat */
+    (ssizeargfunc)dataobject_item,   /* sq_item */
+    0,                               /* sq_slice */
+    0,                               /* sq_ass_item */
+    0,                               /* sq_ass_slice */
+    0,                               /* sq_contains */
 };
 
 static PyMappingMethods dataobject_as_mapping = {
-    (lenfunc)dataobject_len,                          /* mp_len */
-    (binaryfunc)dataobject_subscript,                 /* mp_subscr */
-    (objobjargproc)dataobject_ass_subscript,          /* mp_ass_subscr */
+    (lenfunc)dataobject_len,                  /* mp_len */
+    (binaryfunc)dataobject_subscript,         /* mp_subscr */
+    (objobjargproc)dataobject_ass_subscript,  /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping_ro = {
-    (lenfunc)dataobject_len,                          /* mp_len */
-    (binaryfunc)dataobject_subscript,                 /* mp_subscr */
-    0,          /* mp_ass_subscr */
+    (lenfunc)dataobject_len,            /* mp_len */
+    (binaryfunc)dataobject_subscript,   /* mp_subscr */
+    0,                                  /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping2 = {
-    (lenfunc)dataobject_len,                          /* mp_len */
-    (binaryfunc)dataobject_subscript2,                 /* mp_subscr */
-    (objobjargproc)dataobject_ass_subscript2,          /* mp_ass_subscr */
+    (lenfunc)dataobject_len,                   /* mp_len */
+    (binaryfunc)dataobject_subscript2,         /* mp_subscr */
+    (objobjargproc)dataobject_ass_subscript2,  /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping2_ro = {
-    (lenfunc)dataobject_len,                          /* mp_len */
-    (binaryfunc)dataobject_subscript2,                 /* mp_subscr */
-    0,          /* mp_ass_subscr */
+    (lenfunc)dataobject_len,            /* mp_len */
+    (binaryfunc)dataobject_subscript2,  /* mp_subscr */
+    0,                                  /* mp_ass_subscr */
 };
 
 
@@ -987,12 +987,12 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
 }
 
 static PyMethodDef dataobject_methods[] = {
-    {"__copy__", (PyCFunction)dataobject_copy, METH_NOARGS, dataobject_copy_doc},
-    {"__len__", (PyCFunction)dataobject_len, METH_NOARGS, dataobject_len_doc},
-    {"__sizeof__",      (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
-    {"__reduce__",      (PyCFunction)dataobject_reduce, METH_NOARGS, dataobject_reduce_doc},
-    {"__getstate__",      (PyCFunction)dataobject_getstate, METH_NOARGS, dataobject_getstate_doc},
-    {"__setstate__",      (PyCFunction)dataobject_setstate, METH_O, dataobject_setstate_doc},
+    {"__copy__",     (PyCFunction)dataobject_copy, METH_NOARGS, dataobject_copy_doc},
+    {"__len__",      (PyCFunction)dataobject_len, METH_NOARGS, dataobject_len_doc},
+    {"__sizeof__",   (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
+    {"__reduce__",   (PyCFunction)dataobject_reduce, METH_NOARGS, dataobject_reduce_doc},
+    {"__getstate__", (PyCFunction)dataobject_getstate, METH_NOARGS, dataobject_getstate_doc},
+    {"__setstate__", (PyCFunction)dataobject_setstate, METH_O, dataobject_setstate_doc},
     {NULL}
 };
 
@@ -1005,20 +1005,20 @@ PyDoc_STRVAR(dataobject_doc,
 
 static PyTypeObject PyDataObject_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
-    "recordclass._dataobject.dataobject",        /* tp_name */
+    "recordclass._dataobject.dataobject",   /* tp_name */
     sizeof(PyObject),                       /* tp_basicsize */
     0,                                      /* tp_itemsize */
     /* methods */
-    (destructor)dataobject_dealloc,           /* tp_dealloc */
+    (destructor)dataobject_dealloc,         /* tp_dealloc */
     0,                                      /* tp_print */
     0,                                      /* tp_getattr */
     0,                                      /* tp_setattr */
     0,                                      /* tp_reserved */
-    0,                           /* tp_repr */
+    0,                                      /* tp_repr */
     0,                                      /* tp_as_number */
-    &dataobject_as_sequence,                  /* tp_as_sequence */
-    0,                   /* tp_as_mapping */
-    dataobject_hash,                          /* tp_hash */
+    &dataobject_as_sequence,                /* tp_as_sequence */
+    0,                                      /* tp_as_mapping */
+    dataobject_hash,                        /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
     0,                                      /* tp_getattro */
@@ -1026,14 +1026,14 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
                                             /* tp_flags */
-    dataobject_doc,                           /* tp_doc */
-    0,                      /* tp_traverse */
-    0,                         /* tp_clear */
-    dataobject_richcompare,                   /* tp_richcompare */
+    dataobject_doc,                         /* tp_doc */
+    0,                                      /* tp_traverse */
+    0,                                      /* tp_clear */
+    dataobject_richcompare,                 /* tp_richcompare */
     0,                                      /* tp_weaklistoffset*/
-    dataobject_iter,                                      /* tp_iter */
+    dataobject_iter,                        /* tp_iter */
     0,                                      /* tp_iternext */
-    dataobject_methods,                       /* tp_methods */
+    dataobject_methods,                     /* tp_methods */
     0,                                      /* tp_members */
     0,                                      /* tp_getset */
     0,                                      /* tp_base */
@@ -1042,9 +1042,9 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_descr_set */
     0,                                      /* tp_dictoffset */
     0,                                      /* tp_init */
-    dataobject_alloc,                         /* tp_alloc */
-    dataobject_new,                   /* tp_new */
-    dataobject_free,                          /* tp_free */
+    dataobject_alloc,                       /* tp_alloc */
+    dataobject_new,                         /* tp_new */
+    dataobject_free,                        /* tp_free */
     0                                       /* tp_is_gc */
 };
 
