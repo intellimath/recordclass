@@ -465,6 +465,13 @@ dataobject_item(PyObject *op, Py_ssize_t i)
     return v;
 }
 
+static PyObject *
+dataobject_ITEM(PyObject *op, Py_ssize_t i)
+{
+    PyObject **items = PyDataObject_ITEMS(op);
+    return items[i];
+}
+
 static int
 dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
@@ -485,6 +492,18 @@ dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     Py_INCREF(val);
     *items = val;
     return 0;
+}
+
+static void
+dataobject_ASS_ITEM(PyObject *op, Py_ssize_t i, PyObject *val)
+{
+    PyObject **items = PyDataObject_SLOTS(op);
+
+    items += i;
+
+    Py_XDECREF(*items);
+    Py_INCREF(val);
+    *items = val;
 }
 
 static PyObject*
@@ -539,9 +558,9 @@ dataobject_hash(PyObject *op)
 
     x = 0x345678L;
     for(i=0; i<len; i++) {
-        o = dataobject_item(op, i);
+        o = dataobject_ITEM(op, i);
         y = PyObject_Hash(o);
-        Py_DECREF(o);
+//         Py_DECREF(o);
         if (y == -1)
             return -1;
         x = (x ^ y) * mult;
@@ -577,11 +596,11 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
     }
 
     for (i = 0; i < vlen && i < wlen; i++) {
-        vv = dataobject_item(v, i);
-        ww = dataobject_item(w, i);
+        vv = dataobject_ITEM(v, i);
+        ww = dataobject_ITEM(w, i);
         k = PyObject_RichCompareBool(vv, ww, Py_EQ);
-        Py_DECREF(vv);
-        Py_DECREF(ww);
+//         Py_DECREF(vv);
+//         Py_DECREF(ww);
         if (k < 0)
             return NULL;
         if (!k)
@@ -620,11 +639,11 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
     }
 
     /* Compare the final item again using the proper operator */
-    vv = dataobject_item(v, i);
-    ww = dataobject_item(w, i);
+    vv = dataobject_ITEM(v, i);
+    ww = dataobject_ITEM(w, i);
     ret = PyObject_RichCompare(vv, ww, op);
-    Py_DECREF(vv);
-    Py_DECREF(ww);
+//     Py_DECREF(vv);
+//     Py_DECREF(ww);
 
     return ret;
 }
@@ -710,17 +729,13 @@ dataobject_copy(PyObject* op)
     for(i=0; i<n; i++) {
         PyObject *v;
 
-        v = dataobject_item(op, i);
+        v = dataobject_ITEM(op, i);
         if (!v) {
             Py_DECREF(new_op);
             return NULL;
         }
-        if (dataobject_ass_item(new_op, i, v) < 0) {
-            Py_DECREF(new_op);
-            Py_DECREF(v);
-            return NULL;
-        }
-        Py_DECREF(v);
+        dataobject_ASS_ITEM(new_op, i, v);
+//         Py_DECREF(v);
     }
 
     if (type->tp_dictoffset) {
@@ -1007,8 +1022,8 @@ static PyTypeObject PyDataObject_Type = {
     dataobject_hash,                          /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
-    PyObject_GenericGetAttr,                /* tp_getattro */
-    PyObject_GenericSetAttr,                /* tp_setattro */
+    0, /*PyObject_GenericGetAttr,*/                /* tp_getattro */
+    0, /*PyObject_GenericSetAttr,*/                /* tp_setattro */
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
                                             /* tp_flags */
@@ -1935,14 +1950,15 @@ _set_deep_dealloc(PyObject *cls, PyObject *state)
 static PyObject *
 _astuple(PyObject *op)
 {
-    Py_ssize_t i, n;
+    const Py_ssize_t n = dataobject_len(op);
+    Py_ssize_t i;
     PyObject *tpl;
     PyObject *v;
 
-    n = dataobject_len(op);
     tpl = PyTuple_New(n);
     for (i=0; i<n; i++) {
-        v = dataobject_item(op, i);
+        v = dataobject_ITEM(op, i);
+        Py_INCREF(v);
         PyTuple_SET_ITEM(tpl, i, v);
     }
     return tpl;
@@ -1964,8 +1980,8 @@ _asdict(PyObject *op)
         return NULL;
     }
     
+    const Py_ssize_t n = Py_SIZE(fields);
     PyObject *dict = PyDict_New();
-    Py_ssize_t n = Py_SIZE(fields);
 
     if (n == 0) {
         Py_DECREF(fields);
@@ -1973,8 +1989,9 @@ _asdict(PyObject *op)
     }
         
     for (i=0; i<n; i++) {
-        fn = PyTuple_GetItem(fields, i);
-        v = dataobject_item(op, i);
+        fn = PyTuple_GET_ITEM(fields, i);
+        Py_INCREF(fn);
+        v = dataobject_ITEM(op, i);
         PyDict_SetItem(dict, fn, v);
     }
     

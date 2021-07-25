@@ -88,6 +88,7 @@ class dataobjectTest(unittest.TestCase):
         a = A(1,2)
         b = a.__copy__()
         self.assertEqual(a, b)
+        del b
         
     def test_datatype_copy_dict(self):
         A = make_dataclass("A", ('x', 'y'), use_dict=True)
@@ -97,6 +98,7 @@ class dataobjectTest(unittest.TestCase):
         b = a.__copy__()
         self.assertEqual(gc.is_tracked(b), False)
         self.assertEqual(a, b)
+        del b
         
     def test_datatype_subscript(self):
         A = make_dataclass("A", ('x', 'y'), mapping=True)
