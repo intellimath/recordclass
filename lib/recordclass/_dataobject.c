@@ -160,7 +160,7 @@ static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyObject *op;
-    Py_ssize_t const n_slots = PyDataObject_NUMSLOTS(type); 
+    Py_ssize_t const n_slots = PyDataObject_NUMITEMS(type); 
     Py_ssize_t j;
     PyTupleObject *tmp;
     Py_ssize_t n_args;
@@ -264,7 +264,7 @@ dataobject_clear(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
     PyObject **items = PyDataObject_ITEMS(op);
-    Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
+    Py_ssize_t n_slots = PyDataObject_NUMITEMS(type);
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_GetDictPtr(op);
@@ -305,7 +305,7 @@ dataobject_xdecref(PyObject *op)
     }
 
     PyObject **items = PyDataObject_ITEMS(op);
-    Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
+    Py_ssize_t n_slots = PyDataObject_NUMITEMS(type);
 
     while (n_slots--) {
         PyObject *ob = *items;
@@ -356,7 +356,7 @@ dataobject_dealloc(PyObject *op)
 static void
 dataobject_finalize_step(PyObject *op, PyObject *stack)
 {
-    Py_ssize_t n_slots = PyDataObject_NUMSLOTS(Py_TYPE(op));
+    Py_ssize_t n_slots = PyDataObject_NUMITEMS(Py_TYPE(op));
     PyObject **items = PyDataObject_ITEMS(op);
 
     while (n_slots--) {
@@ -437,7 +437,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
     PyObject **items;
     PyTypeObject *type = Py_TYPE(op);
 
-    n_slots = PyDataObject_NUMSLOTS(type);
+    n_slots = PyDataObject_NUMITEMS(type);
 
     if (n_slots) {
         items = PyDataObject_ITEMS(op);
@@ -459,7 +459,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
 static PyObject *
 dataobject_item(PyObject *op, Py_ssize_t i)
 {
-    const Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
+    const Py_ssize_t n = PyDataObject_NUMITEMS(Py_TYPE(op));
 
     if (i < 0)
         i += n;
@@ -484,7 +484,7 @@ dataobject_ITEM(PyObject *op, Py_ssize_t i)
 static int
 dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
-    const Py_ssize_t n = PyDataObject_NUMSLOTS(Py_TYPE(op));
+    const Py_ssize_t n = PyDataObject_NUMITEMS(Py_TYPE(op));
 
     if (i < 0)
         i += n;
