@@ -30,7 +30,7 @@
 
 #define DEFERRED_ADDRESS(addr) 0
 
-#define IsStr(op) PyUnicode_CheckExact(op)
+// #define IsStr(op) PyUnicode_CheckExact(op)
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
@@ -38,8 +38,7 @@ static PyTypeObject PyDataObject_Type;
 
 static PyObject **
 PyDataObject_GetDictPtr(PyObject *ob) {
-    PyTypeObject *tp = Py_TYPE(ob);
-    Py_ssize_t dictoffset = tp->tp_dictoffset;
+    Py_ssize_t dictoffset = Py_TYPE(ob)->tp_dictoffset;
 
     if (dictoffset == 0)
         return NULL;
@@ -372,13 +371,18 @@ dataobject_finalize_step(PyObject *op, PyObject *stack)
     }
 }
 
+static PyObject* stack = NULL;
+
 static void
 dataobject_finalize(PyObject *ob) {
-    PyObject *stack = PyList_New(0);
+//     PyObject *stack = PyList_New(0);
+
+    if (!stack)
+        stack = PyList_New(0);
 
     dataobject_finalize_step(ob, stack);
 
-    int n_stack = PyList_GET_SIZE(stack);
+    Py_ssize_t n_stack = PyList_GET_SIZE(stack);
     while (n_stack) {
         PyObject *op = PyList_GET_ITEM(stack, 0);
 
@@ -400,7 +404,7 @@ dataobject_finalize(PyObject *ob) {
             Py_SIZE(stack) = n_stack;
         }
     }
-    Py_DECREF(stack);
+//     Py_DECREF(stack);
 }
 
 static void
@@ -1785,7 +1789,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     PyTypeObject *tp_base;
     int __init__, __new__;
     PyObject *fields, *dict;
-    int n_fields;
+    Py_ssize_t n_fields;
     int has_fields;
 
     if (Py_SIZE(args) != 1) {
@@ -1911,7 +1915,7 @@ _set_deep_dealloc(PyObject *cls, PyObject *state)
     int have_gc;
 
     if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
-        PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of type");
+        PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of a type");
         return NULL;
     }
 
@@ -2013,8 +2017,7 @@ astuple(PyObject *module, PyObject *args)
     op = PyTuple_GET_ITEM(args, 0);
     type = Py_TYPE(op);
 
-    if (type != &PyDataObject_Type &&
-        !PyType_IsSubtype(type, &PyDataObject_Type)) {
+    if (type->tp_base != &PyDataObject_Type) {
             PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
             return NULL;
     }
@@ -2084,8 +2087,8 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 "dataobject module provide `dataobject` class.");
 
 static PyMethodDef dataobjectmodule_methods[] = {
-    {"_asdict", asdict, METH_VARARGS, asdict_doc},
-    {"_astuple", astuple, METH_VARARGS, astuple_doc},
+    {"asdict", asdict, METH_VARARGS, asdict_doc},
+    {"astuple", astuple, METH_VARARGS, astuple_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
     {0, 0, 0, 0}

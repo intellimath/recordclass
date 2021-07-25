@@ -24,6 +24,7 @@
 
 from .utils import dataslot_offset, process_fields
 from .utils import check_name, collect_info_from_bases
+from ._dataobject import astuple, asdict
 
 __all__ = 'make_dataclass', 'join_dataclasses', 'astuple', 'asdict', 'DataclassStorage'
 
@@ -171,13 +172,13 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 
 make_class = make_dataclass
 
-def asdict(ob):
-    from ._dataobject import _asdict
-    return _asdict(ob)
+# def asdict(ob):
+#     from ._dataobject import _asdict
+#     return _asdict(ob)
 
-def astuple(ob):
-    from ._dataobject import _astuple
-    return _astuple(ob)
+# def astuple(ob):
+#     from ._dataobject import _astuple
+#     return _astuple(ob)
 
 class DataclassStorage:
     #
