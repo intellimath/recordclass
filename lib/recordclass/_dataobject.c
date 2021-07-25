@@ -188,7 +188,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     op = type->tp_alloc(type, 0);
 
-    items = PyDataObject_SLOTS(op);
+    items = PyDataObject_ITEMS(op);
     pp = tmp->ob_item;
     j = n_slots;
     while (n_args--) {
@@ -263,7 +263,7 @@ static int
 dataobject_clear(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
-    PyObject **items = PyDataObject_SLOTS(op);
+    PyObject **items = PyDataObject_ITEMS(op);
     Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
 
     if (type->tp_dictoffset) {
@@ -304,7 +304,7 @@ dataobject_xdecref(PyObject *op)
         }            
     }
 
-    PyObject **items = PyDataObject_SLOTS(op);
+    PyObject **items = PyDataObject_ITEMS(op);
     Py_ssize_t n_slots = PyDataObject_NUMSLOTS(type);
 
     while (n_slots--) {
@@ -357,7 +357,7 @@ static void
 dataobject_finalize_step(PyObject *op, PyObject *stack)
 {
     Py_ssize_t n_slots = PyDataObject_NUMSLOTS(Py_TYPE(op));
-    PyObject **items = PyDataObject_SLOTS(op);
+    PyObject **items = PyDataObject_ITEMS(op);
 
     while (n_slots--) {
         PyObject *o = *items;
@@ -440,7 +440,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
     n_slots = PyDataObject_NUMSLOTS(type);
 
     if (n_slots) {
-        items = PyDataObject_SLOTS(op);
+        items = PyDataObject_ITEMS(op);
         while (n_slots--) {
             Py_VISIT(*items);
             items++;
@@ -493,7 +493,7 @@ dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
         return -1;
     }
 
-    PyObject **items = PyDataObject_SLOTS(op);
+    PyObject **items = PyDataObject_ITEMS(op);
 
     items += i;
 
@@ -506,7 +506,7 @@ dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 static void
 dataobject_ASS_ITEM(PyObject *op, Py_ssize_t i, PyObject *val)
 {
-    PyObject **items = PyDataObject_SLOTS(op);
+    PyObject **items = PyDataObject_ITEMS(op);
 
     items += i;
 
