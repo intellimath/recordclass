@@ -160,7 +160,7 @@ static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyObject *op;
-    Py_ssize_t const n_slots = PyDataObject_NUMITEMS(type); 
+    Py_ssize_t const n_items = PyDataObject_NUMITEMS(type); 
     Py_ssize_t j;
     PyTupleObject *tmp;
     Py_ssize_t n_args;
@@ -179,7 +179,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     n_args = Py_SIZE(tmp);
 
-    if (n_args > n_slots) {
+    if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
                         "number of the arguments should not be greater than the number of the slots");
         Py_DECREF(tmp);
@@ -190,7 +190,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     items = PyDataObject_ITEMS(op);
     pp = tmp->ob_item;
-    j = n_slots;
+    j = n_items;
     while (n_args--) {
         v = *(pp++);
         Py_INCREF(v);
@@ -213,7 +213,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             PyObject *defaults = PyMapping_GetItemString(dict, "__defaults__");
             
             while (j) {
-                PyObject *fname = PyTuple_GetItem(fields, n_slots-j);
+                PyObject *fname = PyTuple_GetItem(fields, n_items-j);
                 PyObject *value = PyDict_GetItem(defaults, fname);
                 
                 if (!value)
@@ -264,7 +264,7 @@ dataobject_clear(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
     PyObject **items = PyDataObject_ITEMS(op);
-    Py_ssize_t n_slots = PyDataObject_NUMITEMS(type);
+    Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_GetDictPtr(op);
@@ -277,7 +277,7 @@ dataobject_clear(PyObject *op)
         }            
     }
 
-    while (n_slots-- > 0) {
+    while (n_items-- > 0) {
         Py_CLEAR(*items);
         items++;
     }
@@ -305,9 +305,9 @@ dataobject_xdecref(PyObject *op)
     }
 
     PyObject **items = PyDataObject_ITEMS(op);
-    Py_ssize_t n_slots = PyDataObject_NUMITEMS(type);
+    Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
 
-    while (n_slots--) {
+    while (n_items--) {
         PyObject *ob = *items;
         if (ob) {
             Py_DECREF(ob);
@@ -356,10 +356,10 @@ dataobject_dealloc(PyObject *op)
 static void
 dataobject_finalize_step(PyObject *op, PyObject *stack)
 {
-    Py_ssize_t n_slots = PyDataObject_NUMITEMS(Py_TYPE(op));
+    Py_ssize_t n_items = dataobject_LEN(op);
     PyObject **items = PyDataObject_ITEMS(op);
 
-    while (n_slots--) {
+    while (n_items--) {
         PyObject *o = *items;
         
         if (o->ob_refcnt == 1 && Py_TYPE(o)->tp_base == &PyDataObject_Type) {
@@ -375,7 +375,6 @@ static PyObject* stack = NULL;
 
 static void
 dataobject_finalize(PyObject *ob) {
-//     PyObject *stack = PyList_New(0);
 
     if (!stack)
         stack = PyList_New(0);
@@ -433,15 +432,15 @@ dataobject_free(void *op)
 static int
 dataobject_traverse(PyObject *op, visitproc visit, void *arg)
 {
-    Py_ssize_t n_slots;
+    Py_ssize_t n_items;
     PyObject **items;
     PyTypeObject *type = Py_TYPE(op);
 
-    n_slots = PyDataObject_NUMITEMS(type);
+    n_items = PyDataObject_NUMITEMS(type);
 
-    if (n_slots) {
+    if (n_items) {
         items = PyDataObject_ITEMS(op);
-        while (n_slots--) {
+        while (n_items--) {
             Py_VISIT(*items);
             items++;
         }
@@ -459,7 +458,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
 static PyObject *
 dataobject_item(PyObject *op, Py_ssize_t i)
 {
-    const Py_ssize_t n = PyDataObject_NUMITEMS(Py_TYPE(op));
+    const Py_ssize_t n = dataobject_LEN(op);
 
     if (i < 0)
         i += n;
@@ -484,7 +483,7 @@ dataobject_ITEM(PyObject *op, Py_ssize_t i)
 static int
 dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
-    const Py_ssize_t n = PyDataObject_NUMITEMS(Py_TYPE(op));
+    const Py_ssize_t n = dataobject_LEN(op);
 
     if (i < 0)
         i += n;
