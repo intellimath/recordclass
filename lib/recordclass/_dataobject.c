@@ -1276,11 +1276,11 @@ static PyMethodDef dataobjectiter_methods[] = {
 
 PyTypeObject PyDataObjectIter_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
-    "recordclass._dataobject.dataobject_iterator",                           /* tp_name */
-    sizeof(dataobjectiterobject),                    /* tp_basicsize */
+    "recordclass._dataobject.dataobject_iterator",  /* tp_name */
+    sizeof(dataobjectiterobject),               /* tp_basicsize */
     0,                                          /* tp_itemsize */
     /* methods */
-    (destructor)dataobjectiter_dealloc,              /* tp_dealloc */
+    (destructor)dataobjectiter_dealloc,         /* tp_dealloc */
     0,                                          /* tp_print */
     0,                                          /* tp_getattr */
     0,                                          /* tp_setattr */
@@ -1295,15 +1295,16 @@ PyTypeObject PyDataObjectIter_Type = {
     PyObject_GenericGetAttr,                    /* tp_getattro */
     0,                                          /* tp_setattro */
     0,                                          /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,                         /* tp_flags */
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
+                                                /* tp_flags */
     0,                                          /* tp_doc */
-    dataobjectiter_traverse,     /* tp_traverse */
-    dataobjectiter_clear,             /* tp_clear */
+    dataobjectiter_traverse,                    /* tp_traverse */
+    dataobjectiter_clear,                       /* tp_clear */
     0,                                          /* tp_richcompare */
     0,                                          /* tp_weaklistoffset */
     PyObject_SelfIter,                          /* tp_iter */
-    (iternextfunc)dataobjectiter_next,         /* tp_iternext */
-    dataobjectiter_methods,                    /* tp_methods */
+    (iternextfunc)dataobjectiter_next,          /* tp_iternext */
+    dataobjectiter_methods,                     /* tp_methods */
     0,
 };
 
@@ -1690,7 +1691,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
                tp->tp_as_sequence = &dataobject_as_sequence_ro;
         }
     } else {
-        tp->tp_as_sequence = NULL; //&dataobject_as_sequence0;
+        tp->tp_as_sequence = NULL;
         if (mp) {
             tp->tp_as_mapping = &dataobject_as_mapping;
             if (ro)
@@ -1748,17 +1749,24 @@ _set_dictoffset(PyObject *cls, PyObject *add_dict) {
     }
 
     if (!tp->tp_dictoffset && state) {
-        tp->tp_dictoffset = tp->tp_basicsize;
-        tp->tp_basicsize += sizeof(PyObject*);
-        if (tp->tp_weaklistoffset)
+        if (!tp->tp_weaklistoffset) {
+            tp->tp_dictoffset = tp->tp_basicsize;
+            tp->tp_basicsize += sizeof(PyObject*);
+        } else {
+            tp->tp_dictoffset = tp->tp_basicsize - sizeof(PyObject*);
             tp->tp_weaklistoffset = tp->tp_basicsize;
+            tp->tp_basicsize += sizeof(PyObject*);
+        }
     }
-    if (tp->tp_dictoffset && !state) {
-        tp->tp_dictoffset = 0;
-        tp->tp_basicsize -= sizeof(PyObject*);
-        if (tp->tp_weaklistoffset)
-            tp->tp_weaklistoffset = tp->tp_basicsize;
-    }
+//     if (tp->tp_dictoffset && !state) {
+//         if (!tp->tp_weaklistoffset) {
+//             tp->tp_dictoffset = 0;
+//             tp->tp_basicsize -= sizeof(PyObject*);
+//         } else {
+//             tp->tp_basicsize -= sizeof(PyObject*);
+//             tp->tp_weaklistoffset = tp->tp_basicsize - sizeof(PyObject*);
+//         }
+//     }
 
     Py_RETURN_NONE;
 }
@@ -1777,17 +1785,22 @@ _set_weaklistoffset(PyObject *cls, PyObject* add_weakref) {
     state = PyObject_IsTrue(add_weakref);
 
     if (!tp->tp_weaklistoffset && state) {
-        tp->tp_weaklistoffset = tp->tp_basicsize;
-        tp->tp_basicsize += sizeof(PyObject*);
+        if (!tp->tp_dictoffset) {
+            tp->tp_weaklistoffset = tp->tp_basicsize;
+            tp->tp_basicsize += sizeof(PyObject*);        
+        } else {
+            tp->tp_weaklistoffset = tp->tp_basicsize;
+            tp->tp_basicsize += sizeof(PyObject*);                
+        }
     }
-    if (tp->tp_weaklistoffset && !state) {
-//         PyErr_SetString(PyExc_TypeError, "we can only enable __weakref__");
-//         return NULL;
-        tp->tp_weaklistoffset = 0;
-        tp->tp_basicsize -= sizeof(PyObject*);
-        if (tp->tp_dictoffset)
-            tp->tp_dictoffset = tp->tp_basicsize;
-    }
+//     if (tp->tp_weaklistoffset && !state) {
+// //         PyErr_SetString(PyExc_TypeError, "we can only enable __weakref__");
+// //         return NULL;
+//         tp->tp_weaklistoffset = 0;
+//         tp->tp_basicsize -= sizeof(PyObject*);
+//         if (tp->tp_dictoffset)
+//             tp->tp_dictoffset = tp->tp_basicsize;
+//     }
 
     Py_RETURN_NONE;
 }
