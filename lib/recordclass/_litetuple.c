@@ -665,13 +665,15 @@ litetuple_bool(PyLiteTupleObject *o)
         Py_RETURN_FALSE;
 }
 
-static long
+static Py_hash_t
 litetuple_hash(PyObject *v)
 {
-    register long x, y;
+    register Py_uhash_t x;
+    Py_hash_t y;
     register Py_ssize_t len = Py_SIZE(v);
     register PyObject **p;
-    long mult = 1000003L;
+    Py_hash_t mult = 1000003L;
+
     x = 0x345678L;
     p = ((PyTupleObject*)v)->ob_item;
     while (--len >= 0) {
@@ -683,9 +685,9 @@ litetuple_hash(PyObject *v)
         mult += (long)(82520L + len + len);
     }
     x += 97531L;
-    if (x == -1)
+    if (x == (Py_uhash_t)-1)
         x = -2;
-    return x;
+    return (Py_hash_t)x;
 }
 
 static PyMethodDef litetuple_methods[] = {
