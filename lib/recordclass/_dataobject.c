@@ -560,7 +560,7 @@ dataobject_hash(PyObject *op)
     Py_hash_t y;
     Py_ssize_t i;
     const Py_ssize_t len = dataobject_LEN(op);
-    long mult = _PyHASH_MULTIPLIER;
+    Py_hash_t mult = _PyHASH_MULTIPLIER;
     PyObject *o;
 
     x = 0x345678L;
