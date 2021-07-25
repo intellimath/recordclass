@@ -556,7 +556,7 @@ dataobject_hash(PyObject *op)
     long mult = _PyHASH_MULTIPLIER;
     PyObject *o;
 
-    x = 0x374761393UL;
+    x = 0x345678L;
     for(i=0; i<len; i++) {
         o = dataobject_ITEM(op, i);
         y = PyObject_Hash(o);
