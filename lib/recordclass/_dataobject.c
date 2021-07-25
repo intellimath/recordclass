@@ -1017,19 +1017,18 @@ static PyTypeObject PyDataObject_Type = {
     0,                           /* tp_repr */
     0,                                      /* tp_as_number */
     &dataobject_as_sequence,                  /* tp_as_sequence */
-//     &dataobject_as_mapping0,                   /* tp_as_mapping */
     0,                   /* tp_as_mapping */
     dataobject_hash,                          /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
-    0, /*PyObject_GenericGetAttr,*/                /* tp_getattro */
-    0, /*PyObject_GenericSetAttr,*/                /* tp_setattro */
+    0,                                      /* tp_getattro */
+    0,                                      /* tp_setattro */
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
                                             /* tp_flags */
     dataobject_doc,                           /* tp_doc */
-    dataobject_traverse,                      /* tp_traverse */
-    dataobject_clear,                         /* tp_clear */
+    0,                      /* tp_traverse */
+    0,                         /* tp_clear */
     dataobject_richcompare,                   /* tp_richcompare */
     0,                                      /* tp_weaklistoffset*/
     dataobject_iter,                                      /* tp_iter */
