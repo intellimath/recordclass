@@ -546,17 +546,17 @@ dataobject_subscript2(PyObject* op, PyObject* item)
 #define _PyHASH_MULTIPLIER 1000003UL
 #endif
 
-static long
+static Py_hash_t
 dataobject_hash(PyObject *op)
 {
-    unsigned long x;
-    long y;
+    Py_uhash_t x;
+    Py_hash_t y;
     Py_ssize_t i;
     const Py_ssize_t len = dataobject_len(op);
     long mult = _PyHASH_MULTIPLIER;
     PyObject *o;
 
-    x = 0x345678L;
+    x = 0x374761393UL;
     for(i=0; i<len; i++) {
         o = dataobject_ITEM(op, i);
         y = PyObject_Hash(o);
@@ -568,7 +568,7 @@ dataobject_hash(PyObject *op)
     }
 
     x += 97531L;
-    if (x == (unsigned long)-1)
+    if (x == (Py_uhash_t)-1)
         x = -2;
     return x;
 }
