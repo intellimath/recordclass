@@ -172,14 +172,6 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 
 make_class = make_dataclass
 
-# def asdict(ob):
-#     from ._dataobject import _asdict
-#     return _asdict(ob)
-
-# def astuple(ob):
-#     from ._dataobject import _astuple
-#     return _astuple(ob)
-
 class DataclassStorage:
     #
     def __init__(self):
