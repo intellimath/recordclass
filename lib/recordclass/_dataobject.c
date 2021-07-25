@@ -407,6 +407,15 @@ dataobject_finalize(PyObject *ob) {
 //     Py_DECREF(stack);
 }
 
+PyDoc_STRVAR(dataobject_len_doc,
+"T.__len__() -- len of T");
+
+static Py_ssize_t
+dataobject_len(PyObject *op)
+{
+    return dataobject_LEN(op);
+}
+
 static void
 dataobject_free(void *op)
 {
@@ -552,7 +561,7 @@ dataobject_hash(PyObject *op)
     Py_uhash_t x;
     Py_hash_t y;
     Py_ssize_t i;
-    const Py_ssize_t len = dataobject_len(op);
+    const Py_ssize_t len = dataobject_LEN(op);
     long mult = _PyHASH_MULTIPLIER;
     PyObject *o;
 
@@ -564,7 +573,7 @@ dataobject_hash(PyObject *op)
         if (y == -1)
             return -1;
         x = (x ^ y) * mult;
-        mult += (long)(82520L + len + len);
+        mult += (Py_hash_t)(82520L + len + len);
     }
 
     x += 97531L;
@@ -577,7 +586,7 @@ static PyObject *
 dataobject_richcompare(PyObject *v, PyObject *w, int op)
 {
     Py_ssize_t i, k;
-    Py_ssize_t vlen = dataobject_len(v), wlen = dataobject_len(w);
+    Py_ssize_t vlen = dataobject_LEN(v), wlen = dataobject_LEN(w);
     PyObject *vv;
     PyObject *ww;
     PyObject *ret;
@@ -648,15 +657,6 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
     return ret;
 }
 
-PyDoc_STRVAR(dataobject_len_doc,
-"T.__len__() -- len of T");
-
-static Py_ssize_t
-dataobject_len(PyObject *op)
-{
-    return PyDataObject_NUMSLOTS(Py_TYPE(op));
-}
-
 static PySequenceMethods dataobject_as_sequence = {
     (lenfunc)dataobject_len,                /* sq_length */
     0,                                      /* sq_concat */
@@ -724,7 +724,7 @@ dataobject_copy(PyObject* op)
     PyTypeObject *type = Py_TYPE(op);
     PyObject *new_op = type->tp_alloc(type, 0);
 
-    Py_ssize_t i, n = dataobject_len(op);
+    Py_ssize_t i, n = dataobject_LEN(op);
 
     for(i=0; i<n; i++) {
         PyObject *v;
@@ -1313,7 +1313,7 @@ dataobject_iter(PyObject *seq)
 {
     dataobjectiterobject *it;
 
-    if (!PyObject_IsInstance(seq, (PyObject*)&PyDataObject_Type)) {
+    if (Py_TYPE(seq)->tp_base != &PyDataObject_Type) {
         PyErr_SetString(PyExc_TypeError, "the object is not instance of dataobject");
         return NULL;
     }
@@ -1333,7 +1333,7 @@ dataobject_iter(PyObject *seq)
     it->it_index = 0;
     it->it_seq = seq;
     Py_INCREF(seq);
-    it->it_len = dataobject_len(seq);
+    it->it_len = dataobject_LEN(seq);
 
     PyObject_GC_Track(it);
 
@@ -1962,7 +1962,7 @@ _set_deep_dealloc(PyObject *cls, PyObject *state)
 static PyObject *
 _astuple(PyObject *op)
 {
-    const Py_ssize_t n = dataobject_len(op);
+    const Py_ssize_t n = dataobject_LEN(op);
     Py_ssize_t i;
     PyObject *tpl;
     PyObject *v;

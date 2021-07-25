@@ -5,6 +5,8 @@
                                   (tp->tp_dictoffset?1:0) - \
                                   (tp->tp_weaklistoffset?1:0)
 
+#define dataobject_LEN(o) (PyDataObject_NUMSLOTS(Py_TYPE(o)))
+
 #define PyDataObject_DICTPTR(type, op) ((PyObject**)((char*)(op) + type->tp_dictoffset))
 #define PyDataObject_WEAKLISTPTR(type, op) ((PyObject**)((char*)op + type->tp_weaklistoffset))
 #define PyDataObject_HAS_DICT(type) (type->tp_dictoffset != 0)
