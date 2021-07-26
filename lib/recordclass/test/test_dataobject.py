@@ -35,6 +35,15 @@ class dataobjectTest(unittest.TestCase):
             a.z            
         a = None
 
+    def test_dataobject_assign(self):
+        A = make_dataclass("A", ('x', 'y'), sequence=True)
+        a = A(1,2)
+        self.assertEqual(gc.is_tracked(a), False)
+        a[0] = 100
+        a[1] = 200
+        self.assertEqual(a.x, 100)
+        self.assertEqual(a.y, 200)
+
     def test_datatype_nosq_nomp(self):
         A = make_dataclass("A", ('x', 'y'))
         a = A(1,2)
