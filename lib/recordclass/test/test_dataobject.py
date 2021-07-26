@@ -47,6 +47,7 @@ class dataobjectTest(unittest.TestCase):
         a.y = -200
         self.assertEqual(a[0], -100)
         self.assertEqual(a[1], -200)
+        a = None
 
     def test_datatype_nosq_nomp(self):
         A = make_dataclass("A", ('x', 'y'))

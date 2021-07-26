@@ -179,9 +179,9 @@ or
     >>> print(p)
     Point(x=1, y=2, color='white')
     
-### Using dataobject-based classes for recursive data without recursive links
+### Using dataobject-based classes for recursive data without reference cycles
 
-There is option `deep_dealloc` (default value is `True`) for deallocation of recursive datastructures. Let consider simple example:
+There is the option `deep_dealloc` (default value is `True`) for deallocation of recursive datastructures. Let consider simple example:
 
     class LinkedItem(dataobject, fast_new=True):
         val: object
@@ -199,8 +199,8 @@ There is option `deep_dealloc` (default value is `True`) for deallocation of rec
                 self.end.next = link
             self.end = link
 
-Without `deep_dealloc=True` deallocation of the instance of `LinkedList` will be failed.
-But it can be resolved with `__dell__` method:
+Without `deep_dealloc=True` deallocation of the instance of `LinkedList` will be failed if the length of the linked list is too large.
+But it can be resolved with `__del__` method for clearing the linked list:
 
     def __del__(self):
         curr = self.start
@@ -209,7 +209,7 @@ But it can be resolved with `__dell__` method:
             curr.next = None
             curr = next
 
-There is default more fast deallocation method using finalization mechanizm when  `deep_dealloc=True`.
+There is builtin more fast deallocation method using finalization mechanizm when `deep_dealloc=True`. In such case one don't need `__del__`  method for clearing tthe list.
 
 > Note that for classes with `gc=True` (cyclic GC is used) this method is disabled: the python's cyclic GC is used.
 
