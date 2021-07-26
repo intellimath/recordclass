@@ -411,7 +411,17 @@ PyDoc_STRVAR(dataobject_len_doc,
 static Py_ssize_t
 dataobject_len(PyObject *op)
 {
-    return dataobject_LEN(op);
+    Py_ssize_t n = dataobject_LEN(op);
+    if (Py_TYPE(op)->tp_dictoffset) {
+        PyObject **dictptr = PyDataObject_GetDictPtr(op);
+        if (dictptr != NULL) {
+            PyObject *dict = *dictptr;
+            if (dict != NULL)
+                n += PyDict_Size(dict);
+        }            
+        
+    }
+    return n;
 }
 
 static void
@@ -708,9 +718,7 @@ PyDoc_STRVAR(dataobject_sizeof_doc,
 static PyObject *
 dataobject_sizeof(PyObject *self)
 {
-    PyTypeObject *tp = Py_TYPE(self);
-
-    return PyLong_FromSsize_t(tp->tp_basicsize);
+    return PyLong_FromSsize_t(Py_TYPE(self)->tp_basicsize);
 }
 
 PyDoc_STRVAR(dataobject_copy_doc,
@@ -750,8 +758,7 @@ dataobject_copy(PyObject* op)
                 return NULL;
             }
             *new_dictptr = new_dict;
-        }
-        else {
+        } else {
             *new_dictptr = NULL;
         }
     }
