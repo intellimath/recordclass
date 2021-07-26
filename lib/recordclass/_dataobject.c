@@ -482,12 +482,14 @@ dataobject_item(PyObject *op, Py_ssize_t i)
     return v;
 }
 
-static inline PyObject *
-PyDataObject_GET_ITEM(PyObject *op, Py_ssize_t i)
-{
-//     PyObject **items = PyDataObject_ITEMS(op);
-    return (PyDataObject_ITEMS(op))[i];
-}
+#define PyDataObject_GET_ITEM(op, i) ((PyDataObject_ITEMS(op))[i])
+
+// static inline PyObject *
+// PyDataObject_GET_ITEM(PyObject *op, Py_ssize_t i)
+// {
+// //     PyObject **items = PyDataObject_ITEMS(op);
+//     return (PyDataObject_ITEMS(op))[i];
+// }
 
 static int
 dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
