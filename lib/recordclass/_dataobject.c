@@ -482,11 +482,11 @@ dataobject_item(PyObject *op, Py_ssize_t i)
     return v;
 }
 
-static PyObject *
-dataobject_ITEM(PyObject *op, Py_ssize_t i)
+static inline PyObject *
+PyDataObject_GET_ITEM(PyObject *op, Py_ssize_t i)
 {
-    PyObject **items = PyDataObject_ITEMS(op);
-    return items[i];
+//     PyObject **items = PyDataObject_ITEMS(op);
+    return (PyDataObject_ITEMS(op))[i];
 }
 
 static int
@@ -575,7 +575,7 @@ dataobject_hash(PyObject *op)
 
     x = 0x345678L;
     for(i=0; i<len; i++) {
-        o = dataobject_ITEM(op, i);
+        o = PyDataObject_GET_ITEM(op, i);
         y = PyObject_Hash(o);
 //         Py_DECREF(o);
         if (y == -1)
@@ -613,8 +613,8 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
     }
 
     for (i = 0; i < vlen && i < wlen; i++) {
-        vv = dataobject_ITEM(v, i);
-        ww = dataobject_ITEM(w, i);
+        vv = PyDataObject_GET_ITEM(v, i);
+        ww = PyDataObject_GET_ITEM(w, i);
         k = PyObject_RichCompareBool(vv, ww, Py_EQ);
 //         Py_DECREF(vv);
 //         Py_DECREF(ww);
@@ -656,8 +656,8 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
     }
 
     /* Compare the final item again using the proper operator */
-    vv = dataobject_ITEM(v, i);
-    ww = dataobject_ITEM(w, i);
+    vv = PyDataObject_GET_ITEM(v, i);
+    ww = PyDataObject_GET_ITEM(w, i);
     ret = PyObject_RichCompare(vv, ww, op);
 //     Py_DECREF(vv);
 //     Py_DECREF(ww);
@@ -735,7 +735,7 @@ dataobject_copy(PyObject* op)
     for(i=0; i<n; i++) {
         PyObject *v;
 
-        v = dataobject_ITEM(op, i);
+        v = PyDataObject_GET_ITEM(op, i);
         if (!v) {
             Py_DECREF(new_op);
             return NULL;
@@ -1975,7 +1975,7 @@ _astuple(PyObject *op)
     PyObject **op_items = PyDataObject_ITEMS(op);
     for (i=0; i<n; i++) {
         PyObject *v = *(op_items++);
-//         v = dataobject_ITEM(op, i);
+//         v = PyDataObject_GET_ITEM(op, i);
         Py_INCREF(v);
         *(tpl_items++) = v;
 //         PyTuple_SET_ITEM(tpl, i, v);
@@ -2010,7 +2010,7 @@ _asdict(PyObject *op)
     for (i=0; i<n; i++) {
         fn = PyTuple_GET_ITEM(fields, i);
         Py_INCREF(fn);
-        v = dataobject_ITEM(op, i);
+        v = PyDataObject_GET_ITEM(op, i);
         PyDict_SetItem(dict, fn, v);
     }
     
