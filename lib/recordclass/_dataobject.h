@@ -4,7 +4,7 @@
                                   (tp->tp_dictoffset?1:0) - \
                                   (tp->tp_weaklistoffset?1:0)
 
-#define dataobject_LEN(o) (PyDataObject_NUMITEMS(Py_TYPE(o)))
+#define PyDataObject_LEN(o) (PyDataObject_NUMITEMS(Py_TYPE(o)))
 
 #define PyDataObject_DICTPTR(type, op) ((PyObject**)((char*)(op) + type->tp_dictoffset))
 #define PyDataObject_WEAKLISTPTR(type, op) ((PyObject**)((char*)op + type->tp_weaklistoffset))

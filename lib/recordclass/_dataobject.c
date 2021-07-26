@@ -356,7 +356,7 @@ dataobject_dealloc(PyObject *op)
 static void
 dataobject_finalize_step(PyObject *op, PyObject *stack)
 {
-    Py_ssize_t n_items = dataobject_LEN(op);
+    Py_ssize_t n_items = PyDataObject_LEN(op);
     PyObject **items = PyDataObject_ITEMS(op);
 
     while (n_items--) {
@@ -411,7 +411,7 @@ PyDoc_STRVAR(dataobject_len_doc,
 static Py_ssize_t
 dataobject_len(PyObject *op)
 {
-    Py_ssize_t n = dataobject_LEN(op);
+    Py_ssize_t n = PyDataObject_LEN(op);
     if (Py_TYPE(op)->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_GetDictPtr(op);
         if (dictptr != NULL) {
@@ -467,7 +467,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
 static PyObject *
 dataobject_item(PyObject *op, Py_ssize_t i)
 {
-    const Py_ssize_t n = dataobject_LEN(op);
+    const Py_ssize_t n = PyDataObject_LEN(op);
 
     if (i < 0)
         i += n;
@@ -492,7 +492,7 @@ dataobject_ITEM(PyObject *op, Py_ssize_t i)
 static int
 dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
-    const Py_ssize_t n = dataobject_LEN(op);
+    const Py_ssize_t n = PyDataObject_LEN(op);
 
     if (i < 0)
         i += n;
@@ -569,7 +569,7 @@ dataobject_hash(PyObject *op)
     Py_uhash_t x;
     Py_hash_t y;
     Py_ssize_t i;
-    const Py_ssize_t len = dataobject_LEN(op);
+    const Py_ssize_t len = PyDataObject_LEN(op);
     Py_hash_t mult = _PyHASH_MULTIPLIER;
     PyObject *o;
 
@@ -594,7 +594,7 @@ static PyObject *
 dataobject_richcompare(PyObject *v, PyObject *w, int op)
 {
     Py_ssize_t i, k;
-    Py_ssize_t vlen = dataobject_LEN(v), wlen = dataobject_LEN(w);
+    Py_ssize_t vlen = PyDataObject_LEN(v), wlen = PyDataObject_LEN(w);
     PyObject *vv;
     PyObject *ww;
     PyObject *ret;
@@ -730,7 +730,7 @@ dataobject_copy(PyObject* op)
     PyTypeObject *type = Py_TYPE(op);
     PyObject *new_op = type->tp_alloc(type, 0);
 
-    Py_ssize_t i, n = dataobject_LEN(op);
+    Py_ssize_t i, n = PyDataObject_LEN(op);
 
     for(i=0; i<n; i++) {
         PyObject *v;
@@ -1338,7 +1338,7 @@ dataobject_iter(PyObject *seq)
     it->it_index = 0;
     it->it_seq = seq;
     Py_INCREF(seq);
-    it->it_len = dataobject_LEN(seq);
+    it->it_len = PyDataObject_LEN(seq);
 
     PyObject_GC_Track(it);
 
@@ -1967,7 +1967,7 @@ _set_deep_dealloc(PyObject *cls, PyObject *state)
 static PyObject *
 _astuple(PyObject *op)
 {
-    const Py_ssize_t n = dataobject_LEN(op);
+    const Py_ssize_t n = PyDataObject_LEN(op);
     Py_ssize_t i;
 
     PyTupleObject *tpl = (PyTupleObject*)PyTuple_New(n);
