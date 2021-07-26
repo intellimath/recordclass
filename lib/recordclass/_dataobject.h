@@ -5,6 +5,7 @@
                                   (tp->tp_weaklistoffset?1:0)
 
 #define PyDataObject_LEN(o) (PyDataObject_NUMITEMS(Py_TYPE(o)))
+#define PyDataObject_GET_ITEM(op, i) ((PyDataObject_ITEMS(op))[i])
 
 #define PyDataObject_DICTPTR(type, op) ((PyObject**)((char*)(op) + type->tp_dictoffset))
 #define PyDataObject_WEAKLISTPTR(type, op) ((PyObject**)((char*)op + type->tp_weaklistoffset))

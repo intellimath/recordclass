@@ -482,8 +482,6 @@ dataobject_item(PyObject *op, Py_ssize_t i)
     return v;
 }
 
-#define PyDataObject_GET_ITEM(op, i) ((PyDataObject_ITEMS(op))[i])
-
 // static inline PyObject *
 // PyDataObject_GET_ITEM(PyObject *op, Py_ssize_t i)
 // {
