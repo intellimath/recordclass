@@ -36,9 +36,7 @@ int_type = type(1)
 def clsconfig(sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=True, 
               hashable=True, gc=False, deep_dealloc=False):
-
     from ._dataobject import _clsconfig
-
     def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
@@ -54,14 +52,14 @@ def _matching_annotations_and_defaults(annotations, defaults):
             first_default = 1
         else:
             if first_default:
-                raise TypeError('Simple argument after argument with default value')
+                raise TypeError('A field without default value appears after a field with default value')
 
 _ds_cache = {}
 _ds_ro_cache = {}
                 
 class datatype(type):
 
-    def __new__(metatype, typename, bases, ns, gc=False, fast_new=False, deep_dealloc=False):
+    def __new__(metatype, typename, bases, ns, gc=False, fast_new=False):
 
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
@@ -73,12 +71,11 @@ class datatype(type):
         iterable = options.get('iterable', True)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
+        deep_dealloc = options.get('deep_dealloc', False)
         if 'gc' in options:
             gc = options['gc']
         if 'fast_new' in options:
             fast_new = options['fast_new']
-        if deep_dealloc in options:
-            deep_dealloc = options['deep_dealloc']
 
         if not bases:
             raise TypeError("The base class in not specified")
@@ -88,7 +85,7 @@ class datatype(type):
         if '__fields__' in ns:
             fields = ns['__fields__']
         else:
-            fields = [name for name in annotations]
+            fields = tuple(annotations)
 
         has_fields = True
         if isinstance(fields, int_type):
@@ -142,6 +139,7 @@ class datatype(type):
             if fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
+                __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
 
                 ns['__new__'] = __new__
 
@@ -197,14 +195,15 @@ class datatype(type):
             ns['__defaults__'] = defaults
             ns['__annotations__'] = annotations
 
-            ns['__doc__'] = _make_cls_doc(typename, fields, defaults, use_dict)
+            ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
         
         cls = type.__new__(metatype, typename, bases, ns)
 
         _dataobject_type_init(cls)
-        _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, deep_dealloc=deep_dealloc)
-
+        _clsconfig(cls, sequence=sequence, mapping=mapping, 
+                        use_dict=use_dict, use_weakref=use_weakref, 
+                        iterable=iterable, hashable=hashable,
+                        gc=gc, deep_dealloc=deep_dealloc)
         return cls
 
 def _make_new_function(typename, fields, defaults, annotations, use_dict):
@@ -248,19 +247,30 @@ def __new__(_cls_, {2}):
 
     return __new__
 
-def _make_cls_doc(typename, fields, defaults, use_dict):
+def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
 
-    if fields and defaults:
-        fields2 = [f for f in fields if f not in defaults] + \
-                  ["%s=%r" % (f, defaults[f]) for f in fields if f in defaults]
-    else:
-        fields2 = fields
+    fields2 = []
+    for fn in fields:
+        if fn in annotations:
+            tp = annotations[fn]
+            fn_txt = "%s:%s" % (fn, (tp if type(tp) is str else tp.__name__))            
+        else:
+            fn_txt = fn
+        if fn in defaults:
+            fn_txt += "=%r" % defaults[fn]
+        fields2.append(fn_txt)
+#     if fields and defaults:
+#         fields2 = [f for f in fields if f not in defaults] + \
+#                   ["%s=%r" % (f, defaults[f]) for f in fields if f in defaults]
+#     else:
+#         fields2 = fields
     fields2 = tuple(fields2)
 
     if use_dict:
-        template = "{0}({2}, **kw)\n--\nCreate class instance"
+        template = "{0}({1}, **kw)\n--\nCreate class instance"
     else:
-        template = "{0}({2})\n--\nCreate class instance"
-    doc = template.format(typename, ', '.join(fields), ', '.join(fields2))
+        template = "{0}({1})\n--\nCreate class instance"
+    doc = template.format(typename, ', '.join(fields2))
 
+#     print(doc)
     return doc

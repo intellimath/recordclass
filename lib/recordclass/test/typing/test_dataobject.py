@@ -657,8 +657,9 @@ class DataObjectTest3(unittest.TestCase):
         class LinkedItem(dataobject, fast_new=True):
             val: object
             next: 'LinkedItem'
-
-        class LinkedList(dataobject, deep_dealloc=True):
+        
+        @clsconfig(deep_dealloc=True)
+        class LinkedList(dataobject):
             start: LinkedItem = None
             end: LinkedItem = None
 

@@ -6,46 +6,73 @@ alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/
 It implements a factory function `recordclass` (a variant of `collection.namedtuple`) in order to create record-like classes with the same API as  `collection.namedtuple`.
 It was evolved further in order to provide more memory saving, fast and flexible types.
 
-Later **recordclass** library started to provide record-like classes that do not participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanism for garbage collection.
+**Recordclass** library provide record-like classes that do not participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanism for garbage collection.
 The instances of such classes havn't `PyGC_Head` prefix in the memory, which decrease their size.
-This may make sense in cases where it is necessary to limit the size of objects as much as possible, provided that they will never be part of circular references in the application.
-For example, when an object represents a record with fields that represent simple values by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
-
-For example, consider a class with type hints:
+This may make sense in cases where it is necessary to limit the size of the objects as much as possible, provided that they will never be part of references cycles in the application.
+For example, when an object represents a record with fields that represent simple values by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.). In order to illustrate this, consider a simple class with type hints:
 
     class Point:
         x: int
         y: int
 
 By contract instances of the class `Point` have attributes `x` and `y` with values of `int` type.
-Assigning of values of a different types should be considered as a violation of the contract.
+Assigning other types of values, which are not subclass of `int`, should be considered as a violation of the contract.
 
 Another examples are non-recursive data structures in which all leaf elements represent a value of an atomic type.
 Of course, in python, nothing prevent you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
 But in many cases, this can still be avoided provided that the developer understands what he is doing and uses such classes in the code with care.
-Another option is a use of static analyzers together with type annotations.
+Another option is to use static code analyzers along with type annotations to monitor compliance with data types.
 
-**First**, `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. It control creation of subclasses of `dataobject`, which  will not participate in CGC by default. As the result the instance of such class need less memory. It's memory footprint is similar to memory footprint of instances of the classes with `__slots__`. The difference is equal to the size of `PyGC_Head`. It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. All subclasses of `dataobject` created by `class statement` support `attrs`/`dataclasses`-like API. The `recordclass` factory create dataobject-based subclass with specified fields and support `namedtuple`-like API. By default it will not participate in CGC too.  
+1. The `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. 
+   It control creation  of subclasses of `dataobject`, which  will not participate in CGC by default. 
+   As the result the instance of such class need less memory. 
+   It's memory footprint is similar to memory footprint of instances of the classes with `__slots__`. 
+   The difference is equal to the size of `PyGC_Head`. 
+   It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. 
+   All subclasses of `dataobject` created by `class statement` support `attrs`/`dataclasses`-like API.
+   For example:
 
-**Second**, it provide a factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names. These subclasses support `attrs`/`dataclasses`-like API.
-For example:
+        from recordclass import dataobject, astuple, asdict
+        class Point(dataobject):
+            x:int
+            y:int
 
-    >>> Point = make_dataclass('Point', 'x y')
-    >>> p = Point(1, 2)
-    >>> p.y = -1
-    >>> print(p.x, p.y)
-    1 -1
+        >>> p = Point(1, 2)
+        >>> astuple(p)
+        (1, 2)
+        >>> asdict(p)
+        {'x':1, 'y':2}
 
-**Three**, it provide a factory function `make_arrayclass` in order to create subclass of `dataobject` wich can consider as array of simple values.
-For example:
+2. The `recordclass` factory create dataobject-based subclass with specified fields and support `namedtuple`-like API. 
+   By default it will not participate in CGC too.  
 
-    >>> Pair = make_arrayclass(2)
-    >>> p = Pair(2, 3)
-    >>> p[1] = -1
-    >>> print(p)
-    Pair(2, -1)
+        >>> from recordclass import recordclass
+        >>> Point = recordclass('Point', 'x y')
+        >>> p = Point(1, 2)
+        >>> p.y = -1
+        >>> print(p._astuple)
+        (1, -1)
 
-**Four**, it provide the class `lightlist`, which considers as list-like *light* container in order to save memory.
+3. It provide a factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names. 
+   These subclasses support `attrs`/`dataclasses`-like API. This is an equivalent to creation of subclasses of dataobject using `class statement`.
+   For example:
+
+        >>> Point = make_dataclass('Point', 'x y')
+        >>> p = Point(1, 2)
+        >>> p.y = -1
+        >>> print(p.x, p.y)
+        1 -1
+
+4. It provide a factory function `make_arrayclass` in order to create subclass of `dataobject` wich can consider as array of simple values.
+   For example:
+
+        >>> Pair = make_arrayclass(2)
+        >>> p = Pair(2, 3)
+        >>> p[1] = -1
+        >>> print(p)
+        Pair(2, -1)
+
+5. It provide classes `lightlist` and `lighttuple`, which considers as list-like and tuple-like *light* containers in order to save memory.
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
@@ -77,6 +104,8 @@ Run tests:
 
 ### Quick start with recordclass
 
+The `recordclass` factory function is designed to create classes that support `namedtuple`'s API, can be mutable and immutable, provide fast creation of the instances and have a minimum memory footprint.
+
 First load inventory:
 
     >>> from recordclass import recordclass
@@ -92,10 +121,10 @@ Example with `recordclass`:
     >>> p.x, p.y = 1, 2
     >>> print(p)
     Point(1, 2)
-    >>> sys.getsizeof(p) # the output below is for 64bit cpython3.9
-    40
+    >>> sys.getsizeof(p) # the output below is for 64bit cpython3.8+
+    32
 
-Example with `RecordClass` and typehints::
+Example with class statement and typehints:
 
     >>> from recordclass import RecordClass
 
@@ -114,11 +143,11 @@ Example with `RecordClass` and typehints::
     >>> print(p)
     Point(1, 2)
 
-Now by default `recordclass`-based class instances doesn't participate in CGC and therefore they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`gc=False` by default):
+By default `recordclass`-based class instances doesn't participate in CGC and therefore they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`gc=False` by default):
 
     >>> Node = recordclass('Node', 'root children', gc=True)
     
-or decorator:
+or
 
     @clsconfig(gc=True)
     class Node(RecordClass):
@@ -127,9 +156,11 @@ or decorator:
 
 ### Quick start with dataobject
 
-First load inventory::
+`Dataobject` is base class for creation of data classes with fast instance creation and small memory footprint. They don't provide `namedtuple`-like API.
 
-    >>> from recordclass import dataobject, asdict
+First load inventory:
+
+    >>> from recordclass import dataobject, asdict, astuple
 
     class Point(dataobject):
         x: int
@@ -155,10 +186,17 @@ First load inventory::
     2
     >>> asdict(p)
     {'x':1, 'y':2}
-    >>> tuple(p)
+    >>> astuple(p)
     (1, 2)
 
-Another way &ndash; factory function `make_dataclass`:
+By default subclasses of dataobject are iterable. If one want to disable iterable protocol then there is the option `iterable=False`:
+
+    @clsconfig(iterable=False)
+    class Point(dataobject):
+        x: int
+        y: int
+
+Another way for creation of subclasses of dataobject &ndash; factory function `make_dataclass`:
 
     >>> from recordclass import make_dataclass
 
@@ -179,9 +217,24 @@ or
     >>> print(p)
     Point(x=1, y=2, color='white')
     
+There is the options `fast_new=True`. It allows faster creation of the instances. Here is an example:
+
+    class FPoint(dataobject, fast_new=True):
+        x: int
+        y: int
+    
+The followings timings explain (in jupyter notebook) boosting effect of `fast_new` option:
+
+    %timeit l1 = [Point(i,i) for i in range(100000)]
+    %timeit l2 = [FastPoint(i,i) for i in range(100000)]
+    # output with python 3.8+ 64bit
+    25.6 ms ± 2.4 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+    10.4 ms ± 426 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+    
 ### Using dataobject-based classes for recursive data without reference cycles
 
-There is the option `deep_dealloc` (default value is `True`) for deallocation of recursive datastructures. Let consider simple example:
+There is the option `deep_dealloc` (default value is `True`) for deallocation of recursive datastructures. 
+Let consider simple example:
 
     class LinkedItem(dataobject, fast_new=True):
         val: object
