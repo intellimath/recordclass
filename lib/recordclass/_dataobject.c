@@ -501,9 +501,7 @@ dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
         return -1;
     }
 
-    PyObject **items = PyDataObject_ITEMS(op);
-
-    items += i;
+    PyObject **items = PyDataObject_ITEMS(op) + i;
 
     Py_XDECREF(*items);
     Py_INCREF(val);
@@ -515,8 +513,6 @@ static void
 dataobject_ASS_ITEM(PyObject *op, Py_ssize_t i, PyObject *val)
 {
     PyObject **items = PyDataObject_ITEMS(op) + i;
-
-//     items += i;
 
     Py_XDECREF(*items);
     Py_INCREF(val);
