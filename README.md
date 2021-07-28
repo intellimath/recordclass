@@ -319,7 +319,7 @@ As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.
     print
     56 56 40 40
 
-Here are also table with some performance counters (python 3.9, debian linux, x86-64):
+Here are also table with some performance counters (python 3.9, debian linux, x86-64), which are mesured using `utils/perfcount.py` script:
 
 |                     id|       new|  getattr|  setattr| size|
 |-----------------------|----------|---------|---------|-----|
