@@ -163,12 +163,8 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t n_items)
 static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    PyObject *op;
     Py_ssize_t const n_items = PyDataObject_NUMITEMS(type); 
-    Py_ssize_t j;
     PyTupleObject *tmp;
-    Py_ssize_t n_args;
-    PyObject **items, **pp;
 
     if (Py_TYPE(args) == &PyTuple_Type) {
         tmp = (PyTupleObject*)args;
@@ -180,7 +176,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         }
     }
 
-    n_args = Py_SIZE(tmp);
+    Py_ssize_t n_args = Py_SIZE(tmp);
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
@@ -189,11 +185,12 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         return NULL;
     }
 
-    op = type->tp_alloc(type, 0);
+    PyObject *op = type->tp_alloc(type, 0);
 
-    items = PyDataObject_ITEMS(op);
-    pp = tmp->ob_item;
-    j = n_items;
+    PyObject **items = PyDataObject_ITEMS(op);
+    PyObject **pp = tmp->ob_item;
+    Py_ssize_t j = n_items;
+
     while (n_args--) {
         PyObject *v = *(pp++);
         Py_INCREF(v);
