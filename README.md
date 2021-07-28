@@ -9,7 +9,9 @@ It was evolved further in order to provide more memory saving, fast and flexible
 **Recordclass** library provide record-like classes that do not participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanism for garbage collection.
 The instances of such classes havn't `PyGC_Head` prefix in the memory, which decrease their size.
 This may make sense in cases where it is necessary to limit the size of the objects as much as possible, provided that they will never be part of references cycles in the application.
-For example, when an object represents a record with fields that represent simple values by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.). In order to illustrate this, consider a simple class with type hints:
+For example, when an object represents a record with fields that represent simple values by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
+
+In order to illustrate this, consider a simple class with type hints:
 
     class Point:
         x: int
@@ -196,7 +198,7 @@ By default subclasses of dataobject are iterable. If one want to disable iterabl
         x: int
         y: int
 
-Another way for creation of subclasses of dataobject &ndash; factory function `make_dataclass`:
+Another way to create subclasses of dataobject &ndash; factory function `make_dataclass`:
 
     >>> from recordclass import make_dataclass
 
@@ -216,6 +218,14 @@ or
     >>> p = CPoint(1,2)
     >>> print(p)
     Point(x=1, y=2, color='white')
+    
+But
+
+    class PointInvalidDefaults(dataobject):
+        x:int = 0
+        y:int
+
+is not allowed. A fields without default value may not appear after a field with default value.
     
 There is the options `fast_new=True`. It allows faster creation of the instances. Here is an example:
 
@@ -316,6 +326,16 @@ Here are also table with some performance counters (python 3.9, debian linux, x8
 |   `new`   |    299±6 ns  |     420±9 ns    |   287±10 ns   |    106±4 ns  |
 | `getattr` |   23.6±0.3 ns |    24.7±0.9 ns   |   23.0±0.2 ns |   23.1±0.7 ns |
 | `setattr` |               |     27.6±0.8 ns  |   26.8±0.4 ns |   26.57±0.4 ns |
+
+
+                           id       new      read     write
+    0              namedtuple  2.643526  0.471421          
+    1             class+slots  1.851441  0.536047  0.549807
+    2              dataobject  2.017816  0.466287  0.534306
+    3     dataobject+fast_new  0.927759  0.468668  0.523788
+    4           dataobject+gc  2.162687  0.463672  0.523189
+    5  dataobject+fast_new+gc  1.046897  0.468382  0.525876
+
 
 ### Changes:
 

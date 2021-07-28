@@ -34,6 +34,10 @@
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
+// #if PY_VERSION_HEX < 0x030900A4
+// #  define Py_SET_REFCNT(obj, refcnt) ((Py_REFCNT(obj) = (refcnt)), (void)0)
+// #endif
+
 static PyTypeObject PyDataObject_Type;
 
 static PyObject **
@@ -165,7 +169,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyTupleObject *tmp;
     Py_ssize_t n_args;
     PyObject **items, **pp;
-    PyObject *v;
 
     if (Py_TYPE(args) == &PyTuple_Type) {
         tmp = (PyTupleObject*)args;
@@ -192,12 +195,14 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     pp = tmp->ob_item;
     j = n_items;
     while (n_args--) {
-        v = *(pp++);
+        PyObject *v = *(pp++);
         Py_INCREF(v);
         *(items++) = v;
         j--;
     }
     
+    Py_DECREF(tmp);
+
     if (j) {
         PyObject **dictptr = PyObject_GetDictPtr(type);
         PyObject *dict = *dictptr;
@@ -227,8 +232,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             Py_DECREF(defaults);
         }
     }
-
-    Py_DECREF(tmp);
 
     if (kwds) {
             PyObject *iter, *key, *val;
