@@ -68,6 +68,7 @@ class datatype(type):
         hashable = options.get('hashable', True)
         sequence = options.get('sequence', False)
         mapping = options.get('mapping', False)
+        readonly = options.get('readonly', False)
         iterable = options.get('iterable', True)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
