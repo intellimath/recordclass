@@ -201,7 +201,7 @@ class datatype(type):
         cls = type.__new__(metatype, typename, bases, ns)
 
         _dataobject_type_init(cls)
-        _clsconfig(cls, sequence=sequence, mapping=mapping, 
+        _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly,
                         use_dict=use_dict, use_weakref=use_weakref, 
                         iterable=iterable, hashable=hashable,
                         gc=gc, deep_dealloc=deep_dealloc)
