@@ -321,14 +321,14 @@ As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.
 
 Here are also table with some performance counters (python 3.9, debian linux, x86-64):
 
-|                     id|       new|  getattr|  setattr|
-|-----------------------|----------|---------|---------|
-|             namedtuple|  2.643526| 0.471421|         |
-|            class+slots|  1.851441| 0.536047| 0.549807|
-|             dataobject|  2.017816| 0.466287| 0.534306|
-|    dataobject+fast_new|  0.927759| 0.468668| 0.523788|
-|          dataobject+gc|  2.162687| 0.463672| 0.523189|
-| dataobject+fast_new+gc|  1.046897| 0.468382| 0.525876|
+|                     id|       new|  getattr|  setattr| size|
+|-----------------------|----------|---------|---------|-----|
+|             namedtuple|  2.643526| 0.471421|         |   56|
+|            class+slots|  1.851441| 0.536047| 0.549807|   48|
+|             dataobject|  2.017816| 0.466287| 0.534306|   32|
+|    dataobject+fast_new|  0.927759| 0.468668| 0.523788|   32|
+|          dataobject+gc|  2.162687| 0.463672| 0.523189|   48|
+| dataobject+fast_new+gc|  1.046897| 0.468382| 0.525876|   48|
 
 
 ### Changes:
