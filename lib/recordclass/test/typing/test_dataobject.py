@@ -688,7 +688,6 @@ class DataObjectTest3(unittest.TestCase):
         for i in range(10):
             ll.append(i)
             
-            
         del ll
 
 

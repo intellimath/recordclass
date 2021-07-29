@@ -29,7 +29,7 @@ from ._dataobject import astuple, asdict
 __all__ = 'make_dataclass', 'join_dataclasses', 'astuple', 'asdict', 'DataclassStorage'
 
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None,
-                   use_dict=False, use_weakref=False, hashable=True,
+                   use_dict=False, use_weakref=False, hashable=False,
                    sequence=False, mapping=False, iterable=False, readonly=False, nmtpl_api=False,
                    module=None, fast_new=False, rename=False, invalid_names=(), gc=False):
 

@@ -35,7 +35,7 @@ int_type = type(1)
 
 def clsconfig(sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 
-              hashable=True, gc=False, deep_dealloc=False):
+              hashable=False, gc=False, deep_dealloc=False):
     from ._dataobject import _clsconfig
     def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
@@ -65,7 +65,7 @@ class datatype(type):
 
         options = ns.pop('__options__', {})
         readonly = options.get('readonly', False)
-        hashable = options.get('hashable', True)
+        hashable = options.get('hashable', False)
         sequence = options.get('sequence', False)
         mapping = options.get('mapping', False)
         readonly = options.get('readonly', False)
@@ -100,6 +100,9 @@ class datatype(type):
 
         if sequence or mapping:
             iterable = True
+            
+        if readonly:
+            hashable = True
 
         if has_fields:
             if annotations:

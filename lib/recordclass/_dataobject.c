@@ -418,8 +418,7 @@ dataobject_len(PyObject *op)
             PyObject *dict = *dictptr;
             if (dict != NULL)
                 n += PyDict_Size(dict);
-        }            
-        
+        }        
     }
     return n;
 }
@@ -1020,7 +1019,8 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_as_sequence */
 //     &dataobject_as_sequence,                /* tp_as_sequence */
     0,                                      /* tp_as_mapping */
-    dataobject_hash,                        /* tp_hash */
+    0,                                      /* tp_hash */
+//     dataobject_hash,                        /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
     0,                                      /* tp_getattro */
@@ -1714,11 +1714,26 @@ _set_hashable(PyObject *cls, PyObject *hashable) {
 
     tp = (PyTypeObject*)cls;
     state = PyObject_IsTrue(hashable);
+    
+    PyObject *bases = tp->tp_bases;
+    Py_ssize_t i, n_bases = Py_SIZE(bases);
+    for (i=0; i<n_bases; i++) {
+        PyTypeObject *base = (PyTypeObject*)PyTuple_GET_ITEM(bases, i);
+        if (base->tp_hash) {
+            if (base->tp_hash == dataobject_hash) {
+                tp->tp_hash = base->tp_hash;
+                Py_RETURN_NONE;            
+            } 
+//             else printf("%i\n", base->tp_hash);             
+        }        
+    }
+    
+//     printf("%i\n", state);
 
     if (state)
         tp->tp_hash = dataobject_hash;
-//     else
-//         tp->tp_hash = NULL;
+    else
+        tp->tp_hash = NULL;
 
     Py_RETURN_NONE;
 }
@@ -1897,6 +1912,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     if (tp->tp_flags & Py_TPFLAGS_HAVE_GC)
         tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
+        
+//     tp->tp_hash = tp_base->tp_hash;
 
     tp->tp_traverse = NULL;
     tp->tp_clear = NULL;

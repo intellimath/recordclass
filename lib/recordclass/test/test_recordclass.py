@@ -289,6 +289,12 @@ class RecordClassTest(unittest.TestCase):
         #self.assertEqual(hash_b, hash(tuple(b)))
         b.x = -1
         self.assertNotEqual(hash(b), hash_b)
+
+    def test_hash2(self):
+        A = recordclass('A', 'x y', hashable=True)
+#         print(dir(A))
+        a = A(1,2)
+        print(hash(a))
         
     def test_hash_subcls(self):
         A = recordclass('A', 'x y', hashable=True)

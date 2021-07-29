@@ -6,7 +6,8 @@ import sys
 import gc
 import weakref
 
-from recordclass import make_dataclass, make_arrayclass, dataobject, datatype, asdict, astuple, join_dataclasses
+from recordclass import make_dataclass, make_arrayclass, dataobject
+from recordclass import datatype, asdict, astuple, join_dataclasses, clsconfig
 from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
@@ -340,9 +341,34 @@ class dataobjectTest(unittest.TestCase):
 
     def test_hash(self):
         A = make_dataclass("A", ("a", "b", "c"), hashable=True)
-        a = A(1, 2.0, "a")
+        a = A(-1, -2.0, "b")
         hash(a)
 
+    def test_hash_subcl(self):
+        A = make_dataclass("A", ("a", "b", "c"), hashable=True)
+        class B(A):
+            pass
+        b = B(1, 2.0, "a")
+        hash(b)
+        
+    def test_no_hash(self):
+        A = make_dataclass("A", ("a", "b", "c"))
+        a = A(1, 2.0, "a")
+#         print(hash(a))
+        with self.assertRaises(TypeError):
+            hash(a)
+
+    def test_no_hash2(self):
+        A = make_dataclass("A", ("a", "b", "c"), hashable=True)
+        @clsconfig(hashable=False)
+        class B(A):
+            pass
+        b = B(1, 2.0, "a")
+        hash(b)
+#         print(hash(a))
+#         with self.assertRaises(TypeError):
+#             hash(b)
+            
     def test_reduce(self):
         A = make_dataclass("A", ("x","y","z"))
         a = A(1,2,3)
