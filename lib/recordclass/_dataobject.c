@@ -1017,7 +1017,8 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_reserved */
     0,                                      /* tp_repr */
     0,                                      /* tp_as_number */
-    &dataobject_as_sequence,                /* tp_as_sequence */
+    0,                                      /* tp_as_sequence */
+//     &dataobject_as_sequence,                /* tp_as_sequence */
     0,                                      /* tp_as_mapping */
     dataobject_hash,                        /* tp_hash */
     0,                                      /* tp_call */
@@ -1032,7 +1033,8 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_clear */
     dataobject_richcompare,                 /* tp_richcompare */
     0,                                      /* tp_weaklistoffset*/
-    dataobject_iter,                        /* tp_iter */
+    0,                                      /* tp_iter */
+//     dataobject_iter,                        /* tp_iter */
     0,                                      /* tp_iternext */
     dataobject_methods,                     /* tp_methods */
     0,                                      /* tp_members */
@@ -2084,7 +2086,13 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
 
     _set_deep_dealloc(cls, set_dd);
 
-    PyType_Modified((PyTypeObject*)cls);
+
+    PyTypeObject *tp = (PyTypeObject*)cls;
+    PyType_Modified(tp);
+    tp->tp_flags &= ~Py_TPFLAGS_READYING;
+    if(PyType_Ready(tp) < 0)
+        printf("Ready failed\n");
+
 
     Py_XDECREF(sequence);
     Py_XDECREF(mapping);

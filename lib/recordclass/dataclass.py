@@ -30,7 +30,7 @@ __all__ = 'make_dataclass', 'join_dataclasses', 'astuple', 'asdict', 'DataclassS
 
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None,
                    use_dict=False, use_weakref=False, hashable=True,
-                   sequence=False, mapping=False, iterable=True, readonly=False, nmtpl_api=False,
+                   sequence=False, mapping=False, iterable=False, readonly=False, nmtpl_api=False,
                    module=None, fast_new=False, rename=False, invalid_names=(), gc=False):
 
     """Returns a new class with named fields and small memory footprint.

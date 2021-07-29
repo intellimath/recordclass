@@ -34,7 +34,7 @@ _intern = _sys.intern
 int_type = type(1)
 
 def clsconfig(sequence=False, mapping=False, readonly=False,
-              use_dict=False, use_weakref=False, iterable=True, 
+              use_dict=False, use_weakref=False, iterable=False, 
               hashable=True, gc=False, deep_dealloc=False):
     from ._dataobject import _clsconfig
     def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
@@ -69,7 +69,7 @@ class datatype(type):
         sequence = options.get('sequence', False)
         mapping = options.get('mapping', False)
         readonly = options.get('readonly', False)
-        iterable = options.get('iterable', True)
+        iterable = options.get('iterable', False)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
         deep_dealloc = options.get('deep_dealloc', False)

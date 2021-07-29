@@ -384,11 +384,6 @@ class dataobjectTest(unittest.TestCase):
                 tmp = dumps(p, protocol)
                 q = loads(tmp)
                 self.assertEqual(p, q)
-                
-    def test_iter2(self):
-        A = make_dataclass("A", ('x', 'y', 'z'))
-        a=A(1, 2.0, "a")
-        self.assertEqual(list(iter(a)), [1, 2.0, "a"])
         
     def test_iter2(self):
         A = make_dataclass("A", ('x', 'y', 'z'), iterable=True)
@@ -398,7 +393,8 @@ class dataobjectTest(unittest.TestCase):
     def test_iter3(self):
         A = make_dataclass("A", ('x', 'y', 'z'))
         a=A(1, 2.0, "a")
-        self.assertEqual(list(iter(a)), [1, 2.0, "a"])
+        with self.assertRaises(TypeError):
+            iter(a)
         
     def test_enable_gc(self):
         A = make_dataclass("A", ('x', 'y', 'z'))
@@ -410,11 +406,12 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.z, b.z)
         self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
         
-#     def test_caching(self):
-#         ds = DataclassStorage()
-#         A = ds.make_dataclass('A', ('x', 'y'))
-#         B = ds.make_dataclass('A', ['x', 'y'])
-#         self.assertEqual(A, B)
+    def test_caching(self):
+        from recordclass import DataclassStorage
+        ds = DataclassStorage()
+        A = ds.make_dataclass('A', ('x', 'y'))
+        B = ds.make_dataclass('A', ['x', 'y'])
+        self.assertEqual(A, B)
 
     def test_fields_dict(self):
         A = make_dataclass("A", {'x':int, 'y':int})
