@@ -101,6 +101,15 @@ class datatype(type):
         if sequence or mapping:
             iterable = True
             
+        if '__iter__' in ns:
+            iterable = True
+        else:
+            for base in bases:
+                if '__iter__' in base.__dict__:
+                    iterable = True
+#                     ns['__iter__'] = base.__dict__['__iter__']
+                    break
+            
         if readonly:
             hashable = True
 
@@ -204,6 +213,7 @@ class datatype(type):
         cls = type.__new__(metatype, typename, bases, ns)
 
         _dataobject_type_init(cls)
+        
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly,
                         use_dict=use_dict, use_weakref=use_weakref, 
                         iterable=iterable, hashable=hashable,

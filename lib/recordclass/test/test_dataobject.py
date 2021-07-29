@@ -421,6 +421,21 @@ class dataobjectTest(unittest.TestCase):
         a=A(1, 2.0, "a")
         with self.assertRaises(TypeError):
             iter(a)
+            
+    def test_iterable_base(self):
+        @clsconfig(iterable=True)
+        class iterable_do(dataobject):
+            pass
+        
+        print(iter(iterable_do()))
+        
+        class A(iterable_do):
+            __fields__ = 'x', 'y', 'z'
+            
+        print(A.__base__)
+
+        a=A(1, 2.0, "a")
+        self.assertEqual(list(a), [1, 2.0, "a"])
         
     def test_enable_gc(self):
         A = make_dataclass("A", ('x', 'y', 'z'))

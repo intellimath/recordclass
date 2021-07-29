@@ -1316,7 +1316,7 @@ dataobject_iter(PyObject *seq)
 {
     dataobjectiterobject *it;
 
-    if (Py_TYPE(seq)->tp_base != &PyDataObject_Type) {
+    if (Py_TYPE(seq)->tp_base != &PyDataObject_Type && !PyType_IsSubtype(Py_TYPE(seq), &PyDataObject_Type)) {
         PyErr_SetString(PyExc_TypeError, "the object is not instance of dataobject");
         return NULL;
     }
@@ -1742,11 +1742,27 @@ static PyObject*
 _set_iterable(PyObject *cls, PyObject *iterable) {
     PyTypeObject *tp;
     const int state = PyObject_IsTrue(iterable);
+    
+    if (!state)
+        Py_RETURN_NONE;
 
     tp = (PyTypeObject*)cls;
-
+    
     if (!tp->tp_iter && state)
         tp->tp_iter = dataobject_iter;
+        
+    PyObject *bases = tp->tp_bases;
+    Py_ssize_t i, n_bases = Py_SIZE(bases);
+    for (i=0; i<n_bases; i++) {
+        PyTypeObject *base = (PyTypeObject*)PyTuple_GET_ITEM(bases, i);
+        if (base->tp_iter) {
+            if (base->tp_iter == dataobject_iter) {
+                tp->tp_iter = base->tp_iter;
+                Py_RETURN_NONE;            
+            } 
+        }        
+    }
+        
     if (tp->tp_iter && !state)
         tp->tp_iter = NULL;
 
@@ -1871,7 +1887,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp = (PyTypeObject*)cls;
     tp_base = tp->tp_base;
 
-    if (PyObject_IsSubclass((PyObject*)tp_base, (PyObject*)&PyDataObject_Type)) {
+    if ((tp_base == &PyDataObject_Type) || PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
         tp->tp_basicsize = sizeof(PyObject);
         tp->tp_itemsize = 0;
     } else {
@@ -1912,8 +1928,12 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     if (tp->tp_flags & Py_TPFLAGS_HAVE_GC)
         tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
-        
-//     tp->tp_hash = tp_base->tp_hash;
+     
+    if (tp_base->tp_hash)
+        tp->tp_hash = tp_base->tp_hash;
+
+    if (tp_base->tp_iter)
+        tp->tp_iter = tp_base->tp_iter;
 
     tp->tp_traverse = NULL;
     tp->tp_clear = NULL;
@@ -2067,8 +2087,10 @@ astuple(PyObject *module, PyObject *args)
 
     op = PyTuple_GET_ITEM(args, 0);
     type = Py_TYPE(op);
+    
+    PyTypeObject* tp_base = type->tp_base;
 
-    if (type->tp_base != &PyDataObject_Type) {
+    if ((tp_base != &PyDataObject_Type) && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
             PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
             return NULL;
     }

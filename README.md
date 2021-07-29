@@ -183,20 +183,22 @@ First load inventory:
     >>> p.x, p.y = 10, 20
     >>> print(p)
     Point(x=10, y=20)
-    >>> for x in p: print(x)
-    1
-    2
     >>> asdict(p)
     {'x':1, 'y':2}
     >>> astuple(p)
     (1, 2)
 
-By default subclasses of dataobject are iterable. If one want to disable iterable protocol then there is the option `iterable=False`:
+By default subclasses of dataobject are not iterable by default. If one want make it iterable then there is the option `iterable=True`:
 
-    @clsconfig(iterable=False)
+    @clsconfig(iterable=True)
     class Point(dataobject):
         x: int
         y: int
+
+    >>> p = Point(1,2)
+    >>> for x in p: print(x)
+    1
+    2
 
 Another way to create subclasses of dataobject &ndash; factory function `make_dataclass`:
 
