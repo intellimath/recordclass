@@ -338,7 +338,7 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 * 'gc' and 'fast_new' options now can be specified as kwargs in class statement.
 * Add a function `astuple` to dataclass.py for transformation instances of dataobject-based subclasses to a tuple.
 * Drop datatuple based classes.
-* Define the mutabletuple type on top of litetuple types.
+* Add function `make(cls, args, **kwargs)` to create instance of the class `cls`.
 * Make structclass as alias of make_dataclass.
 * Add option 'deep_dealloc' (@clsconfig(deep_dealloc=True)) for deallocation of instances of dataobject-based recursive subclasses.
 
