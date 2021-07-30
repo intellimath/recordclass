@@ -2103,11 +2103,11 @@ astuple(PyObject *module, PyObject *args)
     return _astuple(op);
 }
 
-PyDoc_STRVAR(make_doc,
+PyDoc_STRVAR(dataobject_make_doc,
 "Create a new dataobject-based object");
 
 static PyObject *
-make(PyObject *module, PyObject *args0, PyObject *kw)
+dataobject_make(PyObject *module, PyObject *args0, PyObject *kw)
 {
     PyObject *args;
     
@@ -2119,6 +2119,28 @@ make(PyObject *module, PyObject *args0, PyObject *kw)
         Py_INCREF(args);
     } else
         args = PyTuple_New(0);
+    
+    PyObject *ret =  dataobject_new(type, args, kw);
+    
+    Py_DECREF(args);
+    Py_DECREF(type);
+    
+    return ret;
+}
+
+PyDoc_STRVAR(dataobject_clone_doc,
+"Clone dataobject-based object");
+
+static PyObject *
+dataobject_clone(PyObject *module, PyObject *args0, PyObject *kw)
+{
+    PyObject *args;
+    
+    PyObject *ob = PyTuple_GET_ITEM(args0, 0);
+    PyTypeObject *type = Py_TYPE(ob);
+    Py_INCREF(type);
+    
+    args = _astuple(ob);
     
     PyObject *ret =  dataobject_new(type, args, kw);
     
@@ -2198,7 +2220,8 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 static PyMethodDef dataobjectmodule_methods[] = {
     {"asdict", asdict, METH_VARARGS, asdict_doc},
     {"astuple", astuple, METH_VARARGS, astuple_doc},
-    {"make", (PyCFunction)make, METH_VARARGS | METH_KEYWORDS, make_doc},
+    {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
+    {"clone", (PyCFunction)dataobject_clone, METH_VARARGS | METH_KEYWORDS, dataobject_clone_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
     {0, 0, 0, 0}
