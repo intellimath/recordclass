@@ -427,12 +427,12 @@ class dataobjectTest(unittest.TestCase):
         class iterable_do(dataobject):
             pass
         
-        print(iter(iterable_do()))
+#         print(iter(iterable_do()))
         
         class A(iterable_do):
             __fields__ = 'x', 'y', 'z'
             
-        print(A.__base__)
+#         print(A.__base__)
 
         a=A(1, 2.0, "a")
         self.assertEqual(list(a), [1, 2.0, "a"])

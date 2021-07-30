@@ -165,7 +165,6 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t n_items)
 static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    Py_ssize_t const n_items = PyDataObject_NUMITEMS(type); 
     PyTupleObject *tmp;
 
     if (Py_TYPE(args) == &PyTuple_Type) {
@@ -179,6 +178,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     }
 
     Py_ssize_t n_args = Py_SIZE(tmp);
+    Py_ssize_t const n_items = PyDataObject_NUMITEMS(type); 
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
@@ -477,8 +477,8 @@ dataobject_item(PyObject *op, Py_ssize_t i)
         return NULL;
     }
 
-    PyObject **items = PyDataObject_ITEMS(op);
-    PyObject *v = items[i];
+//     PyObject **items = PyDataObject_ITEMS(op);
+    PyObject *v = ((PyDataStruct*)op)->ob_items[i];
     Py_INCREF(v);
     return v;
 }
@@ -1884,26 +1884,31 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         has_fields = 0;
     }
 
+    if (n_fields < 0) {
+        PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");
+        return NULL;
+    }
+
     Py_DECREF(fields);
 
     tp = (PyTypeObject*)cls;
     tp_base = tp->tp_base;
 
     if ((tp_base == &PyDataObject_Type) || PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
-        tp->tp_basicsize = sizeof(PyObject);
-        tp->tp_itemsize = 0;
+        tp->tp_basicsize = sizeof(PyObject) + n_fields * sizeof(PyObject*);
+        tp->tp_itemsize = n_fields;
     } else {
         PyErr_SetString(PyExc_TypeError,
                         "common base class should be dataobject or subclass");
         return NULL;
     }
 
-    if (n_fields >= 0) {
-        tp->tp_basicsize += n_fields * sizeof(PyObject*);
-    } else {
-        PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");
-        return NULL;
-    }
+//     if (n_fields >= 0) {
+//         tp->tp_basicsize += n_fields * sizeof(PyObject*);
+//     } else {
+//         PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");
+//         return NULL;
+//     }
 
     tp->tp_dictoffset = tp_base->tp_dictoffset;
     tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
