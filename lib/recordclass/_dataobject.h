@@ -18,3 +18,4 @@ typedef struct {
 #define PyDataObject_HAS_WEAKLIST(type) (type->tp_weaklistoffset != 0)
 
 #define Py_TP_BASE(o) (Py_TYPE(o)->tp_base)
+#define Py_METATYPE(o) Py_TYPE(Py_TYPE(o))
