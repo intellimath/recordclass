@@ -74,7 +74,18 @@ Another option is to use static code analyzers along with type annotations to mo
         >>> print(p)
         Pair(2, -1)
 
-5. It provide classes `lightlist` and `lighttuple`, which considers as list-like and tuple-like *light* containers in order to save memory.
+5. It provide classes `lightlist` and `litetuple`, which considers as list-like and tuple-like *light* containers in order to save memory. Mutable variant of litetuple is called by `mutabletuple`. The instances of both types don't participate in CGC. For example: 
+
+    >>> lt = litetuple(1, 2, 3)
+    >>> mt = mutabletuple(1, 2, 3)
+    >>> lt == mt
+    True
+    >>> mt[-1] = -3
+    >>> lt == mt
+    False
+    >>> print(sys.getsizeof(litetuple(1,2,3)), sys.getsizeof((1,2,3)))
+    48 40
+    
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
@@ -158,7 +169,7 @@ or
 
 ### Quick start with dataobject
 
-`Dataobject` is base class for creation of data classes with fast instance creation and small memory footprint. They don't provide `namedtuple`-like API.
+`Dataobject` is the base class for creation of data classes with fast instance creation and small memory footprint. They don't provide `namedtuple`-like API.
 
 First load inventory:
 
@@ -205,6 +216,10 @@ Another way to create subclasses of dataobject &ndash; factory function `make_da
     >>> from recordclass import make_dataclass
 
     >>> Point = make_dataclass("Point", [("x",int), ("y",int)])
+    
+or
+
+    >>> Point = make_dataclass("Point", {"x":int, "y":int})
 
 Default values are also supported::
 
@@ -215,8 +230,8 @@ Default values are also supported::
 
 or
 
-    >>> Point = make_dataclass("Point", [("x",int), ("y",int), ("color",str)], defaults=("white",))
-
+    >>> CPoint = make_dataclass("CPoint", [("x",int), ("y",int), ("color",str)], defaults=("white",))
+    
     >>> p = CPoint(1,2)
     >>> print(p)
     Point(x=1, y=2, color='white')
@@ -231,7 +246,7 @@ is not allowed. A fields without default value may not appear after a field with
     
 There is the options `fast_new=True`. It allows faster creation of the instances. Here is an example:
 
-    class FPoint(dataobject, fast_new=True):
+    class FastPoint(dataobject, fast_new=True):
         x: int
         y: int
     
@@ -239,7 +254,7 @@ The followings timings explain (in jupyter notebook) boosting effect of `fast_ne
 
     %timeit l1 = [Point(i,i) for i in range(100000)]
     %timeit l2 = [FastPoint(i,i) for i in range(100000)]
-    # output with python 3.8+ 64bit
+    # output with python 3.9 64bit
     25.6 ms ± 2.4 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
     10.4 ms ± 426 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
     
@@ -278,7 +293,7 @@ There is builtin more fast deallocation method using finalization mechanizm when
 
 > Note that for classes with `gc=True` (cyclic GC is used) this method is disabled: the python's cyclic GC is used.
 
-For more detailed examples see notebook [example_datatypes](examples/example_datatypes.ipynb).
+For more details see notebook [example_datatypes](examples/example_datatypes.ipynb).
 
 
 ## Memory footprint
@@ -299,29 +314,11 @@ where:
 
 This is useful in that case when you absolutely sure that reference cycle isn't supposed.
 For example, when all field values are instances of atomic types.
-As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.4-3.7) and by 16 bytes since cpython 3.8::
+As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.4-3.7) and by 16 bytes since cpython 3.8.
 
-    class S:
-        __slots__ = ('a','b','c')
-        def __init__(self, a, b, c):
-            self.a = a
-            self.b = b
-            self.c = c
+## Performance counters
 
-    R_gc = recordclass('R_gc', 'a b c', gc=True)
-    R_nogc = recordclass('R_nogc', 'a b c')
-    DO = make_dataclass('R_do', 'a b c')
-
-    s = S(1,2,3)
-    r_gc = R_gc(1,2,3)
-    r_nogc = R_nogc(1,2,3)
-    do = DO(1,2,3)
-    for o in (s, r_gc, r_nogc, do):
-        print(sys.getsizeof(o), end=' ')
-    print
-    56 56 40 40
-
-Here are also table with some performance counters (python 3.9, debian linux, x86-64), which are mesured using `utils/perfcount.py` script:
+Here is the table with performance counters (python 3.9, debian linux, x86-64), which are mesured using `utils/perfcount.py` script:
 
 |                     id|       new|  getattr|  setattr| size|
 |-----------------------|----------|---------|---------|-----|
@@ -342,8 +339,8 @@ Here are also table with some performance counters (python 3.9, debian linux, x8
 * Add a function `astuple` to dataclass.py for transformation instances of dataobject-based subclasses to a tuple.
 * Drop datatuple based classes.
 * Define the mutabletuple type on top of litetuple types.
-* Make structclass an alias of make_dataclass.
-* Add option 'deep_dealloc' for deallocation of instances of dataobject-based recursive subclasses.
+* Make structclass as alias of make_dataclass.
+* Add option 'deep_dealloc' (@clsconfig(deep_dealloc=True)) for deallocation of instances of dataobject-based recursive subclasses.
 
 #### 0.14.3:
 

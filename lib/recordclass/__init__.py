@@ -30,8 +30,7 @@ structclass = make_dataclass
 from .dataclass import asdict, astuple, DataclassStorage
 from .arrayclass import make_arrayclass
 from .litelist import litelist
-from ._litetuple import litetuple, mlitetuple
-mutabletuple = mlitetuple
+from ._litetuple import litetuple, mutabletuple
 
 from .typing import RecordClass
 
