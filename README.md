@@ -339,6 +339,7 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 * Add a function `astuple` to dataclass.py for transformation instances of dataobject-based subclasses to a tuple.
 * Drop datatuple based classes.
 * Add function `make(cls, args, **kwargs)` to create instance of the class `cls`.
+* Add function `clone(ob, **kwargs)` to clone dataobject instance `ob`.
 * Make structclass as alias of make_dataclass.
 * Add option 'deep_dealloc' (@clsconfig(deep_dealloc=True)) for deallocation of instances of dataobject-based recursive subclasses.
 
