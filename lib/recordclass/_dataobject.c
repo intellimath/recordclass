@@ -1019,10 +1019,8 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_repr */
     0,                                      /* tp_as_number */
     0,                                      /* tp_as_sequence */
-//     &dataobject_as_sequence,                /* tp_as_sequence */
     0,                                      /* tp_as_mapping */
     0,                                      /* tp_hash */
-//     dataobject_hash,                        /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
     0,                                      /* tp_getattro */
