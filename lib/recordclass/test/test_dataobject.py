@@ -6,7 +6,7 @@ import sys
 import gc
 import weakref
 
-from recordclass import make_dataclass, make_arrayclass, dataobject
+from recordclass import make_dataclass, make_arrayclass, dataobject, make
 from recordclass import datatype, asdict, astuple, join_dataclasses, clsconfig
 from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
@@ -522,6 +522,22 @@ class dataobjectTest(unittest.TestCase):
         C2 = make_dataclass('C2', 'b c')
         with self.assertRaises(AttributeError):
             C = join_dataclasses('C', [C1, C2])
+            
+    def test_make1(self):
+        A = make_dataclass("A", {'x':int, 'y':int})
+        a = make(A, (1,2))
+        self.assertEqual(a, A(1, 2))
+        
+    def test_make2(self):
+        A = make_dataclass("A", {'x':int, 'y':int})
+        a = make(A, (1,), y=2)
+        self.assertEqual(a, A(1, 2))
+
+    def test_make3(self):
+        A = make_dataclass("A", {'x':int, 'y':int}, use_dict=True)
+        a = make(A, (1,2), {'z':3})
+        self.assertEqual(a, A(1, 2, z=3))
+        
 
         
 

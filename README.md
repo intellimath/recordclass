@@ -84,7 +84,7 @@ Another option is to use static code analyzers along with type annotations to mo
     >>> lt == mt
     False
     >>> print(sys.getsizeof(litetuple(1,2,3)), sys.getsizeof((1,2,3)))
-    48 40
+    64 48
     
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
@@ -195,9 +195,9 @@ First load inventory:
     >>> print(p)
     Point(x=10, y=20)
     >>> asdict(p)
-    {'x':1, 'y':2}
+    {'x':10, 'y':20}
     >>> astuple(p)
-    (1, 2)
+    (10, 20)
 
 By default subclasses of dataobject are not iterable by default. If one want make it iterable then there is the option `iterable=True`:
 

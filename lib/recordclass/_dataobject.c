@@ -2103,25 +2103,30 @@ astuple(PyObject *module, PyObject *args)
     return _astuple(op);
 }
 
-// PyDoc_STRVAR(new_dataobject_doc,
-// "Create a new dataobject-based object");
+PyDoc_STRVAR(make_doc,
+"Create a new dataobject-based object");
 
-// static PyObject *
-// new_dataobject(PyObject *module, PyObject *args0, )
-// {
-//     PyTypeObject *type;
-//     PyObject *args = NULL;
-//     PyObject *kw = NULL;
+static PyObject *
+make(PyObject *module, PyObject *args0, PyObject *kw)
+{
+    PyObject *args;
     
-//     Py_ssize_t n = Py_SIZE(args0);
-//     type = (PyTypeObject*)PyTuple_GET_ITEM(args0, 0);
-//     if (n >= 2)
-//         args = PyTuple_GET_ITEM(args0, 1);
-//     if (n >= 3)
-//         kw = PyTuple_GET_ITEM(args0, 2);
+    const Py_ssize_t n = Py_SIZE(args0);
+    PyTypeObject * type = (PyTypeObject*)PyTuple_GET_ITEM(args0, 0);
+    Py_INCREF(type);
+    if (n >= 2) {
+        args = PyTuple_GET_ITEM(args0, 1);
+        Py_INCREF(args);
+    } else
+        args = PyTuple_New(0);
     
-//     return dataobject_new(type, args, kw);
-// }
+    PyObject *ret =  dataobject_new(type, args, kw);
+    
+    Py_DECREF(args);
+    Py_DECREF(type);
+    
+    return ret;
+}
 
 PyDoc_STRVAR(clsconfig_doc,
 "Configure some class aspects");
@@ -2193,7 +2198,7 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 static PyMethodDef dataobjectmodule_methods[] = {
     {"asdict", asdict, METH_VARARGS, asdict_doc},
     {"astuple", astuple, METH_VARARGS, astuple_doc},
-//     {"new_dataobject", new_dataobject, METH_VARARGS, new_dataobject_doc},
+    {"make", (PyCFunction)make, METH_VARARGS | METH_KEYWORDS, make_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
     {0, 0, 0, 0}

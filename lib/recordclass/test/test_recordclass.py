@@ -294,7 +294,7 @@ class RecordClassTest(unittest.TestCase):
         A = recordclass('A', 'x y', hashable=True)
 #         print(dir(A))
         a = A(1,2)
-        print(hash(a))
+        hash(a)
         
     def test_hash_subcls(self):
         A = recordclass('A', 'x y', hashable=True)
