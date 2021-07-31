@@ -336,12 +336,13 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 
 * Now library supports only Python >= 3.6
 * 'gc' and 'fast_new' options now can be specified as kwargs in class statement.
-* Add a function `astuple` to dataclass.py for transformation instances of dataobject-based subclasses to a tuple.
+* Add a function `astuple(ob)` for transformation dataobject instance `ob` to a tuple.
 * Drop datatuple based classes.
 * Add function `make(cls, args, **kwargs)` to create instance of the class `cls`.
 * Add function `clone(ob, **kwargs)` to clone dataobject instance `ob`.
 * Make structclass as alias of make_dataclass.
-* Add option 'deep_dealloc' (@clsconfig(deep_dealloc=True)) for deallocation of instances of dataobject-based recursive subclasses.
+* Add option 'deep_dealloc' (@clsconfig(deep_dealloc=True)) for deallocation
+  instances of dataobject-based recursive subclasses.
 
 #### 0.14.3:
 

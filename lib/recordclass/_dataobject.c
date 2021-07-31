@@ -39,6 +39,7 @@
 // #endif
 
 static PyTypeObject PyDataObject_Type;
+// static PyTypeObject PyDataSlotGetSet_Type;
 static PyTypeObject *datatype;
 
 
@@ -254,7 +255,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 Py_DECREF(val);
                 Py_DECREF(key);
             }
-
             Py_DECREF(iter);
     }
 
@@ -406,6 +406,38 @@ dataobject_finalize(PyObject *ob) {
         }
     }
 }
+
+// static PyObject*
+// dataobject_getattr(PyObject *op, PyObject *name) 
+// {
+//     PyTypeObject *type = Py_TYPE(op);
+// //     PyObject *tp_dict = type->tp_dict;
+//     PyObject *ob = PyDict_GetItem(type->tp_dict, name);
+//     PyObject *ret;
+        
+//     if (!ob) {
+//         if (type->tp_dictoffset) {
+//             PyObject **dictptr = PyDataObject_GetDictPtr(op);
+//             if (dictptr && *dictptr) {
+//                 ret = PyDict_GetItem(*dictptr, name);
+//                 if (ret) {
+//                     Py_INCREF(ret);
+//                     return ret;
+//                 }
+//             }
+//         }
+//         return PyObject_GenericGetAttr(op, name);
+//     }
+        
+//     PyTypeObject *ob_type = Py_TYPE(ob);
+//     if (ob_type == &PyDataSlotGetSet_Type) {
+//         ret = ob_type->tp_descr_get(ob, op, NULL);
+//         return ret;
+//     }
+    
+    
+//     return PyObject_GenericGetAttr(op, name);
+// }
 
 PyDoc_STRVAR(dataobject_len_doc,
 "T.__len__() -- len of T");
@@ -1034,7 +1066,6 @@ static PyTypeObject PyDataObject_Type = {
     dataobject_richcompare,                 /* tp_richcompare */
     0,                                      /* tp_weaklistoffset*/
     0,                                      /* tp_iter */
-//     dataobject_iter,                        /* tp_iter */
     0,                                      /* tp_iternext */
     dataobject_methods,                     /* tp_methods */
     0,                                      /* tp_members */
