@@ -74,17 +74,18 @@ Another option is to use static code analyzers along with type annotations to mo
         >>> print(p)
         Pair(2, -1)
 
-5. It provide classes `lightlist` and `litetuple`, which considers as list-like and tuple-like *light* containers in order to save memory. Mutable variant of litetuple is called by `mutabletuple`. The instances of both types don't participate in CGC. For example: 
+5. It provide classes `lightlist` and `litetuple`, which considers as list-like and tuple-like *light* containers in order to save memory. Mutable variant of litetuple is called by `mutabletuple`. The instances of both types don't participate in CGC. 
+    For example: 
 
-    >>> lt = litetuple(1, 2, 3)
-    >>> mt = mutabletuple(1, 2, 3)
-    >>> lt == mt
-    True
-    >>> mt[-1] = -3
-    >>> lt == mt
-    False
-    >>> print(sys.getsizeof(litetuple(1,2,3)), sys.getsizeof((1,2,3)))
-    64 48
+        >>> lt = litetuple(1, 2, 3)
+        >>> mt = mutabletuple(1, 2, 3)
+        >>> lt == mt
+        True
+        >>> mt[-1] = -3
+        >>> lt == mt
+        False
+        >>> print(sys.getsizeof(litetuple(1,2,3)), sys.getsizeof((1,2,3)))
+        64 48
     
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
