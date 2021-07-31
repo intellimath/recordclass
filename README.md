@@ -199,6 +199,17 @@ First load inventory:
     >>> astuple(p)
     (10, 20)
 
+By default subclasses of dataobject are mutable. If one want make it immutable then there is the option `readonly=True`:
+
+    @clsconfig(readonly=True)
+    class Point(dataobject):
+        x: int
+        y: int
+
+    >>> p = Point(1,2)
+    >>> p.x = -1
+    TypeError: item is readonly
+
 By default subclasses of dataobject are not iterable by default. If one want make it iterable then there is the option `iterable=True`:
 
     @clsconfig(iterable=True)

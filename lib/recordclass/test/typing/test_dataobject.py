@@ -689,6 +689,18 @@ class DataObjectTest3(unittest.TestCase):
             ll.append(i)
             
         del ll
+        
+    def test_readonly(self):
+        @clsconfig(readonly=True)
+        class A(dataobject):
+            x:int
+            y:int
+            
+        a = A(1,2)
+        with self.assertRaises(TypeError):        
+            a.x = -1
+        with self.assertRaises(TypeError):        
+            a.y = -2
 
 
                 

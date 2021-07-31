@@ -36,12 +36,17 @@ int_type = type(1)
 def clsconfig(sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 
               hashable=False, gc=False, deep_dealloc=False):
-    from ._dataobject import _clsconfig
+    from ._dataobject import _clsconfig, dataslotgetset
     def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                         use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, 
                         deep_dealloc=deep_dealloc)
+        if readonly:
+            for fn in cls.__dict__:
+                o = cls.__dict__[fn]
+                if type(o) is dataslotgetset:
+                    o.readonly = True
         return cls
     return func
 
