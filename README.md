@@ -341,6 +341,16 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 
 ### Changes:
 
+### 0.15.1
+
+* Options `readonly` and `iterable` now can be sspecified via keyword arguments in class statement.
+  For example:
+
+        class Point(dataobject, readonly=True, iterable=True):
+             x:int
+             y:int
+             
+
 ### 0.15
 
 * Now library supports only Python >= 3.6
