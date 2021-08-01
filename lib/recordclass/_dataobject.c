@@ -262,6 +262,11 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 static int
+dataobject_init(PyObject *ob, PyObject *args, PyObject *kwds) {
+    return 0;
+}
+
+static int
 dataobject_clear(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
@@ -1075,7 +1080,7 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_descr_get */
     0,                                      /* tp_descr_set */
     0,                                      /* tp_dictoffset */
-    0,                                      /* tp_init */
+    dataobject_init,                                      /* tp_init */
     dataobject_alloc,                       /* tp_alloc */
     dataobject_new,                         /* tp_new */
     dataobject_free,                        /* tp_free */

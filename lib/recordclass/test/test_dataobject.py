@@ -427,13 +427,19 @@ class dataobjectTest(unittest.TestCase):
         class iterable_do(dataobject):
             pass
         
-#         print(iter(iterable_do()))
+        class A(iterable_do):
+            __fields__ = 'x', 'y', 'z'
+            
+        a=A(1, 2.0, "a")
+        self.assertEqual(list(a), [1, 2.0, "a"])
+
+    def test_iterable_base2(self):
+        class iterable_do(dataobject, iterable=True):
+            pass
         
         class A(iterable_do):
             __fields__ = 'x', 'y', 'z'
             
-#         print(A.__base__)
-
         a=A(1, 2.0, "a")
         self.assertEqual(list(a), [1, 2.0, "a"])
         
@@ -550,6 +556,13 @@ class dataobjectTest(unittest.TestCase):
         b = clone(a, x=100, y=200, z=300)
         self.assertEqual(b, A(100, 200, z=300))
         
+    def test_readonly(self):
+        A = make_dataclass("A", {'x':int, 'y':int}, readonly=True)
+        a = A(1,2)
+        with self.assertRaises(TypeError):        
+            a.x = -1
+        with self.assertRaises(TypeError):        
+            a.y = -2
 
 def main():
     suite = unittest.TestSuite()

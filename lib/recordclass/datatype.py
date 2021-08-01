@@ -42,11 +42,6 @@ def clsconfig(sequence=False, mapping=False, readonly=False,
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                         use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, 
                         deep_dealloc=deep_dealloc)
-        if readonly:
-            for fn in cls.__dict__:
-                o = cls.__dict__[fn]
-                if type(o) is dataslotgetset:
-                    o.readonly = True
         return cls
     return func
 
@@ -64,17 +59,14 @@ _ds_ro_cache = {}
                 
 class datatype(type):
 
-    def __new__(metatype, typename, bases, ns, gc=False, fast_new=False):
+    def __new__(metatype, typename, bases, ns, gc=False, fast_new=False, readonly=False, iterable=False):
 
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
         options = ns.pop('__options__', {})
-        readonly = options.get('readonly', False)
         hashable = options.get('hashable', False)
         sequence = options.get('sequence', False)
         mapping = options.get('mapping', False)
-        readonly = options.get('readonly', False)
-        iterable = options.get('iterable', False)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
         deep_dealloc = options.get('deep_dealloc', False)
@@ -82,6 +74,10 @@ class datatype(type):
             gc = options['gc']
         if 'fast_new' in options:
             fast_new = options['fast_new']
+        if 'readonly' in options:
+            readonly = options['readonly']
+        if 'iterable' in options:
+            iterable = options['iterable']
 
         if not bases:
             raise TypeError("The base class in not specified")

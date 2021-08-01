@@ -498,6 +498,16 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.z, "a")        
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
 
+    def test_iter3_tp2(self):
+        class A(dataobject, iterable=True):
+            __fields__ = ('x', 'y', 'z')
+        
+        a=A(1, 2.0, "a")
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2.0)
+        self.assertEqual(a.z, "a")        
+        self.assertEqual(list(iter(a)), [1, 2.0, "a"])
+        
     def test_iter4_tp(self):
         class A(dataobject):
             __fields__ = 'x', 'y', 'z'
@@ -691,8 +701,8 @@ class DataObjectTest3(unittest.TestCase):
         del ll
         
     def test_readonly(self):
-        @clsconfig(readonly=True)
-        class A(dataobject):
+#         @clsconfig(readonly=True)
+        class A(dataobject, readonly=True):
             x:int
             y:int
             

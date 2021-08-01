@@ -86,7 +86,6 @@ Another option is to use static code analyzers along with type annotations to mo
         False
         >>> print(sys.getsizeof(litetuple(1,2,3)), sys.getsizeof((1,2,3)))
         64 48
-    
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
@@ -202,8 +201,7 @@ First load inventory:
 
 By default subclasses of dataobject are mutable. If one want make it immutable then there is the option `readonly=True`:
 
-    @clsconfig(readonly=True)
-    class Point(dataobject):
+    class Point(dataobject, readonly=True):
         x: int
         y: int
 
@@ -213,8 +211,7 @@ By default subclasses of dataobject are mutable. If one want make it immutable t
 
 By default subclasses of dataobject are not iterable by default. If one want make it iterable then there is the option `iterable=True`:
 
-    @clsconfig(iterable=True)
-    class Point(dataobject):
+    class Point(dataobject, iterable=True):
         x: int
         y: int
 
