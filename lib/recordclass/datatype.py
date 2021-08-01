@@ -151,7 +151,8 @@ class datatype(type):
             if fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
-                __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
+                if not __new__.__doc__:
+                    __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
 
                 ns['__new__'] = __new__
 
@@ -206,8 +207,9 @@ class datatype(type):
             ns['__fields__'] = fields
             ns['__defaults__'] = defaults
             ns['__annotations__'] = annotations
-
-            ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
+            
+            if '__doc__' not in ns:
+                ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
         
         cls = type.__new__(metatype, typename, bases, ns)
 
@@ -285,5 +287,4 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
         template = "{0}({1})\n--\nCreate class instance"
     doc = template.format(typename, ', '.join(fields2))
 
-#     print(doc)
     return doc
