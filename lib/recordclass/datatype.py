@@ -274,11 +274,6 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
         if fn in defaults:
             fn_txt += "=%r" % defaults[fn]
         fields2.append(fn_txt)
-#     if fields and defaults:
-#         fields2 = [f for f in fields if f not in defaults] + \
-#                   ["%s=%r" % (f, defaults[f]) for f in fields if f in defaults]
-#     else:
-#         fields2 = fields
     fields2 = tuple(fields2)
 
     if use_dict:
