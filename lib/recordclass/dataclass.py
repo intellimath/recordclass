@@ -24,9 +24,8 @@
 
 from .utils import dataslot_offset, process_fields
 from .utils import check_name, collect_info_from_bases
-from ._dataobject import astuple, asdict
 
-__all__ = 'make_dataclass', 'join_dataclasses', 'astuple', 'asdict', 'DataclassStorage'
+__all__ = 'make_dataclass', 'join_dataclasses', 'DataclassStorage'
 
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None,
                    use_dict=False, use_weakref=False, hashable=False,
@@ -52,7 +51,7 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     >>> Point(**d)                      # convert from a dictionary
     Point(x=1, y=-1)
     """
-    from ._dataobject import dataobject
+    from ._dataobject import dataobject, astuple, asdict
     from .datatype import datatype
     import sys as _sys
 
