@@ -60,7 +60,8 @@ _ds_ro_cache = {}
 class datatype(type):
 
     def __new__(metatype, typename, bases, ns, 
-                gc=False, fast_new=False, readonly=False, iterable=False):
+                gc=False, fast_new=False, readonly=False, iterable=False,
+                deep_dealloc=False):
 
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
@@ -76,6 +77,7 @@ class datatype(type):
         fast_new = options.get('fast_new', fast_new)
         readonly = options.get('readonly', readonly)
         iterable = options.get('iterable', iterable)
+        deep_dealloc = options.get('deep_dealloc', deep_dealloc)
 
         if not bases:
             raise TypeError("The base class in not specified")
