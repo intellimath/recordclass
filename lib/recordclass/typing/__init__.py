@@ -21,10 +21,41 @@
 # THE SOFTWARE.
 
 import collections
-from recordclass import recordclass
+from recordclass import recordclass #, dataobject, clsconfig
 from typing import _type_check
 
 __all__ = 'RecordClass',
+
+# @clsconfig(sequence=True)
+# class RecordClass(dataobject):
+
+#     def _make(_cls, iterable):
+#         ob = _cls(*iterable)
+#         return ob
+
+#     _make.__doc__ = 'Make a new object from a sequence or iterable'
+
+#     if readonly:
+#         def _replace(_self, **kwds):
+#             result = _self._make(map(kwds.pop, _self.__fields__, _self))
+#             if kwds:
+#                 kwnames = tuple(kwds)
+#                 raise AttributeError(f'Got unexpected field names: {kwnames}')
+#             return result
+#     else:
+#         def _replace(_self, **kwds):
+#             for name, val in kwds.items():
+#                 setattr(_self, name, val)
+#             return _self
+
+#     _replace.__doc__ = 'Return a new object replacing specified fields with new values'
+
+#     def _asdict(self):
+#         'Return a new dict which maps field names to their values.'
+#         return asdict(self)
+
+#     _make = classmethod(_make)
+
 
 import sys as _sys
 
@@ -99,3 +130,4 @@ class RecordClass(metaclass=RecordClassMeta):
             raise TypeError("Either list of fields or keywords"
                             " can be provided to RecordClass, not both")
         return _make_recordclass(typename, fields)
+# 

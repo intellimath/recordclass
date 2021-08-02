@@ -104,16 +104,16 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 #             args = ', '.join(repr(o) for o in self)
 #             return f'{typename}({args})'
 #     else:
-    def __repr__(self):
-        args = ', '.join(("%s=%r" % (name, getattr(self, name))) for name in self.__class__.__fields__)
-        if '__dict__' in  fields and self.__dict__:
-            kw = self.__dict__
-            return f'{typename}({args}, **{kw})'
-        else:
-            return f'{typename}({args})'
-    __repr__.__qual_name__ =  f'{typename}.__repr__'
-    ns['__repr__'] = __repr__
-    ns['__str__'] = __repr__
+#     def __repr__(self):
+#         args = ', '.join(("%s=%r" % (name, getattr(self, name))) for name in self.__class__.__fields__)
+#         if '__dict__' in  fields and self.__dict__:
+#             kw = self.__dict__
+#             return f'{typename}({args}, **{kw})'
+#         else:
+#             return f'{typename}({args})'
+#     __repr__.__qual_name__ =  f'{typename}.__repr__'
+#     ns['__repr__'] = __repr__
+#     ns['__str__'] = __repr__
     
     if nmtpl_api:
         def _make(_cls, iterable):

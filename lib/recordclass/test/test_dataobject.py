@@ -6,7 +6,7 @@ import sys
 import gc
 import weakref
 
-from recordclass import make_dataclass, make_arrayclass, dataobject, make, clone
+from recordclass import make_dataclass, make_arrayclass, dataobject, make, clone, update
 from recordclass import datatype, asdict, astuple, join_dataclasses, clsconfig
 from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
@@ -555,6 +555,18 @@ class dataobjectTest(unittest.TestCase):
         a = A(1, 2, z=3)
         b = clone(a, x=100, y=200, z=300)
         self.assertEqual(b, A(100, 200, z=300))
+
+    def test_update1(self):
+        A = make_dataclass("A", {'x':int, 'y':int})
+        a = A(1,2)
+        update(a, x=100, y=200)
+        self.assertEqual(a, A(100, 200))
+
+    def test_update2(self):
+        A = make_dataclass("A", {'x':int, 'y':int}, use_dict=True)
+        a = A(1, 2, z=3)
+        update(a, x=100, y=200, z=300)
+        self.assertEqual(a, A(100, 200, z=300))
         
     def test_readonly(self):
         A = make_dataclass("A", {'x':int, 'y':int}, readonly=True)

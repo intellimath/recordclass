@@ -133,6 +133,7 @@ _PyObject_GetObject(const char *modname_c, const char *attrname_c)
 static Py_ssize_t dataobject_len(PyObject *op);
 static PyObject* dataobject_item(PyObject *op, Py_ssize_t i);
 static PyObject* _astuple(PyObject *op);
+static int _dataobject_update(PyObject *op, PyObject *kw);
 
 static PyObject *
 dataobject_alloc(PyTypeObject *type, Py_ssize_t n_items)
@@ -232,31 +233,9 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             Py_DECREF(defaults);
         }
     }
-
-    if (kwds) {
-            PyObject *iter, *key, *val;
-
-            iter = PyObject_GetIter(kwds);
-            while ((key = PyIter_Next(iter))) {
-                val = PyObject_GetItem(kwds, key);
-                if (!val) {
-                    PyErr_SetString(PyExc_KeyError, "Invalid kwarg");
-                    Py_DECREF(key);
-                    Py_DECREF(iter);
-                    return NULL;
-                }
-                if (PyObject_SetAttr(op, key, val) < 0) {
-                    PyErr_SetString(PyExc_AttributeError, "Set attribute failed");
-                    Py_DECREF(val);
-                    Py_DECREF(key);
-                    Py_DECREF(iter);
-                    return NULL;
-                }
-                Py_DECREF(val);
-                Py_DECREF(key);
-            }
-            Py_DECREF(iter);
-    }
+    
+    if (!_dataobject_update(op, kwds))
+        return NULL;
 
     return op;
 }
@@ -2193,6 +2172,55 @@ dataobject_clone(PyObject *module, PyObject *args0, PyObject *kw)
     return ret;
 }
 
+static int
+_dataobject_update(PyObject *op, PyObject *kwds)
+{
+    if (kwds) {
+        PyObject *iter, *key, *val;
+
+        iter = PyObject_GetIter(kwds);
+        while ((key = PyIter_Next(iter))) {
+            val = PyObject_GetItem(kwds, key);
+            if (!val) {
+                PyErr_SetString(PyExc_KeyError, "Invalid kwarg");
+                Py_DECREF(key);
+                Py_DECREF(iter);
+                return 0;
+            }
+            if (PyObject_SetAttr(op, key, val) < 0) {
+                PyErr_SetString(PyExc_AttributeError, "Set attribute failed");
+                Py_DECREF(val);
+                Py_DECREF(key);
+                Py_DECREF(iter);
+                return 0;
+            }
+            Py_DECREF(val);
+            Py_DECREF(key);
+        }
+        Py_DECREF(iter);
+    }    
+    return 1;
+}
+
+PyDoc_STRVAR(dataobject_update_doc,
+"Update dataobject-based object");
+
+static PyObject*
+dataobject_update(PyObject *module, PyObject *args, PyObject *kw)
+{
+    if (args && PySequence_Size(args) != 1) {        
+        PyErr_SetString(PyExc_TypeError, "Only one argument is allowed");
+        return NULL;
+    }
+    
+    PyObject *op = PyTuple_GET_ITEM(args, 0);
+
+    if (!_dataobject_update(op, kw))
+        return NULL;
+    
+    Py_RETURN_NONE;    
+}
+
 PyDoc_STRVAR(clsconfig_doc,
 "Configure some class aspects");
 
@@ -2265,6 +2293,7 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"astuple", astuple, METH_VARARGS, astuple_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
     {"clone", (PyCFunction)dataobject_clone, METH_VARARGS | METH_KEYWORDS, dataobject_clone_doc},
+    {"update", (PyCFunction)dataobject_update, METH_VARARGS | METH_KEYWORDS, dataobject_update_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
     {0, 0, 0, 0}

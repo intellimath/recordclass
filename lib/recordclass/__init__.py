@@ -22,7 +22,7 @@
 
 
 from .datatype import datatype, clsconfig
-from ._dataobject import dataobject, astuple, asdict, make, clone
+from ._dataobject import dataobject, astuple, asdict, make, clone, update
 from .recordclass import recordclass, RecordclassStorage
 
 from .dataclass import make_dataclass, make_class, join_dataclasses, DataclassStorage

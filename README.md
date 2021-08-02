@@ -23,7 +23,7 @@ Assigning other types of values, which are not subclass of `int`, should be cons
 Another examples are non-recursive data structures in which all leaf elements represent a value of an atomic type.
 Of course, in python, nothing prevent you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
 But in many cases, this can still be avoided provided that the developer understands what he is doing and uses such classes in the code with care.
-Another option is to use static code analyzers along with type annotations to monitor compliance with data types.
+Another option is to use static code analyzers along with type annotations to monitor compliance with typehints.
 
 1. The `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. 
    It control creation  of subclasses of `dataobject`, which  will not participate in CGC by default. 

@@ -277,9 +277,9 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
     fields2 = tuple(fields2)
 
     if use_dict:
-        template = "{0}({1}, **kw)\n--\nCreate class instance"
+        template = "{0}({1}, **kw)\n--\nCreate class {0} instance"
     else:
-        template = "{0}({1})\n--\nCreate class instance"
+        template = "{0}({1})\n--\nCreate class {0} instance"
     doc = template.format(typename, ', '.join(fields2))
 
     return doc
