@@ -349,6 +349,7 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
         class Point(dataobject, readonly=True, iterable=True):
              x:int
              y:int
+* Add `update(cls, **kwargs)` function to update attribute values.`
              
 
 ### 0.15
