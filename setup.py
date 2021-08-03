@@ -30,7 +30,7 @@ from setuptools.extension import Extension
 # extra_compile_args = ["-O3",]
 extra_compile_args = []
 
-use_cython = 1
+use_cython = 0
 
 if use_cython:
     from Cython.Distutils import Extension, build_ext

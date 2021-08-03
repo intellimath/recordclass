@@ -238,14 +238,14 @@ def _make_new_function(typename, fields, defaults, annotations, use_dict):
         new_func_template = \
 """
 def __new__(_cls_, {2}, **kw):
-    'Create new instance: {0}({2}, **kw)'
+    "Create new instance: {0}({2}, **kw)"
     return _method_new(_cls_, {1}, **kw)
 """
     else:
         new_func_template = \
 """
 def __new__(_cls_, {2}):
-    'Create new instance: {0}({2})'
+    "Create new instance: {0}({2})"
     return _method_new(_cls_, {1})
 """
     new_func_def = new_func_template.format(typename, ', '.join(fields), ', '.join(fields2))
@@ -279,9 +279,9 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
     fields2 = tuple(fields2)
 
     if use_dict:
-        template = "{0}({1}, **kw)\n--\nCreate class {0} instance"
+        template = """{0}({1}, **kw)\n--\nCreate class {0} instance"""
     else:
-        template = "{0}({1})\n--\nCreate class {0} instance"
+        template = """{0}({1})\n--\nCreate class {0} instance"""
     doc = template.format(typename, ', '.join(fields2))
 
     return doc

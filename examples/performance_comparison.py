@@ -75,7 +75,7 @@ class TradeDayNamedTuple(NamedTuple("TradeDay",
                            ("prices", PricesNamedTuple)))):
 
     def return_change(self):
-        return round((self.prices.close - self.prices.open) / self.prices.open, 4)
+        return int((self.prices.close - self.prices.open) / self.prices.open)
 
     def update_symbol(self, symb):
         self = self._replace(symbol = symb)
@@ -97,7 +97,7 @@ class TradeDayDataClass:
     prices: PricesDataClass
 
     def return_change(self):
-        return round((self.prices.close - self.prices.open) / self.prices.open, 4)
+        return int((self.prices.close - self.prices.open) / self.prices.open)
 
     def update_symbol(self, symb):
         self.symbol = symb
@@ -116,27 +116,25 @@ class TradeDayRecordClass(RecordClass):
     prices: PricesRecordClass
 
     def return_change(self):
-        return round((self.prices.close - self.prices.open) / self.prices.open, 4)
+        return int((self.prices.close - self.prices.open) / self.prices.open)
 
     def update_symbol(self, symb):
         self.symbol = symb
 
 ##### dataobject #####        
-class PricesDataobject(dataobject):
+class PricesDataobject(dataobject, fast_new=True):
     open: float
     high: float
     low: float
     close: float
-    __options__ = {'argsonly':True}
 
-class TradeDayDataobject(dataobject):
+class TradeDayDataobject(dataobject, fast_new=True):
     symbol: str
     dt: date
     prices: PricesDataobject
-    __options__ = {'argsonly':True}
 
     def return_change(self):
-        return round((self.prices.close - self.prices.open) / self.prices.open, 4)
+        return int((self.prices.close - self.prices.open) / self.prices.open)
 
     def update_symbol(self, symb):
         self.symbol = symb
@@ -165,7 +163,7 @@ class TradeDayClass():
         self.prices = _prices
 
     def return_change(self):
-        return round((self.prices.close - self.prices.open) / self.prices.open, 4)
+        return int((self.prices.close - self.prices.open) / self.prices.open)
 
     def update_symbol(self, symb):
         self.symbol = symb
@@ -173,7 +171,7 @@ class TradeDayClass():
 
 ##### Regular Python class with slots #####
 class PricesClassSlots():
-    __slots__ = ['open', 'high', 'low', 'close']
+    __slots__ = 'open', 'high', 'low', 'close'
     open: float
     high: float
     low: float
@@ -186,7 +184,7 @@ class PricesClassSlots():
         self.close = _close
 
 class TradeDayClassSlots():
-    __slots__ = ['symbol', 'dt', 'prices']
+    __slots__ = 'symbol', 'dt', 'prices'
     symbol: str
     dt: date
     prices: PricesRecordClass
@@ -197,7 +195,7 @@ class TradeDayClassSlots():
         self.prices = _prices
 
     def return_change(self):
-        return round((self.prices.close - self.prices.open) / self.prices.open, 4)
+        return int((self.prices.close - self.prices.open) / self.prices.open)
 
     def update_symbol(self, symb):
         self.symbol = symb
@@ -220,7 +218,7 @@ def run_test(objType):
     TradeDay = eval("TradeDay%s" % objType)
     Prices = eval("Prices%s" % objType)
     data: Dict[str, TradeDay] = {}
-    obj_count = 200000
+    obj_count = 100000
 #     stats['obj_count'] = obj_count
 
     st = time.time()
@@ -248,10 +246,12 @@ def run_test(objType):
     st = time.time()
     if objType == 'Dict':
         for k, v in data.items():
-            d = round((v['prices']['close'] - v['prices']['open']) / v['prices']['open'], 4)
+            vprices = v['prices'] 
+            d = int((vprices['close'] - vprices['open']) / vprices['open'])
     else:
         for k, v in data.items():
-            d = round((v.prices.close - v.prices.open) / v.prices.open, 4)
+            vprices = v.prices
+            d = int((vprices.close - vprices.open) / vprices.open)
     tstats['change'] = obj_count / (time.time() - st)
     print("%s day %s change      at: %8s per second" % (obj_count, objType, int(tstats['change'])))
 
@@ -271,7 +271,8 @@ def run_test(objType):
     st = time.time()
     if objType == 'Dict':
         for k, v in data.items():
-            d = round((v['prices']['close'] - v['prices']['open']) / v['prices']['open'], 4)
+            vprices = v['prices'] 
+            d = int((vprices['close'] - vprices['open']) / vprices['open'])
     else:
         for k, v in data.items():
             d = v.return_change()
@@ -301,8 +302,7 @@ if __name__ == '__main__':
     run_test('Dataobject')
     run_test('NamedTuple')
     
-    pd.set_option("precision", 2)
-#     pd.set_eng_float_format(accuracy=2, use_eng_prefix=False)
+    pd.set_option("float_format", lambda x: "%.0f" % x)
     df = pd.DataFrame(stats)
     print(df)
     for tn in df.index:
@@ -310,4 +310,5 @@ if __name__ == '__main__':
         maxval = float(maxval)
         for key in df.keys():
             df[key][tn] = df[key][tn] / maxval
+    pd.set_option("float_format", lambda x: "%.2f" % x)
     print(df)
