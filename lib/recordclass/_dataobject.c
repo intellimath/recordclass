@@ -186,7 +186,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
                         "number of the arguments should not be greater than the number of the slots");
-        Py_DECREF(tmp);
+//         Py_DECREF(tmp);
         return NULL;
     }
 
