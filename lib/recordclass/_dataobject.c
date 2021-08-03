@@ -167,17 +167,18 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t n_items)
 static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    PyTupleObject *tmp;
+    PyTupleObject *tmp = (PyTupleObject*)args;
 
-    if (Py_TYPE(args) == &PyTuple_Type) {
-        tmp = (PyTupleObject*)args;
-        Py_INCREF(args);
-    } else {
-        tmp = (PyTupleObject*)PySequence_Tuple(args);
-        if (tmp == NULL) {
-            return NULL;
-        }
-    }
+//     if (Py_TYPE(args) == &PyTuple_Type) {
+//         tmp = (PyTupleObject*)args;
+//         Py_INCREF(args);
+//     } else {
+//         printf("*\n");
+//         tmp = (PyTupleObject*)PySequence_Tuple(args);
+//         if (tmp == NULL) {
+//             return NULL;
+//         }
+//     }
 
     Py_ssize_t n_args = Py_SIZE(tmp);
     Py_ssize_t const n_items = PyDataObject_NUMITEMS(type); 
@@ -202,7 +203,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         j--;
     }
     
-    Py_DECREF(tmp);
+//     Py_DECREF(tmp);
 
     if (j) {
         PyObject **dictptr = PyObject_GetDictPtr(type);
