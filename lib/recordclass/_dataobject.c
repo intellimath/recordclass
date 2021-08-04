@@ -136,7 +136,7 @@ static PyObject* _astuple(PyObject *op);
 static int _dataobject_update(PyObject *op, PyObject *kw);
 
 static PyObject *
-dataobject_alloc(PyTypeObject *type, Py_ssize_t n_items)
+dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 {
     PyObject *op;
     Py_ssize_t const size = _PyObject_SIZE(type);
@@ -169,24 +169,12 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyTupleObject *tmp = (PyTupleObject*)args;
 
-//     if (Py_TYPE(args) == &PyTuple_Type) {
-//         tmp = (PyTupleObject*)args;
-//         Py_INCREF(args);
-//     } else {
-//         printf("*\n");
-//         tmp = (PyTupleObject*)PySequence_Tuple(args);
-//         if (tmp == NULL) {
-//             return NULL;
-//         }
-//     }
-
     Py_ssize_t n_args = Py_SIZE(tmp);
-    Py_ssize_t const n_items = PyDataObject_NUMITEMS(type); 
+    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
                         "number of the arguments should not be greater than the number of the slots");
-//         Py_DECREF(tmp);
         return NULL;
     }
 
@@ -203,8 +191,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         j--;
     }
     
-//     Py_DECREF(tmp);
-
     if (j) {
         PyObject **dictptr = PyObject_GetDictPtr(type);
         PyObject *dict = *dictptr;
@@ -690,6 +676,17 @@ static PySequenceMethods dataobject_as_sequence = {
     0,                                      /* sq_contains */
 };
 
+static PySequenceMethods dataobject_as_sequence0 = {
+    (lenfunc)dataobject_len,                /* sq_length */
+    0,                                      /* sq_concat */
+    0,                                      /* sq_repeat */
+    0,          /* sq_item */
+    0,                                      /* sq_slice */
+    0,   /* sq_ass_item */
+    0,                                      /* sq_ass_slice */
+    0,                                      /* sq_contains */
+};
+
 static PySequenceMethods dataobject_as_sequence_ro = {
     (lenfunc)dataobject_len,         /* sq_length */
     0,                               /* sq_concat */
@@ -705,6 +702,12 @@ static PyMappingMethods dataobject_as_mapping = {
     (lenfunc)dataobject_len,                  /* mp_len */
     (binaryfunc)dataobject_subscript,         /* mp_subscr */
     (objobjargproc)dataobject_ass_subscript,  /* mp_ass_subscr */
+};
+
+static PyMappingMethods dataobject_as_mapping0 = {
+    (lenfunc)dataobject_len,                  /* mp_len */
+    0,         /* mp_subscr */
+    0,  /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping_ro = {
@@ -1035,8 +1038,8 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_reserved */
     0,                                      /* tp_repr */
     0,                                      /* tp_as_number */
-    0,                                      /* tp_as_sequence */
-    0,                                      /* tp_as_mapping */
+    &dataobject_as_sequence0,               /* tp_as_sequence */
+    0,                /* tp_as_mapping */
     0,                                      /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
@@ -1717,12 +1720,13 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
                tp->tp_as_sequence = &dataobject_as_sequence_ro;
         }
     } else {
-        tp->tp_as_sequence = NULL;
         if (mp) {
+            tp->tp_as_sequence = NULL;
             tp->tp_as_mapping = &dataobject_as_mapping;
             if (ro)
                tp->tp_as_mapping = &dataobject_as_mapping_ro;
         } else {
+            tp->tp_as_sequence = &dataobject_as_sequence0;
             tp->tp_as_mapping = NULL;
         }
     }

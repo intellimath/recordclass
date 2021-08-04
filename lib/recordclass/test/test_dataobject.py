@@ -128,6 +128,7 @@ class dataobjectTest(unittest.TestCase):
         A = make_dataclass("A", ('x', 'y'), use_dict=True, use_weakref=True)
 
         a = A(1,2)
+        self.assertEqual(len(a), 2)
         self.assertEqual(gc.is_tracked(a), False)
         self.assertEqual(repr(a), "A(x=1, y=2)")
         self.assertEqual(a.x, 1)
@@ -144,9 +145,11 @@ class dataobjectTest(unittest.TestCase):
         A = make_dataclass("A", ('x', 'y'), use_dict=True)
         a = A(1,2,v=3,z=4)
         self.assertEqual(a.__dict__, {'v':3, 'z':4})
+        self.assertEqual(len(a), 4)
         b = A(1,2,z=3)
         self.assertEqual(b.__dict__, {'z':3})
         self.assertEqual(repr(b), "A(x=1, y=2, **{'z': 3})")
+        self.assertEqual(len(b), 3)
         
     def test_subclass(self):
         A = make_dataclass("A", ('x', 'y'))
@@ -481,6 +484,7 @@ class dataobjectTest(unittest.TestCase):
     def test_dataclass_empty_astuple(self):
         A = make_dataclass("A", ())
         a = A()
+        self.assertEqual(len(a), 0)
         t = astuple(a)
         self.assertEqual(t, ())
 
