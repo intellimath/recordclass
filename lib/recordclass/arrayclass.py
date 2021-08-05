@@ -30,7 +30,7 @@ _intern = _sys.intern
 
 int_type = type(1)
     
-def make_arrayclass(typename, fields=0, namespace=None, 
+def make_arrayclass(typename, fields=0, *, namespace=None, 
              use_weakref=False, hashable=False, readonly=False, gc=False,
              module=None):
 

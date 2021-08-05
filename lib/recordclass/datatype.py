@@ -33,11 +33,11 @@ _intern = _sys.intern
 
 int_type = type(1)
 
-def clsconfig(sequence=False, mapping=False, readonly=False,
+def clsconfig(*, sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 
               hashable=False, gc=False, deep_dealloc=False):
     from ._dataobject import _clsconfig, dataslotgetset
-    def func(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
+    def func(cls, *, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                         use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, 
@@ -59,7 +59,7 @@ _ds_ro_cache = {}
                 
 class datatype(type):
 
-    def __new__(metatype, typename, bases, ns, 
+    def __new__(metatype, typename, bases, ns, *,
                 gc=False, fast_new=False, readonly=False, iterable=False,
                 deep_dealloc=False):
 

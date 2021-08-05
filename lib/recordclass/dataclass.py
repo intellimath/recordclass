@@ -27,7 +27,7 @@ from .utils import check_name, collect_info_from_bases
 
 __all__ = 'make_dataclass', 'join_dataclasses', 'DataclassStorage'
 
-def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None,
+def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None, *,
                    use_dict=False, use_weakref=False, hashable=False,
                    sequence=False, mapping=False, iterable=False, readonly=False, nmtpl_api=False,
                    module=None, fast_new=False, rename=False, invalid_names=(), gc=False):
@@ -177,7 +177,7 @@ class DataclassStorage:
         return cls
     make_class = make_dataclass
 
-def join_dataclasses(name, classes, readonly=False, use_dict=False, gc=False,
+def join_dataclasses(name, classes, *, readonly=False, use_dict=False, gc=False,
                  use_weakref=False, hashable=True, sequence=False, fast_new=False, iterable=True, module=None):
 
     from ._dataobject import dataobject
