@@ -2139,13 +2139,19 @@ dataobject_make(PyObject *module, PyObject *args0, PyObject *kw)
     PyObject *args;
     
     const Py_ssize_t n = Py_SIZE(args0);
-    PyTypeObject * type = (PyTypeObject*)PyTuple_GET_ITEM(args0, 0);
-    Py_INCREF(type);
     if (n >= 2) {
         args = PyTuple_GET_ITEM(args0, 1);
-        Py_INCREF(args);
-    } else
-        args = PyTuple_New(0);
+        if (PyTuple_CheckExact(args)) {
+            Py_INCREF(args);
+        } else {
+            args = PySequence_Tuple(args);
+        }
+    } else {
+        goto invalid_nargs;
+    }
+    
+    PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(args0, 0);
+    Py_INCREF(type);
     
     PyObject *ret =  dataobject_new(type, args, kw);
     
@@ -2153,6 +2159,10 @@ dataobject_make(PyObject *module, PyObject *args0, PyObject *kw)
     Py_DECREF(type);
     
     return ret;
+    
+invalid_nargs:
+    PyErr_SetString(PyExc_TypeError, "nargs != 2");
+    return NULL;
 }
 
 PyDoc_STRVAR(dataobject_clone_doc,

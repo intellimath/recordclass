@@ -545,7 +545,7 @@ class dataobjectTest(unittest.TestCase):
 
     def test_make3(self):
         A = make_dataclass("A", {'x':int, 'y':int}, use_dict=True)
-        a = make(A, (1,2), {'z':3})
+        a = make(A, (1,2), **{'z':3})
         self.assertEqual(a, A(1, 2, z=3))
         
     def test_clone1(self):
@@ -557,7 +557,7 @@ class dataobjectTest(unittest.TestCase):
     def test_clone2(self):
         A = make_dataclass("A", {'x':int, 'y':int}, use_dict=True)
         a = A(1, 2, z=3)
-        b = clone(a, x=100, y=200, z=300)
+        b = clone(a, x=100, y=200, **{'z':300})
         self.assertEqual(b, A(100, 200, z=300))
 
     def test_update1(self):
