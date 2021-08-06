@@ -44,7 +44,7 @@ def make_arrayclass(typename, fields=0, *, namespace=None,
 
     options = {
         'use_dict':False, 'use_weakref':use_weakref, 'hashable':hashable, 
-        'sequence':True, 'iterable':True, 'readonly':readonly, 'gc':gc,
+        'sequence':True, 'mapping':False, 'iterable':True, 'readonly':readonly, 'gc':gc,
         'fast_new':True,
     }
 

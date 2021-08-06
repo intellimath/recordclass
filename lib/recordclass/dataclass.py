@@ -29,7 +29,7 @@ __all__ = 'make_dataclass', 'join_dataclasses', 'DataclassStorage'
 
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None, *,
                    use_dict=False, use_weakref=False, hashable=False,
-                   sequence=False, mapping=False, iterable=False, readonly=False, nmtpl_api=False,
+                   sequence=None, mapping=None, iterable=False, readonly=False, nmtpl_api=False,
                    module=None, fast_new=False, rename=False, invalid_names=(), gc=False):
 
     """Returns a new class with named fields and small memory footprint.
@@ -66,10 +66,10 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
         'defaults':defaults,
         'sequence':sequence,
         'mapping':mapping,
-        'iterable':iterable,
+#         'iterable':iterable,
         'use_dict':use_dict,
         'use_weakref':use_weakref,
-        'readonly':readonly,
+#         'readonly':readonly,
         'hashable':hashable,
         'fast_new':fast_new,
     }
@@ -149,7 +149,9 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 
     ns['__module__'] = module
 
-    cls = datatype(typename, bases, ns, gc=gc, fast_new=fast_new)
+    cls = datatype(typename, bases, ns, 
+                   gc=gc, fast_new=fast_new,
+                   readonly=readonly, iterable=iterable)
 
     return cls
 
