@@ -61,23 +61,23 @@ class datatype(type):
 
     def __new__(metatype, typename, bases, ns, *,
                 gc=False, fast_new=False, readonly=False, iterable=False,
-                deep_dealloc=False):
+                deep_dealloc=False, sequence=False, mapping=False,
+                use_dict=False, use_weakref=False, hashable=False):
 
         from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
 
         options = ns.pop('__options__', {})
-        hashable = options.get('hashable', False)
-        sequence = options.get('sequence', False)
-        mapping = options.get('mapping', False)
-        use_dict = options.get('use_dict', False)
-        use_weakref = options.get('use_weakref', False)
-        deep_dealloc = options.get('deep_dealloc', False)
 
         gc = options.get('gc', gc)
         fast_new = options.get('fast_new', fast_new)
         readonly = options.get('readonly', readonly)
         iterable = options.get('iterable', iterable)
         deep_dealloc = options.get('deep_dealloc', deep_dealloc)
+        sequence = options.get('sequence', sequence)
+        mapping = options.get('mapping', mapping)
+        use_dict = options.get('use_dict', use_dict)
+        use_weakref = options.get('use_weakref', use_weakref)
+        hashable = options.get('hashable', hashable)
 
         if not bases:
             raise TypeError("The base class in not specified")
