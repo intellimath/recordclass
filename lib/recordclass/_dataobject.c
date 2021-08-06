@@ -309,8 +309,10 @@ dataobject_dealloc(PyObject *op)
 //     if (is_gc)
 //         PyObject_GC_Track(op);
 
-    if(PyObject_CallFinalizerFromDealloc(op) < 0)
-        return;
+    if (type->tp_finalize != NULL) {
+        if(PyObject_CallFinalizerFromDealloc(op) < 0)
+            return;
+    }
 
     if (is_gc)
         PyObject_GC_UnTrack(op);
@@ -2262,7 +2264,6 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
         _enable_gc(cls);
 
     _set_deep_dealloc(cls, set_dd);
-
 
     PyTypeObject *tp = (PyTypeObject*)cls;
     PyType_Modified(tp);

@@ -58,6 +58,9 @@ _ds_cache = {}
 _ds_ro_cache = {}
                 
 class datatype(type):
+    """
+    Metatype for creation dataobject-based classes.
+    """
 
     def __new__(metatype, typename, bases, ns, *,
                 gc=False, fast_new=False, readonly=False, iterable=False,
