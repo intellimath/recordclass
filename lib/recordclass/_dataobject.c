@@ -1696,9 +1696,9 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
     int sq, mp, ro;
 
     tp = (PyTypeObject*)cls;
-//     sq = PyObject_IsTrue(sequence);
-//     mp = PyObject_IsTrue(mapping);
-//     ro = PyObject_IsTrue(readonly);
+    sq = PyObject_IsTrue(sequence);
+    mp = PyObject_IsTrue(mapping);
+    ro = PyObject_IsTrue(readonly);
 
     tp_base = tp->tp_base;
 
@@ -1707,48 +1707,25 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
         return NULL;
     }
     
-    if (sequence == Py_None)
-        sq = 0;
-    else if (PyObject_IsTrue(sequence))
-        sq = 1;
-    else
-        sq = -1;
-    
-    if (mapping == Py_None)
-        mp = 0;
-    else if (PyObject_IsTrue(mapping))
-        mp = 1;
-    else
-        mp = -1;
-
-    if (readonly == Py_None)
-        ro = 0;
-    else if (PyObject_IsTrue(readonly))
-        ro = 1;
-    else
-        ro = -1;
-    
     tp->tp_as_mapping = tp_base->tp_as_mapping;
     tp->tp_as_sequence = tp_base->tp_as_sequence;
     
-    if (sq > 0) {
-        if (ro > 0)
+    if (sq) {
+        if (ro)
             tp->tp_as_sequence = &dataobject_as_sequence_ro;
         else
             tp->tp_as_sequence = &dataobject_as_sequence;
-    } else if (sq < 0)
-        tp->tp_as_sequence = &dataobject_as_sequence0;
+    }
         
-    if (mp > 0) {
-        if (ro > 0)
+    if (mp) {
+        if (ro)
             tp->tp_as_mapping = &dataobject_as_mapping_ro;
         else
             tp->tp_as_mapping = &dataobject_as_mapping;
-    } else if (mp < 0)
-        tp->tp_as_mapping = NULL;
+    }
         
-    if (mp > 0 && sq > 0) {
-        if (ro > 0)
+    if (mp && sq) {
+        if (ro)
             tp->tp_as_mapping = &dataobject_as_mapping2_ro;
         else
             tp->tp_as_mapping = &dataobject_as_mapping2;

@@ -33,7 +33,7 @@ _intern = _sys.intern
 
 int_type = type(1)
 
-def clsconfig(*, sequence=None, mapping=None, readonly=False,
+def clsconfig(*, sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 
               hashable=False, gc=False, deep_dealloc=False):
     from ._dataobject import _clsconfig, dataslotgetset
@@ -67,8 +67,8 @@ class datatype(type):
 
         options = ns.pop('__options__', {})
         hashable = options.get('hashable', False)
-        sequence = options.get('sequence', None)
-        mapping = options.get('mapping', None)
+        sequence = options.get('sequence', False)
+        mapping = options.get('mapping', False)
         use_dict = options.get('use_dict', False)
         use_weakref = options.get('use_weakref', False)
         deep_dealloc = options.get('deep_dealloc', False)
