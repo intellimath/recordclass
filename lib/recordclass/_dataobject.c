@@ -47,7 +47,7 @@ static PyObject **
 PyDataObject_GetDictPtr(PyObject *ob) {
     Py_ssize_t dictoffset = Py_TYPE(ob)->tp_dictoffset;
 
-    if (dictoffset == 0)
+    if (!dictoffset)
         return NULL;
     if (dictoffset < 0) {
         PyErr_SetString(PyExc_TypeError, "tp_dictoffset < 0");
@@ -59,23 +59,22 @@ PyDataObject_GetDictPtr(PyObject *ob) {
 static PyObject *
 PyDataObject_GetDict(PyObject *obj)
 {
-    PyObject *dict;
     PyObject **dictptr = PyDataObject_GetDictPtr(obj);
     
-    if (dictptr == NULL) {
+    if (!dictptr) {
         PyErr_SetString(PyExc_AttributeError, "This object has no __dict__");
         return NULL;
     }
 
-    dict = *dictptr;
-    if (dict == NULL) {
+    PyObject *dict = *dictptr;
+    if (!dict) {
         *dictptr = dict = PyDict_New();
-        if (dict == NULL) {
+        if (!dict) {
             PyErr_SetString(PyExc_TypeError, "can't create dict");
             return NULL;
         }
     }
-    Py_XINCREF(dict);
+    Py_INCREF(dict);
     return dict;
 }
 
@@ -147,7 +146,7 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
     else
         op = (PyObject*)PyObject_MALLOC(size);
 
-    if (op == NULL)
+    if (!op)
         return PyErr_NoMemory();
 
     memset(op, '\0', size);
@@ -186,8 +185,8 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     while (n_args--) {
         PyObject *v = *(pp++);
-        Py_INCREF(v);
         *(items++) = v;
+        Py_INCREF(v);
         j--;
     }
     
@@ -212,8 +211,8 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 if (!value)
                     value = Py_None;
 
-                Py_INCREF(value);
                 *(items++) = value; 
+                Py_INCREF(value);
                 j--;
             }            
             Py_DECREF(fields);
