@@ -33,4 +33,4 @@ from ._litetuple import litetuple, mutabletuple
 
 from .typing import RecordClass
 
-__version__ = '0.15.1'
+__version__ = '0.15.2'

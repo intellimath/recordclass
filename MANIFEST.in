@@ -17,3 +17,4 @@ include lib/recordclass/_linkedlist.c
 include lib/recordclass/typing/*.py
 include lib/recordclass/test/*.py
 include lib/recordclass/test/typing/*.py
+include lib/recordclass/tools/*.py
