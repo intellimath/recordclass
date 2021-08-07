@@ -81,7 +81,9 @@ with open('README.md', encoding='utf-8') as f:
 packages = [ 'recordclass', 
              'recordclass.test',
              'recordclass.test.typing',
-             'recordclass.typing']
+             'recordclass.typing',
+             'recordclass.tools',
+           ]
 
 setup(
     name = 'recordclass',
