@@ -29,7 +29,7 @@ __all__ = 'make_dataclass', 'join_dataclasses', 'DataclassStorage'
 
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None, *,
                    use_dict=False, use_weakref=False, hashable=False,
-                   sequence=False, mapping=False, iterable=False, readonly=False, nmtpl_api=False,
+                   sequence=False, mapping=False, iterable=False, readonly=False, api='',
                    module=None, fast_new=False, rename=False, invalid_names=(), gc=False):
 
     """Returns a new class with named fields and small memory footprint.
@@ -55,24 +55,11 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     from .datatype import datatype
     import sys as _sys
 
-    if nmtpl_api:
+    if api == 'namedtuple':
         invalid_names = invalid_names + ('_make', '_replace', '_asdict')
 
     fields, annotations, defaults = process_fields(fields, defaults, rename, invalid_names)
     typename = check_name(typename)
-
-    options = {
-        'readonly':readonly,
-        'defaults':defaults,
-        'sequence':sequence,
-        'mapping':mapping,
-#         'iterable':iterable,
-        'use_dict':use_dict,
-        'use_weakref':use_weakref,
-#         'readonly':readonly,
-        'hashable':hashable,
-        'fast_new':fast_new,
-    }
     
     if namespace is None:
         ns = {}
@@ -82,23 +69,16 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     n_fields = len(fields)
     n_defaults = len(defaults) if defaults else 0
 
-#     defaults2 = {}
-#     if defaults:
-#         for i in range(-n_defaults, 0):
-#             fname = fields[i]
-#             defaults2[fname] = defaults[i]
-
     if use_dict and '__dict__' not in fields:
         fields.append('__dict__')
     if use_weakref and '__weakref__' not in fields:
         fields.append('__weakref__')
 
-    ns['__options__'] = options
     ns['__fields__'] = fields
     ns['__annotations__'] = annotations
     ns['__defaults__'] = defaults
     
-    if nmtpl_api:
+    if api == 'namedtuple':
         def _make(_cls, iterable):
             ob = _cls(*iterable)
             return ob
@@ -151,7 +131,11 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 
     cls = datatype(typename, bases, ns, 
                    gc=gc, fast_new=fast_new,
-                   readonly=readonly, iterable=iterable)
+                   readonly=readonly, iterable=iterable,
+                   mapping=mapping, sequence=sequence,
+                   use_dict=use_dict, use_weakref=use_weakref,
+                   hashable=hashable,
+                   )
 
     return cls
 

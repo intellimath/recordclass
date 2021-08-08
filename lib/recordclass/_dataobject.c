@@ -39,8 +39,8 @@
 // #endif
 
 static PyTypeObject PyDataObject_Type;
-// static PyTypeObject PyDataSlotGetSet_Type;
 static PyTypeObject *datatype;
+static PyTypeObject PyDataSlotGetSet_Type;
 
 
 static PyObject **
@@ -144,7 +144,7 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
     if (is_gc)
         op = _PyObject_GC_Malloc(size);
     else
-        op = (PyObject*)PyObject_MALLOC(size);
+        op = (PyObject*)PyObject_Malloc(size);
 
     if (!op)
         return PyErr_NoMemory();
@@ -185,8 +185,8 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     while (n_args--) {
         PyObject *v = *(pp++);
-        *(items++) = v;
         Py_INCREF(v);
+        *(items++) = v;
         j--;
     }
     
@@ -281,10 +281,11 @@ dataobject_xdecref(PyObject *op)
 
     while (n_items--) {
         PyObject *ob = *items;
-        if (ob) {
-            Py_DECREF(ob);
-            *items = NULL;
-        }
+        Py_XDECREF(ob);
+//         if (ob) {
+//             Py_DECREF(ob);
+//             *items = NULL;
+//         }
         items++;
     }
     return 0;
@@ -382,33 +383,39 @@ dataobject_finalize(PyObject *ob) {
 // static PyObject*
 // dataobject_getattr(PyObject *op, PyObject *name) 
 // {
-//     PyTypeObject *type = Py_TYPE(op);
-// //     PyObject *tp_dict = type->tp_dict;
+//     const PyTypeObject *type = Py_TYPE(op);
 //     PyObject *ob = PyDict_GetItem(type->tp_dict, name);
-//     PyObject *ret;
         
 //     if (!ob) {
-//         if (type->tp_dictoffset) {
-//             PyObject **dictptr = PyDataObject_GetDictPtr(op);
-//             if (dictptr && *dictptr) {
-//                 ret = PyDict_GetItem(*dictptr, name);
-//                 if (ret) {
-//                     Py_INCREF(ret);
-//                     return ret;
-//                 }
-//             }
-//         }
 //         return PyObject_GenericGetAttr(op, name);
 //     }
         
 //     PyTypeObject *ob_type = Py_TYPE(ob);
 //     if (ob_type == &PyDataSlotGetSet_Type) {
-//         ret = ob_type->tp_descr_get(ob, op, NULL);
+//         PyObject *ret = ob_type->tp_descr_get(ob, op, NULL);
 //         return ret;
 //     }
     
-    
 //     return PyObject_GenericGetAttr(op, name);
+// }
+
+// static int
+// dataobject_setattr(PyObject *op, PyObject *name, PyObject* val) 
+// {
+//     const PyTypeObject *type = Py_TYPE(op);
+//     PyObject *ob = PyDict_GetItem(type->tp_dict, name);
+        
+//     if (!ob) {
+//         return PyObject_GenericSetAttr(op, name, val);
+//     }
+        
+//     PyTypeObject *ob_type = Py_TYPE(ob);
+//     if (ob_type == &PyDataSlotGetSet_Type) {
+//         int ret = ob_type->tp_descr_set(ob, op, val);
+//         return ret;
+//     }
+    
+//     return PyObject_GenericSetAttr(op, name, val);
 // }
 
 PyDoc_STRVAR(dataobject_len_doc,
@@ -481,7 +488,6 @@ dataobject_item(PyObject *op, Py_ssize_t i)
         return NULL;
     }
 
-//     PyObject **items = PyDataObject_ITEMS(op);
     PyObject *v = ((PyDataStruct*)op)->ob_items[i];
     Py_INCREF(v);
     return v;
