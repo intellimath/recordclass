@@ -1483,16 +1483,17 @@ dataslotgetset_readonly(PyObject *self)
     return PyBool_FromLong((long)(((dataslotgetset_object*)self)->readonly));
 }
 
-static int
-dataslotgetset_readonly_set(PyObject *self, PyObject *val)
-{
-    ((dataslotgetset_object*)self)->readonly = PyObject_IsTrue(val);
-    return 0;
-}
+// static int
+// dataslotgetset_readonly_set(PyObject *self, PyObject *val)
+// {
+//     ((dataslotgetset_object*)self)->readonly = PyObject_IsTrue(val);
+//     return 0;
+// }
 
 static PyGetSetDef dataslotgetset_getsets[] = {
     {"offset", (getter)dataslotgetset_offset, NULL, NULL},
-    {"readonly", (getter)dataslotgetset_readonly, (setter)dataslotgetset_readonly_set, NULL},
+//     {"readonly", (getter)dataslotgetset_readonly, (setter)dataslotgetset_readonly_set, NULL},
+    {"readonly", (getter)dataslotgetset_readonly, NULL, NULL},
     {0}
 };
 

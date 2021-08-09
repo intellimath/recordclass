@@ -225,6 +225,14 @@ class datatype(type):
                         iterable=iterable, hashable=hashable,
                         gc=gc, deep_dealloc=deep_dealloc)
         return cls
+    
+    def __delattr__(self, name):
+        from ._dataobject import dataslotgetset
+        if name in self.__dict__:
+            o = getattr(self, name)
+            if type(o) is dataslotgetset or name == '__fields__':
+                raise TypeError(f"Attribute {name} of the class {self.__name__} can't be deleted")
+        type.__delattr__(self, name)
 
 def _make_new_function(typename, fields, defaults, annotations, use_dict):
 
