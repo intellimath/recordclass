@@ -757,15 +757,12 @@ dataobject_copy(PyObject* op)
     Py_ssize_t i, n = PyDataObject_LEN(op);
 
     for(i=0; i<n; i++) {
-        PyObject *v;
-
-        v = PyDataObject_GET_ITEM(op, i);
+        PyObject *v = PyDataObject_GET_ITEM(op, i);
         if (!v) {
             Py_DECREF(new_op);
             return NULL;
         }
         dataobject_ASS_ITEM(new_op, i, v);
-//         Py_DECREF(v);
     }
 
     if (type->tp_dictoffset) {
@@ -773,10 +770,9 @@ dataobject_copy(PyObject* op)
         PyObject *dict = *dictptr;
 
         PyObject **new_dictptr = PyObject_GetDictPtr(new_op);
-        PyObject *new_dict;
 
         if (dict) {
-            new_dict = PyDict_Copy(dict);
+            PyObject *new_dict = PyDict_Copy(dict);
             if (!new_dict) {
                 PyErr_SetString(PyExc_TypeError, "it is failed to make copy of the dict");
                 return NULL;
