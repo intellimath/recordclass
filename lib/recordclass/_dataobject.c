@@ -1450,7 +1450,7 @@ static PyObject* dataslotgetset_get(PyObject *self, PyObject *obj, PyObject *typ
 static int dataslotgetset_set(PyObject *self, PyObject *obj, PyObject *value) {
 
     if (value == NULL) {
-        PyErr_SetString(PyExc_NotImplementedError, "__delete__");
+        PyErr_SetString(PyExc_AttributeError, "The value can't be deleted");
         return -1;
     }
 

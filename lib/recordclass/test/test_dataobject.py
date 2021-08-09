@@ -586,6 +586,14 @@ class dataobjectTest(unittest.TestCase):
             del A.x
         with self.assertRaises(AttributeError):        
             delattr(A, 'x')
+
+    def test_del_value(self):
+        A = make_dataclass("A", 'x y')
+        a = A(1, 2)
+        with self.assertRaises(AttributeError):        
+            del a.x
+        with self.assertRaises(AttributeError):        
+            delattr(a, 'x')
             
 def main():
     suite = unittest.TestSuite()
