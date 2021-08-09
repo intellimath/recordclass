@@ -343,7 +343,13 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 
 ### 0.15.2
 
-* Now one can't remove dataobject's properties from the class.
+* Now one can't remove dataobject's property from it's class using del or builting delattr.
+  For example:
+  
+       >>> Point = make_dataclass("Point", "x y")
+       >>> del Point.x
+       ...........
+       TypeError: Attribute x of the class Point can't be deleted
 
 ### 0.15.1
 

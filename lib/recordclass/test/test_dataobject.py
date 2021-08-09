@@ -584,6 +584,8 @@ class dataobjectTest(unittest.TestCase):
         A = make_dataclass("A", 'x y')
         with self.assertRaises(TypeError):        
             del A.x
+        with self.assertRaises(TypeError):        
+            delattr(A, 'x')
             
 def main():
     suite = unittest.TestSuite()
