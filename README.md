@@ -184,7 +184,7 @@ Define class:
 One can't remove attributes from the class:
 
     >>> del Point.x
-    ........
+    . . . . . . . .
     AttributeError: Attribute x of the class Point can't be deleted
     
 Annotations of the fields are defined as dict in `__annotations__`:
@@ -201,7 +201,7 @@ Default text representation:
 One can't remove field's value:
 
     >>> del p.x
-    ........
+    . . . . . . . . 
     AttributeError: The value can't be deleted
 
 The instances has a minimum memory footprint possible for CPython objects, which also consist only of Python objects.:
@@ -232,6 +232,7 @@ By default subclasses of dataobject are mutable. If one want make it immutable t
 
     >>> p = Point(1,2)
     >>> p.x = -1
+    . . . . . . . . . . . . . 
     TypeError: item is readonly
 
 By default subclasses of dataobject are not iterable by default. If one want make it iterable then there is the option `iterable=True`:
