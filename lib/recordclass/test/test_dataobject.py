@@ -582,9 +582,9 @@ class dataobjectTest(unittest.TestCase):
 
     def test_del_property(self):
         A = make_dataclass("A", 'x y')
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(AttributeError):        
             del A.x
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(AttributeError):        
             delattr(A, 'x')
             
 def main():

@@ -175,25 +175,44 @@ First load inventory:
 
     >>> from recordclass import dataobject, asdict, astuple
 
+Define class:
+
     class Point(dataobject):
         x: int
         y: int
 
+One can't remove attributes from the class:
+
+    >>> del Point.x
+    ........
+    AttributeError: Attribute x of the class Point can't be deleted
+    
+Annotations of the fields are defined as dict in `__annotations__`:
+
     >>> print(Point.__annotations__)
     {'x': <class 'int'>, 'y': <class 'int'>}
+
+Default text representation:
 
     >>> p = Point(1,2)
     >>> print(p)
     Point(x=1, y=2)
 
+The instances has a minimum memory footprint possible for CPython objects, which also consist only of Python objects.:
+
     >>> sys.getsizeof() # the output below for 64bit python 3.8+
     32
-    >>> p.__sizeof__() == sys.getsizeof(p) # no additional space for CGC support
+    >>> p.__sizeof__() == sys.getsizeof(p) # no additional space for cyclic GC support
     True    
+
+The instance is mutable by default:
 
     >>> p.x, p.y = 10, 20
     >>> print(p)
     Point(x=10, y=20)
+    
+Functions `asdict` and `astuple` for converting to `dict` and `tuple`:
+
     >>> asdict(p)
     {'x':10, 'y':20}
     >>> astuple(p)
@@ -349,7 +368,8 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
        >>> Point = make_dataclass("Point", "x y")
        >>> del Point.x
        ...........
-       TypeError: Attribute x of the class Point can't be deleted
+       AttributeError: Attribute x of the class Point can't be deleted
+
 
 ### 0.15.1
 
