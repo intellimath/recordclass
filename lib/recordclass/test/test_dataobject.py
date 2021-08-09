@@ -580,6 +580,11 @@ class dataobjectTest(unittest.TestCase):
         with self.assertRaises(TypeError):        
             a.y = -2
 
+    def test_del_property(self):
+        A = make_dataclass("A", 'x y')
+        with self.assertRaises(TypeError):        
+            del A.x
+            
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(dataobjectTest))

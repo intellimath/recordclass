@@ -341,6 +341,10 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 
 ### Changes:
 
+### 0.15.2
+
+* Now one can't remove dataobject's properties from the class.
+
 ### 0.15.1
 
 * Options `readonly` and `iterable` now can be sspecified via keyword arguments in class statement.
