@@ -9,7 +9,7 @@ It was evolved further in order to provide more memory saving, fast and flexible
 **Recordclass** library provide record-like classes that do not participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanism for garbage collection.
 The instances of such classes havn't `PyGC_Head` prefix in the memory, which decrease their size.
 This may make sense in cases where it is necessary to limit the size of the objects as much as possible, provided that they will never be part of references cycles in the application.
-For example, when an object represents a record with fields that represent simple values by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
+For example, when an object represents a record with fields with values of simple types by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
 
 In order to illustrate this, consider a simple class with type hints:
 
@@ -376,6 +376,7 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
        >>> del Point.x
        ...........
        AttributeError: Attribute x of the class Point can't be deleted
+       
 * Now one can't delete field's value using del or builting delattr.
   For example:
   
