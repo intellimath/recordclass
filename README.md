@@ -369,6 +369,7 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 
 ### 0.15.2
 
+* Add option `api="dict"``  to ``make_dataclass` for creating class that support dict-like API.
 * Now one can't remove dataobject's property from it's class using del or builting delattr.
   For example:
   
