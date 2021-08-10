@@ -143,6 +143,9 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
                 return getattr(self, key)
             else:
                 return default
+
+        def __contains__(self, key):
+            return (key in self.__fields__)
         
         ns.update({
             'keys': keys, 

@@ -93,4 +93,4 @@ results['size'].extend([
 ])
 
 df = pd.DataFrame.from_dict(results)
-print(df)
+print(df.to_markdown())

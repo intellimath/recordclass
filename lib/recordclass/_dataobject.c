@@ -409,38 +409,28 @@ dataobject_finalize(PyObject *ob) {
 // static PyObject*
 // dataobject_getattr(PyObject *op, PyObject *name) 
 // {
-//     const PyTypeObject *type = Py_TYPE(op);
-//     PyObject *ob = PyDict_GetItem(type->tp_dict, name);
+//     PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
         
-//     if (!ob) {
-//         return PyObject_GenericGetAttr(op, name);
-//     }
-        
-//     PyTypeObject *ob_type = Py_TYPE(ob);
-//     if (ob_type == &PyDataSlotGetSet_Type) {
-//         PyObject *ret = ob_type->tp_descr_get(ob, op, NULL);
-//         return ret;
-//     }
-    
+//     if (ob != NULL) {
+//         const PyTypeObject *ob_type = Py_TYPE(ob);
+//         if (ob_type == &PyDataSlotGetSet_Type) {
+//             return ob_type->tp_descr_get(ob, op, NULL);
+//         }    
+//     }        
 //     return PyObject_GenericGetAttr(op, name);
 // }
 
 // static int
 // dataobject_setattr(PyObject *op, PyObject *name, PyObject* val) 
 // {
-//     const PyTypeObject *type = Py_TYPE(op);
-//     PyObject *ob = PyDict_GetItem(type->tp_dict, name);
+//     PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
         
-//     if (!ob) {
-//         return PyObject_GenericSetAttr(op, name, val);
-//     }
-        
-//     PyTypeObject *ob_type = Py_TYPE(ob);
-//     if (ob_type == &PyDataSlotGetSet_Type) {
-//         int ret = ob_type->tp_descr_set(ob, op, val);
-//         return ret;
-//     }
-    
+//     if (ob != NULL) {
+//         PyTypeObject *ob_type = Py_TYPE(ob);
+//         if (ob_type == &PyDataSlotGetSet_Type) {
+//             return ob_type->tp_descr_set(ob, op, val);
+//         }
+//     }    
 //     return PyObject_GenericSetAttr(op, name, val);
 // }
 
@@ -737,11 +727,11 @@ static PyMappingMethods dataobject_as_mapping = {
     (objobjargproc)dataobject_ass_subscript,  /* mp_ass_subscr */
 };
 
-static PyMappingMethods dataobject_as_mapping0 = {
-    (lenfunc)dataobject_len,                  /* mp_len */
-    0,         /* mp_subscr */
-    0,  /* mp_ass_subscr */
-};
+// static PyMappingMethods dataobject_as_mapping0 = {
+//     (lenfunc)dataobject_len,                  /* mp_len */
+//     0,         /* mp_subscr */
+//     0,  /* mp_ass_subscr */
+// };
 
 static PyMappingMethods dataobject_as_mapping_ro = {
     (lenfunc)dataobject_len,            /* mp_len */
