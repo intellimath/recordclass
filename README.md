@@ -372,18 +372,18 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 * Now one can't remove dataobject's property from it's class using del or builting delattr.
   For example:
   
-       >>> Point = make_dataclass("Point", "x y")
-       >>> del Point.x
-       ...........
-       AttributeError: Attribute x of the class Point can't be deleted
+        >>> Point = make_dataclass("Point", "x y")
+        >>> del Point.x
+        ...........
+        AttributeError: Attribute x of the class Point can't be deleted
        
 * Now one can't delete field's value using del or builting delattr.
   For example:
   
-       >>> p = Point(1, 2)
-       >>> del p.x
-       ...........
-       AttributeError: The value can't be deleted"
+        >>> p = Point(1, 2)
+        >>> del p.x
+        ...........
+        AttributeError: The value can't be deleted"
 
 
 ### 0.15.1
@@ -394,6 +394,7 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
         class Point(dataobject, readonly=True, iterable=True):
              x:int
              y:int
+             
 * Add `update(cls, **kwargs)` function to update attribute values.`
              
 
