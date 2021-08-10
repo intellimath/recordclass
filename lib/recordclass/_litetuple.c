@@ -119,7 +119,7 @@ litetuple_getnewargs(PyLiteTupleObject *ob)
         return NULL;
 
     for (i = n; --i >= 0; ) {
-        v = PyTuple_GET_ITEM(ob, i);
+        v = PyLiteTuple_GET_ITEM(ob, i);
         PyTuple_SET_ITEM(res, i, v);
         Py_INCREF(v);
     }

@@ -139,12 +139,8 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 {
     PyObject *op;
     Py_ssize_t const size = _PyObject_SIZE(type);
-    int const is_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
 
-    if (is_gc)
-        op = _PyObject_GC_Malloc(size);
-    else
-        op = (PyObject*)PyObject_Malloc(size);
+    op = (PyObject*)PyObject_Malloc(size);
 
     if (!op)
         return PyErr_NoMemory();
@@ -157,8 +153,30 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 
     _Py_NewReference(op);
 
-    if (is_gc)
-        PyObject_GC_Track(op);
+    return op;
+}
+
+static PyObject *
+dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
+{
+    PyObject *op;
+    Py_ssize_t const size = _PyObject_SIZE(type);
+//     int const is_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
+
+    op = _PyObject_GC_Malloc(size);
+
+    if (!op)
+        return PyErr_NoMemory();
+
+    memset(op, '\0', size);
+
+    Py_TYPE(op) = type;
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_INCREF(type);
+
+    _Py_NewReference(op);
+
+    PyObject_GC_Track(op);
 
     return op;
 }
@@ -295,37 +313,45 @@ static void
 dataobject_dealloc(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
-    const int is_gc = PyType_IS_GC(type);
-
-//     if (is_gc)
-//         PyObject_GC_UnTrack(op);
-    
-// #if PY_VERSION_HEX < 0x03080000
-//     Py_TRASHCAN_SAFE_BEGIN(op)
-// #else
-//     Py_TRASHCAN_BEGIN(op, dataobject_dealloc)
-// #endif
-
-//     if (is_gc)
-//         PyObject_GC_Track(op);
 
     if (type->tp_finalize != NULL) {
         if(PyObject_CallFinalizerFromDealloc(op) < 0)
             return;
     }
-
-    if (is_gc)
-        PyObject_GC_UnTrack(op);
-    else
-        dataobject_xdecref(op);
     
-// #if PY_VERSION_HEX < 0x03080000
-//     Py_TRASHCAN_SAFE_END(op)
-// #else
-//     Py_TRASHCAN_END
-// #endif
+    dataobject_xdecref(op);
+    
+    type->tp_free((PyObject *)op);
+}
+
+static void
+dataobject_dealloc_gc(PyObject *op)
+{
+    PyTypeObject *type = Py_TYPE(op);
+
+    if (type->tp_finalize != NULL) {
+        if(PyObject_CallFinalizerFromDealloc(op) < 0)
+            return;
+    }
+    
+    PyObject_GC_UnTrack(op);
+    
+#if PY_VERSION_HEX < 0x03080000
+    Py_TRASHCAN_SAFE_BEGIN(op)
+#else
+    Py_TRASHCAN_BEGIN(op, dataobject_dealloc)
+#endif
+
+    dataobject_xdecref(op);
+    
 
     type->tp_free((PyObject *)op);
+    
+#if PY_VERSION_HEX < 0x03080000
+    Py_TRASHCAN_SAFE_END(op)
+#else
+    Py_TRASHCAN_END
+#endif        
 }
 
 static void
@@ -2006,6 +2032,9 @@ _enable_gc(PyObject *cls)
     type->tp_traverse = dataobject_traverse;
     type->tp_clear = dataobject_clear;
 
+    type->tp_dealloc = dataobject_dealloc_gc;
+    type->tp_alloc = dataobject_alloc_gc;
+    
 //     PyType_Modified(type);
 
     Py_RETURN_NONE;

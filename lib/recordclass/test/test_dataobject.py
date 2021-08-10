@@ -595,6 +595,17 @@ class dataobjectTest(unittest.TestCase):
         with self.assertRaises(AttributeError):        
             delattr(a, 'x')
             
+    def test_dict_1(self):
+        A = make_dataclass("A", 'x y', api='dict')
+        a = A(x=1, y=2)
+        self.assertEqual(a['x'], 1)
+        self.assertEqual(a['y'], 2)
+        self.assertEqual(list(a.keys()), ['x', 'y'])
+        self.assertEqual(list(a.values()), [1, 2])
+        self.assertEqual(list(a.items()), [('x',1), ('y',2)])
+        
+        
+            
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(dataobjectTest))

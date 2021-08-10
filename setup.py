@@ -28,7 +28,8 @@ from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
 
 # extra_compile_args = ["-O3",]
-extra_compile_args = []
+extra_compile_args = ['-O3']
+extra_link_args = []
 
 use_cython = 1
 
@@ -42,11 +43,13 @@ ext_modules = [
         "recordclass._dataobject",
         ["lib/recordclass/_dataobject.c"],
         extra_compile_args = extra_compile_args,
+        extra_link_args = extra_link_args,
     ),
     Extension(
         "recordclass._litetuple",
         ["lib/recordclass/_litetuple.c"],
         extra_compile_args = extra_compile_args,
+        extra_link_args = extra_link_args,
     ),
 ]
 
@@ -55,22 +58,26 @@ if use_cython:
         "recordclass.litelist",
         ["lib/recordclass/litelist.pyx"],
         extra_compile_args = extra_compile_args,
+        extra_link_args = extra_link_args,
     ))
     ext_modules.append(Extension(
         "recordclass._linkedlist",
         ["lib/recordclass/_linkedlist.pyx"],
         extra_compile_args = extra_compile_args,
+        extra_link_args = extra_link_args,
     ))
 else:
     ext_modules.append(Extension(
         "recordclass.litelist",
         ["lib/recordclass/litelist.c"],
         extra_compile_args = extra_compile_args,
+        extra_link_args = extra_link_args,
     ))
     ext_modules.append(Extension(
         "recordclass._linkedlist",
         ["lib/recordclass/_linkedlist.c"],
         extra_compile_args = extra_compile_args,
+        extra_link_args = extra_link_args,
     ))
 
 description = """Mutable variant of collections.namedtuple -- recordclass.recordclass, which support assignments, and other memory saving variants."""

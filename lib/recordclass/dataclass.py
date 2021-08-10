@@ -30,7 +30,7 @@ __all__ = 'make_dataclass', 'join_dataclasses', 'DataclassStorage'
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None, *,
                    use_dict=False, use_weakref=False, hashable=False,
                    sequence=False, mapping=False, iterable=False, readonly=False, api='',
-                   module=None, fast_new=False, rename=False, invalid_names=(), gc=False):
+                   module=None, fast_new=False, rename=False, gc=False):
 
     """Returns a new class with named fields and small memory footprint.
 
@@ -56,7 +56,11 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     import sys as _sys
 
     if api == 'namedtuple':
-        invalid_names = invalid_names + ('_make', '_replace', '_asdict')
+        invalid_names = ('_make', '_replace', '_asdict')
+    elif api == 'dict':
+        invalid_names = ('keys', 'values', 'items', 'get')
+    else: 
+        invalid_names = ()
 
     fields, annotations, defaults = process_fields(fields, defaults, rename, invalid_names)
     typename = check_name(typename)
@@ -113,6 +117,39 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
                     '_replace': _replace, 
                     '_asdict': _asdict,
                   })
+        
+    elif api == 'dict':
+        if readonly:
+            raise TypeError('Immutable type can not support dict-like interface')
+
+        iterable = True
+        mapping = True
+        
+        def keys(self):
+            return iter(self.__fields__)
+        
+        def values(self):
+            return iter(self)
+        
+        def items(self):
+            for key in self.__fields__:
+                yield key, getattr(self, key)
+                
+        def update(self, d):
+            return update(self, d)
+        
+        def get(self, key, default=None):
+            if key in self.__fields__:
+                return getattr(self, key)
+            else:
+                return default
+        
+        ns.update({
+            'keys': keys, 
+            'items': items, 
+            'values': values, 
+            'get': get
+        })
 
     if bases:
         base0 = bases[0]
