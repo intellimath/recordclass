@@ -72,7 +72,7 @@ def test_write():
     
     for cls in classes:
         if cls is PointNT:
-            res = ' '
+            res = float('nan')
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test, 'PointNT':PointNT})
         results['write'].append(res)
@@ -92,5 +92,7 @@ results['size'].extend([
   sys.getsizeof(FastPointGC(0,0)),   
 ])
 
+pd.options.mode.use_inf_as_na = True
 df = pd.DataFrame.from_dict(results)
-print(df.to_markdown())
+# pd.set_option('precision', 2)
+print(df.to_markdown(floatfmt='.2f'))
