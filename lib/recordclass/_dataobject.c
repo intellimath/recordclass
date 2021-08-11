@@ -332,10 +332,9 @@ dataobject_dealloc_gc(PyObject *op)
 #endif
 
     dataobject_xdecref(op);
-    
 
     type->tp_free((PyObject *)op);
-    
+
 #if PY_VERSION_HEX < 0x03080000
     Py_TRASHCAN_SAFE_END(op)
 #else
@@ -395,6 +394,22 @@ dataobject_finalize(PyObject *ob) {
     }
 }
 
+static void
+dataobject_free(void *op)
+{
+        Py_DECREF(Py_TYPE(op));
+
+        PyObject_Del((PyObject*)op);
+}
+
+static void
+dataobject_free_gc(void *op)
+{
+        Py_DECREF(Py_TYPE(op));
+
+        PyObject_GC_Del((PyObject*)op);
+}
+
 // static PyObject*
 // dataobject_getattr(PyObject *op, PyObject *name) 
 // {
@@ -439,34 +454,6 @@ dataobject_len(PyObject *op)
         }        
     }
     return n;
-}
-
-static void
-dataobject_free(void *op)
-{
-//     PyTypeObject *type = Py_TYPE(op);
-
-//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_DECREF(Py_TYPE(op));
-
-//     if (PyType_IS_GC(type))
-//         PyObject_GC_Del((PyObject*)op);
-//     else
-        PyObject_Del((PyObject*)op);
-}
-
-static void
-dataobject_free_gc(void *op)
-{
-//     PyTypeObject *type = Py_TYPE(op);
-
-//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_DECREF(Py_TYPE(op));
-
-//     if (PyType_IS_GC(type))
-        PyObject_GC_Del((PyObject*)op);
-//     else
-//         PyObject_Del((PyObject*)op);
 }
 
 static int
