@@ -357,12 +357,12 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 
 |    | id                     |   new |   read |   write |   size |
 |---:|:-----------------------|------:|-------:|--------:|-------:|
-|  0 | namedtuple             |  2.64 |   0.47 |         |     56 |
-|  1 | class+slots            |  1.84 |   0.50 |    0.55 |     48 |
-|  2 | dataobject             |  1.98 |   0.46 |    0.53 |     32 |
-|  3 | dataobject+fast_new    |  0.90 |   0.46 |    0.53 |     32 |
-|  4 | dataobject+gc          |  2.10 |   0.46 |    0.54 |     48 |
-|  5 | dataobject+fast_new+gc |  1.05 |   0.47 |    0.53 |     48 |
+|  0 | namedtuple             |  2.56 |   0.47 |         |     56 |
+|  1 | class+slots            |  1.84 |   0.52 |    0.57 |     48 |
+|  2 | dataobject             |  1.95 |   0.45 |    0.53 |     32 |
+|  3 | dataobject+gc          |  2.10 |   0.45 |    0.53 |     32 |
+|  4 | dataobject+fast_new    |  0.88 |   0.45 |    0.53 |     48 |
+|  5 | dataobject+fast_new+gc |  1.03 |   0.46 |    0.53 |     48 |
 
 
 ### Changes:

@@ -146,8 +146,8 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
     memset(op, '\0', size);
 
     Py_TYPE(op) = type;
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_INCREF(type);
+//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    Py_INCREF(type);
 
     _Py_NewReference(op);
 
@@ -168,8 +168,8 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
     memset(op, '\0', size);
 
     Py_TYPE(op) = type;
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_INCREF(type);
+//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    Py_INCREF(type);
 
     _Py_NewReference(op);
 
@@ -448,15 +448,29 @@ dataobject_len(PyObject *op)
 static void
 dataobject_free(void *op)
 {
-    PyTypeObject *type = Py_TYPE(op);
+//     PyTypeObject *type = Py_TYPE(op);
 
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_DECREF(type);
+//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_DECREF(Py_TYPE(op));
 
-    if (PyType_IS_GC(type))
-        PyObject_GC_Del((PyObject*)op);
-    else
+//     if (PyType_IS_GC(type))
+//         PyObject_GC_Del((PyObject*)op);
+//     else
         PyObject_Del((PyObject*)op);
+}
+
+static void
+dataobject_free_gc(void *op)
+{
+//     PyTypeObject *type = Py_TYPE(op);
+
+//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_DECREF(Py_TYPE(op));
+
+//     if (PyType_IS_GC(type))
+        PyObject_GC_Del((PyObject*)op);
+//     else
+//         PyObject_Del((PyObject*)op);
 }
 
 static int
@@ -2017,6 +2031,7 @@ _enable_gc(PyObject *cls)
 
     type->tp_dealloc = dataobject_dealloc_gc;
     type->tp_alloc = dataobject_alloc_gc;
+    type->tp_free = dataobject_free_gc;
     
 //     PyType_Modified(type);
 

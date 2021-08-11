@@ -31,10 +31,10 @@ class FastPointGC(dataobject, fast_new=True, gc=True):
 results = {'id':[], 'new':[], 'read':[], 'write':[], 'size':[]}
 
 results['id'].extend(
-    ['namedtuple', 'class+slots', 'dataobject', 'dataobject+fast_new',  
-     'dataobject+gc', 'dataobject+fast_new+gc'])
+    ['namedtuple', 'class+slots', 'dataobject',  
+     'dataobject+gc', 'dataobject+fast_new', 'dataobject+fast_new+gc'])
 
-classes = (PointNT, PointSlots, Point, FastPoint, PointGC, FastPointGC)
+classes = (PointNT, PointSlots, Point, PointGC, FastPoint, FastPointGC)
 
 N = 1000000
 
