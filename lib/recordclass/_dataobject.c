@@ -137,10 +137,8 @@ static int _dataobject_update(PyObject *op, PyObject *kw);
 static PyObject *
 dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 {
-    PyObject *op;
     Py_ssize_t const size = _PyObject_SIZE(type);
-
-    op = (PyObject*)PyObject_Malloc(size);
+    PyObject *op = (PyObject*)PyObject_Malloc(size);
 
     if (!op)
         return PyErr_NoMemory();
@@ -159,11 +157,10 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 static PyObject *
 dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 {
-    PyObject *op;
     Py_ssize_t const size = _PyObject_SIZE(type);
 //     int const is_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
 
-    op = _PyObject_GC_Malloc(size);
+    PyObject *op = _PyObject_GC_Malloc(size);
 
     if (!op)
         return PyErr_NoMemory();
@@ -300,10 +297,6 @@ dataobject_xdecref(PyObject *op)
     while (n_items--) {
         PyObject *ob = *items;
         Py_XDECREF(ob);
-//         if (ob) {
-//             Py_DECREF(ob);
-//             *items = NULL;
-//         }
         items++;
     }
     return 0;
@@ -409,7 +402,7 @@ dataobject_finalize(PyObject *ob) {
 // static PyObject*
 // dataobject_getattr(PyObject *op, PyObject *name) 
 // {
-//     PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
+//     PyObject *ob = PyDict_GetItemWithError(Py_TYPE(op)->tp_dict, name);
         
 //     if (ob != NULL) {
 //         const PyTypeObject *ob_type = Py_TYPE(ob);
@@ -423,7 +416,7 @@ dataobject_finalize(PyObject *ob) {
 // static int
 // dataobject_setattr(PyObject *op, PyObject *name, PyObject* val) 
 // {
-//     PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
+//     PyObject *ob = PyDict_GetItemWithError(Py_TYPE(op)->tp_dict, name);
         
 //     if (ob != NULL) {
 //         PyTypeObject *ob_type = Py_TYPE(ob);
