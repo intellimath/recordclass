@@ -34,10 +34,6 @@
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
-// #if PY_VERSION_HEX < 0x030900A4
-// #  define Py_SET_REFCNT(obj, refcnt) ((Py_REFCNT(obj) = (refcnt)), (void)0)
-// #endif
-
 static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataSlotGetSet_Type;
@@ -543,16 +539,6 @@ dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     return 0;
 }
 
-static void
-dataobject_ASS_ITEM(PyObject *op, Py_ssize_t i, PyObject *val)
-{
-    PyObject **items = PyDataObject_ITEMS(op) + i;
-
-    Py_XDECREF(*items);
-    Py_INCREF(val);
-    *items = val;
-}
-
 static PyObject*
 dataobject_subscript(PyObject* op, PyObject* item)
 {
@@ -785,7 +771,8 @@ dataobject_copy(PyObject* op)
             Py_DECREF(new_op);
             return NULL;
         }
-        dataobject_ASS_ITEM(new_op, i, v);
+        PyDataObject_SET_ITEM(new_op, i, v);
+        Py_INCREF(v);
     }
 
     if (type->tp_dictoffset) {
@@ -2069,14 +2056,10 @@ _astuple(PyObject *op)
     Py_ssize_t i;
 
     PyTupleObject *tpl = (PyTupleObject*)PyTuple_New(n);
-    PyObject **tpl_items = tpl->ob_item;
-    PyObject **op_items = PyDataObject_ITEMS(op);
     for (i=0; i<n; i++) {
-        PyObject *v = *(op_items++);
-//         v = PyDataObject_GET_ITEM(op, i);
+        PyObject *v = PyDataObject_GET_ITEM(op, i);
         Py_INCREF(v);
-        *(tpl_items++) = v;
-//         PyTuple_SET_ITEM(tpl, i, v);
+        PyTuple_SET_ITEM(tpl, i, v);
     }
     return (PyObject*)tpl;
 }
