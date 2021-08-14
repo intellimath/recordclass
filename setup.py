@@ -28,7 +28,7 @@ from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
 
 # extra_compile_args = ["-O3",]
-extra_compile_args = ['-O3']
+extra_compile_args = []
 extra_link_args = []
 
 use_cython = 1
@@ -94,7 +94,7 @@ packages = [ 'recordclass',
 
 setup(
     name = 'recordclass',
-    version = '0.15.2',
+    version = '0.16',
     description = description,
     author = 'Zaur Shibzukhov',
     author_email = 'szport@gmail.com',

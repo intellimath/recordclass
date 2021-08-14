@@ -367,8 +367,11 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 
 ### Changes:
 
-#### 0.15.2
+#### 0.16
 
+* Fom now `RecordClass` is a direct subclass of dataobject with `sequence=True`. 
+  Insted of `RecordClass(name, fields, **kw)` use `recordclass(name, fields, **kw)` 
+  (it support type hints).
 * Add option api='dict'  to make_dataclass for creating class that support dict-like API.
 * Now one can't remove dataobject's property from it's class using del or builting delattr.
   For example:
@@ -385,6 +388,11 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
         >>> del p.x
         ...........
         AttributeError: The value can't be deleted"
+        
+  Insted one can use assighnment to None:
+
+        >>> p = Point(1, 2)
+        >>> p.x = None
 
 
 #### 0.15.1
