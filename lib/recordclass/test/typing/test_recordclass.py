@@ -9,7 +9,7 @@ except:
 
 import pickle
 import typing
-from recordclass import dataobject
+from recordclass import dataobject, recordclass
 import sys as _sys
 
 class CoolEmployee(RecordClass):
@@ -55,10 +55,10 @@ class RecordClassTypingTest(unittest.TestCase):
         self.assertEqual(tmp.__annotations__, {'a': int, 'b': str, 'c': typing.List[int]})
 
     def test_recordclass_basics(self):
-#         class Emp(RecordClass):
-#             name:str
-#             id:int
-        Emp = RecordClass('Emp', [('name', str), ('id', int)])
+        class Emp(RecordClass):
+            name:str
+            id:int
+#         Emp = recordclass('Emp', [('name', str), ('id', int)])
         #self.assertIsSubclass(Emp, memoryslots)
         joe = Emp('Joe', 42)
         jim = Emp(name='Jim', id=1)
@@ -122,7 +122,7 @@ class NonDefaultAfterDefault(RecordClass):
         self.assertEqual(str(XRepr(42)), '42 -> 1')
         self.assertEqual(XRepr(1, 2) + XRepr(3), 0)
 
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(TypeError):
             exec("""
 class XMethBad(RecordClass):
     x: int
@@ -131,11 +131,11 @@ class XMethBad(RecordClass):
 """)
 
     def test_recordclass_keyword_usage(self):
-#         class LocalEmployee(RecordClass):
-#             name:str
-#             age:int
+        class LocalEmployee(RecordClass):
+            name:str
+            age:int
 
-        LocalEmployee = RecordClass("LocalEmployee", name=str, age=int)
+#         LocalEmployee = recordclass("LocalEmployee", dict(name=str, age=int))
         nick = LocalEmployee('Nick', 25)
         self.assertEqual(nick.name, 'Nick')
         self.assertEqual(LocalEmployee.__name__, 'LocalEmployee')
@@ -172,7 +172,7 @@ class XMethBad(RecordClass):
         
     def test_pickle(self):
         global Emp  # pickle wants to reference the class by name
-        Emp = RecordClass('Emp', [('name', str), ('id', int)])
+        Emp = recordclass('Emp', [('name', str), ('id', int)])
         jane = Emp('jane', 37)
         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             z = pickle.dumps(jane, proto)

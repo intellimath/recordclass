@@ -24,6 +24,9 @@
 
 __all__ = 'recordclass', 'RecordclassStorage'
 
+from .datatype import datatype
+from ._dataobject import dataobject
+
 def recordclass(typename, fields, defaults=None, *,
                 rename=False, readonly=False, hashable=False, gc=False,
                 use_dict=False, use_weakref=False, fast_new=False, module=None):
@@ -85,3 +88,53 @@ class RecordclassStorage:
             cls = recordclass(name, fields, defaults, **kw)
             self._storage[key] = cls
         return cls
+
+
+class recordclassmeta(datatype):
+    
+    def __new__(metatype, typename, bases, ns, *,
+                gc=False, fast_new=False, readonly=False, iterable=True,
+                sequence=True, use_dict=False, use_weakref=False, hashable=False):
+        
+        def _make(_cls, iterable):
+            ob = _cls(*iterable)
+            return ob
+
+        _make.__doc__ = f'Make a new {typename} object from a sequence or iterable'
+
+        if readonly:
+            def _replace(_self, **kwds):
+                result = _self._make(map(kwds.pop, _self.__fields__, _self))
+                if kwds:
+                    kwnames = tuple(kwds)
+                    raise AttributeError(f'Got unexpected field names: {kwnames}')
+                return result
+        else:
+            def _replace(_self, **kwds):
+                for name, val in kwds.items():
+                    setattr(_self, name, val)
+                return _self
+
+        _replace.__doc__ = f'Return a new {typename} object replacing specified fields with new values'
+
+        def _asdict(self):
+            'Return a new dict which maps field names to their values.'
+            return asdict(self)
+
+        for method in (_make, _replace, _asdict,):
+            method.__qualname__ = typename + "." + method.__name__        
+
+        _make = classmethod(_make)
+
+        ns.update({ '_make': _make, 
+                    '_replace': _replace, 
+                    '_asdict': _asdict,
+                  })
+        
+        return datatype.__new__(metatype, typename, bases, ns,
+                gc=gc, fast_new=fast_new, readonly=readonly, iterable=iterable,
+                sequence=sequence, use_dict=use_dict, use_weakref=use_weakref, hashable=hashable)
+    
+class RecordClass(dataobject, metaclass=recordclassmeta):
+    pass
+

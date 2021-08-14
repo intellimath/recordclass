@@ -275,13 +275,19 @@ def __new__(_cls_, {2}):
 
     return __new__
 
+def _type2str(tp):
+    if hasattr(tp, '__name__'):
+        return tp.__name__
+    else:
+        return str(tp)
+
 def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
 
     fields2 = []
     for fn in fields:
         if fn in annotations:
             tp = annotations[fn]
-            fn_txt = "%s:%s" % (fn, (tp if type(tp) is str else tp.__name__))            
+            fn_txt = "%s:%s" % (fn, (tp if type(tp) is str else _type2str(tp)))            
         else:
             fn_txt = fn
         if fn in defaults:
