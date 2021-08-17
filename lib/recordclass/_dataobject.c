@@ -929,36 +929,48 @@ dataobject_copy(PyObject* op)
 //     return NULL;
 // }
 
-// PyDoc_STRVAR(dataobject_subscript_doc,
-// "T.__getitem__(ob, key)");
+PyDoc_STRVAR(dataobject_subscript_doc,
+"T.__getitem__(ob, key)");
 
-// static PyObject *
-// dataobject_subscript(PyObject *ob, PyObject *key)
-// {
-//     PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
+static PyObject *
+dataobject_subscript(PyObject *ob, PyObject *key)
+{
+    PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
     
-//     if (m->mp_subscript) {
-//         return m->mp_subscript(ob, key);
-//     }
+    if (m->mp_subscript) {
+        return m->mp_subscript(ob, key);
+    }
     
-//     return type_error("instances of %s are not subsciptable", (PyObject*)Py_TYPE(ob));
-// }
+    return type_error("instances of %s are not subsciptable", (PyObject*)Py_TYPE(ob));
+}
 
-// PyDoc_STRVAR(dataobject_ass_subscript_doc,
-// "T.__setitem__(ob, key, val)");
+PyDoc_STRVAR(dataobject_ass_subscript_doc,
+"T.__setitem__(ob, key, val)");
 
-// static int
-// dataobject_ass_subscript(PyObject *ob, PyObject *key, PyObject *val)
-// {
-//     PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
+static PyObject*
+dataobject_ass_subscript(PyObject *ob, PyObject *args)
+{
+    if (Py_SIZE(args) != 2) {
+        type_error("__setitem__ need 2 args", ob);
+        return NULL;
+    }
     
-//     if (m->mp_ass_subscript) {
-//         return m->mp_ass_subscript(ob, key, val);
-//     }
+    PyObject *key = PyTuple_GET_ITEM(args, 0);
+    PyObject *val = PyTuple_GET_ITEM(args, 1);;
     
-//     type_error("instances of %s does not support item assignment", (PyObject*)Py_TYPE(ob));
-//     return -1;
-// }
+    
+    PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
+    
+    if (m->mp_ass_subscript) {
+        if (m->mp_ass_subscript(ob, key, val) < 0)
+            return NULL;
+        else 
+            Py_RETURN_NONE;
+    }
+    
+    type_error("instances of %s does not support item assignment", (PyObject*)Py_TYPE(ob));
+    return NULL;
+}
 
 
 PyDoc_STRVAR(dataobject_reduce_doc,
@@ -1048,7 +1060,8 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
 }
 
 static PyMethodDef dataobject_methods[] = {
-//     {"__getitem__",  (PyCFunction)(void(*)(void))dataobject_subscript, METH_O|METH_COEXIST, dataobject_subscript_doc},
+    {"__getitem__",  (PyCFunction)(void(*)(void))dataobject_subscript, METH_O|METH_COEXIST, dataobject_subscript_doc},
+    {"__setitem__",  (PyCFunction)dataobject_ass_subscript, METH_VARARGS, dataobject_ass_subscript_doc},
     {"__copy__",     (PyCFunction)dataobject_copy, METH_NOARGS, dataobject_copy_doc},
     {"__len__",      (PyCFunction)dataobject_len, METH_NOARGS, dataobject_len_doc},
     {"__sizeof__",   (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
