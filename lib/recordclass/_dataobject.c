@@ -38,6 +38,13 @@ static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataSlotGetSet_Type;
 
+static PyObject *
+type_error(const char *msg, PyObject *obj)
+{
+    PyErr_Format(PyExc_TypeError, msg, obj->ob_type->tp_name);
+    return NULL;
+}
+
 
 static PyObject **
 PyDataObject_GetDictPtr(PyObject *ob) {
@@ -126,7 +133,7 @@ _PyObject_GetObject(const char *modname_c, const char *attrname_c)
 
 // forward decaration
 static Py_ssize_t dataobject_len(PyObject *op);
-static PyObject* dataobject_item(PyObject *op, Py_ssize_t i);
+static PyObject* dataobject_sq_item(PyObject *op, Py_ssize_t i);
 static PyObject* _astuple(PyObject *op);
 static int _dataobject_update(PyObject *op, PyObject *kw);
 
@@ -483,7 +490,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
 }
 
 static PyObject *
-dataobject_item(PyObject *op, Py_ssize_t i)
+dataobject_sq_item(PyObject *op, Py_ssize_t i)
 {
     const Py_ssize_t n = PyDataObject_LEN(op);
 
@@ -507,7 +514,7 @@ dataobject_item(PyObject *op, Py_ssize_t i)
 // }
 
 static int
-dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
+dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
     const Py_ssize_t n = PyDataObject_LEN(op);
 
@@ -527,39 +534,39 @@ dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 }
 
 static PyObject*
-dataobject_subscript(PyObject* op, PyObject* item)
+dataobject_mp_subscript(PyObject* op, PyObject* item)
 {
-    return PyObject_GetAttr(op, item);
+    return Py_TYPE(op)->tp_getattro(op, item);
 }
 
 static int
-dataobject_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
+dataobject_mp_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
 {
-    return PyObject_SetAttr(op, item, val);
+    return Py_TYPE(op)->tp_setattro(op, item, val);
 }
 
 static int
-dataobject_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
+dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
 {
     if (PyIndex_Check(item)) {
         const Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
         if (i == -1 && PyErr_Occurred())
             return -1;
-        return dataobject_ass_item(op, i, val);
+        return dataobject_sq_ass_item(op, i, val);
     } else
-        return PyObject_SetAttr(op, item, val);
+        return Py_TYPE(op)->tp_setattro(op, item, val);
 }
 
 static PyObject*
-dataobject_subscript2(PyObject* op, PyObject* item)
+dataobject_mp_subscript2(PyObject* op, PyObject* item)
 {
     if (PyIndex_Check(item)) {
         const Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
         if (i == -1 && PyErr_Occurred())
             return NULL;
-        return dataobject_item(op, i);
+        return dataobject_sq_item(op, i);
     } else
-        return PyObject_GetAttr(op, item);
+        return Py_TYPE(op)->tp_getattro(op, item);
 }
 
 #ifndef _PyHASH_MULTIPLIER
@@ -672,9 +679,9 @@ static PySequenceMethods dataobject_as_sequence = {
     (lenfunc)dataobject_len,                /* sq_length */
     0,                                      /* sq_concat */
     0,                                      /* sq_repeat */
-    (ssizeargfunc)dataobject_item,          /* sq_item */
+    (ssizeargfunc)dataobject_sq_item,          /* sq_item */
     0,                                      /* sq_slice */
-    (ssizeobjargproc)dataobject_ass_item,   /* sq_ass_item */
+    (ssizeobjargproc)dataobject_sq_ass_item,   /* sq_ass_item */
     0,                                      /* sq_ass_slice */
     0,                                      /* sq_contains */
 };
@@ -694,7 +701,7 @@ static PySequenceMethods dataobject_as_sequence_ro = {
     (lenfunc)dataobject_len,         /* sq_length */
     0,                               /* sq_concat */
     0,                               /* sq_repeat */
-    (ssizeargfunc)dataobject_item,   /* sq_item */
+    (ssizeargfunc)dataobject_sq_item,   /* sq_item */
     0,                               /* sq_slice */
     0,                               /* sq_ass_item */
     0,                               /* sq_ass_slice */
@@ -703,8 +710,8 @@ static PySequenceMethods dataobject_as_sequence_ro = {
 
 static PyMappingMethods dataobject_as_mapping = {
     (lenfunc)dataobject_len,                  /* mp_len */
-    (binaryfunc)dataobject_subscript,         /* mp_subscr */
-    (objobjargproc)dataobject_ass_subscript,  /* mp_ass_subscr */
+    (binaryfunc)dataobject_mp_subscript,         /* mp_subscr */
+    (objobjargproc)dataobject_mp_ass_subscript,  /* mp_ass_subscr */
 };
 
 // static PyMappingMethods dataobject_as_mapping0 = {
@@ -715,19 +722,19 @@ static PyMappingMethods dataobject_as_mapping = {
 
 static PyMappingMethods dataobject_as_mapping_ro = {
     (lenfunc)dataobject_len,            /* mp_len */
-    (binaryfunc)dataobject_subscript,   /* mp_subscr */
+    (binaryfunc)dataobject_mp_subscript,   /* mp_subscr */
     0,                                  /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping2 = {
     (lenfunc)dataobject_len,                   /* mp_len */
-    (binaryfunc)dataobject_subscript2,         /* mp_subscr */
-    (objobjargproc)dataobject_ass_subscript2,  /* mp_ass_subscr */
+    (binaryfunc)dataobject_mp_subscript2,         /* mp_subscr */
+    (objobjargproc)dataobject_mp_ass_subscript2,  /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping2_ro = {
     (lenfunc)dataobject_len,            /* mp_len */
-    (binaryfunc)dataobject_subscript2,  /* mp_subscr */
+    (binaryfunc)dataobject_mp_subscript2,  /* mp_subscr */
     0,                                  /* mp_ass_subscr */
 };
 
@@ -922,6 +929,38 @@ dataobject_copy(PyObject* op)
 //     return NULL;
 // }
 
+// PyDoc_STRVAR(dataobject_subscript_doc,
+// "T.__getitem__(ob, key)");
+
+// static PyObject *
+// dataobject_subscript(PyObject *ob, PyObject *key)
+// {
+//     PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
+    
+//     if (m->mp_subscript) {
+//         return m->mp_subscript(ob, key);
+//     }
+    
+//     return type_error("instances of %s are not subsciptable", (PyObject*)Py_TYPE(ob));
+// }
+
+// PyDoc_STRVAR(dataobject_ass_subscript_doc,
+// "T.__setitem__(ob, key, val)");
+
+// static int
+// dataobject_ass_subscript(PyObject *ob, PyObject *key, PyObject *val)
+// {
+//     PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
+    
+//     if (m->mp_ass_subscript) {
+//         return m->mp_ass_subscript(ob, key, val);
+//     }
+    
+//     type_error("instances of %s does not support item assignment", (PyObject*)Py_TYPE(ob));
+//     return -1;
+// }
+
+
 PyDoc_STRVAR(dataobject_reduce_doc,
 "T.__reduce__()");
 
@@ -1009,6 +1048,7 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
 }
 
 static PyMethodDef dataobject_methods[] = {
+//     {"__getitem__",  (PyCFunction)(void(*)(void))dataobject_subscript, METH_O|METH_COEXIST, dataobject_subscript_doc},
     {"__copy__",     (PyCFunction)dataobject_copy, METH_NOARGS, dataobject_copy_doc},
     {"__len__",      (PyCFunction)dataobject_len, METH_NOARGS, dataobject_len_doc},
     {"__sizeof__",   (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
@@ -1227,7 +1267,7 @@ dataobjectiter_next(dataobjectiterobject *it)
         return NULL;
 
     if (it->it_index < it->it_len) {
-        item = dataobject_item(op, it->it_index);
+        item = dataobject_sq_item(op, it->it_index);
         it->it_index++;
         return item;
     }

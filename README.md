@@ -91,6 +91,8 @@ Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intelli
 
 Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/intellimath/recordclass/raw/master/examples/what_is_recordclass.ipynb).
 
+More examples can be found in the folder [examples](https://bitbucket.org/intellimath/recordclass/examples).
+
 ## Quick start
 
 ### Installation
@@ -166,6 +168,10 @@ or
     class Node(RecordClass):
          root: 'Node'
          chilren: list
+
+The `recordclass` factory can specify type of the fields:
+
+    >>> Point = recordclass('Point', [('x',int), ('y',int)])
 
 ### Quick start with dataobject
 
@@ -373,7 +379,7 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
   Insted of `RecordClass(name, fields, **kw)` for class creation 
   use factory function `recordclass(name, fields, **kw)` 
   (it allow to specify types).
-* Add option `api='dict'``  to `make_dataclass` for creating class that support dict-like API.
+* Add option api='dict'  to `make_dataclass` for creating class that support dict-like API.
 * Now one can't remove dataobject's property from it's class using del or builting delattr.
   For example:
   
