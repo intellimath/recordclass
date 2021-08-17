@@ -962,7 +962,7 @@ dataobject_ass_subscript(PyObject *ob, PyObject *args)
     PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
     
     if (m->mp_ass_subscript) {
-        if (m->mp_ass_subscript(ob, key, val) < 0)
+        if (m->mp_ass_subscript(ob, key, val))
             return NULL;
         else 
             Py_RETURN_NONE;
