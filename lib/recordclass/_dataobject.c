@@ -569,6 +569,124 @@ dataobject_mp_subscript2(PyObject* op, PyObject* item)
         return Py_TYPE(op)->tp_getattro(op, item);
 }
 
+static int
+dataobject_mp_ass_subscript_sq(PyObject* op, PyObject* item, PyObject *val)
+{
+    if (PyIndex_Check(item)) {
+        const Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+        if (i == -1 && PyErr_Occurred())
+            return -1;
+        return dataobject_sq_ass_item(op, i, val);
+    } else {
+        type_error("object %s support only assignment by index", op);
+        return -1;
+    }
+}
+
+static PyObject*
+dataobject_mp_subscript_sq(PyObject* op, PyObject* item)
+{
+    if (PyIndex_Check(item)) {
+        const Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+        if (i == -1 && PyErr_Occurred())
+            return NULL;
+        return dataobject_sq_item(op, i);
+    } else {
+        type_error("object %s get item only by index", op);
+        return NULL;
+    }
+}
+
+static int
+dataobject_mp_ass_subscript0(PyObject* op, PyObject* item, PyObject *val)
+{
+    type_error("object %s does not support set item", op);
+    return -1;
+}
+
+static PyObject*
+dataobject_mp_subscript0(PyObject* op, PyObject* item)
+{
+    type_error("object %s does not support assignment", op);
+    return NULL;
+}
+
+static PySequenceMethods dataobject_as_sequence = {
+    (lenfunc)dataobject_len,                /* sq_length */
+    0,                                      /* sq_concat */
+    0,                                      /* sq_repeat */
+    (ssizeargfunc)dataobject_sq_item,          /* sq_item */
+    0,                                      /* sq_slice */
+    (ssizeobjargproc)dataobject_sq_ass_item,   /* sq_ass_item */
+    0,                                      /* sq_ass_slice */
+    0,                                      /* sq_contains */
+};
+
+static PySequenceMethods dataobject_as_sequence0 = {
+    (lenfunc)dataobject_len,                /* sq_length */
+    0,                                      /* sq_concat */
+    0,                                      /* sq_repeat */
+    0,          /* sq_item */
+    0,                                      /* sq_slice */
+    0,   /* sq_ass_item */
+    0,                                      /* sq_ass_slice */
+    0,                                      /* sq_contains */
+};
+
+static PySequenceMethods dataobject_as_sequence_ro = {
+    (lenfunc)dataobject_len,         /* sq_length */
+    0,                               /* sq_concat */
+    0,                               /* sq_repeat */
+    (ssizeargfunc)dataobject_sq_item,   /* sq_item */
+    0,                               /* sq_slice */
+    0,                               /* sq_ass_item */
+    0,                               /* sq_ass_slice */
+    0,                               /* sq_contains */
+};
+
+static PyMappingMethods dataobject_as_mapping = {
+    (lenfunc)dataobject_len,                  /* mp_len */
+    (binaryfunc)dataobject_mp_subscript,         /* mp_subscr */
+    (objobjargproc)dataobject_mp_ass_subscript,  /* mp_ass_subscr */
+};
+
+static PyMappingMethods dataobject_as_mapping0 = {
+    (lenfunc)dataobject_len,                  /* mp_len */
+    (binaryfunc)dataobject_mp_subscript0,         /* mp_subscr */
+    (objobjargproc)dataobject_mp_ass_subscript0,  /* mp_ass_subscr */
+};
+
+static PyMappingMethods dataobject_as_mapping_ro = {
+    (lenfunc)dataobject_len,            /* mp_len */
+    (binaryfunc)dataobject_mp_subscript,   /* mp_subscr */
+    0,                                  /* mp_ass_subscr */
+};
+
+static PyMappingMethods dataobject_as_mapping2 = {
+    (lenfunc)dataobject_len,                   /* mp_len */
+    (binaryfunc)dataobject_mp_subscript2,         /* mp_subscr */
+    (objobjargproc)dataobject_mp_ass_subscript2,  /* mp_ass_subscr */
+};
+
+static PyMappingMethods dataobject_as_mapping2_ro = {
+    (lenfunc)dataobject_len,            /* mp_len */
+    (binaryfunc)dataobject_mp_subscript2,  /* mp_subscr */
+    0,                                  /* mp_ass_subscr */
+};
+
+static PyMappingMethods dataobject_as_mapping_sq = {
+    (lenfunc)dataobject_len,                   /* mp_len */
+    (binaryfunc)dataobject_mp_subscript_sq,         /* mp_subscr */
+    (objobjargproc)dataobject_mp_ass_subscript_sq,  /* mp_ass_subscr */
+};
+
+static PyMappingMethods dataobject_as_mapping_sq_ro = {
+    (lenfunc)dataobject_len,            /* mp_len */
+    (binaryfunc)dataobject_mp_subscript_sq,  /* mp_subscr */
+    0,                                  /* mp_ass_subscr */
+};
+
+
 #ifndef _PyHASH_MULTIPLIER
 #define _PyHASH_MULTIPLIER 1000003UL
 #endif
@@ -674,70 +792,6 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
 
     return ret;
 }
-
-static PySequenceMethods dataobject_as_sequence = {
-    (lenfunc)dataobject_len,                /* sq_length */
-    0,                                      /* sq_concat */
-    0,                                      /* sq_repeat */
-    (ssizeargfunc)dataobject_sq_item,          /* sq_item */
-    0,                                      /* sq_slice */
-    (ssizeobjargproc)dataobject_sq_ass_item,   /* sq_ass_item */
-    0,                                      /* sq_ass_slice */
-    0,                                      /* sq_contains */
-};
-
-static PySequenceMethods dataobject_as_sequence0 = {
-    (lenfunc)dataobject_len,                /* sq_length */
-    0,                                      /* sq_concat */
-    0,                                      /* sq_repeat */
-    0,          /* sq_item */
-    0,                                      /* sq_slice */
-    0,   /* sq_ass_item */
-    0,                                      /* sq_ass_slice */
-    0,                                      /* sq_contains */
-};
-
-static PySequenceMethods dataobject_as_sequence_ro = {
-    (lenfunc)dataobject_len,         /* sq_length */
-    0,                               /* sq_concat */
-    0,                               /* sq_repeat */
-    (ssizeargfunc)dataobject_sq_item,   /* sq_item */
-    0,                               /* sq_slice */
-    0,                               /* sq_ass_item */
-    0,                               /* sq_ass_slice */
-    0,                               /* sq_contains */
-};
-
-static PyMappingMethods dataobject_as_mapping = {
-    (lenfunc)dataobject_len,                  /* mp_len */
-    (binaryfunc)dataobject_mp_subscript,         /* mp_subscr */
-    (objobjargproc)dataobject_mp_ass_subscript,  /* mp_ass_subscr */
-};
-
-// static PyMappingMethods dataobject_as_mapping0 = {
-//     (lenfunc)dataobject_len,                  /* mp_len */
-//     0,         /* mp_subscr */
-//     0,  /* mp_ass_subscr */
-// };
-
-static PyMappingMethods dataobject_as_mapping_ro = {
-    (lenfunc)dataobject_len,            /* mp_len */
-    (binaryfunc)dataobject_mp_subscript,   /* mp_subscr */
-    0,                                  /* mp_ass_subscr */
-};
-
-static PyMappingMethods dataobject_as_mapping2 = {
-    (lenfunc)dataobject_len,                   /* mp_len */
-    (binaryfunc)dataobject_mp_subscript2,         /* mp_subscr */
-    (objobjargproc)dataobject_mp_ass_subscript2,  /* mp_ass_subscr */
-};
-
-static PyMappingMethods dataobject_as_mapping2_ro = {
-    (lenfunc)dataobject_len,            /* mp_len */
-    (binaryfunc)dataobject_mp_subscript2,  /* mp_subscr */
-    0,                                  /* mp_ass_subscr */
-};
-
 
 PyDoc_STRVAR(dataobject_sizeof_doc,
 "T.__sizeof__() -- size of T");
@@ -1061,7 +1115,7 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
 
 static PyMethodDef dataobject_methods[] = {
     {"__getitem__",  (PyCFunction)(void(*)(void))dataobject_subscript, METH_O|METH_COEXIST, dataobject_subscript_doc},
-    {"__setitem__",  (PyCFunction)dataobject_ass_subscript, METH_VARARGS, dataobject_ass_subscript_doc},
+    {"__setitem__",  (PyCFunction)dataobject_ass_subscript, METH_VARARGS|METH_COEXIST, dataobject_ass_subscript_doc},
     {"__copy__",     (PyCFunction)dataobject_copy, METH_NOARGS, dataobject_copy_doc},
     {"__len__",      (PyCFunction)dataobject_len, METH_NOARGS, dataobject_len_doc},
     {"__sizeof__",   (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
@@ -1092,7 +1146,7 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_repr */
     0,                                      /* tp_as_number */
     &dataobject_as_sequence0,               /* tp_as_sequence */
-    0,                /* tp_as_mapping */
+    &dataobject_as_mapping0,                /* tp_as_mapping */
     0,                                      /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
@@ -1765,24 +1819,29 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
     tp->tp_as_sequence = tp_base->tp_as_sequence;
     
     if (sq) {
-        if (ro)
+        if (ro) {
             tp->tp_as_sequence = &dataobject_as_sequence_ro;
-        else
+            tp->tp_as_mapping = &dataobject_as_mapping_sq_ro;
+        } else {
             tp->tp_as_sequence = &dataobject_as_sequence;
+            tp->tp_as_mapping = &dataobject_as_mapping_sq;
+        } 
     }
         
     if (mp) {
-        if (ro)
+        if (ro) {
             tp->tp_as_mapping = &dataobject_as_mapping_ro;
-        else
+        } else {
             tp->tp_as_mapping = &dataobject_as_mapping;
+        }
     }
         
     if (mp && sq) {
-        if (ro)
+        if (ro) {
             tp->tp_as_mapping = &dataobject_as_mapping2_ro;
-        else
+        } else {
             tp->tp_as_mapping = &dataobject_as_mapping2;
+        }
     }
     
     Py_RETURN_NONE;

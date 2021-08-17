@@ -83,6 +83,8 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     ns['__defaults__'] = defaults
     
     if api == 'namedtuple':
+        sequence = True
+
         def _make(_cls, iterable):
             ob = _cls(*iterable)
             return ob
