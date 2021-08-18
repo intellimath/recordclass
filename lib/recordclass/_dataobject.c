@@ -659,7 +659,7 @@ static PyMappingMethods dataobject_as_mapping0 = {
 static PyMappingMethods dataobject_as_mapping_ro = {
     (lenfunc)dataobject_len,            /* mp_len */
     (binaryfunc)dataobject_mp_subscript,   /* mp_subscr */
-    0,                                  /* mp_ass_subscr */
+    (objobjargproc)dataobject_mp_ass_subscript0,  /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping2 = {
@@ -671,7 +671,7 @@ static PyMappingMethods dataobject_as_mapping2 = {
 static PyMappingMethods dataobject_as_mapping2_ro = {
     (lenfunc)dataobject_len,            /* mp_len */
     (binaryfunc)dataobject_mp_subscript2,  /* mp_subscr */
-    0,                                  /* mp_ass_subscr */
+    (objobjargproc)dataobject_mp_ass_subscript0,   /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping_sq = {
@@ -683,7 +683,7 @@ static PyMappingMethods dataobject_as_mapping_sq = {
 static PyMappingMethods dataobject_as_mapping_sq_ro = {
     (lenfunc)dataobject_len,            /* mp_len */
     (binaryfunc)dataobject_mp_subscript_sq,  /* mp_subscr */
-    0,                                  /* mp_ass_subscr */
+    (objobjargproc)dataobject_mp_ass_subscript0,      /* mp_ass_subscr */
 };
 
 
