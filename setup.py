@@ -27,8 +27,8 @@ from setuptools import setup
 from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
 
-# extra_compile_args = ["-O3",]
-extra_compile_args = []
+extra_compile_args = ["-O3",]
+# extra_compile_args = []
 extra_link_args = []
 
 use_cython = 1
