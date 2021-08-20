@@ -133,7 +133,7 @@ class datatype(type):
                     del annotations['__weakref__']
                 use_weakref = True
 
-            _fields, _defaults, _annotations = collect_info_from_bases(bases)
+            _fields, _defaults, _annotations, _readonlys = collect_info_from_bases(bases)
 
             if '__defaults__' in ns:
                 defaults = ns['__defaults__']
@@ -168,7 +168,7 @@ class datatype(type):
                 else:
                     readonly_fields = set(readonly)
             else:
-                readonly_fields = set()
+                readonly_fields = _readonlys
 
             for i, name in enumerate(fields):
                 offset = dataslot_offset(i, n_fields)

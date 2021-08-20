@@ -2,10 +2,10 @@
 import unittest, doctest, operator
 from recordclass.typing import RecordClass
 
-try:
-    from test import support
-except:
-    from test import test_support as support
+# try:
+#     from test import support
+# except:
+#     from test import test_support as support
 
 import pickle
 import typing
@@ -33,15 +33,15 @@ class XRepr(RecordClass):
     def __add__(self, other):
         return 0
     
-class H(RecordClass):
+class H(RecordClass, hashable=True):
     x: int
     y: int
-    __options__ = {'hashable': True}
+#     __options__ = {'hashable': True}
 
-class HR(RecordClass):
+class HR(RecordClass, readonly=True):
     x: int
     y: int
-    __options__ = {'readonly': True}
+#     __options__ = {'readonly': True}
         
 class RecordClassTypingTest(unittest.TestCase):
     def test_typing(self):
@@ -163,12 +163,27 @@ class XMethBad(RecordClass):
         hash(b)
 
     def test_hash_subcls2(self):
+        class B(H):
+            def __hash__(self):
+                return 0
+#         print(dir(B))
+        b = B(1,2)
+        hash(b)
+
+    def test_hash_subcls3(self):
         class B(HR):
             def __hash__(self):
                 return 0
 #         print(dir(B))
         b = B(1,2)
         hash(b)
+
+    def test_hash_subcls4(self):
+        class B(HR):
+            pass
+        b = B(1,2)
+        with self.assertRaises(TypeError):
+            b.x = 1
         
     def test_pickle(self):
         global Emp  # pickle wants to reference the class by name

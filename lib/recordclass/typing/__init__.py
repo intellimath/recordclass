@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 
-# Copyright (c) «2015-2020» «Shibzukhov Zaur, szport at gmail dot com»
+# Copyright (c) «2015-2021» «Shibzukhov Zaur, szport at gmail dot com»
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software - recordclass library - and associated documentation files 
@@ -26,7 +26,6 @@ from recordclass.recordclass import RecordClass
 # from typing import _type_check
 
 __all__ = 'RecordClass',
-
 
 # import sys as _sys
 
