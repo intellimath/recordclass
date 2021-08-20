@@ -23,14 +23,12 @@
 
 from .datatype import datatype, clsconfig
 from ._dataobject import dataobject, astuple, asdict, make, clone, update
-from .recordclass import recordclass, RecordclassStorage
+from .recordclass import recordclass, RecordClass, RecordclassStorage
 
 from .dataclass import make_dataclass, make_class, join_dataclasses, DataclassStorage
 structclass = make_dataclass
 from .arrayclass import make_arrayclass
 from .litelist import litelist
 from ._litetuple import litetuple, mutabletuple
-
-from .typing import RecordClass
 
 __version__ = '0.16'

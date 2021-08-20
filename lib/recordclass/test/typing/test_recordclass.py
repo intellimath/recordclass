@@ -4,7 +4,6 @@ from recordclass.typing import RecordClass
 
 import pickle
 import typing
-# from recordclass import dataobject, recordclass
 import sys as _sys
 
 class CoolEmployee(RecordClass):

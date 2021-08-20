@@ -93,8 +93,8 @@ class RecordclassStorage:
 class recordclassmeta(datatype):
     
     def __new__(metatype, typename, bases, ns, *,
-                gc=False, fast_new=False, readonly=False, iterable=True,
-                sequence=True, use_dict=False, use_weakref=False, hashable=False):
+                gc=False, fast_new=False, readonly=False, 
+                use_dict=False, use_weakref=False, hashable=False):
         
         def _make(_cls, iterable):
             ob = _cls(*iterable)
@@ -131,9 +131,12 @@ class recordclassmeta(datatype):
                     '_asdict': _asdict,
                   })
         
+        if readonly:
+            hashable = True
+        
         return datatype.__new__(metatype, typename, bases, ns,
-                gc=gc, fast_new=fast_new, readonly=readonly, iterable=iterable,
-                sequence=sequence, use_dict=use_dict, use_weakref=use_weakref, hashable=hashable)
+                    gc=gc, fast_new=fast_new, readonly=readonly, iterable=True,
+                    sequence=True, use_dict=use_dict, use_weakref=use_weakref, hashable=hashable)
     
 class RecordClass(dataobject, metaclass=recordclassmeta):
     pass
