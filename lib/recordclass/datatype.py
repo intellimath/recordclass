@@ -137,7 +137,9 @@ class datatype(type):
                     del annotations['__weakref__']
                 use_weakref = True
 
-            _fields, _fields_dict = collect_info_from_bases(bases)
+            _fields, _fields_dict, _use_dict = collect_info_from_bases(bases)
+            if _use_dict:
+                use_dict = _use_dict
             _defaults = {fn:fd['default'] for fn,fd in _fields_dict.items() if 'default' in fd} 
             _annotations = {fn:fd['type'] for fn,fd in _fields_dict.items() if 'type' in fd} 
 

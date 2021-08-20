@@ -53,13 +53,15 @@ del _sys
 #############
 
 def number_of_dataslots(cls):
-    basesize = pyobject_size
-    n = (cls.__basicsize__ - basesize) // ref_size
-    if cls.__dictoffset__:
-        n -= 1
-    if cls.__weakrefoffset__:
-        n -= 1
-    return n
+    return cls.__itemsize__
+
+#     basesize = pyobject_size
+#     n = (cls.__basicsize__ - basesize) // ref_size
+#     if cls.__dictoffset__:
+#         n -= 1
+#     if cls.__weakrefoffset__:
+#         n -= 1
+#     return n
 
 def dataslot_offset(i, n_slots):
     if i >= n_slots:
@@ -137,14 +139,22 @@ def check_name(name, i=0, rename=False, invalid_names=()):
     return name
 
 def collect_info_from_bases(bases):
+    from recordclass import dataobject 
+
     fields = []
     fields_dict = {}
     use_dict = False
     for base in bases:
+        if issubclass(base, dataobject):
+            if base.__dictoffset__ > 0:
+                use_dict = True
+        else:
+            continue
+
         fs = base.__dict__.get('__fields__', ())
         base_defaults = base.__dict__.get('__defaults__', {})
         base_annotations = base.__dict__.get('__annotations__', {})
-        n = number_of_dataslots(base)
+        n = base.__itemsize__ #number_of_dataslots(base)
         if type(fs) is tuple and len(fs) == n:
             for fn in fs:
                 if fn in fields:
@@ -161,4 +171,4 @@ def collect_info_from_bases(bases):
         else:
             raise TypeError("invalid fields in base class %r" % base)
         
-    return fields, fields_dict
+    return fields, fields_dict, use_dict
