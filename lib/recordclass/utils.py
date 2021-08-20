@@ -138,31 +138,27 @@ def check_name(name, i=0, rename=False, invalid_names=()):
 
 def collect_info_from_bases(bases):
     fields = []
-    defaults = {}
-    annotations = {}
-    readonlys = []
+    fields_dict = {}
     use_dict = False
     for base in bases:
         fs = base.__dict__.get('__fields__', ())
+        base_defaults = base.__dict__.get('__defaults__', {})
+        base_annotations = base.__dict__.get('__annotations__', {})
         n = number_of_dataslots(base)
         if type(fs) is tuple and len(fs) == n:
-            for f in fs:
-                if f in fields:
-                    raise TypeError('field %s is already defined in the %s' % (f, base))
+            for fn in fs:
+                if fn in fields:
+                    raise TypeError('field %s is already defined in the %s' % (fn, base))
                 else:
-                    if base.__dict__[f].readonly:
-                        readonlys.append(f)
-                    fields.append(f)
-#             fields.extend(f for f in fs if f not in fields)
+                    fields_dict[fn] = f = {}
+                    if base.__dict__[fn].readonly:
+                        f['readonly'] = True
+                    if fn in base_defaults:
+                        f['default'] = base_defaults[fn]
+                    if fn in base_annotations:
+                        f['type'] = base_annotations[fn]
+                    fields.append(fn)
         else:
             raise TypeError("invalid fields in base class %r" % base)
-
-        readonlys = set(readonlys)
-
-        ds = base.__dict__.get('__defaults__', {})
-        defaults.update(ds)                        
-
-        ann = base.__dict__.get('__annotations__', {})
-        annotations.update(ann)
         
-    return fields, defaults, annotations, readonlys
+    return fields, fields_dict

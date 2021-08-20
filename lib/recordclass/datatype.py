@@ -89,8 +89,13 @@ class datatype(type):
 
         if '__fields__' in ns:
             fields = ns['__fields__']
+            if not isinstance(fields, int_type):
+                field_dicts = {fn:{} for fn in fields}
+            else:
+                field_dicts = {}
         else:
             fields = tuple(annotations)
+            field_dicts = {fn:{'type':tp} for fn,tp in annotations.items()}
 
         has_fields = True
         if isinstance(fields, int_type):
@@ -111,7 +116,6 @@ class datatype(type):
             for base in bases:
                 if '__iter__' in base.__dict__:
                     iterable = True
-#                     ns['__iter__'] = base.__dict__['__iter__']
                     break
             
         if readonly:
@@ -133,7 +137,9 @@ class datatype(type):
                     del annotations['__weakref__']
                 use_weakref = True
 
-            _fields, _defaults, _annotations, _readonlys = collect_info_from_bases(bases)
+            _fields, _fields_dict = collect_info_from_bases(bases)
+            _defaults = {fn:fd['default'] for fn,fd in _fields_dict.items() if 'default' in fd} 
+            _annotations = {fn:fd['type'] for fn,fd in _fields_dict.items() if 'type' in fd} 
 
             if '__defaults__' in ns:
                 defaults = ns['__defaults__']
@@ -142,10 +148,30 @@ class datatype(type):
             _matching_annotations_and_defaults(annotations, defaults)
 
             if fields:
-                fields = [f for f in fields if f not in _fields]
+                fields = [fn for fn in fields if fn not in _fields]
+            
+            fields_dict = {}
+            for fn in fields:
+                fields_dict[fn] = f = {}
+                if fn in annotations:
+                    f['type'] = annotations[fn]
+                if fn in defaults:
+                    f['default'] = defaults[fn]
+                
+            if readonly:
+                if type(readonly) is type(True):
+                    for f in fields_dict.values():
+                        f['readonly'] = True
+                else:
+                    for fn in readonly:
+                        fields_dict[fn]['readonly'] = True
+                
             fields = _fields + fields
             fields = tuple(fields)
             n_fields = len(fields)
+            
+            _fields_dict.update(fields_dict)
+            fields_dict = _fields_dict
 
             _defaults.update(defaults)
             defaults = _defaults
@@ -162,22 +188,16 @@ class datatype(type):
                 ns['__new__'] = __new__
 
         if has_fields:
-            if readonly:
-                if type(readonly) is type(True):
-                    readonly_fields = set(fields)
-                else:
-                    readonly_fields = set(readonly)
-            else:
-                readonly_fields = _readonlys
-
             for i, name in enumerate(fields):
                 offset = dataslot_offset(i, n_fields)
-                if name in readonly_fields:
+                fd = fields_dict[name]
+                fd_readonly = fd.get('readonly', False)
+                if fd_readonly:
                     ds = _ds_ro_cache.get(offset, None)
                 else:
                     ds = _ds_cache.get(offset, None)
                 if ds is None:
-                    if name in readonly_fields:
+                    if fd_readonly:
                         ds = dataslotgetset(offset, True)
                     else:
                         ds = dataslotgetset(offset)

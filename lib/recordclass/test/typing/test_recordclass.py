@@ -2,14 +2,9 @@
 import unittest, doctest, operator
 from recordclass.typing import RecordClass
 
-# try:
-#     from test import support
-# except:
-#     from test import test_support as support
-
 import pickle
 import typing
-from recordclass import dataobject, recordclass
+# from recordclass import dataobject, recordclass
 import sys as _sys
 
 class CoolEmployee(RecordClass):
@@ -36,12 +31,10 @@ class XRepr(RecordClass):
 class H(RecordClass, hashable=True):
     x: int
     y: int
-#     __options__ = {'hashable': True}
 
 class HR(RecordClass, readonly=True):
     x: int
     y: int
-#     __options__ = {'readonly': True}
         
 class RecordClassTypingTest(unittest.TestCase):
     def test_typing(self):
@@ -58,12 +51,9 @@ class RecordClassTypingTest(unittest.TestCase):
         class Emp(RecordClass):
             name:str
             id:int
-#         Emp = recordclass('Emp', [('name', str), ('id', int)])
-        #self.assertIsSubclass(Emp, memoryslots)
         joe = Emp('Joe', 42)
         jim = Emp(name='Jim', id=1)
         self.assertIsInstance(joe, Emp)
-#         self.assertIsInstance(joe, memoryslots)
         self.assertEqual(joe.name, 'Joe')
         self.assertEqual(joe.id, 42)
         self.assertEqual(jim.name, 'Jim')
@@ -72,34 +62,20 @@ class RecordClassTypingTest(unittest.TestCase):
         self.assertEqual(Emp.__fields__, ('name', 'id'))
         self.assertEqual(Emp.__annotations__,
                          dict([('name', str), ('id', int)]))
-        #self.assertIs(Emp._field_types, Emp.__annotations__)
 
-    # def test_namedtuple_pyversion(self):
-    #     if sys.version_info[:2] < (3, 6):
-    #         with self.assertRaises(TypeError):
-    #             RecordClass('Name', one=int, other=str)
-    #         with self.assertRaises(TypeError):
-    #             class NotYet(NamedTuple):
-    #                 whatever = 0
-
-    #@skipUnless(PY36, 'Python 3.6 required')
     def test_annotation_usage(self):
         tim = CoolEmployee('Tim', 9000)
         self.assertIsInstance(tim, CoolEmployee)
-#         self.assertIsInstance(tim, memoryslots)
         self.assertEqual(tim.name, 'Tim')
         self.assertEqual(tim.cool, 9000)
         self.assertEqual(CoolEmployee.__name__, 'CoolEmployee')
         self.assertEqual(CoolEmployee.__fields__, ('name', 'cool'))
         self.assertEqual(CoolEmployee.__annotations__,
                          dict(name=str, cool=int))
-        #self.assertIs(CoolEmployee._field_types, CoolEmployee.__annotations__)
 
-    #@skipUnless(PY36, 'Python 3.6 required')
     def test_annotation_usage_with_default(self):
         jelle = CoolEmployeeWithDefault('Jelle')
         self.assertIsInstance(jelle, CoolEmployeeWithDefault)
-#         self.assertIsInstance(jelle, memoryslots)
         self.assertEqual(jelle.name, 'Jelle')
         self.assertEqual(jelle.cool, 0)
         cooler_employee = CoolEmployeeWithDefault('Sjoerd', 1)
@@ -135,7 +111,6 @@ class XMethBad(RecordClass):
             name:str
             age:int
 
-#         LocalEmployee = recordclass("LocalEmployee", dict(name=str, age=int))
         nick = LocalEmployee('Nick', 25)
         self.assertEqual(nick.name, 'Nick')
         self.assertEqual(LocalEmployee.__name__, 'LocalEmployee')
@@ -158,7 +133,6 @@ class XMethBad(RecordClass):
 
     def test_hash_subcls(self):
         class B(H): pass
-#         print(dir(B))
         b = B(1,2)
         hash(b)
 
@@ -166,7 +140,6 @@ class XMethBad(RecordClass):
         class B(H):
             def __hash__(self):
                 return 0
-#         print(dir(B))
         b = B(1,2)
         hash(b)
 
@@ -174,7 +147,6 @@ class XMethBad(RecordClass):
         class B(HR):
             def __hash__(self):
                 return 0
-#         print(dir(B))
         b = B(1,2)
         hash(b)
 
@@ -186,8 +158,11 @@ class XMethBad(RecordClass):
             b.x = 1
         
     def test_pickle(self):
-        global Emp  # pickle wants to reference the class by name
-        Emp = recordclass('Emp', [('name', str), ('id', int)])
+        global Emp 
+        class Emp(RecordClass):
+            name:str
+            id:int
+
         jane = Emp('jane', 37)
         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             z = pickle.dumps(jane, proto)
