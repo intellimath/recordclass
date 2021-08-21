@@ -1473,7 +1473,7 @@ dataobject_iter(PyObject *seq)
 
 typedef struct {
     PyObject_HEAD
-    Py_ssize_t offset;
+    Py_ssize_t index;
     int readonly;
 } dataslotgetset_object;
 
@@ -1485,7 +1485,7 @@ static PyMethodDef dataslotgetset_methods[] = {
 static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k) {
     dataslotgetset_object *ob = NULL;
     PyObject *item;
-    Py_ssize_t len, offset;
+    Py_ssize_t len, index;
     int readonly;
 
     len = Py_SIZE(args);
@@ -1495,8 +1495,8 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
     }
 
     item = PyTuple_GET_ITEM(args, 0);
-    offset = PyNumber_AsSsize_t(item, PyExc_IndexError);
-    if (offset == -1 && PyErr_Occurred()) {
+    index = PyNumber_AsSsize_t(item, PyExc_IndexError);
+    if (index == -1 && PyErr_Occurred()) {
         return NULL;
     }
 
@@ -1515,7 +1515,7 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
             Py_INCREF(t);
 #endif
     ob->readonly = readonly;
-    ob->offset = offset;
+    ob->index = index;
     return (PyObject*)ob;
 }
 
@@ -1530,10 +1530,10 @@ static void dataslotgetset_dealloc(PyObject *o) {
 #endif
 }
 
-#define dataobject_refitem_by_offset(op, offset) ((PyObject**)((char*)op + offset))
-#define dataobject_item_by_offset(op, offset) (*((PyObject**)((char*)op + offset)))
-#define dataobject_ass_item_by_offset(op, offset, val) (*((PyObject**)((char*)op + offset))=val)
-#define self_igs ((dataslotgetset_object *)self)
+// #define dataobject_refitem_by_offset(op, offset) ((PyObject**)((char*)op + offset))
+// #define dataobject_item_by_offset(op, offset) (*((PyObject**)((char*)op + offset)))
+// #define dataobject_ass_item_by_offset(op, offset, val) (*((PyObject**)((char*)op + offset))=val)
+// #define self_igs ((dataslotgetset_object *)self)
 
 static PyObject* dataslotgetset_get(PyObject *self, PyObject *obj, PyObject *type) {
 
@@ -1542,7 +1542,7 @@ static PyObject* dataslotgetset_get(PyObject *self, PyObject *obj, PyObject *typ
         return self;
     }
 
-    PyObject *v = dataobject_item_by_offset(obj, self_igs->offset);
+    PyObject *v = PyDataObject_GET_ITEM(obj, ((dataslotgetset_object *)self)->index);
     Py_INCREF(v);
     return v;
 }
@@ -1557,24 +1557,24 @@ static int dataslotgetset_set(PyObject *self, PyObject *obj, PyObject *value) {
     if (obj == NULL || obj == Py_None)
         return 0;
 
-    if (self_igs->readonly) {
+    if (((dataslotgetset_object *)self)->readonly) {
         PyErr_SetString(PyExc_TypeError, "item is readonly");
         return -1;
     }
 
-    PyObject **v = dataobject_refitem_by_offset(obj, self_igs->offset);
-    Py_DECREF(*v);
+    PyObject *v = PyDataObject_GET_ITEM(obj, ((dataslotgetset_object *)self)->index);
+    Py_DECREF(v);
 
     Py_INCREF(value);
-    *v = value;
+    PyDataObject_SET_ITEM(obj, ((dataslotgetset_object *)self)->index, value);
 
     return 0;
 }
 
 static PyObject*
-dataslotgetset_offset(PyObject *self)
+dataslotgetset_index(PyObject *self)
 {
-    return PyLong_FromSsize_t(((dataslotgetset_object*)self)->offset);
+    return PyLong_FromSsize_t(((dataslotgetset_object*)self)->index);
 }
 
 static PyObject*
@@ -1591,7 +1591,7 @@ dataslotgetset_readonly(PyObject *self)
 // }
 
 static PyGetSetDef dataslotgetset_getsets[] = {
-    {"offset", (getter)dataslotgetset_offset, NULL, NULL},
+    {"index", (getter)dataslotgetset_index, NULL, NULL},
 //     {"readonly", (getter)dataslotgetset_readonly, (setter)dataslotgetset_readonly_set, NULL},
     {"readonly", (getter)dataslotgetset_readonly, NULL, NULL},
     {0}

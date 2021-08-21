@@ -191,18 +191,18 @@ class datatype(type):
 
         if has_fields:
             for i, name in enumerate(fields):
-                offset = dataslot_offset(i, n_fields)
+#                 offset = dataslot_offset(i, n_fields)
                 fd = fields_dict[name]
                 fd_readonly = fd.get('readonly', False)
                 if fd_readonly:
-                    ds = _ds_ro_cache.get(offset, None)
+                    ds = _ds_ro_cache.get(i, None)
                 else:
-                    ds = _ds_cache.get(offset, None)
+                    ds = _ds_cache.get(i, None)
                 if ds is None:
                     if fd_readonly:
-                        ds = dataslotgetset(offset, True)
+                        ds = dataslotgetset(i, True)
                     else:
-                        ds = dataslotgetset(offset)
+                        ds = dataslotgetset(i)
                 ns[name] = ds
 
         if '__repr__' not in ns:
