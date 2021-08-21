@@ -1475,15 +1475,15 @@ typedef struct {
     PyObject_HEAD
     Py_ssize_t index;
     int readonly;
-} dataslotgetset_object;
+} dataobjectproperty_object;
 
-static PyMethodDef dataslotgetset_methods[] = {
-//   {"__set_name__", dataslotgetset_setname, METH_VARARGS, dataslotgetset_setname_doc},
+static PyMethodDef dataobjectproperty_methods[] = {
+//   {"__set_name__", dataobjectproperty_setname, METH_VARARGS, dataobjectproperty_setname_doc},
   {0, 0, 0, 0}
 };
 
-static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k) {
-    dataslotgetset_object *ob = NULL;
+static PyObject* dataobjectproperty_new(PyTypeObject *t, PyObject *args, PyObject *k) {
+    dataobjectproperty_object *ob = NULL;
     PyObject *item;
     Py_ssize_t len, index;
     int readonly;
@@ -1506,7 +1506,7 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
     else
         readonly = 0;
 
-    ob = PyObject_New(dataslotgetset_object, t);
+    ob = PyObject_New(dataobjectproperty_object, t);
     if (ob == NULL)
         return NULL;
 
@@ -1519,7 +1519,7 @@ static PyObject* dataslotgetset_new(PyTypeObject *t, PyObject *args, PyObject *k
     return (PyObject*)ob;
 }
 
-static void dataslotgetset_dealloc(PyObject *o) {
+static void dataobjectproperty_dealloc(PyObject *o) {
     PyTypeObject *t = Py_TYPE(o);
 
     t->tp_free(o);
@@ -1530,19 +1530,19 @@ static void dataslotgetset_dealloc(PyObject *o) {
 #endif
 }
 
-static PyObject* dataslotgetset_get(PyObject *self, PyObject *obj, PyObject *type) {
+static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type) {
 
     if (obj == NULL || obj == Py_None) {
         Py_INCREF(self);
         return self;
     }
 
-    PyObject *v = PyDataObject_GET_ITEM(obj, ((dataslotgetset_object *)self)->index);
+    PyObject *v = PyDataObject_GET_ITEM(obj, ((dataobjectproperty_object *)self)->index);
     Py_INCREF(v);
     return v;
 }
 
-static int dataslotgetset_set(PyObject *self, PyObject *obj, PyObject *value) {
+static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value) {
 
     if (value == NULL) {
         PyErr_SetString(PyExc_AttributeError, "The value can't be deleted");
@@ -1552,52 +1552,52 @@ static int dataslotgetset_set(PyObject *self, PyObject *obj, PyObject *value) {
     if (obj == NULL || obj == Py_None)
         return 0;
 
-    if (((dataslotgetset_object *)self)->readonly) {
+    if (((dataobjectproperty_object *)self)->readonly) {
         PyErr_SetString(PyExc_TypeError, "item is readonly");
         return -1;
     }
 
-    PyObject *v = PyDataObject_GET_ITEM(obj, ((dataslotgetset_object *)self)->index);
+    PyObject *v = PyDataObject_GET_ITEM(obj, ((dataobjectproperty_object *)self)->index);
     Py_DECREF(v);
 
     Py_INCREF(value);
-    PyDataObject_SET_ITEM(obj, ((dataslotgetset_object *)self)->index, value);
+    PyDataObject_SET_ITEM(obj, ((dataobjectproperty_object *)self)->index, value);
 
     return 0;
 }
 
 static PyObject*
-dataslotgetset_index(PyObject *self)
+dataobjectproperty_index(PyObject *self)
 {
-    return PyLong_FromSsize_t(((dataslotgetset_object*)self)->index);
+    return PyLong_FromSsize_t(((dataobjectproperty_object*)self)->index);
 }
 
 static PyObject*
-dataslotgetset_readonly(PyObject *self)
+dataobjectproperty_readonly(PyObject *self)
 {
-    return PyBool_FromLong((long)(((dataslotgetset_object*)self)->readonly));
+    return PyBool_FromLong((long)(((dataobjectproperty_object*)self)->readonly));
 }
 
 // static int
-// dataslotgetset_readonly_set(PyObject *self, PyObject *val)
+// dataobjectproperty_readonly_set(PyObject *self, PyObject *val)
 // {
-//     ((dataslotgetset_object*)self)->readonly = PyObject_IsTrue(val);
+//     ((dataobjectproperty_object*)self)->readonly = PyObject_IsTrue(val);
 //     return 0;
 // }
 
-static PyGetSetDef dataslotgetset_getsets[] = {
-    {"index", (getter)dataslotgetset_index, NULL, NULL},
-//     {"readonly", (getter)dataslotgetset_readonly, (setter)dataslotgetset_readonly_set, NULL},
-    {"readonly", (getter)dataslotgetset_readonly, NULL, NULL},
+static PyGetSetDef dataobjectproperty_getsets[] = {
+    {"index", (getter)dataobjectproperty_index, NULL, NULL},
+//     {"readonly", (getter)dataobjectproperty_readonly, (setter)dataobjectproperty_readonly_set, NULL},
+    {"readonly", (getter)dataobjectproperty_readonly, NULL, NULL},
     {0}
 };
 
 static PyTypeObject PyDataSlotGetSet_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
-    "recordclass._dataobject.dataslotgetset", /*tp_name*/
-    sizeof(dataslotgetset_object), /*tp_basicsize*/
+    "recordclass._dataobject.dataobjectproperty", /*tp_name*/
+    sizeof(dataobjectproperty_object), /*tp_basicsize*/
     0, /*tp_itemsize*/
-    dataslotgetset_dealloc, /*tp_dealloc*/
+    dataobjectproperty_dealloc, /*tp_dealloc*/
     0, /*tp_print*/
     0, /*tp_getattr*/
     0, /*tp_setattr*/
@@ -1620,17 +1620,17 @@ static PyTypeObject PyDataSlotGetSet_Type = {
     0, /*tp_weaklistoffset*/
     0, /*tp_iter*/
     0, /*tp_iternext*/
-    dataslotgetset_methods, /*tp_methods*/
+    dataobjectproperty_methods, /*tp_methods*/
     0, /*tp_members*/
-    dataslotgetset_getsets, /*tp_getset*/
+    dataobjectproperty_getsets, /*tp_getset*/
     0, /*tp_base*/
     0, /*tp_dict*/
-    dataslotgetset_get, /*tp_descr_get*/
-    dataslotgetset_set, /*tp_descr_set*/
+    dataobjectproperty_get, /*tp_descr_get*/
+    dataobjectproperty_set, /*tp_descr_set*/
     0, /*tp_dictoffset*/
     0, /*tp_init*/
     0, /*tp_alloc*/
-    dataslotgetset_new, /*tp_new*/
+    dataobjectproperty_new, /*tp_new*/
     0, /*tp_free*/
     0, /*tp_is_gc*/
 };
@@ -2467,7 +2467,7 @@ PyInit__dataobject(void)
         Py_FatalError("Can't initialize dataobjectiter type");
 
     if (PyType_Ready(&PyDataSlotGetSet_Type) < 0)
-        Py_FatalError("Can't initialize dataslotgetset type");
+        Py_FatalError("Can't initialize dataobjectproperty type");
 
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
@@ -2476,7 +2476,7 @@ PyInit__dataobject(void)
     PyModule_AddObject(m, "dataobjectiter", (PyObject *)&PyDataObjectIter_Type);
 
     Py_INCREF(&PyDataSlotGetSet_Type);
-    PyModule_AddObject(m, "dataslotgetset", (PyObject *)&PyDataSlotGetSet_Type);
+    PyModule_AddObject(m, "dataobjectproperty", (PyObject *)&PyDataSlotGetSet_Type);
 
     return m;
 }

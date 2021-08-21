@@ -36,7 +36,7 @@ int_type = type(1)
 def clsconfig(*, sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 
               hashable=False, gc=False, deep_dealloc=False):
-    from ._dataobject import _clsconfig, dataslotgetset
+    from ._dataobject import _clsconfig
     def func(cls, *, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
@@ -67,7 +67,7 @@ class datatype(type):
                 deep_dealloc=False, sequence=False, mapping=False,
                 use_dict=False, use_weakref=False, hashable=False):
 
-        from ._dataobject import _clsconfig, _dataobject_type_init, dataslotgetset
+        from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
 
         options = ns.pop('__options__', {})
 
@@ -200,9 +200,9 @@ class datatype(type):
                     ds = _ds_cache.get(i, None)
                 if ds is None:
                     if fd_readonly:
-                        ds = dataslotgetset(i, True)
+                        ds = dataobjectproperty(i, True)
                     else:
-                        ds = dataslotgetset(i)
+                        ds = dataobjectproperty(i)
                 ns[name] = ds
 
         if '__repr__' not in ns:
@@ -249,10 +249,10 @@ class datatype(type):
         return cls
     
     def __delattr__(self, name):
-        from ._dataobject import dataslotgetset
+        from ._dataobject import dataobjectproperty
         if name in self.__dict__:
             o = getattr(self, name)
-            if type(o) is dataslotgetset or name == '__fields__':
+            if type(o) is dataobjectproperty or name == '__fields__':
                 raise AttributeError(f"Attribute {name} of the class {self.__name__} can't be deleted")
         type.__delattr__(self, name)
 
