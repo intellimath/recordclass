@@ -1530,11 +1530,6 @@ static void dataslotgetset_dealloc(PyObject *o) {
 #endif
 }
 
-// #define dataobject_refitem_by_offset(op, offset) ((PyObject**)((char*)op + offset))
-// #define dataobject_item_by_offset(op, offset) (*((PyObject**)((char*)op + offset)))
-// #define dataobject_ass_item_by_offset(op, offset, val) (*((PyObject**)((char*)op + offset))=val)
-// #define self_igs ((dataslotgetset_object *)self)
-
 static PyObject* dataslotgetset_get(PyObject *self, PyObject *obj, PyObject *type) {
 
     if (obj == NULL || obj == Py_None) {
