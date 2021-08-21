@@ -253,8 +253,6 @@ static int
 dataobject_clear(PyObject *op)
 {
     PyTypeObject *type = Py_TYPE(op);
-    PyObject **items = PyDataObject_ITEMS(op);
-    Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_GetDictPtr(op);
@@ -267,6 +265,8 @@ dataobject_clear(PyObject *op)
         }            
     }
 
+    PyObject **items = PyDataObject_ITEMS(op);
+    Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
     while (n_items-- > 0) {
         Py_CLEAR(*items);
         items++;
@@ -317,6 +317,7 @@ dataobject_dealloc(PyObject *op)
     
     dataobject_xdecref(op);
     
+    Py_DECREF(type);
     type->tp_free((PyObject *)op);
 }
 
@@ -340,6 +341,7 @@ dataobject_dealloc_gc(PyObject *op)
 
     dataobject_xdecref(op);
 
+    Py_DECREF(type);
     type->tp_free((PyObject *)op);
 
 #if PY_VERSION_HEX < 0x03080000
@@ -404,16 +406,12 @@ dataobject_finalize(PyObject *ob) {
 static void
 dataobject_free(void *op)
 {
-        Py_DECREF(Py_TYPE(op));
-
         PyObject_Del((PyObject*)op);
 }
 
 static void
 dataobject_free_gc(void *op)
 {
-        Py_DECREF(Py_TYPE(op));
-
         PyObject_GC_Del((PyObject*)op);
 }
 
@@ -526,8 +524,9 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     }
 
     PyObject **items = PyDataObject_ITEMS(op) + i;
+    PyObject *v = *items;
+    Py_XDECREF(v);
 
-    Py_XDECREF(*items);
     Py_INCREF(val);
     *items = val;
     return 0;
@@ -2191,7 +2190,6 @@ _asdict(PyObject *op)
     
     Py_DECREF(fields);
     return dict;
-    
 }
 
 PyDoc_STRVAR(asdict_doc,
@@ -2242,36 +2240,71 @@ PyDoc_STRVAR(dataobject_make_doc,
 "Create a new dataobject-based object");
 
 static PyObject *
-dataobject_make(PyObject *module, PyObject *args0, PyObject *kw)
+dataobject_make(PyObject *module, PyObject *type_args, PyObject *kw)
 {
-    PyObject *args;
+    PyObject *args0, *args;
     
-    const Py_ssize_t n = Py_SIZE(args0);
-    if (n >= 2) {
-        args = PyTuple_GET_ITEM(args0, 1);
-        if (PyTuple_CheckExact(args)) {
+    const Py_ssize_t n = Py_SIZE(type_args);
+    if (n >= 1) {
+        args0 = PyTuple_GET_ITEM(type_args, 1);
+        if (Py_TYPE(args0) == &PyTuple_Type) {
+            args = args0;
             Py_INCREF(args);
         } else {
-            args = PySequence_Tuple(args);
+            args = PySequence_Tuple(args0);
         }
     } else {
-        goto invalid_nargs;
+        PyErr_SetString(PyExc_TypeError, "nargs < 1");
+        return NULL;
     }
-    
-    PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(args0, 0);
-    Py_INCREF(type);
+        
+    PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
+//     Py_INCREF(type);
     
     PyObject *ret =  dataobject_new(type, args, kw);
     
     Py_DECREF(args);
-    Py_DECREF(type);
+//     Py_DECREF(type);
     
     return ret;
-    
-invalid_nargs:
-    PyErr_SetString(PyExc_TypeError, "nargs != 2");
-    return NULL;
 }
+
+// PyDoc_STRVAR(dataobject_new_doc,
+// "Create a new dataobject-based object");
+
+// static PyObject *
+// dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
+// {
+//     PyObject *args;
+    
+//     const Py_ssize_t n = Py_SIZE(type_args);
+//     if (n >= 1) {
+//         Py_ssize_t i;
+//         PyObject **ss, **tt;
+
+//         args = PyTuple_New(n-1);
+//         tt = ((PyTupleObject*)args)->ob_item;
+//         ss = ((PyTupleObject*)type_args)->ob_item + 1;
+//         for (i=1; i < n; i++) {
+//             PyObject *v = *(ss++);
+//             Py_INCREF(v);
+//             *(tt++) = v;
+//         }
+//     } else {
+//         PyErr_SetString(PyExc_TypeError, "nargs < 1");
+//         return NULL;
+//     }
+        
+//     PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
+// //     Py_INCREF(type);
+    
+//     PyObject *ret =  dataobject_new(type, args, kw);
+    
+//     Py_DECREF(args);
+// //     Py_DECREF(type);
+    
+//     return ret;
+// }
 
 PyDoc_STRVAR(dataobject_clone_doc,
 "Clone dataobject-based object");
@@ -2413,6 +2446,7 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 static PyMethodDef dataobjectmodule_methods[] = {
     {"asdict", asdict, METH_VARARGS, asdict_doc},
     {"astuple", astuple, METH_VARARGS, astuple_doc},
+//     {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
     {"clone", (PyCFunction)dataobject_clone, METH_VARARGS | METH_KEYWORDS, dataobject_clone_doc},
     {"update", (PyCFunction)dataobject_update, METH_VARARGS | METH_KEYWORDS, dataobject_update_doc},

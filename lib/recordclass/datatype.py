@@ -27,10 +27,6 @@ from .utils import check_name, collect_info_from_bases
 
 __all__ = 'clsconfig', 'datatype'
 
-import sys as _sys
-
-_intern = _sys.intern
-
 int_type = type(1)
 
 def clsconfig(*, sequence=False, mapping=False, readonly=False,
@@ -68,6 +64,7 @@ class datatype(type):
                 use_dict=False, use_weakref=False, hashable=False):
 
         from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
+        from sys import intern as _intern
 
         options = ns.pop('__options__', {})
 
@@ -191,7 +188,6 @@ class datatype(type):
 
         if has_fields:
             for i, name in enumerate(fields):
-#                 offset = dataslot_offset(i, n_fields)
                 fd = fields_dict[name]
                 fd_readonly = fd.get('readonly', False)
                 if fd_readonly:
