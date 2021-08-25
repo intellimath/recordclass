@@ -371,9 +371,6 @@ There is builtin more fast deallocation method using finalization mechanizm when
 
 For more details see notebook [example_datatypes](examples/example_datatypes.ipynb).
 
-
-
-
 ### Changes:
 
 #### 0.16
@@ -382,7 +379,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
   of `namedtuple`-like API. 
   Insted of `RecordClass(name, fields, **kw)` for class creation 
   use factory function `recordclass(name, fields, **kw)` 
-  (it allow to specify types).
+  (it allows to specify types).
 * Add option api='dict'  to `make_dataclass` for creating class that support dict-like API.
 * Now one can't remove dataobject's property from it's class using del or builting delattr.
   For example:
