@@ -87,6 +87,42 @@ Another option is to use static code analyzers along with type annotations to mo
         >>> print(sys.getsizeof(litetuple(1,2,3)), sys.getsizeof((1,2,3)))
         64 48
 
+### Memory footprint
+
+The following table explain memory footprints of `recordclass`-base and `dataobject`-base objects:
+
+| namedtuple    |  class with \_\_slots\_\_  |  recordclass   | dataobject |  litetuple/mutabletuple  |
+| ------------- | ----------------- | -------------- | ------------- | ------------- |
+|   $g+b+s+n*p$     |     $g+b+n*p$         |  $b+n*p$       |     $b+n*p$     |     $b+s+n*p$     |
+
+where:
+
+ * b = sizeof(`PyObject`)
+ * s = sizeof(`Py_ssize_t`)
+ * n = number of items
+ * p = sizeof(`PyObject*`)
+ * g = sizeof(PyGC_Head)
+
+This is useful in that case when you absolutely sure that reference cycle isn't supposed.
+For example, when all field values are instances of atomic types.
+As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.4-3.7) and by 16 bytes since cpython 3.8.
+
+### Performance counters
+
+Here is the table with performance counters (python 3.9, debian linux, x86-64), which are mesured using `utils/perfcount.py` script:
+
+|    | id                     |   new |   getattr |   setattr |   getitem |   setitem |   size |
+|---:|:-----------------------|------:|----------:|----------:|----------:|----------:|-------:|
+|  0 | dict                   |  2.45 |      0.45 |      0.58 |           |           |    232 |
+|  1 | tuple                  |  1.02 |           |           |      0.43 |           |     56 |
+|  2 | namedtuple             |  2.70 |      0.47 |           |      0.45 |           |     56 |
+|  3 | class+slots            |  2.01 |      0.50 |      0.54 |           |           |     48 |
+|  4 | dataobject             |  2.13 |      0.46 |      0.54 |      0.45 |      0.50 |     32 |
+|  5 | dataobject+fast_new    |  1.05 |      0.46 |      0.54 |      0.45 |      0.50 |     32 |
+|  6 | dataobject+gc          |  2.25 |      0.46 |      0.54 |      0.46 |      0.50 |     48 |
+|  7 | dataobject+fast_new+gc |  1.17 |      0.46 |      0.54 |      0.46 |      0.50 |     48 |
+
+
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
 Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/intellimath/recordclass/raw/master/examples/what_is_recordclass.ipynb).
@@ -337,40 +373,6 @@ There is builtin more fast deallocation method using finalization mechanizm when
 For more details see notebook [example_datatypes](examples/example_datatypes.ipynb).
 
 
-## Memory footprint
-
-The following table explain memory footprints of `recordclass`-base and `dataobject`-base objects:
-
-| namedtuple    |  class with \_\_slots\_\_  |  recordclass   | dataobject |
-| ------------- | ----------------- | -------------- | ------------- |
-|   $g+b+s+n*p$     |     $g+b+n*p$         |  $b+n*p$       |     $b+n*p$     |
-
-where:
-
- * b = sizeof(`PyObject`)
- * s = sizeof(`Py_ssize_t`)
- * n = number of items
- * p = sizeof(`PyObject*`)
- * g = sizeof(PyGC_Head)
-
-This is useful in that case when you absolutely sure that reference cycle isn't supposed.
-For example, when all field values are instances of atomic types.
-As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.4-3.7) and by 16 bytes since cpython 3.8.
-
-## Performance counters
-
-Here is the table with performance counters (python 3.9, debian linux, x86-64), which are mesured using `utils/perfcount.py` script:
-
-|    | id                     |   new |   getattr |   setattr |   getitem |   setitem |   size |
-|---:|:-----------------------|------:|----------:|----------:|----------:|----------:|-------:|
-|  0 | dict                   |  2.45 |      0.45 |      0.58 |           |           |    232 |
-|  1 | tuple                  |  1.02 |           |           |      0.43 |           |     56 |
-|  2 | namedtuple             |  2.70 |      0.47 |           |      0.45 |           |     56 |
-|  3 | class+slots            |  2.01 |      0.50 |      0.54 |           |           |     48 |
-|  4 | dataobject             |  2.13 |      0.46 |      0.54 |      0.45 |      0.50 |     32 |
-|  5 | dataobject+fast_new    |  1.05 |      0.46 |      0.54 |      0.45 |      0.50 |     32 |
-|  6 | dataobject+gc          |  2.25 |      0.46 |      0.54 |      0.46 |      0.50 |     48 |
-|  7 | dataobject+fast_new+gc |  1.17 |      0.46 |      0.54 |      0.46 |      0.50 |     48 |
 
 
 ### Changes:
