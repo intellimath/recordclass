@@ -91,9 +91,9 @@ Another option is to use static code analyzers along with type annotations to mo
 
 The following table explain memory footprints of `recordclass`-base and `dataobject`-base objects:
 
-| namedtuple    |  class with \_\_slots\_\_  |  recordclass/dataobject |  litetuple/mutabletuple  |
-| ------------- | ----------------- | ------------- | ------------- |
-|   $g+b+s+n*p$     |     $g+b+n*p$         |  $b+n*p$      |     $b+s+n*p$     |
+| tuple/namedtuple   |  class with \_\_slots\_\_  |  recordclass/dataobject |  litetuple/mutabletuple  |
+|:------------------:|:--------------------------:|:-----------------------:|:------------------------:|
+|   $g+b+s+n*p$      |     $g+b+n*p$              |         $b+n*p$         |     $b+s+n*p$            |
 
 where:
 
