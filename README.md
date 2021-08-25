@@ -105,7 +105,7 @@ where:
 
 This is useful in that case when you absolutely sure that reference cycle isn't supposed.
 For example, when all field values are instances of atomic types.
-As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.4-3.7) and by 16 bytes since cpython 3.8.
+As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4-3.7 and by 16 bytes for cpython >=3.8.
 
 ### Performance counters
 
