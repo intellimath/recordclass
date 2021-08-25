@@ -1544,7 +1544,7 @@ static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject 
 static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value) {
 
     if (value == NULL) {
-        PyErr_SetString(PyExc_AttributeError, "The value can't be deleted");
+        PyErr_SetString(PyExc_AttributeError, "The field and it's value can't be deleted");
         return -1;
     }
 

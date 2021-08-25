@@ -377,7 +377,8 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 
 #### 0.16
 
-* `RecordClass` started to be a direct subclass of dataobject with `sequence=True`. 
+* `RecordClass` started to be a direct subclass of dataobject with `sequence=True` and support
+  of `namedtuple`-like API. 
   Insted of `RecordClass(name, fields, **kw)` for class creation 
   use factory function `recordclass(name, fields, **kw)` 
   (it allow to specify types).
@@ -402,7 +403,7 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
         >>> p = Point(1, 2)
         >>> p.x = None
 
-* Slightly improve performance of the access by index of dataobject-based classes with `sequence=True` option. 
+* Slightly improve performance of the access by index of dataobject-based classes with option `sequence=True`. 
 
 
 #### 0.15.1
