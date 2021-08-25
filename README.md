@@ -93,7 +93,7 @@ The following table explain memory footprints of `recordclass`-base and `dataobj
 
 | tuple/namedtuple   |  class with \_\_slots\_\_  |  recordclass/dataobject |  litetuple/mutabletuple  |
 |:------------------:|:--------------------------:|:-----------------------:|:------------------------:|
-|   $g+b+s+n*p$      |     $g+b+n*p$              |         $b+n*p$         |     $b+s+n*p$            |
+|     g+b+s+n\*p     |     g+b+n\*p              |         b+n\*p         |     b+s+n\*p            |
 
 where:
 
