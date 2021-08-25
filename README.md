@@ -396,8 +396,7 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
         >>> p = Point(1, 2)
         >>> del p.x
         ...........
-        AttributeError: The value can't be deleted"
-        
+        AttributeError: The value can't be deleted"      
   Insted one can use assighnment to None:
 
         >>> p = Point(1, 2)
