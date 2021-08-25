@@ -200,8 +200,7 @@ By default `recordclass`-based class instances doesn't participate in CGC and th
     
 or
 
-    @clsconfig(gc=True)
-    class Node(RecordClass):
+    class Node(RecordClass, gc=True):
          root: 'Node'
          chilren: list
 
