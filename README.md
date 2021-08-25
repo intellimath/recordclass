@@ -97,10 +97,10 @@ The following table explain memory footprints of `recordclass`-base and `dataobj
 
 where:
 
- * b = sizeof(`PyObject`)
- * s = sizeof(`Py_ssize_t`)
+ * b = sizeof(PyObject)
+ * s = sizeof(Py_ssize_t)
  * n = number of items
- * p = sizeof(`PyObject*`)
+ * p = sizeof(PyObject*)
  * g = sizeof(PyGC_Head)
 
 This is useful in that case when you absolutely sure that reference cycle isn't supposed.
