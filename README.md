@@ -361,14 +361,16 @@ As a result the size of the instance is decreased by 24-32 bytes (for cpython 3.
 
 Here is the table with performance counters (python 3.9, debian linux, x86-64), which are mesured using `utils/perfcount.py` script:
 
-|    | id                     |   new |   read |   write |   size |
-|---:|:-----------------------|------:|-------:|--------:|-------:|
-|  0 | namedtuple             |  2.56 |   0.47 |         |     56 |
-|  1 | class+slots            |  1.84 |   0.52 |    0.57 |     48 |
-|  2 | dataobject             |  1.95 |   0.45 |    0.53 |     32 |
-|  3 | dataobject+gc          |  2.10 |   0.45 |    0.53 |     32 |
-|  4 | dataobject+fast_new    |  0.88 |   0.45 |    0.53 |     48 |
-|  5 | dataobject+fast_new+gc |  1.03 |   0.46 |    0.53 |     48 |
+|    | id                     |   new |   getattr |   setattr |   getitem |   setitem |   size |
+|---:|:-----------------------|------:|----------:|----------:|----------:|----------:|-------:|
+|  0 | dict                   |  2.45 |      0.45 |      0.58 |           |           |    232 |
+|  1 | tuple                  |  1.02 |           |           |      0.43 |           |     56 |
+|  2 | namedtuple             |  2.70 |      0.47 |           |      0.45 |           |     56 |
+|  3 | class+slots            |  2.01 |      0.50 |      0.54 |           |           |     48 |
+|  4 | dataobject             |  2.13 |      0.46 |      0.54 |      0.45 |      0.50 |     32 |
+|  5 | dataobject+fast_new    |  1.05 |      0.46 |      0.54 |      0.45 |      0.50 |     32 |
+|  6 | dataobject+gc          |  2.25 |      0.46 |      0.54 |      0.46 |      0.50 |     48 |
+|  7 | dataobject+fast_new+gc |  1.17 |      0.46 |      0.54 |      0.46 |      0.50 |     48 |
 
 
 ### Changes:

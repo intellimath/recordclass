@@ -45,6 +45,13 @@ type_error(const char *msg, PyObject *obj)
     return NULL;
 }
 
+static inline int
+_PyIndex_Check(PyObject *obj)
+{
+    PyNumberMethods *tp_as_number = Py_TYPE(obj)->tp_as_number;
+    return (tp_as_number != NULL && tp_as_number->nb_index != NULL);
+}
+
 
 static PyObject **
 PyDataObject_GetDictPtr(PyObject *ob) {
@@ -490,7 +497,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
 static PyObject *
 dataobject_sq_item(PyObject *op, Py_ssize_t i)
 {
-    const Py_ssize_t n = PyDataObject_LEN(op);
+    Py_ssize_t n = PyDataObject_LEN(op);
 
     if (i < 0)
         i += n;
@@ -499,22 +506,15 @@ dataobject_sq_item(PyObject *op, Py_ssize_t i)
         return NULL;
     }
 
-    PyObject *v = ((PyDataStruct*)op)->ob_items[i];
+    PyObject *v = PyDataObject_GET_ITEM(op, i);
     Py_INCREF(v);
     return v;
 }
 
-// static inline PyObject *
-// PyDataObject_GET_ITEM(PyObject *op, Py_ssize_t i)
-// {
-// //     PyObject **items = PyDataObject_ITEMS(op);
-//     return (PyDataObject_ITEMS(op))[i];
-// }
-
 static int
 dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
-    const Py_ssize_t n = PyDataObject_LEN(op);
+    Py_ssize_t n = PyDataObject_LEN(op);
 
     if (i < 0)
         i += n;
@@ -525,10 +525,10 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 
     PyObject **items = PyDataObject_ITEMS(op) + i;
     PyObject *v = *items;
-    Py_XDECREF(v);
-
-    Py_INCREF(val);
     *items = val;
+    
+    Py_INCREF(val);
+    Py_XDECREF(v);
     return 0;
 }
 
@@ -547,8 +547,8 @@ dataobject_mp_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
 static int
 dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
 {
-    if (PyIndex_Check(item)) {
-        const Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+    if (_PyIndex_Check(item)) {
+        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
         if (i == -1 && PyErr_Occurred())
             return -1;
         return dataobject_sq_ass_item(op, i, val);
@@ -559,8 +559,8 @@ dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
 static PyObject*
 dataobject_mp_subscript2(PyObject* op, PyObject* item)
 {
-    if (PyIndex_Check(item)) {
-        const Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+    if (_PyIndex_Check(item)) {
+        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
         if (i == -1 && PyErr_Occurred())
             return NULL;
         return dataobject_sq_item(op, i);
@@ -571,8 +571,8 @@ dataobject_mp_subscript2(PyObject* op, PyObject* item)
 static int
 dataobject_mp_ass_subscript_sq(PyObject* op, PyObject* item, PyObject *val)
 {
-    if (PyIndex_Check(item)) {
-        const Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+    if (_PyIndex_Check(item)) {
+        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
         if (i == -1 && PyErr_Occurred())
             return -1;
         return dataobject_sq_ass_item(op, i, val);
@@ -585,8 +585,8 @@ dataobject_mp_ass_subscript_sq(PyObject* op, PyObject* item, PyObject *val)
 static PyObject*
 dataobject_mp_subscript_sq(PyObject* op, PyObject* item)
 {
-    if (PyIndex_Check(item)) {
-        const Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+    if (_PyIndex_Check(item)) {
+        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
         if (i == -1 && PyErr_Occurred())
             return NULL;
         return dataobject_sq_item(op, i);

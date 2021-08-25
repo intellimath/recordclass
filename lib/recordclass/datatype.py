@@ -22,7 +22,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .utils import dataslot_offset
 from .utils import check_name, collect_info_from_bases
 
 __all__ = 'clsconfig', 'datatype'
