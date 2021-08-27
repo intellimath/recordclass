@@ -194,7 +194,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyTupleObject *tmp = (PyTupleObject*)args;
 
     Py_ssize_t n_args = Py_SIZE(tmp);
-    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
+    Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,

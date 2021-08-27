@@ -54,7 +54,7 @@ _ds_ro_cache = {}
                 
 class datatype(type):
     """
-    Metatype for creation dataobject-based classes.
+    Metatype for creating classes based on dataobject.
     """
 
     def __new__(metatype, typename, bases, ns, *,
@@ -243,13 +243,18 @@ class datatype(type):
                         gc=gc, deep_dealloc=deep_dealloc)
         return cls
     
-    def __delattr__(self, name):
+    def __delattr__(cls, name):
         from ._dataobject import dataobjectproperty
-        if name in self.__dict__:
-            o = getattr(self, name)
+        if name in cls.__dict__:
+            o = getattr(cls, name)
             if type(o) is dataobjectproperty or name == '__fields__':
-                raise AttributeError(f"Attribute {name} of the class {self.__name__} can't be deleted")
-        type.__delattr__(self, name)
+                raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be deleted")
+        type.__delattr__(cls, name)
+        
+    def __setattr__(cls, name, ob):
+        if name in ('__fields__', '__defaults__'):
+            raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be modified")
+        type.__setattr__(cls, name, ob)
 
 def _make_new_function(typename, fields, defaults, annotations, use_dict):
 
