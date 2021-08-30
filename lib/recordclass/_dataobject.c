@@ -38,6 +38,19 @@ static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataSlotGetSet_Type;
 
+// _Py_IDENTIFIER(__fields__);
+_Py_IDENTIFIER(__fields_dict__);
+// _Py_IDENTIFIER(__defaults__);
+
+// Py_ssize_t fields_hash;
+// PyObject *fields_name;
+
+Py_ssize_t fields_dict_hash;
+PyObject *fields_dict_name;
+
+// Py_ssize_t defaults_hash;
+// PyObject *defaults_name;
+
 static PyObject *
 type_error(const char *msg, PyObject *obj)
 {
@@ -216,8 +229,8 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     }
     
     if (j) {
-        PyObject **dictptr = PyObject_GetDictPtr(type);
-        PyObject *dict = *dictptr;
+//         PyObject **dictptr = PyObject_GetDictPtr(type);
+        PyObject *dict = type->tp_dict;
         
         if (!PyMapping_HasKeyString(dict, "__defaults__")) {
             while (j) {
@@ -533,6 +546,42 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 }
 
 static PyObject*
+dataobject_mp_subscript_only(PyObject* op, PyObject* name)
+{
+    PyObject* fields_dict = _PyDict_GetItem_KnownHash(Py_TYPE(op)->tp_dict, fields_dict_name, fields_dict_hash);
+    
+    Py_hash_t name_hash = Py_TYPE(name)->tp_hash(name);
+  
+    PyObject *index = _PyDict_GetItem_KnownHash(fields_dict, name, name_hash);
+
+    Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
+    
+    PyObject *v = PyDataObject_GET_ITEM(op, i);
+    Py_INCREF(v);
+    return v;
+}
+
+static int
+dataobject_mp_ass_subscript_only(PyObject* op, PyObject* name, PyObject *val)
+{
+    PyObject* fields_dict = _PyDict_GetItem_KnownHash(Py_TYPE(op)->tp_dict, fields_dict_name, fields_dict_hash);
+    
+    Py_hash_t name_hash = Py_TYPE(name)->tp_hash(name);
+  
+    PyObject *index = _PyDict_GetItem_KnownHash(fields_dict, name, name_hash);
+
+    Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
+    
+    PyObject **items = PyDataObject_ITEMS(op) + i;
+    PyObject *v = *items;
+    *items = val;
+    
+    Py_INCREF(val);
+    Py_XDECREF(v);
+    return 0;
+}
+
+static PyObject*
 dataobject_mp_subscript(PyObject* op, PyObject* item)
 {
     return Py_TYPE(op)->tp_getattro(op, item);
@@ -647,6 +696,18 @@ static PyMappingMethods dataobject_as_mapping = {
     (lenfunc)dataobject_len,                  /* mp_len */
     (binaryfunc)dataobject_mp_subscript,         /* mp_subscr */
     (objobjargproc)dataobject_mp_ass_subscript,  /* mp_ass_subscr */
+};
+
+static PyMappingMethods dataobject_as_mapping_only = {
+    (lenfunc)dataobject_len,                  /* mp_len */
+    (binaryfunc)dataobject_mp_subscript_only,         /* mp_subscr */
+    (objobjargproc)dataobject_mp_ass_subscript_only,  /* mp_ass_subscr */
+};
+
+static PyMappingMethods dataobject_as_mapping_only_ro = {
+    (lenfunc)dataobject_len,                  /* mp_len */
+    (binaryfunc)dataobject_mp_subscript_only,         /* mp_subscr */
+    0,  /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping0 = {
@@ -1792,15 +1853,16 @@ static PyTypeObject PyDataSlotGetSet_Type = {
 //////////////////// module level functions //////////////////////////////
 
 static PyObject*
-_collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObject *readonly) {
+_collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObject *readonly, PyObject *mapping_only) {
     PyTypeObject *tp;
     PyTypeObject *tp_base;
-    int sq, mp, ro;
+    int sq, mp, ro, mo;
 
     tp = (PyTypeObject*)cls;
     sq = PyObject_IsTrue(sequence);
     mp = PyObject_IsTrue(mapping);
     ro = PyObject_IsTrue(readonly);
+    mo = PyObject_IsTrue(mapping_only);
 
     tp_base = tp->tp_base;
 
@@ -1812,7 +1874,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
     tp->tp_as_mapping = tp_base->tp_as_mapping;
     tp->tp_as_sequence = tp_base->tp_as_sequence;
     
-    if (sq) {
+    if (!mo && sq) {
         if (ro) {
             tp->tp_as_sequence = &dataobject_as_sequence_ro;
             tp->tp_as_mapping = &dataobject_as_mapping_sq_ro;
@@ -1822,7 +1884,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
         } 
     }
         
-    if (mp) {
+    if (!mo && mp) {
         if (ro) {
             tp->tp_as_mapping = &dataobject_as_mapping_ro;
         } else {
@@ -1830,12 +1892,20 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
         }
     }
         
-    if (mp && sq) {
+    if (!mo && mp && sq) {
         if (ro) {
             tp->tp_as_mapping = &dataobject_as_mapping2_ro;
         } else {
             tp->tp_as_mapping = &dataobject_as_mapping2;
         }
+    }
+    
+    if (mo) {
+        if (ro) {
+            tp->tp_as_mapping = &dataobject_as_mapping_only_ro;
+        } else {
+            tp->tp_as_mapping = &dataobject_as_mapping_only;
+        }    
     }
     
     Py_RETURN_NONE;
@@ -2392,8 +2462,9 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     PyObject *hashable = PyMapping_GetItemString(kw, "hashable");
     PyObject *gc = PyMapping_GetItemString(kw, "gc");
     PyObject *set_dd = PyMapping_GetItemString(kw, "deep_dealloc");
+    PyObject *mapping_only = PyMapping_GetItemString(kw, "mapping_only");
 
-    _collection_protocol(cls, sequence, mapping, readonly);
+    _collection_protocol(cls, sequence, mapping, readonly, mapping_only);
     _set_dictoffset(cls, use_dict);
     _set_weaklistoffset(cls, use_weakref);
     _set_hashable(cls, hashable);
@@ -2420,6 +2491,7 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     Py_XDECREF(hashable);
     Py_XDECREF(gc);
     Py_XDECREF(set_dd);
+    Py_XDECREF(mapping_only);
 
     Py_RETURN_NONE;
 }
@@ -2511,6 +2583,17 @@ PyInit__dataobject(void)
 
     Py_INCREF(&PyDataSlotGetSet_Type);
     PyModule_AddObject(m, "dataobjectproperty", (PyObject *)&PyDataSlotGetSet_Type);
+    
+    fields_dict_name = _PyUnicode_FromId(&PyId___fields_dict__); /* borrowed */
+    if (fields_dict_name == NULL)
+        return NULL;
+    Py_INCREF(fields_dict_name);
+    fields_dict_hash = ((PyASCIIObject *)fields_dict_name)->hash;
 
+//     dataobject_as_mapping.mp_subscript = PyDataObject_Type.tp_getattro;
+//     dataobject_as_mapping.mp_ass_subscript = PyDataObject_Type.tp_setattro;
+
+//     dataobject_as_mapping_ro.mp_subscript = PyDataObject_Type.tp_getattro;
+    
     return m;
 }

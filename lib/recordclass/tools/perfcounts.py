@@ -1,5 +1,5 @@
 from collections import namedtuple
-from recordclass import dataobject, clsconfig
+from recordclass import dataobject, clsconfig, make_dictclass
 from timeit import timeit
 import sys
 
@@ -28,17 +28,22 @@ class FastPoint(dataobject, sequence=True, fast_new=True):
 class FastPointGC(dataobject, sequence=True, fast_new=True, gc=True):
     x:int
     y:int
+
+class PointDict(dataobject, mapping=True, fast_new=True):
+    x:int
+    y:int
     
 results = {'id':[], 'new':[], 
            'getattr':[], 'setattr':[], 
            'getitem':[], 'setitem':[],
+           'getkey':[], 'setkey':[],
            'size':[]}
 
 results['id'].extend(
-    ['dict', 'tuple', 'namedtuple', 'class+slots', 'dataobject',  
-     'dataobject+fast_new', 'dataobject+gc', 'dataobject+fast_new+gc'])
+    ['tuple', 'namedtuple', 'class+slots', 'dataobject',  
+     'dataobject+fast_new', 'dataobject+gc', 'dataobject+fast_new+gc', 'dict', 'dictclass'])
 
-classes = (dict, tuple, PointNT, PointSlots, Point, FastPoint, PointGC, FastPointGC)
+classes = (tuple, PointNT, PointSlots, Point, FastPoint, PointGC, FastPointGC, dict, PointDict)
 
 N = 1_000_000
 
@@ -75,21 +80,58 @@ def test_getattr():
             x = p.x
             y = p.y
 
+#     def test_dict():
+#         p = {'x':0, 'y':0}
+#         for i in range(N):
+#             x = p['x']
+#             y = p['y']
+            
+#     def test_dictclass():
+#         p = PointDict(0,0)
+#         for i in range(N):
+#             x = p['x']
+#             y = p['y']
+            
+    for cls in classes:
+        if cls in (tuple,dict,PointDict):
+            res = nan
+#         elif cls is dict:
+#             res = timeit("test_dict()", number=numbers, globals={'test':test, 'test_dict':test_dict})
+#         elif cls is PointDict:
+#             res = timeit("test_dictclass()", number=numbers, globals={'test':test, 'test_dictclass':test_dictclass})
+        else:
+            res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
+        results['getattr'].append(res)
+
+def test_getkey():
+    print("getkey")
+#     def test(cls):
+#         p = cls(0,0)
+#         for i in range(N):
+#             x = p.x
+#             y = p.y
+
     def test_dict():
         p = {'x':0, 'y':0}
         for i in range(N):
             x = p['x']
             y = p['y']
             
+    def test_dictclass():
+        p = PointDict(0,0)
+        for i in range(N):
+            x = p['x']
+            y = p['y']
+            
     for cls in classes:
-        if cls in (tuple,):
-            res = nan
-        elif cls is dict:
-            res = timeit("test_dict()", number=numbers, globals={'test':test, 'test_dict':test_dict})
+        if cls is dict:
+            res = timeit("test_dict()", number=numbers, globals={'test_dict':test_dict})
+        elif cls is PointDict:
+            res = timeit("test_dictclass()", number=numbers, globals={'test_dictclass':test_dictclass})
         else:
-            res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
-        results['getattr'].append(res)
-
+            res = nan
+        results['getkey'].append(res)
+        
 def test_getitem():
     print("getitem")
     def test(cls):
@@ -105,7 +147,7 @@ def test_getitem():
             y = p[1]
 
     for cls in classes:
-        if cls in (dict, PointSlots):
+        if cls in (dict, PointSlots, PointDict):
             res = nan
         elif cls is tuple:
             res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
@@ -121,21 +163,58 @@ def test_setattr():
             p.x = 1
             p.y = 2
 
+#     def test_dict():
+#         p = {'x':0, 'y':0}
+#         for i in range(N):
+#             p['x'] = 1
+#             p['y'] = 2
+
+#     def test_dictclass():
+#         p = PointDict(0,0)
+#         for i in range(N):
+#             p['x'] = 1
+#             p['y'] = 2
+            
+    for cls in classes:
+        if cls in (tuple, PointNT, dict, PointDict):
+            res = nan
+#         elif cls is PointDict:
+#             res = timeit("test_dictclass()", number=numbers, globals={'test':test, 'test_dictclass':test_dictclass})
+#         elif cls is dict:
+#             res = timeit("test_dict()", number=numbers, globals={'cls':cls, 'test_dict':test_dict})
+        else:
+            res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test, 'tuple':tuple, 'PointNT':PointNT})
+        results['setattr'].append(res)
+
+def test_setkey():
+    print("setkey")
+#     def test(cls):
+#         p = cls(0,0)
+#         for i in range(N):
+#             p.x = 1
+#             p.y = 2
+
     def test_dict():
         p = {'x':0, 'y':0}
         for i in range(N):
             p['x'] = 1
             p['y'] = 2
+
+    def test_dictclass():
+        p = PointDict(0,0)
+        for i in range(N):
+            p['x'] = 1
+            p['y'] = 2
             
     for cls in classes:
-        if cls in (tuple, PointNT):
-            res = nan
+        if cls is PointDict:
+            res = timeit("test_dictclass()", number=numbers, globals={'test_dictclass':test_dictclass})
         elif cls is dict:
-            res = timeit("test_dict()", number=numbers, globals={'cls':cls, 'test_dict':test_dict})
+            res = timeit("test_dict()", number=numbers, globals={'test_dict':test_dict})
         else:
-            res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test, 'tuple':tuple, 'PointNT':PointNT})
-        results['setattr'].append(res)
-
+            res = nan
+        results['setkey'].append(res)
+        
 def test_setitem():
     print("setitem")
     def test(cls):
@@ -145,7 +224,7 @@ def test_setitem():
             p[1] = 2
             
     for cls in classes:
-        if cls in (dict, tuple, PointNT, PointSlots):
+        if cls in (dict, tuple, PointNT, PointSlots, PointDict):
             res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
@@ -158,9 +237,10 @@ test_getattr()
 test_setattr()
 test_getitem()
 test_setitem()
+test_getkey()
+test_setkey()
 
 results['size'].extend([
-  sys.getsizeof({'x':0,'y':0}),   
   sys.getsizeof((0,0)),   
   sys.getsizeof(PointNT(0,0)),   
   sys.getsizeof(PointSlots(0,0)),   
@@ -168,6 +248,8 @@ results['size'].extend([
   sys.getsizeof(FastPoint(0,0)),   
   sys.getsizeof(PointGC(0,0)),   
   sys.getsizeof(FastPointGC(0,0)),   
+  sys.getsizeof({'x':0,'y':0}),   
+  sys.getsizeof(PointDict(0,0)),   
 ])
 
 pd.options.mode.use_inf_as_na = True

@@ -22,21 +22,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .utils import check_name, collect_info_from_bases
-
 __all__ = 'clsconfig', 'datatype'
-
-int_type = type(1)
 
 def clsconfig(*, sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 
-              hashable=False, gc=False, deep_dealloc=False):
+              hashable=False, gc=False, deep_dealloc=False, mapping_only=False):
     from ._dataobject import _clsconfig
     def func(cls, *, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                         use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, 
-                        deep_dealloc=deep_dealloc)
+                        deep_dealloc=deep_dealloc, mapping_only=mapping_only)
         return cls
     return func
 
@@ -60,8 +56,9 @@ class datatype(type):
     def __new__(metatype, typename, bases, ns, *,
                 gc=False, fast_new=False, readonly=False, iterable=False,
                 deep_dealloc=False, sequence=False, mapping=False,
-                use_dict=False, use_weakref=False, hashable=False):
+                use_dict=False, use_weakref=False, hashable=False, mapping_only=False):
 
+        from .utils import check_name, collect_info_from_bases
         from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
         from sys import intern as _intern
 
@@ -82,6 +79,8 @@ class datatype(type):
             raise TypeError("The base class in not specified")
 
         annotations = ns.get('__annotations__', {})
+        
+        int_type = type(1)
 
         if '__fields__' in ns:
             fields = ns['__fields__']
@@ -94,7 +93,7 @@ class datatype(type):
             field_dicts = {fn:{'type':tp} for fn,tp in annotations.items()}
 
         has_fields = True
-        if isinstance(fields, int_type):
+        if isinstance(fields, type(1)):
             has_fields = False
             n_fields = fields
             sequence = True
@@ -186,28 +185,40 @@ class datatype(type):
                 ns['__new__'] = __new__
 
         if has_fields:
-            for i, name in enumerate(fields):
-                fd = fields_dict[name]
-                fd_readonly = fd.get('readonly', False)
-                if fd_readonly:
-                    ds = _ds_ro_cache.get(i, None)
-                else:
-                    ds = _ds_cache.get(i, None)
-                if ds is None:
+            if mapping_only:
+                ns['__fields_dict__'] = {fn:i for i,fn in enumerate(fields)}
+            else:
+                for i, name in enumerate(fields):
+                    fd = fields_dict[name]
+                    fd_readonly = fd.get('readonly', False)
                     if fd_readonly:
-                        ds = dataobjectproperty(i, True)
+                        ds = _ds_ro_cache.get(i, None)
                     else:
-                        ds = dataobjectproperty(i)
-                ns[name] = ds
+                        ds = _ds_cache.get(i, None)
+                    if ds is None:
+                        if fd_readonly:
+                            ds = dataobjectproperty(i, True)
+                        else:
+                            ds = dataobjectproperty(i)
+                    ns[name] = ds
 
         if '__repr__' not in ns:
-            def __repr__(self):
-                args = ', '.join((name + '=' + repr(getattr(self, name))) for name in self.__class__.__fields__) 
-                kw = getattr(self, '__dict__', None)
-                if kw:
-                    return f'{typename}({args}, **{kw})'
-                else:
-                    return f'{typename}({args})'
+            if mapping_only:
+                def __repr__(self):
+                    args = ', '.join((name + '=' + repr(self[name])) for name in self.__class__.__fields__) 
+                    kw = getattr(self, '__dict__', None)
+                    if kw:
+                        return f'{typename}({args}, **{kw})'
+                    else:
+                        return f'{typename}({args})'
+            else:
+                def __repr__(self):
+                    args = ', '.join((name + '=' + repr(getattr(self, name))) for name in self.__class__.__fields__) 
+                    kw = getattr(self, '__dict__', None)
+                    if kw:
+                        return f'{typename}({args}, **{kw})'
+                    else:
+                        return f'{typename}({args})'
             __repr__.__qual_name__ =  f'{typename}.__repr__'
 
             ns['__repr__'] = __repr__
@@ -240,7 +251,7 @@ class datatype(type):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly,
                         use_dict=use_dict, use_weakref=use_weakref, 
                         iterable=iterable, hashable=hashable,
-                        gc=gc, deep_dealloc=deep_dealloc)
+                        gc=gc, deep_dealloc=deep_dealloc, mapping_only=mapping_only)
         return cls
     
     def __delattr__(cls, name):

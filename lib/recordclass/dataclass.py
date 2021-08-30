@@ -30,7 +30,7 @@ __all__ = 'make_dataclass', 'join_dataclasses', 'DataclassStorage'
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None, *,
                    use_dict=False, use_weakref=False, hashable=False,
                    sequence=False, mapping=False, iterable=False, readonly=False, api='',
-                   module=None, fast_new=False, rename=False, gc=False):
+                   module=None, fast_new=False, rename=False, gc=False, mapping_only=False):
 
     """Returns a new class with named fields and small memory footprint.
 
@@ -125,7 +125,8 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
             raise TypeError('Immutable type can not support dict-like interface')
 
         iterable = True
-        mapping = True
+        if not mapping_only:
+            mapping = True
         
         def keys(self):
             return iter(self.__fields__)
@@ -176,7 +177,7 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
                    readonly=readonly, iterable=iterable,
                    mapping=mapping, sequence=sequence,
                    use_dict=use_dict, use_weakref=use_weakref,
-                   hashable=hashable,
+                   hashable=hashable, mapping_only=mapping_only,
                    )
 
     return cls
