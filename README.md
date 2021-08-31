@@ -111,18 +111,19 @@ As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4
 
 Here is the table with performance counters (python 3.9, debian linux, x86-64), which are mesured using `utils/perfcount.py` script:
 
-    | id                     |   size |   new | getattr   | setattr   | getitem   | setitem   | getkey   | setkey   | iterate   |
-    |:-----------------------|-------:|------:|:----------|:----------|:----------|:----------|:---------|:---------|:----------|
-    | tuple                  |     56 |  1.09 |           |           | 0.45      |           |          |          | 2.22      |
-    | namedtuple             |     56 |  2.82 | 0.49      |           | 0.45      |           |          |          | 2.15      |
-    | class+slots            |     48 |  2.09 | 0.53      | 0.57      |           |           |          |          |           |
-    | dataobject             |     32 |  2.19 | 0.47      | 0.54      | 0.47      | 0.52      |          |          | 2.20      |
-    | dataobject+fast_new    |     32 |  1.08 | 0.47      | 0.55      | 0.47      | 0.52      |          |          | 2.22      |
-    | dataobject+gc          |     48 |  2.37 | 0.48      | 0.55      | 0.48      | 0.53      |          |          | 2.34      |
-    | dataobject+fast_new+gc |     48 |  1.25 | 0.48      | 0.56      | 0.49      | 0.56      |          |          | 2.26      |
-    | dict                   |    232 |  2.49 |           |           |           |           | 0.50     | 0.83     | 2.36      |
-    | dictclass              |     32 |  1.11 |           |           |           |           | 0.72     | 0.85     | 2.32      |
-
+======================  ======  =====  =========  =========  =========  =========  ========  ========  =========
+id                        size    new  getattr    setattr    getitem    setitem    getkey    setkey    iterate
+======================  ======  =====  =========  =========  =========  =========  ========  ========  =========
+tuple                       56   1.03                        0.45                                      2.16
+namedtuple                  56   2.77  0.50                  0.45                                      2.15
+class+slots                 48   2.07  0.52       0.57
+dataobject                  32   2.21  0.47       0.55       0.47       0.52                           2.23
+dataobject+fast_new         32   1.08  0.48       0.56       0.47       0.52                           2.24
+dataobject+gc               48   2.36  0.48       0.55       0.48       0.59                           2.29
+dataobject+fast_new+gc      48   1.23  0.49       0.56       0.48       0.60                           2.22
+dict                       232   2.4                                               0.47      0.59      2.31
+dictclass                   32   1.12                                              0.53      0.61      2.28
+======================  ======  =====  =========  =========  =========  =========  ========  ========  =========
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
