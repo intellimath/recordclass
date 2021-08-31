@@ -111,16 +111,17 @@ As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4
 
 Here is the table with performance counters (python 3.9, debian linux, x86-64), which are mesured using `utils/perfcount.py` script:
 
-|    | id                     |   new |   getattr |   setattr |   getitem |   setitem |   size |
-|---:|:-----------------------|------:|----------:|----------:|----------:|----------:|-------:|
-|  0 | dict                   |  2.45 |      0.45 |      0.58 |           |           |    232 |
-|  1 | tuple                  |  1.02 |           |           |      0.43 |           |     56 |
-|  2 | namedtuple             |  2.70 |      0.47 |           |      0.45 |           |     56 |
-|  3 | class+slots            |  2.01 |      0.50 |      0.54 |           |           |     48 |
-|  4 | dataobject             |  2.13 |      0.46 |      0.54 |      0.45 |      0.50 |     32 |
-|  5 | dataobject+fast_new    |  1.05 |      0.46 |      0.54 |      0.45 |      0.50 |     32 |
-|  6 | dataobject+gc          |  2.25 |      0.46 |      0.54 |      0.46 |      0.50 |     48 |
-|  7 | dataobject+fast_new+gc |  1.17 |      0.46 |      0.54 |      0.46 |      0.50 |     48 |
+    | id                     |   size |   new | getattr   | setattr   | getitem   | setitem   | getkey   | setkey   | iterate   |
+    |:-----------------------|-------:|------:|:----------|:----------|:----------|:----------|:---------|:---------|:----------|
+    | tuple                  |     56 |  1.09 |           |           | 0.45      |           |          |          | 2.22      |
+    | namedtuple             |     56 |  2.82 | 0.49      |           | 0.45      |           |          |          | 2.15      |
+    | class+slots            |     48 |  2.09 | 0.53      | 0.57      |           |           |          |          |           |
+    | dataobject             |     32 |  2.19 | 0.47      | 0.54      | 0.47      | 0.52      |          |          | 2.20      |
+    | dataobject+fast_new    |     32 |  1.08 | 0.47      | 0.55      | 0.47      | 0.52      |          |          | 2.22      |
+    | dataobject+gc          |     48 |  2.37 | 0.48      | 0.55      | 0.48      | 0.53      |          |          | 2.34      |
+    | dataobject+fast_new+gc |     48 |  1.25 | 0.48      | 0.56      | 0.49      | 0.56      |          |          | 2.26      |
+    | dict                   |    232 |  2.49 |           |           |           |           | 0.50     | 0.83     | 2.36      |
+    | dictclass              |     32 |  1.11 |           |           |           |           | 0.72     | 0.85     | 2.32      |
 
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
