@@ -33,11 +33,12 @@ class PointDict(dataobject, mapping=True, fast_new=True):
     x:int
     y:int
     
-results = {'id':[], 'new':[], 
+results = {'id':[], 'size':[], 'new':[], 
            'getattr':[], 'setattr':[], 
            'getitem':[], 'setitem':[],
            'getkey':[], 'setkey':[],
-           'size':[]}
+           'iterate':[],
+          }
 
 results['id'].extend(
     ['tuple', 'namedtuple', 'class+slots', 'dataobject',  
@@ -70,6 +71,7 @@ def test_new():
             res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
+        res = "%.2f" % res
         results['new'].append(res)
 
 def test_getattr():
@@ -94,13 +96,15 @@ def test_getattr():
             
     for cls in classes:
         if cls in (tuple,dict,PointDict):
-            res = nan
+            res = ''
 #         elif cls is dict:
 #             res = timeit("test_dict()", number=numbers, globals={'test':test, 'test_dict':test_dict})
 #         elif cls is PointDict:
 #             res = timeit("test_dictclass()", number=numbers, globals={'test':test, 'test_dictclass':test_dictclass})
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
+        if res != '':
+            res = "%.2f" % res
         results['getattr'].append(res)
 
 def test_getkey():
@@ -129,7 +133,9 @@ def test_getkey():
         elif cls is PointDict:
             res = timeit("test_dictclass()", number=numbers, globals={'test_dictclass':test_dictclass})
         else:
-            res = nan
+            res = ''
+        if res != '':
+            res = "%.2f" % res
         results['getkey'].append(res)
         
 def test_getitem():
@@ -148,11 +154,13 @@ def test_getitem():
 
     for cls in classes:
         if cls in (dict, PointSlots, PointDict):
-            res = nan
+            res = ''
         elif cls is tuple:
             res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
+        if res != '':
+            res = "%.2f" % res
         results['getitem'].append(res)
         
 def test_setattr():
@@ -177,13 +185,15 @@ def test_setattr():
             
     for cls in classes:
         if cls in (tuple, PointNT, dict, PointDict):
-            res = nan
+            res = ''
 #         elif cls is PointDict:
 #             res = timeit("test_dictclass()", number=numbers, globals={'test':test, 'test_dictclass':test_dictclass})
 #         elif cls is dict:
 #             res = timeit("test_dict()", number=numbers, globals={'cls':cls, 'test_dict':test_dict})
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test, 'tuple':tuple, 'PointNT':PointNT})
+        if res != '':
+            res = "%.2f" % res
         results['setattr'].append(res)
 
 def test_setkey():
@@ -212,7 +222,9 @@ def test_setkey():
         elif cls is dict:
             res = timeit("test_dict()", number=numbers, globals={'test_dict':test_dict})
         else:
-            res = nan
+            res = ''
+        if res != '':
+            res = "%.2f" % res
         results['setkey'].append(res)
         
 def test_setitem():
@@ -225,10 +237,42 @@ def test_setitem():
             
     for cls in classes:
         if cls in (dict, tuple, PointNT, PointSlots, PointDict):
-            res = nan
+            res = ''
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
+        if res != '':
+            res = "%.2f" % res
         results['setitem'].append(res)
+
+def test_iterate():
+    print("iterate")
+    def test(cls):
+        p = cls(0,0)
+        lst = [tuple(iter(p)) for i in range(N)]
+        return lst
+
+    def test_tuple():
+        p = (0,0)
+        lst = [tuple(iter(p)) for i in range(N)]
+        return lst
+    
+    def test_dict():
+        p = {'x':0, 'y':0}
+        lst = [tuple(iter(p)) for i in range(N)]
+        return lst
+    
+    for cls in classes:
+        if cls is dict:
+            res = timeit("test_dict()", number=numbers, globals={'test':test, 'test_dict':test_dict})
+        elif cls is tuple:
+            res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
+        elif cls is PointSlots:
+            res = ''
+        else:
+            res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
+        if res != '':
+            res = "%.2f" % res
+        results['iterate'].append(res)
         
 import pandas as pd
 
@@ -239,6 +283,7 @@ test_getitem()
 test_setitem()
 test_getkey()
 test_setkey()
+test_iterate()
 
 results['size'].extend([
   sys.getsizeof((0,0)),   
@@ -254,5 +299,6 @@ results['size'].extend([
 
 pd.options.mode.use_inf_as_na = True
 df = pd.DataFrame.from_dict(results)
+df.fillna('',inplace=True)
 # pd.set_option('precision', 2)
-print(df.to_markdown(floatfmt='.2f'))
+print(df.to_markdown(floatfmt='.2f', index=False))

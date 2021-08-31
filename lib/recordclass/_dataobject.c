@@ -229,18 +229,21 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     }
     
     if (j) {
-//         PyObject **dictptr = PyObject_GetDictPtr(type);
-        PyObject *dict = type->tp_dict;
+        PyObject *tp_dict = type->tp_dict;
+
+        PyObject *defaults = PyMapping_GetItemString(tp_dict, "__defaults__");
         
-        if (!PyMapping_HasKeyString(dict, "__defaults__")) {
+        if (defaults == NULL) {
+            if (PyErr_Occurred())
+                PyErr_Clear();
+                
             while (j) {
                 Py_INCREF(Py_None);
                 *(items++) = Py_None;
                 j--;
             }            
         } else {
-            PyObject *fields = PyMapping_GetItemString(dict, "__fields__");
-            PyObject *defaults = PyMapping_GetItemString(dict, "__defaults__");
+            PyObject *fields = PyMapping_GetItemString(tp_dict, "__fields__");
             
             while (j) {
                 PyObject *fname = PyTuple_GetItem(fields, n_items-j);
