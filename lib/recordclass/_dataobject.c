@@ -204,6 +204,12 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
+    if (type == &PyDataObject_Type) {
+        PyErr_SetString(PyExc_TypeError,
+                        "dataobject base class can't be instantiated");
+        return NULL;        
+    }
+
     PyTupleObject *tmp = (PyTupleObject*)args;
 
     Py_ssize_t n_args = Py_SIZE(tmp);
@@ -234,9 +240,8 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         PyObject *defaults = PyMapping_GetItemString(tp_dict, "__defaults__");
         
         if (defaults == NULL) {
-            if (PyErr_Occurred()) {
+            if (PyErr_Occurred())
                 PyErr_Clear();
-            }
                 
             while (j) {
                 Py_INCREF(Py_None);
@@ -627,8 +632,8 @@ dataobject_mp_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
 static int
 dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
 {
-    if (_PyIndex_Check(item)) {
-        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+    if (PyLong_Check(item)) {
+        Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return -1;
         return dataobject_sq_ass_item(op, i, val);
@@ -639,8 +644,8 @@ dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
 static PyObject*
 dataobject_mp_subscript2(PyObject* op, PyObject* item)
 {
-    if (_PyIndex_Check(item)) {
-        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+    if (PyLong_Check(item)) {
+        Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return NULL;
         return dataobject_sq_item(op, i);
@@ -651,8 +656,8 @@ dataobject_mp_subscript2(PyObject* op, PyObject* item)
 static int
 dataobject_mp_ass_subscript_sq(PyObject* op, PyObject* item, PyObject *val)
 {
-    if (_PyIndex_Check(item)) {
-        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+    if (PyLong_Check(item)) {
+        Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return -1;
         return dataobject_sq_ass_item(op, i, val);
@@ -665,8 +670,8 @@ dataobject_mp_ass_subscript_sq(PyObject* op, PyObject* item, PyObject *val)
 static PyObject*
 dataobject_mp_subscript_sq(PyObject* op, PyObject* item)
 {
-    if (_PyIndex_Check(item)) {
-        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+    if (PyLong_Check(item)) {
+        Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return NULL;
         return dataobject_sq_item(op, i);
@@ -1306,7 +1311,7 @@ static PyObject* dataobject_iter(PyObject *seq);
 // }
 
 // static PyObject*
-// dataobject_weakref_value(PyObject *self)
+// dataobject_weakref_get_value(PyObject *self)
 // {
 //     PyObject *value;
 //     value = ((struct dataobject_weakref*)self)->value;
@@ -1968,11 +1973,8 @@ _set_hashable(PyObject *cls, PyObject *hashable) {
                 tp->tp_hash = base->tp_hash;
                 Py_RETURN_NONE;            
             } 
-//             else printf("%i\n", base->tp_hash);             
         }        
     }
-    
-//     printf("%i\n", state);
 
     if (state)
         tp->tp_hash = dataobject_hash;
