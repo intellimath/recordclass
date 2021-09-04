@@ -151,9 +151,10 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
             return (key in self.__fields__)
         
         ns.update({
-            'keys': keys, 
-            'items': items, 
-            'values': values, 
+            'keys': keys,
+            'items': items,
+            'values': values,
+            'update': update,
             'get': get
         })
 

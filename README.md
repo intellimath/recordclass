@@ -373,6 +373,10 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.16.1
+
+* Add `dictclass` factory function to generate with `dict-like` API and without attribute access to the fields.
+
 #### 0.16
 
 * `RecordClass` started to be a direct subclass of dataobject with `sequence=True` and support

@@ -234,8 +234,9 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         PyObject *defaults = PyMapping_GetItemString(tp_dict, "__defaults__");
         
         if (defaults == NULL) {
-            if (PyErr_Occurred())
+            if (PyErr_Occurred()) {
                 PyErr_Clear();
+            }
                 
             while (j) {
                 Py_INCREF(Py_None);
@@ -244,6 +245,14 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             }            
         } else {
             PyObject *fields = PyMapping_GetItemString(tp_dict, "__fields__");
+            Py_ssize_t n_fields = Py_SIZE(fields);
+            
+            if (n_fields != n_items) {
+                PyErr_SetString(PyExc_TypeError,
+                                "number of fields != number of data items");
+                Py_DECREF(defaults);
+                return NULL;                
+            }
             
             while (j) {
                 PyObject *fname = PyTuple_GetItem(fields, n_items-j);
@@ -523,6 +532,10 @@ dataobject_sq_item(PyObject *op, Py_ssize_t i)
     }
 
     PyObject *v = PyDataObject_GET_ITEM(op, i);
+    if (v == NULL) {        
+        PyErr_SetString(PyExc_IndexError, "item has no value");
+        return NULL;
+    }
     Py_INCREF(v);
     return v;
 }
@@ -543,7 +556,7 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     PyObject *v = *items;
     *items = val;
     
-    Py_INCREF(val);
+    Py_XINCREF(val);
     Py_XDECREF(v);
     return 0;
 }
@@ -552,9 +565,16 @@ static PyObject*
 dataobject_mp_subscript_only(PyObject* op, PyObject* name)
 {
     PyObject* fields_dict = _PyDict_GetItem_KnownHash(Py_TYPE(op)->tp_dict, fields_dict_name, fields_dict_hash);
+    Py_hash_t name_hash;
     
-    Py_hash_t name_hash = Py_TYPE(name)->tp_hash(name);
-  
+    if (Py_TYPE(name) == &PyUnicode_Type) {
+        name_hash = ((PyASCIIObject*)name)->hash;
+        if (name_hash == -1)
+            name_hash = Py_TYPE(name)->tp_hash(name);
+    } else {
+        name_hash = Py_TYPE(name)->tp_hash(name);
+    }
+
     PyObject *index = _PyDict_GetItem_KnownHash(fields_dict, name, name_hash);
 
     Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
@@ -569,7 +589,15 @@ dataobject_mp_ass_subscript_only(PyObject* op, PyObject* name, PyObject *val)
 {
     PyObject* fields_dict = _PyDict_GetItem_KnownHash(Py_TYPE(op)->tp_dict, fields_dict_name, fields_dict_hash);
     
-    Py_hash_t name_hash = Py_TYPE(name)->tp_hash(name);
+    Py_hash_t name_hash;
+    
+    if (Py_TYPE(name) == &PyUnicode_Type) {
+        name_hash = ((PyASCIIObject*)name)->hash;
+        if (name_hash == -1)
+            name_hash = Py_TYPE(name)->tp_hash(name);
+    } else {
+        name_hash = Py_TYPE(name)->tp_hash(name);
+    }
   
     PyObject *index = _PyDict_GetItem_KnownHash(fields_dict, name, name_hash);
 
@@ -1601,6 +1629,11 @@ static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject 
     }
 
     PyObject *v = PyDataObject_GET_ITEM(obj, ((dataobjectproperty_object *)self)->index);
+    if (v == NULL) {
+        PyErr_SetString(PyExc_AttributeError, "the attribute has no value");
+        return NULL;
+    }
+
     Py_INCREF(v);
     return v;
 }
@@ -1621,9 +1654,13 @@ static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value
     }
 
     PyObject *v = PyDataObject_GET_ITEM(obj, ((dataobjectproperty_object *)self)->index);
-    Py_DECREF(v);
+    if (v == NULL)
+        return 0;
 
-    Py_INCREF(value);
+    Py_DECREF(v);
+    
+    if (value != NULL)
+        Py_INCREF(value);
     PyDataObject_SET_ITEM(obj, ((dataobjectproperty_object *)self)->index, value);
 
     return 0;
@@ -2593,10 +2630,10 @@ PyInit__dataobject(void)
     Py_INCREF(fields_dict_name);
     fields_dict_hash = ((PyASCIIObject *)fields_dict_name)->hash;
 
-//     dataobject_as_mapping.mp_subscript = PyDataObject_Type.tp_getattro;
-//     dataobject_as_mapping.mp_ass_subscript = PyDataObject_Type.tp_setattro;
+    dataobject_as_mapping.mp_subscript = PyDataObject_Type.tp_getattro;
+    dataobject_as_mapping.mp_ass_subscript = PyDataObject_Type.tp_setattro;
 
-//     dataobject_as_mapping_ro.mp_subscript = PyDataObject_Type.tp_getattro;
+    dataobject_as_mapping_ro.mp_subscript = PyDataObject_Type.tp_getattro;
     
     return m;
 }

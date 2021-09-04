@@ -881,7 +881,22 @@ class dataobjectTest(unittest.TestCase):
             a['x'] = 100
         with self.assertRaises(TypeError):        
             a['y'] = 200
-        
+
+    def test_bad_makeclass(self):
+        with self.assertRaises(TypeError):        
+            A = make_dataclass("A", 'x y', defaults=(0,0,0), fast_new=True)
+#         a = A(x=1, y=2, z=3)
+
+    def test_bad_call(self):
+        A = make_dataclass("A", 'x y', defaults=(0,), fast_new=True)
+        with self.assertRaises(AttributeError):        
+            a = A(x=1, y=2, z=3)
+
+    def test_bad_call2(self):
+        A = make_dataclass("A", 'x y', defaults=(0,))
+        with self.assertRaises(TypeError):        
+            a = A(x=1, y=2, z=3)
+            
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(dataobjectTest))

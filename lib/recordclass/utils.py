@@ -52,16 +52,8 @@ del _sys
 
 #############
 
-def number_of_dataslots(cls):
+def number_of_dataitems(cls):
     return cls.__itemsize__
-
-#     basesize = pyobject_size
-#     n = (cls.__basicsize__ - basesize) // ref_size
-#     if cls.__dictoffset__:
-#         n -= 1
-#     if cls.__weakrefoffset__:
-#         n -= 1
-#     return n
 
 def dataslot_offset(i, n_slots):
     if i >= n_slots:
@@ -115,6 +107,7 @@ def process_fields(fields, defaults, rename, invalid_names):
 
     if isinstance(defaults, (tuple,list)) and n_defaults > 0:
         defaults = {fields[i]:defaults[i] for i in range(-n_defaults,0)}
+
         
     return fields, annotations, defaults
 
@@ -154,7 +147,7 @@ def collect_info_from_bases(bases):
         fs = base.__dict__.get('__fields__', ())
         base_defaults = base.__dict__.get('__defaults__', {})
         base_annotations = base.__dict__.get('__annotations__', {})
-        n = base.__itemsize__ #number_of_dataslots(base)
+        n = base.__itemsize__ #number_of_dataitems(base)
         if type(fs) is tuple and len(fs) == n:
             for fn in fs:
                 if fn in fields:
