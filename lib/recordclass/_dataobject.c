@@ -569,18 +569,14 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 static PyObject*
 dataobject_mp_subscript_only(PyObject* op, PyObject* name)
 {
-    PyObject* fields_dict = _PyDict_GetItem_KnownHash(Py_TYPE(op)->tp_dict, fields_dict_name, fields_dict_hash);
-    Py_hash_t name_hash;
-    
-    if (Py_TYPE(name) == &PyUnicode_Type) {
-        name_hash = ((PyASCIIObject*)name)->hash;
-        if (name_hash == -1)
-            name_hash = Py_TYPE(name)->tp_hash(name);
-    } else {
-        name_hash = Py_TYPE(name)->tp_hash(name);
-    }
+    PyObject* tp_dict = Py_TYPE(op)->tp_dict;
+    PyObject* fields_dict = Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, fields_dict_name);
 
-    PyObject *index = _PyDict_GetItem_KnownHash(fields_dict, name, name_hash);
+    PyObject* tp_dict2 = Py_TYPE(fields_dict)->tp_dict;
+    PyObject* index = Py_TYPE(tp_dict2)->tp_as_mapping->mp_subscript(fields_dict, name);
+    
+    if (index == NULL) 
+        return NULL;
 
     Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
     
@@ -592,20 +588,15 @@ dataobject_mp_subscript_only(PyObject* op, PyObject* name)
 static int
 dataobject_mp_ass_subscript_only(PyObject* op, PyObject* name, PyObject *val)
 {
-    PyObject* fields_dict = _PyDict_GetItem_KnownHash(Py_TYPE(op)->tp_dict, fields_dict_name, fields_dict_hash);
-    
-    Py_hash_t name_hash;
-    
-    if (Py_TYPE(name) == &PyUnicode_Type) {
-        name_hash = ((PyASCIIObject*)name)->hash;
-        if (name_hash == -1)
-            name_hash = Py_TYPE(name)->tp_hash(name);
-    } else {
-        name_hash = Py_TYPE(name)->tp_hash(name);
-    }
-  
-    PyObject *index = _PyDict_GetItem_KnownHash(fields_dict, name, name_hash);
+    PyObject* tp_dict = Py_TYPE(op)->tp_dict;
+    PyObject* fields_dict = Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, fields_dict_name);
 
+    PyObject* tp_dict2 = Py_TYPE(fields_dict)->tp_dict;
+    PyObject* index = Py_TYPE(tp_dict2)->tp_as_mapping->mp_subscript(fields_dict, name);
+    
+    if (index == NULL) 
+        return -1;
+    
     Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
     
     PyObject **items = PyDataObject_ITEMS(op) + i;
@@ -2625,7 +2616,7 @@ PyInit__dataobject(void)
 
     Py_INCREF(&PyDataSlotGetSet_Type);
     PyModule_AddObject(m, "dataobjectproperty", (PyObject *)&PyDataSlotGetSet_Type);
-    
+
     fields_dict_name = _PyUnicode_FromId(&PyId___fields_dict__); /* borrowed */
     if (fields_dict_name == NULL)
         return NULL;
@@ -2636,6 +2627,6 @@ PyInit__dataobject(void)
     dataobject_as_mapping.mp_ass_subscript = PyDataObject_Type.tp_setattro;
 
     dataobject_as_mapping_ro.mp_subscript = PyDataObject_Type.tp_getattro;
-    
+
     return m;
 }

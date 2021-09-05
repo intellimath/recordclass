@@ -759,6 +759,7 @@ class dataobjectTest(unittest.TestCase):
     def test_dictlike_1(self):
         A = make_dataclass("A", 'x y', mapping_only=True)
         a = A(x=1, y=2)
+        print(a)
         self.assertEqual(a['x'], 1)
         self.assertEqual(a['y'], 2)
         a['x'] = 100
