@@ -169,8 +169,8 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
     memset(op, '\0', size);
 
     Py_TYPE(op) = type;
-//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-    Py_INCREF(type);
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_INCREF(type);
 
     _Py_NewReference(op);
 
@@ -191,8 +191,8 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
     memset(op, '\0', size);
 
     Py_TYPE(op) = type;
-//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-    Py_INCREF(type);
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_INCREF(type);
 
     _Py_NewReference(op);
 
@@ -378,7 +378,8 @@ dataobject_dealloc_gc(PyObject *op)
 
     dataobject_xdecref(op);
 
-    Py_DECREF(type);
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_DECREF(type);
     type->tp_free((PyObject *)op);
 
 #if PY_VERSION_HEX < 0x03080000
@@ -428,7 +429,7 @@ dataobject_finalize(PyObject *ob) {
         {
             Py_ssize_t j;
             PyObject **ptr = ((PyListObject*)stack)->ob_item;
-            
+
             *ptr = NULL;
             for(j=1; j<n_stack; j++) {
                 ptr[j-1] = ptr[j];
@@ -560,7 +561,7 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     PyObject **items = PyDataObject_ITEMS(op) + i;
     PyObject *v = *items;
     *items = val;
-    
+
     Py_XINCREF(val);
     Py_XDECREF(v);
     return 0;
@@ -574,12 +575,12 @@ dataobject_mp_subscript_only(PyObject* op, PyObject* name)
 
     PyObject* tp_dict2 = Py_TYPE(fields_dict)->tp_dict;
     PyObject* index = Py_TYPE(tp_dict2)->tp_as_mapping->mp_subscript(fields_dict, name);
-    
+
     if (index == NULL) 
         return NULL;
 
     Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
-    
+
     PyObject *v = PyDataObject_GET_ITEM(op, i);
     Py_INCREF(v);
     return v;
@@ -593,16 +594,16 @@ dataobject_mp_ass_subscript_only(PyObject* op, PyObject* name, PyObject *val)
 
     PyObject* tp_dict2 = Py_TYPE(fields_dict)->tp_dict;
     PyObject* index = Py_TYPE(tp_dict2)->tp_as_mapping->mp_subscript(fields_dict, name);
-    
+
     if (index == NULL) 
         return -1;
-    
+
     Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
-    
+
     PyObject **items = PyDataObject_ITEMS(op) + i;
     PyObject *v = *items;
     *items = val;
-    
+
     Py_INCREF(val);
     Py_XDECREF(v);
     return 0;
