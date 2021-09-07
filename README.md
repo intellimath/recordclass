@@ -375,7 +375,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 #### 0.16.1
 
-* Add `dictclass` factory function to generate with `dict-like` API and without attribute access to the fields.
+* Add `dictclass` factory function to generate class with `dict-like` API and without attribute access to the fields.
   Features: fast instance creation, small memory footprint.
 
 #### 0.16
