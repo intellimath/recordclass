@@ -32,4 +32,4 @@ from .arrayclass import make_arrayclass
 from .litelist import litelist
 from ._litetuple import litetuple, mutabletuple
 
-__version__ = '0.16'
+__version__ = '0.16.1'
