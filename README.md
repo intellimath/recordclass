@@ -373,8 +373,9 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
-#### 0.16.2
+#### 0.17
 
+* Now recordclass may built for pypy3.
 * From now the function `_PyObject_GetBuitin` is not used 
   (see [question](https://stackoverflow.com/questions/67094860/pypy3-pip-install-recordclass) on stackoverflow).
 
