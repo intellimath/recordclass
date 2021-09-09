@@ -23,6 +23,7 @@
 #ifdef Py_LIMITED_API
 #undef Py_LIMITED_API
 #endif
+// #define Py_LIMITED_API 1
 
 #include "Python.h"
 
@@ -101,32 +102,6 @@ PyDataObject_GetDict(PyObject *obj)
     return dict;
 }
 
-// static int
-// PyDataObject_SetDict(PyObject *obj, PyObject* value)
-// {
-//     PyObject **dictptr = PyDataObject_GetDictPtr(obj);
-//     if (dictptr == NULL) {
-//         PyErr_SetString(PyExc_AttributeError,
-//                         "This object has no __dict__");
-//         return -1;
-//     }
-//     if (value == NULL) {
-//         PyErr_SetString(PyExc_TypeError,
-//                         "can not delete __dict__");
-//         return -1;
-//     }
-//     if (!PyDict_Check(value)) {
-//         PyErr_Format(PyExc_TypeError,
-//                         "__dict__ must be set to a dictionary, "
-//                         "not a '%.200s'", Py_TYPE(value)->tp_name);
-//         return -1;
-//     }
-//     Py_INCREF(value);
-//     Py_XDECREF(*dictptr);
-//     *dictptr = value;
-//     return 0;
-// }
-
 static PyObject *
 _PyObject_GetObject(const char *modname_c, const char *attrname_c)
 {
@@ -134,6 +109,30 @@ _PyObject_GetObject(const char *modname_c, const char *attrname_c)
     PyObject *mod, *ob;
 
     modname = PyUnicode_FromString(modname_c);
+    if (modname == NULL)
+        return NULL;
+    mod = PyImport_Import(modname);
+    if (mod == NULL) {
+        Py_DECREF(modname);    
+        return NULL;
+    }
+    ob = PyObject_GetAttrString(mod, attrname_c);
+    if (ob == NULL) {
+        Py_DECREF(mod);
+        return NULL;
+    }
+    Py_DECREF(modname);    
+    Py_DECREF(mod);
+    return ob;
+}
+
+static PyObject *
+_PyObject_GetBuiltin(const char *attrname_c)
+{
+    PyObject *modname;
+    PyObject *mod, *ob;
+
+    modname = PyUnicode_FromString("builtins");
     if (modname == NULL)
         return NULL;
     mod = PyImport_Import(modname);
@@ -1446,20 +1445,11 @@ PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(
 static PyObject *
 dataobjectiter_reduce(dataobjectiterobject *it) //, PyObject *Py_UNUSED(ignore))
 {
-#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
-    _Py_IDENTIFIER(iter);
-    if (it->it_seq)
-        return Py_BuildValue("N(O)n", _PyEval_GetBuiltinId(&PyId_iter),
-                             it->it_seq, it->it_index);
-    else
-        return Py_BuildValue("N(())", _PyEval_GetBuiltinId(&PyId_iter));
-#else
     if (it->it_seq)
         return Py_BuildValue("N(O)n", _PyObject_GetBuiltin("iter"),
                              it->it_seq, it->it_index);
     else
         return Py_BuildValue("N(())", _PyObject_GetBuiltin("iter"));
-#endif
 }
 
 PyDoc_STRVAR(dataobjectiter_reduce_doc, "D.__reduce__()");
