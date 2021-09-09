@@ -581,7 +581,11 @@ dataobject_mp_subscript_only(PyObject* op, PyObject* name)
     if (index == NULL) 
         return NULL;
 
-    Py_ssize_t i = PyLong_AsSsize_t(index); //((PyLongObject*)index)->ob_digit[0];
+#ifdef PYPY_VERSION
+    Py_ssize_t i = PyLong_AsSsize_t(index);
+#else
+    Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
+#endif
 
     PyObject *v = PyDataObject_GET_ITEM(op, i);
     Py_INCREF(v);
@@ -600,7 +604,11 @@ dataobject_mp_ass_subscript_only(PyObject* op, PyObject* name, PyObject *val)
     if (index == NULL) 
         return -1;
 
-    Py_ssize_t i = PyLong_AsSsize_t(index); //((PyLongObject*)index)->ob_digit[0];
+#ifdef PYPY_VERSION
+    Py_ssize_t i = PyLong_AsSsize_t(index);
+#else
+    Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
+#endif
 
     PyObject **items = PyDataObject_ITEMS(op) + i;
     PyObject *v = *items;
@@ -2527,11 +2535,11 @@ static void
 __fix_type(PyObject *tp, PyTypeObject *meta) {
     PyObject *val;
 
-    if (tp->ob_type != meta) {
-        val = (PyObject*)tp->ob_type;
+    if (Py_TYPE(tp) != meta) {
+        val = (PyObject*)Py_TYPE(tp);
         if (val)
             Py_DECREF(val);
-        tp->ob_type = meta;
+        Py_TYPE(tp) = meta;
         Py_INCREF(meta);
         PyType_Modified((PyTypeObject*)tp);
     }
