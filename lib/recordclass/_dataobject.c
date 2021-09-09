@@ -39,9 +39,11 @@ static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataSlotGetSet_Type;
 
-// _Py_IDENTIFIER(__fields__);
-_Py_IDENTIFIER(__fields_dict__);
-// _Py_IDENTIFIER(__defaults__);
+// #ifndef Py_LIMITED_API
+// // _Py_IDENTIFIER(__fields__);
+// // _Py_IDENTIFIER(__fields_dict__);
+// // _Py_IDENTIFIER(__defaults__);
+// #endif
 
 // Py_ssize_t fields_hash;
 // PyObject *fields_name;
@@ -427,14 +429,15 @@ dataobject_finalize(PyObject *ob) {
 
         {
             Py_ssize_t j;
-            PyObject **ptr = ((PyListObject*)stack)->ob_item;
+//             PyObject **ptr = ((PyListObject*)stack)->ob_item;
 
-            *ptr = NULL;
+//             *ptr = NULL;
+            PyList_SET_ITEM(stack, 0, NULL);
             for(j=1; j<n_stack; j++) {
-                ptr[j-1] = ptr[j];
+                PyList_SET_ITEM(stack, j-1, PyList_GET_ITEM(stack, j));
             }
             n_stack--;
-            ptr[n_stack] = NULL;
+            PyList_SET_ITEM(stack, n_stack, NULL);
             Py_SIZE(stack) = n_stack;
         }
     }
@@ -578,7 +581,7 @@ dataobject_mp_subscript_only(PyObject* op, PyObject* name)
     if (index == NULL) 
         return NULL;
 
-    Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
+    Py_ssize_t i = PyLong_AsSsize_t(index); //((PyLongObject*)index)->ob_digit[0];
 
     PyObject *v = PyDataObject_GET_ITEM(op, i);
     Py_INCREF(v);
@@ -597,7 +600,7 @@ dataobject_mp_ass_subscript_only(PyObject* op, PyObject* name, PyObject *val)
     if (index == NULL) 
         return -1;
 
-    Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
+    Py_ssize_t i = PyLong_AsSsize_t(index); //((PyLongObject*)index)->ob_digit[0];
 
     PyObject **items = PyDataObject_ITEMS(op) + i;
     PyObject *v = *items;
@@ -2571,11 +2574,13 @@ PyInit__dataobject(void)
 {
     PyObject *m;
 
+#ifndef PYPY_VERSION 
     m = PyState_FindModule(&dataobjectmodule);
     if (m) {
         Py_INCREF(m);
         return m;
     }
+#endif
 
     m = PyModule_Create(&dataobjectmodule);
     if (m == NULL)
@@ -2608,11 +2613,11 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataSlotGetSet_Type);
     PyModule_AddObject(m, "dataobjectproperty", (PyObject *)&PyDataSlotGetSet_Type);
 
-    fields_dict_name = _PyUnicode_FromId(&PyId___fields_dict__); /* borrowed */
+    fields_dict_name = PyUnicode_FromString("__fields_dict__");
     if (fields_dict_name == NULL)
         return NULL;
     Py_INCREF(fields_dict_name);
-    fields_dict_hash = ((PyASCIIObject *)fields_dict_name)->hash;
+    fields_dict_hash = PyObject_Hash(fields_dict_name);
 
     dataobject_as_mapping.mp_subscript = PyDataObject_Type.tp_getattro;
     dataobject_as_mapping.mp_ass_subscript = PyDataObject_Type.tp_setattro;

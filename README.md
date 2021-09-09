@@ -373,6 +373,11 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.16.2
+
+* From now the function `_PyObject_GetBuitin` is not used 
+  (see [question](https://stackoverflow.com/questions/67094860/pypy3-pip-install-recordclass) on stackoverflow).
+
 #### 0.16.1
 
 * Add `dictclass` factory function to generate class with `dict-like` API and without attribute access to the fields.

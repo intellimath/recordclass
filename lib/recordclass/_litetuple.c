@@ -42,6 +42,30 @@ static PyTypeObject PyLiteTuple_Type;
 typedef PyTupleObject PyLiteTupleObject;
 
 static PyObject *
+pyobject_get_builtin(const char *attrname_c)
+{
+    PyObject *modname;
+    PyObject *mod, *ob;
+
+    modname = PyUnicode_FromString("builtins");
+    if (modname == NULL)
+        return NULL;
+    mod = PyImport_Import(modname);
+    if (mod == NULL) {
+        Py_DECREF(modname);    
+        return NULL;
+    }
+    ob = PyObject_GetAttrString(mod, attrname_c);
+    if (ob == NULL) {
+        Py_DECREF(mod);
+        return NULL;
+    }
+    Py_DECREF(modname);    
+    Py_DECREF(mod);
+    return ob;
+}
+
+static PyObject *
 PyLiteTuple_New(PyTypeObject *tp, const Py_ssize_t size)
 {
     PyLiteTupleObject *op;
@@ -857,20 +881,11 @@ PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(
 static PyObject *
 litetupleiter_reduce(litetupleiterobject *it) //, PyObject *Py_UNUSED(ignore))
 {
-#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
-    _Py_IDENTIFIER(iter);
     if (it->it_seq)
-        return Py_BuildValue("N(O)n", _PyEval_GetBuiltinId(&PyId_iter),
+        return Py_BuildValue("N(O)n", pyobject_get_builtin("iter"),
                              it->it_seq, it->it_index);
     else
-        return Py_BuildValue("N(())", _PyEval_GetBuiltinId(&PyId_iter));
-#else
-    if (it->it_seq)
-        return Py_BuildValue("N(O)n", _PyObject_GetBuiltin("iter"),
-                             it->it_seq, it->it_index);
-    else
-        return Py_BuildValue("N(())", _PyObject_GetBuiltin("iter"));
-#endif
+        return Py_BuildValue("N(())", pyobject_get_builtin("iter"));
 }
 
 PyDoc_STRVAR(litetupleiter_reduce_doc, "D.__reduce__()");
@@ -1006,12 +1021,14 @@ PyInit__litetuple(void)
 {
     PyObject *m;
     
+#ifndef PYPY_VERSION
     m = PyState_FindModule(&litetuplemodule);
     if (m) {
         Py_INCREF(m);
         return m;
     }    
-
+#endif
+    
     m = PyModule_Create(&litetuplemodule);
     if (m == NULL)
         return NULL;
