@@ -127,7 +127,7 @@ _PyObject_GetObject(const char *modname_c, const char *attrname_c)
 }
 
 static PyObject *
-_PyObject_GetBuiltin(const char *attrname_c)
+pyobject_get_builtin(const char *attrname_c)
 {
     PyObject *modname;
     PyObject *mod, *ob;
@@ -1446,10 +1446,10 @@ static PyObject *
 dataobjectiter_reduce(dataobjectiterobject *it) //, PyObject *Py_UNUSED(ignore))
 {
     if (it->it_seq)
-        return Py_BuildValue("N(O)n", _PyObject_GetBuiltin("iter"),
+        return Py_BuildValue("N(O)n", pyobject_get_builtin("iter"),
                              it->it_seq, it->it_index);
     else
-        return Py_BuildValue("N(())", _PyObject_GetBuiltin("iter"));
+        return Py_BuildValue("N(())", pyobject_get_builtin("iter"));
 }
 
 PyDoc_STRVAR(dataobjectiter_reduce_doc, "D.__reduce__()");
