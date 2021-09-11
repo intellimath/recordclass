@@ -26,7 +26,6 @@
 // #define Py_LIMITED_API 1
 
 #include "Python.h"
-
 #include "_dataobject.h"
 
 #define DEFERRED_ADDRESS(addr) 0
@@ -67,7 +66,6 @@ _PyIndex_Check(PyObject *obj)
     PyNumberMethods *tp_as_number = Py_TYPE(obj)->tp_as_number;
     return (tp_as_number != NULL && tp_as_number->nb_index != NULL);
 }
-
 
 static PyObject **
 PyDataObject_GetDictPtr(PyObject *ob) {
@@ -182,8 +180,6 @@ static PyObject *
 dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 {
     Py_ssize_t const size = _PyObject_SIZE(type);
-//     int const is_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
-
     PyObject *op = _PyObject_GC_Malloc(size);
 
     if (!op)
@@ -443,17 +439,17 @@ dataobject_finalize(PyObject *ob) {
     }
 }
 
-static void
-dataobject_free(void *op)
-{
-        PyObject_Del((PyObject*)op);
-}
+// static void
+// dataobject_free(void *op)
+// {
+//         PyObject_Del((PyObject*)op);
+// }
 
-static void
-dataobject_free_gc(void *op)
-{
-        PyObject_GC_Del((PyObject*)op);
-}
+// static void
+// dataobject_free_gc(void *op)
+// {
+//         PyObject_GC_Del((PyObject*)op);
+// }
 
 // static PyObject*
 // dataobject_getattr(PyObject *op, PyObject *name) 
@@ -1271,7 +1267,7 @@ static PyTypeObject PyDataObject_Type = {
     dataobject_init,                                      /* tp_init */
     dataobject_alloc,                       /* tp_alloc */
     dataobject_new,                         /* tp_new */
-    dataobject_free,                        /* tp_free */
+    PyObject_Del,                        /* tp_free */
     0                                       /* tp_is_gc */
 };
 
@@ -2161,7 +2157,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     }
 
     tp->tp_dealloc = dataobject_dealloc;
-    tp->tp_free = dataobject_free;
+    tp->tp_free = PyObject_Del;
 
     __init__ = PyMapping_HasKeyString(dict, "__init__");
     if (!__init__) {
@@ -2216,7 +2212,7 @@ _enable_gc(PyObject *cls)
 
     type->tp_dealloc = dataobject_dealloc_gc;
     type->tp_alloc = dataobject_alloc_gc;
-    type->tp_free = dataobject_free_gc;
+    type->tp_free = PyObject_GC_Del;
     
 //     PyType_Modified(type);
 

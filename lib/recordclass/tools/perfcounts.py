@@ -1,5 +1,6 @@
 from collections import namedtuple
-from recordclass import dataobject, clsconfig, make_dictclass
+from recordclass import dataobject, make_dictclass
+from recordclass import litetuple, mutabletuple
 from timeit import timeit
 import sys
 
@@ -43,10 +44,12 @@ results = {'id':[], 'size':[], 'new':[],
           }
 
 results['id'].extend(
-    ['tuple', 'namedtuple', 'class+slots', 'dataobject',  
+    ['litetuple', 'mutabletuple', 'tuple', 'namedtuple', 'class+slots', 'dataobject',  
      'dataobject+fast_new', 'dataobject+gc', 'dataobject+fast_new+gc', 'dict', 'dataobject+fast_new+map', 'dictclass'])
 
-classes = (tuple, PointNT, PointSlots, Point, FastPoint, PointGC, FastPointGC, dict, PointMap, PointDict)
+classes = (litetuple, mutabletuple, tuple, PointNT, PointSlots, 
+           Point, FastPoint, PointGC, FastPointGC, 
+           dict, PointMap, PointDict)
 
 N = 1_000_000
 
@@ -85,7 +88,7 @@ def test_getattr():
             y = p.y
             
     for cls in classes:
-        if cls in (tuple,dict,PointMap,PointDict):
+        if cls in (litetuple,mutabletuple,tuple,dict,PointMap,PointDict):
             res = ''
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
@@ -132,7 +135,7 @@ def test_getitem():
         for i in range(N):
             x = p[0]
             y = p[1]
-
+            
     for cls in classes:
         if cls in (dict, PointSlots, PointMap, PointDict):
             res = ''
@@ -153,7 +156,7 @@ def test_setattr():
             p.y = 2
 
     for cls in classes:
-        if cls in (tuple, PointNT, dict, PointMap, PointDict):
+        if cls in (litetuple, mutabletuple, tuple, PointNT, dict, PointMap, PointDict):
             res = ''
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test, 'tuple':tuple, 'PointNT':PointNT})
@@ -195,7 +198,7 @@ def test_setitem():
             p[1] = 2
             
     for cls in classes:
-        if cls in (dict, tuple, PointNT, PointSlots, PointDict, PointMap):
+        if cls in (litetuple, dict, tuple, PointNT, PointSlots, PointDict, PointMap):
             res = ''
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
@@ -245,6 +248,8 @@ test_setkey()
 test_iterate()
 
 results['size'].extend([
+  sys.getsizeof(litetuple(0,0)),   
+  sys.getsizeof(mutabletuple(0,0)),   
   sys.getsizeof((0,0)),   
   sys.getsizeof(PointNT(0,0)),   
   sys.getsizeof(PointSlots(0,0)),   
