@@ -1397,38 +1397,35 @@ dataobjectiter_dealloc(dataobjectiterobject *it)
     Py_DECREF(tp);
 #endif
 
-    PyObject_GC_UnTrack(it);
     Py_XDECREF(it->it_seq);
     tp->tp_free((PyObject *)it);
 }
 
-static int
-dataobjectiter_clear(PyObject *op)
-{
-    dataobjectiterobject *it = (dataobjectiterobject*)op;
-    Py_CLEAR(it->it_seq);
-    return 0;
-}
+// static int
+// dataobjectiter_clear(PyObject *op)
+// {
+//     dataobjectiterobject *it = (dataobjectiterobject*)op;
+//     Py_CLEAR(it->it_seq);
+//     return 0;
+// }
 
-static int
-dataobjectiter_traverse(PyObject *op, visitproc visit, void *arg)
-{
-    dataobjectiterobject *it = (dataobjectiterobject*)op;
-    Py_VISIT(it->it_seq);
-    return 0;
+// static int
+// dataobjectiter_traverse(PyObject *op, visitproc visit, void *arg)
+// {
+//     dataobjectiterobject *it = (dataobjectiterobject*)op;
+//     Py_VISIT(it->it_seq);
+//     return 0;
+// }
 
-}
 static PyObject *
 dataobjectiter_next(dataobjectiterobject *it)
 {
     PyObject *item;
     PyObject *op = it->it_seq;
     
-    if (!it->it_seq)
-        return NULL;
-
     if (it->it_index < it->it_len) {
-        item = dataobject_sq_item(op, it->it_index);
+        item = PyDataObject_GET_ITEM(op, it->it_index);
+        Py_INCREF(item);
         it->it_index++;
         return item;
     }
@@ -1509,11 +1506,11 @@ PyTypeObject PyDataObjectIter_Type = {
     PyObject_GenericGetAttr,                    /* tp_getattro */
     0,                                          /* tp_setattro */
     0,                                          /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE, 
                                                 /* tp_flags */
     0,                                          /* tp_doc */
-    dataobjectiter_traverse,                    /* tp_traverse */
-    dataobjectiter_clear,                       /* tp_clear */
+    0,                    /* tp_traverse */
+    0,                        /* tp_clear */
     0,                                          /* tp_richcompare */
     0,                                          /* tp_weaklistoffset */
     PyObject_SelfIter,                          /* tp_iter */
@@ -1526,13 +1523,16 @@ static PyObject *
 dataobject_iter(PyObject *seq)
 {
     dataobjectiterobject *it;
+    
+    if (!seq)
+        return NULL;
 
     if (Py_TYPE(seq)->tp_base != &PyDataObject_Type && !PyType_IsSubtype(Py_TYPE(seq), &PyDataObject_Type)) {
         PyErr_SetString(PyExc_TypeError, "the object is not instance of dataobject");
         return NULL;
     }
 
-    it = PyObject_GC_New(dataobjectiterobject, &PyDataObjectIter_Type);
+    it = PyObject_New(dataobjectiterobject, &PyDataObjectIter_Type);
     if (it == NULL)
         return NULL;
 
@@ -1548,8 +1548,6 @@ dataobject_iter(PyObject *seq)
     it->it_seq = seq;
     Py_INCREF(seq);
     it->it_len = PyDataObject_LEN(seq);
-
-    PyObject_GC_Track(it);
 
     return (PyObject *)it;
 }

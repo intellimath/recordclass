@@ -58,16 +58,19 @@ numbers = 10
 def test_new():
     print("new")
     def test(cls):
-        lst = [cls(i,i) for i in range(N)]
-        return lst
+        for i in range(N):
+            ob = cls(i, i)
+            prev = ob
         
     def test_tuple():
-        lst = [(i,i) for i in range(N)]
-        return lst
+        for i in range(N):
+            ob = (i, i)
+            prev = ob
 
     def test_dict():
-        lst = [{'x':i, 'y':i} for i in range(N)]
-        return lst
+        for i in range(N):
+            ob = {'x':i, 'y':i}
+            prev = ob
     
     for cls in classes:
         if cls is dict:
@@ -210,18 +213,21 @@ def test_iterate():
     print("iterate")
     def test(cls):
         p = cls(0,0)
-        lst = [tuple(iter(p)) for i in range(N)]
-        return lst
+        for i in range(N):
+            for x in iter(p):
+                s = x
 
     def test_tuple():
         p = (0,0)
-        lst = [tuple(iter(p)) for i in range(N)]
-        return lst
+        for i in range(N):
+            for x in iter(p):
+                s = x
     
     def test_dict():
         p = {'x':0, 'y':0}
-        lst = [tuple(iter(p)) for i in range(N)]
-        return lst
+        for i in range(N):
+            for x in iter(p):
+                s = x
     
     for cls in classes:
         if cls is dict:

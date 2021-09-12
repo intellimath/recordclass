@@ -89,7 +89,7 @@ PyLiteTuple_New(PyTypeObject *tp, Py_ssize_t nitems)
 static PyObject *
 litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    const Py_ssize_t n = PyTuple_GET_SIZE(args);
+    const Py_ssize_t n = Py_SIZE(args);
 
     PyObject *newobj = PyLiteTuple_New(type, n);
 
@@ -402,7 +402,7 @@ litetuple_subscript(PyLiteTupleObject* self, PyObject* item)
             return NULL;
         return litetuple_item(self, i);
     }
-    else if (PySlice_Check(item)) {
+    if (PySlice_Check(item)) {
         Py_ssize_t start, stop, step, slicelength;
 
         if (PySlice_GetIndicesEx(item, (PyTuple_GET_SIZE(self)), &start, &stop, &step, &slicelength) < 0)
@@ -426,7 +426,7 @@ litetuple_ass_subscript(PyLiteTupleObject* self, PyObject* item, PyObject* value
             return -1;
         return litetuple_ass_item(self, i, value);
     }
-    else if (PySlice_Check(item)) {
+    if (PySlice_Check(item)) {
         Py_ssize_t start, stop, step, slicelength;
 
         if (PySlice_GetIndicesEx(item, (Py_SIZE(self)), &start, &stop, &step, &slicelength) < 0)

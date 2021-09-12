@@ -111,17 +111,20 @@ As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4
 
 Here is the table with performance counters (python 3.9, debian linux, x86-64), which are mesured using `utils/perfcount.py` script:
 
-|    | id                     |   size |   new | getattr   | setattr   | getitem   | setitem   | getkey   | setkey   | iterate   |
-|---:|:-----------------------|-------:|------:|:----------|:----------|:----------|:----------|:---------|:---------|:----------|
-|  0 | tuple                  |     56 |  1.07 |           |           | 0.43      |           |          |          | 2.19      |
-|  1 | namedtuple             |     56 |  2.73 | 0.47      |           | 0.43      |           |          |          | 2.17      |
-|  2 | class+slots            |     48 |  2.08 | 0.50      | 0.55      |           |           |          |          |           |
-|  3 | dataobject             |     32 |  2.15 | 0.45      | 0.53      | 0.45      | 0.50      |          |          | 2.20      |
-|  4 | dataobject+fast_new    |     32 |  1.07 | 0.45      | 0.53      | 0.46      | 0.50      |          |          | 2.20      |
-|  5 | dataobject+gc          |     48 |  2.29 | 0.46      | 0.54      | 0.46      | 0.51      |          |          | 2.32      |
-|  6 | dataobject+fast_new+gc |     48 |  1.19 | 0.47      | 0.55      | 0.47      | 0.52      |          |          | 2.23      |
-|  7 | dict                   |    232 |  2.36 |           |           |           |           | 0.45     | 0.58     | 2.30      |
-|  8 | dictclass              |     32 |  1.09 |           |           |           |           | 0.52     | 0.60     | 2.30      |
+|    | id                      |   size |   new | getattr   | setattr   | getitem   | setitem   | getkey   | setkey   | iterate   |
+|---:|:------------------------|-------:|------:|:----------|:----------|:----------|:----------|:---------|:---------|:----------|
+|  0 | litetuple               |     40 |  0.68 |           |           | 0.50      |           |          |          | 1.03      |
+|  1 | mutabletuple            |     40 |  0.7  |           |           | 0.48      | 0.51      |          |          | 1.01      |
+|  2 | tuple                   |     56 |  0.43 |           |           | 0.44      |           |          |          | 0.96      |
+|  3 | namedtuple              |     56 |  2.24 | 0.47      |           | 0.44      |           |          |          | 0.96      |
+|  4 | class+slots             |     48 |  1.65 | 0.50      | 0.55      |           |           |          |          |           |
+|  5 | dataobject              |     32 |  1.8  | 0.46      | 0.57      | 0.45      | 0.46      |          |          | 0.96      |
+|  6 | dataobject+fast_new     |     32 |  0.72 | 0.49      | 0.57      | 0.45      | 0.46      |          |          | 0.93      |
+|  7 | dataobject+gc           |     48 |  1.91 | 0.47      | 0.57      | 0.45      | 0.47      |          |          | 0.96      |
+|  8 | dataobject+fast_new+gc  |     48 |  0.79 | 0.48      | 0.58      | 0.46      | 0.47      |          |          | 0.96      |
+|  9 | dict                    |    232 |  0.79 |           |           |           |           | 0.48     | 0.59     | 1.06      |
+| 10 | dataobject+fast_new+map |     32 |  0.72 |           |           |           |           | 0.53     | 0.60     | 0.93      |
+| 11 | dictclass               |     32 |  0.72 |           |           |           |           | 0.75     | 0.78     | 0.94      |
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
