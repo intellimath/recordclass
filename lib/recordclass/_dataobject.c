@@ -2027,6 +2027,7 @@ _set_dictoffset(PyObject *cls, PyObject *add_dict) {
             tp->tp_basicsize += sizeof(PyObject*);
         }
     }
+    
 //     if (tp->tp_dictoffset && !state) {
 //         if (!tp->tp_weaklistoffset) {
 //             tp->tp_dictoffset = 0;

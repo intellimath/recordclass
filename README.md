@@ -367,7 +367,7 @@ But it can be resolved with `__del__` method for clearing the linked list:
 
 There is builtin more fast deallocation method using finalization mechanizm when `deep_dealloc=True`. In such case one don't need `__del__`  method for clearing tthe list.
 
-> Note that for classes with `gc=True` (cyclic GC is used) this method is disabled: the python's cyclic GC is used.
+> Note that for classes with `gc=True` (cyclic GC is used) this method is disabled: the python's cyclic GC is used in these cases.
 
 For more details see notebook [example_datatypes](examples/example_datatypes.ipynb).
 
@@ -375,9 +375,10 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 #### 0.17
 
-* Now recordclass may built for pypy3.
+* Now recordclass may be built for pypy3.
 * From now the function `_PyObject_GetBuitin` is not used 
   (see [question](https://stackoverflow.com/questions/67094860/pypy3-pip-install-recordclass) on stackoverflow).
+* Slighly imporove performance of litetuple/mutabletuple.
 
 #### 0.16.1
 

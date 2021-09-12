@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .utils import dataslot_offset, process_fields
+from .utils import process_fields
 from .utils import check_name, collect_info_from_bases
 
 __all__ = 'make_dictclass', 'DictclassStorage'

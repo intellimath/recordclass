@@ -264,7 +264,7 @@ results['size'].extend([
 
 pd.options.mode.use_inf_as_na = True
 df = pd.DataFrame.from_dict(results)
-df.fillna('',inplace=True)
+df.fillna('', inplace=True)
 # pd.set_option('precision', 2)
 # print(df.to_markdown(floatfmt='.2f', index=False))
 print(df.to_markdown())

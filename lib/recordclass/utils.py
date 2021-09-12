@@ -55,15 +55,15 @@ del _sys
 def number_of_dataitems(cls):
     return cls.__itemsize__
 
-def dataslot_offset(i, n_slots):
-    if i >= n_slots:
-        raise IndexError("invalid index of the slots")
-    basesize = pyobject_size
-    return basesize + i*ref_size
+# def dataslot_offset(i, n_slots):
+#     if i >= n_slots:
+#         raise IndexError("invalid index of the slots")
+#     basesize = pyobject_size
+#     return basesize + i*ref_size
 
-def dataitem_offset(cls, i):
-    tp_basicsize = cls.__basicsize__
-    return tp_basicsize + i*ref_size
+# def dataitem_offset(cls, i):
+#     tp_basicsize = cls.__basicsize__
+#     return tp_basicsize + i*ref_size
 
 def process_fields(fields, defaults, rename, invalid_names):
     annotations = {}

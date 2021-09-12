@@ -10,6 +10,11 @@ from recordclass import make_dataclass, make_arrayclass, dataobject, make, clone
 from recordclass import datatype, asdict, astuple, join_dataclasses, clsconfig
 from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
+if 'PyPy' in sys.platform:
+    is_pypy = True
+else:
+    is_pypy = False
+
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
 TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
 

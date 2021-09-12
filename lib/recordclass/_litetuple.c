@@ -74,7 +74,7 @@ PyLiteTuple_New(PyTypeObject *tp, Py_ssize_t nitems)
     if (!op)
         return PyErr_NoMemory();
 
-    memset(op, '\0', nitems);
+    memset(op, '\0', size);
 
     Py_TYPE(op) = tp;
     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
@@ -91,13 +91,10 @@ litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     const Py_ssize_t n = PyTuple_GET_SIZE(args);
 
-    PyLiteTupleObject *newobj = (PyLiteTupleObject*)PyLiteTuple_New(type, n);
-
-    if (newobj == NULL)
-        return NULL;
+    PyObject *newobj = PyLiteTuple_New(type, n);
 
     PyTupleObject *tmp = (PyTupleObject*)args; 
-    PyObject **dest = newobj->ob_item;
+    PyObject **dest = ((PyLiteTupleObject*)newobj)->ob_item;
     PyObject **src = tmp->ob_item;
 
     Py_ssize_t i;
@@ -107,7 +104,7 @@ litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         *(dest++) = val;
     }
 
-    return (PyObject*)newobj;
+    return newobj;
 }
 
 static int
