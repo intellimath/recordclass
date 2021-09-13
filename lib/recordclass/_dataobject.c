@@ -53,10 +53,10 @@ PyObject *fields_dict_name;
 // Py_ssize_t defaults_hash;
 // PyObject *defaults_name;
 
-static PyObject *
+static inline PyObject *
 type_error(const char *msg, PyObject *obj)
 {
-    PyErr_Format(PyExc_TypeError, msg, obj->ob_type->tp_name);
+    PyErr_Format(PyExc_TypeError, msg, Py_TYPE(obj)->tp_name);
     return NULL;
 }
 
@@ -71,10 +71,8 @@ static PyObject **
 PyDataObject_GetDictPtr(PyObject *ob) {
     Py_ssize_t dictoffset = Py_TYPE(ob)->tp_dictoffset;
 
-    if (!dictoffset)
-        return NULL;
-    if (dictoffset < 0) {
-        PyErr_SetString(PyExc_TypeError, "tp_dictoffset < 0");
+    if (dictoffset <= 0) {
+        PyErr_Format(PyExc_TypeError, "Invalid tp_dictoffset=%i of the type %s", dictoffset, Py_TYPE(ob)->tp_name);
         return NULL;
     }
     return (PyObject**) ((char *)ob + dictoffset);
@@ -2285,6 +2283,7 @@ _asdict(PyObject *op)
         fn = PyTuple_GET_ITEM(fields, i);
         Py_INCREF(fn);
         v = PyDataObject_GET_ITEM(op, i);
+        Py_INCREF(v);
         PyDict_SetItem(dict, fn, v);
     }
     

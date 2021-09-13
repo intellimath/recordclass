@@ -109,7 +109,7 @@ As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4
 
 ### Performance counters
 
-Here is the table with performance counters (python 3.9, debian linux, x86-64), which are mesured using `utils/perfcount.py` script:
+Here is the table with performance counters (python 3.9, debian linux, x86-64), which was measured using `utils/perfcount.py` script:
 
 |    | id                      |   size |   new | getattr   | setattr   | getitem   | setitem   | getkey   | setkey   | iterate   |
 |---:|:------------------------|-------:|------:|:----------|:----------|:----------|:----------|:---------|:---------|:----------|
