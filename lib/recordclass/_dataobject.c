@@ -45,13 +45,13 @@ static PyTypeObject PyDataSlotGetSet_Type;
 // #endif
 
 // Py_ssize_t fields_hash;
-// PyObject *fields_name;
+PyObject *fields_name;
 
 Py_ssize_t fields_dict_hash;
 PyObject *fields_dict_name;
 
 // Py_ssize_t defaults_hash;
-// PyObject *defaults_name;
+PyObject *defaults_name;
 
 static inline PyObject *
 type_error(const char *msg, PyObject *obj)
@@ -232,7 +232,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (j) {
         PyObject *tp_dict = type->tp_dict;
 
-        PyObject *defaults = PyMapping_GetItemString(tp_dict, "__defaults__");
+        PyObject *defaults = Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, defaults_name);
         
         if (defaults == NULL) {
             if (PyErr_Occurred())
@@ -244,7 +244,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 j--;
             }            
         } else {
-            PyObject *fields = PyMapping_GetItemString(tp_dict, "__fields__");
+            PyObject *fields = Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, fields_name);
             Py_ssize_t n_fields = Py_SIZE(fields);
             
             if (n_fields != n_items) {
@@ -2620,6 +2620,16 @@ PyInit__dataobject(void)
         return NULL;
     Py_INCREF(fields_dict_name);
     fields_dict_hash = PyObject_Hash(fields_dict_name);
+
+    fields_name = PyUnicode_FromString("__fields__");
+    if (fields_name == NULL)
+        return NULL;
+    Py_INCREF(fields_name);
+    
+    defaults_name = PyUnicode_FromString("__defaults__");
+    if (defaults_name == NULL)
+        return NULL;
+    Py_INCREF(defaults_name);
 
     dataobject_as_mapping.mp_subscript = PyDataObject_Type.tp_getattro;
     dataobject_as_mapping.mp_ass_subscript = PyDataObject_Type.tp_setattro;
