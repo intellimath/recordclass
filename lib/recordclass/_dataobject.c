@@ -255,7 +255,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             }
             
             while (j) {
-                PyObject *fname = PyTuple_GetItem(fields, n_items-j);
+                PyObject *fname = PyTuple_GET_ITEM(fields, n_items-j);
                 PyObject *value = PyDict_GetItem(defaults, fname);
                 
                 if (!value)
@@ -270,8 +270,10 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         }
     }
     
-    if (!_dataobject_update(op, kwds))
-        return NULL;
+    if (kwds != NULL) {
+        if (!_dataobject_update(op, kwds))
+            return NULL;
+    }
 
     return op;
 }
@@ -330,9 +332,9 @@ dataobject_xdecref(PyObject *op)
     Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
 
     while (n_items--) {
-        PyObject *ob = *items;
+        PyObject *ob = *(items++);
         Py_XDECREF(ob);
-        items++;
+//         items++;
     }
     return 0;
 }
@@ -2430,7 +2432,7 @@ dataobject_clone(PyObject *module, PyObject *args0, PyObject *kw)
 static int
 _dataobject_update(PyObject *op, PyObject *kwds)
 {
-    if (kwds) {
+//     if (kwds) {
         PyObject *iter, *key, *val;
 
         iter = PyObject_GetIter(kwds);
@@ -2453,7 +2455,7 @@ _dataobject_update(PyObject *op, PyObject *kwds)
             Py_DECREF(key);
         }
         Py_DECREF(iter);
-    }    
+//     }    
     return 1;
 }
 
