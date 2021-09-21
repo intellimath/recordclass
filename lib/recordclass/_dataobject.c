@@ -219,32 +219,34 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyObject *op = type->tp_alloc(type, 0);
 
     PyObject **items = PyDataObject_ITEMS(op);
-    PyObject **pp = tmp->ob_item;
-    Py_ssize_t j = n_items;
+    Py_ssize_t j = n_items - n_args;
 
-    while (n_args--) {
-        PyObject *v = *(pp++);
-        Py_INCREF(v);
-        *(items++) = v;
-        j--;
+    {
+        PyObject **pp = tmp->ob_item;
+        while (n_args--) {
+            PyObject *v = *(pp++);
+            Py_INCREF(v);
+            *(items++) = v;
+        }
     }
     
     if (j) {
         PyObject *tp_dict = type->tp_dict;
+        PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
+        
 
-        PyObject *defaults = Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, defaults_name);
+        PyObject *defaults = mp->mp_subscript(tp_dict, defaults_name);
         
         if (defaults == NULL) {
             if (PyErr_Occurred())
                 PyErr_Clear();
                 
-            while (j) {
+            while (j--) {
                 Py_INCREF(Py_None);
                 *(items++) = Py_None;
-                j--;
             }            
         } else {
-            PyObject *fields = Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, fields_name);
+            PyObject *fields = mp->mp_subscript(tp_dict, fields_name);
             Py_ssize_t n_fields = Py_SIZE(fields);
             
             if (n_fields != n_items) {
@@ -334,7 +336,6 @@ dataobject_xdecref(PyObject *op)
     while (n_items--) {
         PyObject *ob = *(items++);
         Py_XDECREF(ob);
-//         items++;
     }
     return 0;
 }
@@ -423,11 +424,7 @@ dataobject_finalize(PyObject *ob) {
 
         Py_DECREF(op);
 
-        {
-            Py_ssize_t j;
-//             PyObject **ptr = ((PyListObject*)stack)->ob_item;
-
-//             *ptr = NULL;
+        {   Py_ssize_t j;
             PyList_SET_ITEM(stack, 0, NULL);
             for(j=1; j<n_stack; j++) {
                 PyList_SET_ITEM(stack, j-1, PyList_GET_ITEM(stack, j));
