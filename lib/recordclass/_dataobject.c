@@ -2090,9 +2090,18 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     }
 
     cls = PyTuple_GET_ITEM(args, 0);
+    tp = (PyTypeObject*)cls;
+    tp_base = tp->tp_base;
+    
+    if (!PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "common base class should be subclass of dataobject");
+        return NULL;
+    }
 
-    fields = PyObject_GetAttrString(cls, "__fields__");
+    dict = tp->tp_dict;
 
+    fields = PyMapping_GetItemString(dict, "__fields__");
     if (!fields){
         PyErr_SetString(PyExc_TypeError, "__fields__ is missing");
         return NULL;
@@ -2110,55 +2119,34 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
             Py_DECREF(fields);
             return NULL;
         }
+        if (n_fields < 0) {
+            PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");
+            return NULL;
+        }
         has_fields = 0;
-    }
-
-    if (n_fields < 0) {
-        PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");
-        return NULL;
     }
 
     Py_DECREF(fields);
 
-    tp = (PyTypeObject*)cls;
-    tp_base = tp->tp_base;
+    tp->tp_basicsize = sizeof(PyObject) + n_fields * sizeof(PyObject*);
+    tp->tp_itemsize = n_fields;
 
-    if ((tp_base == &PyDataObject_Type) || PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
-        tp->tp_basicsize = sizeof(PyObject) + n_fields * sizeof(PyObject*);
-        tp->tp_itemsize = n_fields;
-    } else {
-        PyErr_SetString(PyExc_TypeError,
-                        "common base class should be dataobject or subclass");
-        return NULL;
-    }
-
-//     if (n_fields >= 0) {
-//         tp->tp_basicsize += n_fields * sizeof(PyObject*);
-//     } else {
-//         PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");
-//         return NULL;
-//     }
-
-    tp->tp_dictoffset = tp_base->tp_dictoffset;
-    tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
+    tp->tp_dictoffset = 0; //tp_base->tp_dictoffset;
+    tp->tp_weaklistoffset = 0; //tp_base->tp_weaklistoffset;
 
     tp->tp_alloc = dataobject_alloc;
 
-    dict = PyObject_GetAttrString(cls, "__dict__");
-
     __new__ = PyMapping_HasKeyString(dict, "__new__");
 
-    if(!__new__ || !has_fields) {
+    if(!__new__ || !has_fields)
         tp->tp_new = dataobject_new;
-    }
 
     tp->tp_dealloc = dataobject_dealloc;
     tp->tp_free = PyObject_Del;
 
     __init__ = PyMapping_HasKeyString(dict, "__init__");
-    if (!__init__) {
+    if (!__init__)
         tp->tp_init = tp_base->tp_init;
-    }
 
     tp->tp_flags |= Py_TPFLAGS_HEAPTYPE;
 
@@ -2186,7 +2174,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 //         tp->tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
 // #endif
 
-    Py_DECREF(dict);
+//     Py_DECREF(dict);
 
     Py_RETURN_NONE;
 }
