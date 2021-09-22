@@ -436,18 +436,6 @@ dataobject_finalize(PyObject *ob) {
     }
 }
 
-// static void
-// dataobject_free(void *op)
-// {
-//         PyObject_Del((PyObject*)op);
-// }
-
-// static void
-// dataobject_free_gc(void *op)
-// {
-//         PyObject_GC_Del((PyObject*)op);
-// }
-
 // static PyObject*
 // dataobject_getattr(PyObject *op, PyObject *name) 
 // {
@@ -1643,10 +1631,8 @@ static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value
     }
 
     PyObject *v = PyDataObject_GET_ITEM(obj, ((dataobjectproperty_object *)self)->index);
-    if (v == NULL)
-        return 0;
 
-    Py_DECREF(v);
+    Py_XDECREF(v);
     
     if (value != NULL)
         Py_INCREF(value);
