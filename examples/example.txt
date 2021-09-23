@@ -1,0 +1,4 @@
+id,name,password,hostip,description,source,admin_name
+1,Matt,obvious,10.0.0.1,,,
+2,Maria,obvious as usual,10.1.0.1,some description,localnet,super_admin
+3,Maria,,10.1.0.1,some description,localnet,
