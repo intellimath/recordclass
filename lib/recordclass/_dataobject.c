@@ -30,8 +30,6 @@
 
 #define DEFERRED_ADDRESS(addr) 0
 
-// #define IsStr(op) PyUnicode_CheckExact(op)
-
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
 static PyTypeObject PyDataObject_Type;
@@ -72,7 +70,9 @@ PyDataObject_GetDictPtr(PyObject *ob) {
     Py_ssize_t dictoffset = Py_TYPE(ob)->tp_dictoffset;
 
     if (dictoffset <= 0) {
-        PyErr_Format(PyExc_TypeError, "Invalid tp_dictoffset=%i of the type %s", dictoffset, Py_TYPE(ob)->tp_name);
+        PyErr_Format(PyExc_TypeError, 
+                "Invalid tp_dictoffset=%i of the type %s", 
+                dictoffset, Py_TYPE(ob)->tp_name);
         return NULL;
     }
     return (PyObject**) ((char *)ob + dictoffset);
@@ -207,8 +207,8 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     PyTupleObject *tmp = (PyTupleObject*)args;
 
-    Py_ssize_t n_args = Py_SIZE(tmp);
-    Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
+    const Py_ssize_t n_args = Py_SIZE(tmp);
+    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
@@ -221,13 +221,13 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyObject **items = PyDataObject_ITEMS(op);
     Py_ssize_t j = n_items - n_args;
 
-    {
-        PyObject **pp = tmp->ob_item;
-        while (n_args--) {
-            PyObject *v = *(pp++);
-            Py_INCREF(v);
-            *(items++) = v;
-        }
+    PyObject **pp = tmp->ob_item;
+    Py_ssize_t i;
+    for(i=0; i<n_args; i++) {
+    // while (n_args--) {
+        PyObject *v = *(pp++);
+        Py_INCREF(v);
+        *(items++) = v;
     }
     
     if (j) {
