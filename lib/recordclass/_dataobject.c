@@ -212,7 +212,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
-                        "number of the arguments should not be greater than the number of the slots");
+                        "number of the arguments greater than the number of the items"
         return NULL;
     }
 
@@ -224,7 +224,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyObject **pp = tmp->ob_item;
     Py_ssize_t i;
     for(i=0; i<n_args; i++) {
-    // while (n_args--) {
         PyObject *v = *(pp++);
         Py_INCREF(v);
         *(items++) = v;
