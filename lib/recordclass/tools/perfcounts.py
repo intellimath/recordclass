@@ -3,6 +3,7 @@ from recordclass import dataobject, make_dictclass
 from recordclass import litetuple, mutabletuple
 from timeit import timeit
 import sys
+import gc
 
 PointNT = namedtuple("PointNT", "x y")
 nan = float('nan')
@@ -73,6 +74,7 @@ def test_new():
             prev = ob
     
     for cls in classes:
+        gc.collect()
         if cls is dict:
             res = timeit("test_dict()", number=numbers, globals={'test':test, 'test_dict':test_dict})
         elif cls is tuple:
@@ -91,6 +93,7 @@ def test_getattr():
             y = p.y
             
     for cls in classes:
+        gc.collect()
         if cls in (litetuple,mutabletuple,tuple,dict,PointMap,PointDict):
             res = ''
         else:
@@ -115,6 +118,7 @@ def test_getkey():
             y = p['y']
             
     for cls in classes:
+        gc.collect()
         if cls is dict:
             res = timeit("test_dict()", number=numbers, globals={'test_dict':test_dict})
         elif cls in (PointMap, PointDict):
@@ -140,6 +144,7 @@ def test_getitem():
             y = p[1]
             
     for cls in classes:
+        gc.collect()
         if cls in (dict, PointSlots, PointMap, PointDict):
             res = ''
         elif cls is tuple:
@@ -159,6 +164,7 @@ def test_setattr():
             p.y = 2
 
     for cls in classes:
+        gc.collect()
         if cls in (litetuple, mutabletuple, tuple, PointNT, dict, PointMap, PointDict):
             res = ''
         else:
@@ -182,6 +188,7 @@ def test_setkey():
             p['y'] = 2
             
     for cls in classes:
+        gc.collect()
         if cls in (PointMap, PointDict):
             res = timeit("test_dictclass(cls)", number=numbers, globals={'cls':cls, 'test_dictclass':test_dictclass})
         elif cls is dict:
@@ -201,6 +208,7 @@ def test_setitem():
             p[1] = 2
             
     for cls in classes:
+        gc.collect()
         if cls in (litetuple, dict, tuple, PointNT, PointSlots, PointDict, PointMap):
             res = ''
         else:
@@ -230,6 +238,7 @@ def test_iterate():
                 s = x
     
     for cls in classes:
+        gc.collect()
         if cls is dict:
             res = timeit("test_dict()", number=numbers, globals={'test':test, 'test_dict':test_dict})
         elif cls is tuple:
