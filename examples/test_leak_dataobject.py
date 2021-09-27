@@ -5,20 +5,25 @@ import time
 import psutil
 import os
 
-from recordclass import make_dataclass
+from recordclass import make_dataclass, litelist
 
 def memory_usage_psutil():
     # return the memory usage in percentage like top
     process = psutil.Process(os.getpid())
-    mem = process.memory_percent()
+    mem = process.memory_info().rss
     return mem
 
-X = make_dataclass('x', ['a','b','c'])
+Cls = make_dataclass('Cls', ['a','b','c'])
 
+N = 1000000
 while True:
-  a = X(str(random.randint(1000000,10000000)), random.randint(1,1000),
-            'a' * random.randint(1,1024))
-  del a
-  time.sleep(.01)
-  print(memory_usage_psutil())
+    print(memory_usage_psutil())
+    rnd = random.randint
+    lst = litelist()
+    for i in range(N):
+        o = Cls(rnd(1,1024), rnd(1,1024), rnd(1,1024))
+        lst.append(o)
+    print(memory_usage_psutil())
+    del a
+    time.sleep(1.)
   
