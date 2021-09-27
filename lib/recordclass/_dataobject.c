@@ -212,7 +212,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
-                        "number of the arguments greater than the number of the items"
+                        "number of the arguments greater than the number of the items");
         return NULL;
     }
 
