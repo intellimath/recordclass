@@ -8,12 +8,12 @@ import weakref
 
 from recordclass import make_dataclass, make_arrayclass, dataobject, make, clone, update
 from recordclass import datatype, asdict, astuple, join_dataclasses, clsconfig
-# from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 if 'PyPy' in sys.platform:
     is_pypy = True
 else:
     is_pypy = False
+    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
 TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
@@ -30,7 +30,7 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
-        if is_pypy:
+        if not is_pypy:
             self.assertEqual(sys.getsizeof(a), pyobject_size+2*ref_size)
         with self.assertRaises(TypeError):     
             weakref.ref(a)
@@ -460,7 +460,7 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, b.x)
         self.assertEqual(a.y, b.y)
         self.assertEqual(a.z, b.z)
-        if is_pypy:
+        if not is_pypy:
             self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
         
     def test_caching(self):

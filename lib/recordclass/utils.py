@@ -40,16 +40,21 @@ else:
 
 ### sizes
 
-# _t = ()
-# _t1 = (1,)
-# _o = object()
-# headgc_size = _sys.getsizeof(_t) - _t.__sizeof__()
-# ref_size = _sys.getsizeof(_t1) - _sys.getsizeof(_t)
-# pyobject_size = _o.__sizeof__()
-# pyvarobject_size = _t.__sizeof__()
-# pyssize = pyvarobject_size - pyobject_size
-# del _t, _t1, _o
-# del _sys
+if 'PyPy' in _sys.platform:
+    is_pypy = True
+else:
+    is_pypy = False
+
+    _t = ()
+    _t1 = (1,)
+    _o = object()
+    headgc_size = _sys.getsizeof(_t) - _t.__sizeof__()
+    ref_size = _sys.getsizeof(_t1) - _sys.getsizeof(_t)
+    pyobject_size = _o.__sizeof__()
+    pyvarobject_size = _t.__sizeof__()
+    pyssize = pyvarobject_size - pyobject_size
+    del _t, _t1, _o
+del _sys
 
 #############
 
@@ -120,8 +125,6 @@ def check_name(name, i=0, rename=False, invalid_names=()):
     return name
 
 def number_of_dataitems(cls):
-    if cls is dataobject:
-        return 0
     fields = cls.__fields__
     if type(fields) is int:
         return fields
@@ -135,15 +138,18 @@ def collect_info_from_bases(bases):
     fields_dict = {}
     use_dict = False
     for base in bases:
-        if issubclass(base, dataobject):
-            if base.__dictoffset__ > 0:
-                use_dict = True
+        if base is dataobject:
+            continue
+        elif issubclass(base, dataobject):
+            use_dict = base.__options__.get('use_dict', False) or use_dict
+            # if base.__dictoffset__ > 0:
+            #     use_dict = True
         else:
             continue
 
-        fs = base.__dict__.get('__fields__', ())
-        base_defaults = base.__dict__.get('__defaults__', {})
-        base_annotations = base.__dict__.get('__annotations__', {})
+        fs = getattr(base, '__fields__', ())
+        base_defaults = getattr(base, '__defaults__', {})
+        base_annotations = getattr(base, '__annotations__', {})
         n = number_of_dataitems(base)
         if type(fs) is tuple and len(fs) == n:
             for fn in fs:

@@ -62,7 +62,9 @@ class datatype(type):
         from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
         from sys import intern as _intern
 
-        options = ns.pop('__options__', {})
+        options = ns.get('__options__', None)
+        if options is None:
+            options = ns['__options__'] = {}
 
         gc = options.get('gc', gc)
         fast_new = options.get('fast_new', fast_new)
@@ -96,25 +98,25 @@ class datatype(type):
         if isinstance(fields, type(1)):
             has_fields = False
             n_fields = fields
-            sequence = True
-            iterable = True
+            sequence = options['sequence'] = True
+            iterable = options['iterable'] = True
             fields = ()
         else:
             fields = [_intern(check_name(fn)) for fn in fields]
 
         if sequence or mapping:
-            iterable = True
+            iterable = options['iterable'] = True
             
         if '__iter__' in ns:
-            iterable = True
+            iterable = options['iterable'] = True
         else:
             for base in bases:
                 if '__iter__' in base.__dict__:
-                    iterable = True
+                    iterable = options['iterable'] = True
                     break
             
         if readonly:
-            hashable = True
+            hashable = options['hashable'] = True
 
         if has_fields:
             if annotations:
@@ -124,13 +126,13 @@ class datatype(type):
                 fields.remove('__dict__')
                 if '__dict__' in annotations:
                     del annotations['__dict__']
-                use_dict = True
+                use_dict = options['use_dict'] = True
 
             if '__weakref__' in fields:
                 fields.remove('__weakref__')
                 if '__weakref__' in annotations:
                     del annotations['__weakref__']
-                use_weakref = True
+                use_weakref = options['use_weakref'] = True
 
             _fields, _fields_dict, _use_dict = collect_info_from_bases(bases)
             if _use_dict:
