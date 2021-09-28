@@ -7,10 +7,10 @@ import keyword
 import re
 import sys
 
-try:
-    from test import support
-except:
-    from test import test_support as support
+# try:
+#     from test import support
+# except:
+#     from test import test_support as support
 
 
 TestNT = recordclass('TestNT', 'x y z')    # type used for pickle tests
@@ -227,50 +227,49 @@ class RecordClassTest(unittest.TestCase):
             self.assertEqual(p, q)
             self.assertEqual(p.__fields__, q.__fields__)
 
-    def test_name_conflicts(self):
-        # Some names like "self", "cls", "tuple", "itemgetter", and "property"
-        # failed when used as field names.  Test to make sure these now work.
-        T = recordclass('T', 'itemgetter property self cls tuple')
-        t = T(1, 2, 3, 4, 5)
-        self.assertEqual(t, T(1,2,3,4,5))
-        newt = t._replace(itemgetter=10, property=20, self=30, cls=40, tuple=50)
-        self.assertEqual(newt, T(10,20,30,40,50))
+#     def test_name_conflicts(self):
+#         # Some names like "self", "cls", "tuple", "itemgetter", and "property"
+#         # failed when used as field names.  Test to make sure these now work.
+#         T = recordclass('T', 'itemgetter property self cls tuple')
+#         t = T(1, 2, 3, 4, 5)
+#         self.assertEqual(t, T(1,2,3,4,5))
+#         newt = t._replace(itemgetter=10, property=20, self=30, cls=40, tuple=50)
+#         self.assertEqual(newt, T(10,20,30,40,50))
 
-        # Broader test of all interesting names in a template
-        with support.captured_stdout() as template:
-            T = recordclass('T', 'x')
-        words = set(re.findall('[A-Za-z]+', template.getvalue()))
-        words -= set(keyword.kwlist)
-        words = list(words)
-        if 'None' in words:
-            words.remove('None')
-        T = recordclass('T', words)
-        # test __new__
-        values = tuple(range(len(words)))
-        t = T(*values)
-        self.assertEqual(t, T(*values))
-        t = T(**dict(zip(T.__fields__, values)))
-        self.assertEqual(t, T(*values))
-        # test _make
-        t = T._make(values)
-        self.assertEqual(t, T(*values))
-        # exercise __repr__
-        repr(t)
-        # test _asdict
-        self.assertEqual(t._asdict(), dict(zip(T.__fields__, values)))
-        # test _replace
-        t = T._make(values)
-        newvalues = tuple(v*10 for v in values)
-        newt = t._replace(**dict(zip(T.__fields__, newvalues)))
-        self.assertEqual(newt, T(*newvalues))
-        # test __fields__
-        self.assertEqual(T.__fields__, tuple(words))
-        # test __getnewargs__
-        #self.assertEqual(t.__getnewargs__(), newvalues)
+#         # Broader test of all interesting names in a template
+#         # with support.captured_stdout() as template:
+#         #     T = recordclass('T', 'x')
+#         # words = set(re.findall('[A-Za-z]+', template.getvalue()))
+#         # words -= set(keyword.kwlist)
+#         # words = list(words)
+#         # if 'None' in words:
+#         #     words.remove('None')
+#         T = recordclass('T', words)
+#         # test __new__
+#         values = tuple(range(len(words)))
+#         t = T(*values)
+#         self.assertEqual(t, T(*values))
+#         t = T(**dict(zip(T.__fields__, values)))
+#         self.assertEqual(t, T(*values))
+#         # test _make
+#         t = T._make(values)
+#         self.assertEqual(t, T(*values))
+#         # exercise __repr__
+#         repr(t)
+#         # test _asdict
+#         self.assertEqual(t._asdict(), dict(zip(T.__fields__, values)))
+#         # test _replace
+#         t = T._make(values)
+#         newvalues = tuple(v*10 for v in values)
+#         newt = t._replace(**dict(zip(T.__fields__, newvalues)))
+#         self.assertEqual(newt, T(*newvalues))
+#         # test __fields__
+#         self.assertEqual(T.__fields__, tuple(words))
+#         # test __getnewargs__
+#         #self.assertEqual(t.__getnewargs__(), newvalues)
 
     def test_repr(self):
-        with support.captured_stdout() as template:
-            A = recordclass('A', 'x')
+        A = recordclass('A', 'x')
         self.assertEqual(repr(A(1)), 'A(x=1)')
         # repr should show the name of the subclass
         class B(A):
