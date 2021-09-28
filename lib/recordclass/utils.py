@@ -39,16 +39,16 @@ else:
 
 ### sizes
 
-_t = ()
-_t1 = (1,)
-_o = object()
-headgc_size = _sys.getsizeof(_t) - _t.__sizeof__()
-ref_size = _sys.getsizeof(_t1) - _sys.getsizeof(_t)
-pyobject_size = _o.__sizeof__()
-pyvarobject_size = _t.__sizeof__()
-pyssize = pyvarobject_size - pyobject_size
-del _t, _t1, _o
-del _sys
+# _t = ()
+# _t1 = (1,)
+# _o = object()
+# headgc_size = _sys.getsizeof(_t) - _t.__sizeof__()
+# ref_size = _sys.getsizeof(_t1) - _sys.getsizeof(_t)
+# pyobject_size = _o.__sizeof__()
+# pyvarobject_size = _t.__sizeof__()
+# pyssize = pyvarobject_size - pyobject_size
+# del _t, _t1, _o
+# del _sys
 
 #############
 

@@ -8,7 +8,7 @@ import weakref
 
 from recordclass import make_dataclass, make_arrayclass, dataobject, make, clone, update
 from recordclass import datatype, asdict, astuple, join_dataclasses, clsconfig
-from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+# from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 if 'PyPy' in sys.platform:
     is_pypy = True

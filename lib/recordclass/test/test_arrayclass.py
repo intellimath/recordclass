@@ -5,7 +5,7 @@ import weakref
 import pickle, copy
 
 from recordclass import make_arrayclass, datatype
-from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+# from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 TPickle1 = make_arrayclass("TPickle1", fields=3)
 
