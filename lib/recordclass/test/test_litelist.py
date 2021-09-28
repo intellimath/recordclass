@@ -75,8 +75,9 @@ class litelistTest(unittest.TestCase):
         self.assertEqual(tuple(a), (1,2,3))
 
     def test_iter2(self):
-        from recordclass.litelist import litelistiter
+        from recordclass._litelist import litelistiter
         a = litelist([1,2,3])
+        print(iter(iter(a)), litelistiter)
         self.assertTrue(isinstance(iter(a), litelistiter))        
 
     def test_getslice1(self):

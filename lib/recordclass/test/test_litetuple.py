@@ -1,9 +1,5 @@
 import unittest
 from recordclass import litetuple, mutabletuple
-# try:
-#     from test import support
-# except:
-#     from test import test_support as support
 
 import gc
 import pickle

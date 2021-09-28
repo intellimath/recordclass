@@ -9,7 +9,7 @@ import weakref
 from recordclass import make_dataclass, make_arrayclass, dataobject, make, clone, update
 from recordclass import datatype, asdict, astuple, join_dataclasses, clsconfig
 
-if 'PyPy' in sys.platform:
+if 'PyPy' in sys.version:
     is_pypy = True
 else:
     is_pypy = False

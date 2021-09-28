@@ -40,7 +40,7 @@ else:
 
 ### sizes
 
-if 'PyPy' in _sys.platform:
+if 'PyPy' in _sys.version:
     is_pypy = True
 else:
     is_pypy = False
