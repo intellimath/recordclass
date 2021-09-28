@@ -26,6 +26,7 @@ import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
 
 from keyword import iskeyword
+from recordclass import dataobject
 
 _intern = _sys.intern
 if _PY36:
@@ -51,19 +52,6 @@ else:
 # del _sys
 
 #############
-
-def number_of_dataitems(cls):
-    return cls.__itemsize__
-
-# def dataslot_offset(i, n_slots):
-#     if i >= n_slots:
-#         raise IndexError("invalid index of the slots")
-#     basesize = pyobject_size
-#     return basesize + i*ref_size
-
-# def dataitem_offset(cls, i):
-#     tp_basicsize = cls.__basicsize__
-#     return tp_basicsize + i*ref_size
 
 def process_fields(fields, defaults, rename, invalid_names):
     annotations = {}
@@ -131,6 +119,15 @@ def check_name(name, i=0, rename=False, invalid_names=()):
     
     return name
 
+def number_of_dataitems(cls):
+    if cls is dataobject:
+        return 0
+    fields = cls.__fields__
+    if type(fields) is int:
+        return fields
+    else:
+        return len(fields)
+
 def collect_info_from_bases(bases):
     from recordclass import dataobject 
 
@@ -147,7 +144,7 @@ def collect_info_from_bases(bases):
         fs = base.__dict__.get('__fields__', ())
         base_defaults = base.__dict__.get('__defaults__', {})
         base_annotations = base.__dict__.get('__annotations__', {})
-        n = base.__itemsize__ #number_of_dataitems(base)
+        n = number_of_dataitems(base)
         if type(fs) is tuple and len(fs) == n:
             for fn in fs:
                 if fn in fields:

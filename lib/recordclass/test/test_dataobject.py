@@ -30,7 +30,8 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
-        # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ref_size)
+        if is_pypy:
+            self.assertEqual(sys.getsizeof(a), pyobject_size+2*ref_size)
         with self.assertRaises(TypeError):     
             weakref.ref(a)
         with self.assertRaises(AttributeError):     
@@ -459,7 +460,8 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, b.x)
         self.assertEqual(a.y, b.y)
         self.assertEqual(a.z, b.z)
-        # self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
+        if is_pypy:
+            self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
         
     def test_caching(self):
         from recordclass import DataclassStorage
