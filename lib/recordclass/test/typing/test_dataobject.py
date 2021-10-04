@@ -80,8 +80,10 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         self.assertEqual(A.__fields__, ('x', 'y'))
         # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
+        print('*')
         with self.assertRaises(TypeError):     
             weakref.ref(a)
+        print('*')
         with self.assertRaises(AttributeError):     
             a.__dict__
         with self.assertRaises(AttributeError):     

@@ -59,6 +59,7 @@ class datatype(type):
                 use_dict=False, use_weakref=False, hashable=False, mapping_only=False):
 
         from .utils import check_name, collect_info_from_bases
+        from ._dataobject import dataobject
         from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
         from sys import intern as _intern
 
@@ -76,7 +77,7 @@ class datatype(type):
         use_dict = options.get('use_dict', use_dict)
         use_weakref = options.get('use_weakref', use_weakref)
         hashable = options.get('hashable', hashable)
-
+        
         if not bases:
             raise TypeError("The base class in not specified")
 
@@ -93,9 +94,9 @@ class datatype(type):
         else:
             fields = tuple(annotations)
             field_dicts = {fn:{'type':tp} for fn,tp in annotations.items()}
-
+            
         has_fields = True
-        if isinstance(fields, type(1)):
+        if isinstance(fields, int_type):
             has_fields = False
             n_fields = fields
             sequence = options['sequence'] = True
@@ -104,20 +105,29 @@ class datatype(type):
         else:
             fields = [_intern(check_name(fn)) for fn in fields]
 
+        if sequence:
+            options['sequence'] = True
+        if mapping:
+            options['mapping'] = True
+            
         if sequence or mapping:
-            iterable = options['iterable'] = True
+            iterable = True
+            options['iterable'] = True
+            
+        # print(options)
             
         if '__iter__' in ns:
             iterable = options['iterable'] = True
         else:
             for base in bases:
                 if '__iter__' in base.__dict__:
-                    iterable = options['iterable'] = True
+                    iterable = True
+                    options['iterable'] = True
                     break
             
         if readonly:
             hashable = options['hashable'] = True
-
+            
         if has_fields:
             if annotations:
                 annotations = {fn:annotations[fn] for fn in fields if fn in annotations}
@@ -126,28 +136,21 @@ class datatype(type):
                 fields.remove('__dict__')
                 if '__dict__' in annotations:
                     del annotations['__dict__']
-                use_dict = options['use_dict'] = True
+                use_dict = True
+                options['use_dict'] = True
 
             if '__weakref__' in fields:
                 fields.remove('__weakref__')
                 if '__weakref__' in annotations:
                     del annotations['__weakref__']
-                use_weakref = options['use_weakref'] = True
-
-            _fields, _fields_dict, _use_dict = collect_info_from_bases(bases)
-            if _use_dict:
-                use_dict = _use_dict
-            _defaults = {fn:fd['default'] for fn,fd in _fields_dict.items() if 'default' in fd} 
-            _annotations = {fn:fd['type'] for fn,fd in _fields_dict.items() if 'type' in fd} 
+                use_weakref = True
+                options['use_weakref'] = True
 
             if '__defaults__' in ns:
                 defaults = ns['__defaults__']
             else:
                 defaults = {f:ns[f] for f in fields if f in ns}
             _matching_annotations_and_defaults(annotations, defaults)
-
-            if fields:
-                fields = [fn for fn in fields if fn not in _fields]
             
             fields_dict = {}
             for fn in fields:
@@ -163,22 +166,44 @@ class datatype(type):
                         f['readonly'] = True
                 else:
                     for fn in readonly:
-                        fields_dict[fn]['readonly'] = True
+                        fields_dict[fn]['readonly'] = True      
+                        
+            # print("###")
                 
-            fields = _fields + fields
+            if bases and (len(bases) > 1 or bases[0] is not dataobject):
+                _fields, _fields_dict, _use_dict = collect_info_from_bases(bases)
+                if _use_dict:
+                    use_dict = _use_dict or use_dict
+                _defaults = {fn:fd['default'] for fn,fd in _fields_dict.items() if 'default' in fd} 
+                _annotations = {fn:fd['type'] for fn,fd in _fields_dict.items() if 'type' in fd} 
+
+                if fields:
+                    fields = [fn for fn in fields if fn not in _fields]
+
+                fields = _fields + fields
+
+                _fields_dict.update(fields_dict)
+                fields_dict = _fields_dict
+
+                _defaults.update(defaults)
+                defaults = _defaults
+
+                _annotations.update(annotations)
+                annotations = _annotations
+                del _fields, _fields_dict, _use_dict
+                
             fields = tuple(fields)
             n_fields = len(fields)
+                
+            # else:
+            #     _fields = []
+            #     _defaults = {}
+            #     _annotations = {}
+            #     _fields_dict = {} 
+            #     _use_dict = False
             
-            _fields_dict.update(fields_dict)
-            fields_dict = _fields_dict
 
-            _defaults.update(defaults)
-            defaults = _defaults
-
-            _annotations.update(annotations)
-            annotations = _annotations
-
-            if fields and not fast_new and '__new__' not in ns:
+            if has_fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
                 if not __new__.__doc__:
@@ -207,7 +232,8 @@ class datatype(type):
         if '__repr__' not in ns:
             if mapping_only:
                 def __repr__(self):
-                    args = ', '.join((name + '=' + repr(self[name])) for name in self.__class__.__fields__) 
+                    fields = type(self).__fields__
+                    args = ', '.join((name + '=' + repr(self[name])) for name in fields) 
                     kw = getattr(self, '__dict__', None)
                     if kw:
                         return f'{typename}({args}, **{kw})'
@@ -215,7 +241,8 @@ class datatype(type):
                         return f'{typename}({args})'
             else:
                 def __repr__(self):
-                    args = ', '.join((name + '=' + repr(getattr(self, name))) for name in self.__class__.__fields__) 
+                    fields = type(self).__fields__
+                    args = ', '.join((name + '=' + repr(getattr(self, name))) for name in fields) 
                     kw = getattr(self, '__dict__', None)
                     if kw:
                         return f'{typename}({args}, **{kw})'
@@ -245,9 +272,9 @@ class datatype(type):
             
             if '__doc__' not in ns:
                 ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
-        
+                
         cls = type.__new__(metatype, typename, bases, ns)
-
+        
         _dataobject_type_init(cls)
         
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly,
