@@ -126,7 +126,8 @@ class datatype(type):
                     break
             
         if readonly:
-            hashable = options['hashable'] = True
+            hashable = True
+        options['hashable'] = hashable
             
         if has_fields:
             if annotations:
@@ -201,6 +202,8 @@ class datatype(type):
             #     _annotations = {}
             #     _fields_dict = {} 
             #     _use_dict = False
+            
+            options['use_dict'] = use_dict
             
 
             if has_fields and not fast_new and '__new__' not in ns:

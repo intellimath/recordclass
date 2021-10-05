@@ -440,6 +440,7 @@ static PyObject*
 dataobject_getattr(PyObject *op, PyObject *name) 
 {
     PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
+    // printf("00\n");
         
     if (ob != NULL) {
         PyTypeObject *ob_type = Py_TYPE(ob);
@@ -469,11 +470,13 @@ dataobject_getattr(PyObject *op, PyObject *name)
         } else {
             *dictptr = PyDict_New();
             Py_INCREF(*dictptr);
+            // printf("33\n");
             return *dictptr;
         }
     } else {
         if (is__dict__) {
-            PyErr_Format(PyExc_AttributeError, "do not get __dict__ for type %s\n");
+            // Py_RETURN_NONE;
+            PyErr_Format(PyExc_AttributeError, "do not get __dict__ for type %s\n", Py_TYPE(op)->tp_name);
             return NULL;                            
         }
     }
@@ -503,7 +506,7 @@ dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
             dict = *dictptr = PyDict_New();
         // Py_INCREF(val);
         PyDict_SetItem(dict, name, val);
-        printf("2\n");
+        // printf("2\n");
         return 1;
     }
     PyErr_Format(PyExc_AttributeError, "do not set attribute for type %s\n", Py_TYPE(op)->tp_name);
@@ -1210,15 +1213,12 @@ PyDoc_STRVAR(dataobject_getstate_doc,
 static PyObject *
 dataobject_getstate(PyObject *ob) {
     PyTypeObject *tp = Py_TYPE(ob);
-    PyObject *kw = NULL;
     PyObject **dictptr;
 
     if (tp->tp_dictoffset) {
         dictptr = PyObject_GetDictPtr(ob);
-        if (dictptr) {
-            kw = *dictptr;
-            if (kw)
-                return PyDict_Copy(kw);
+        if (dictptr && *dictptr) {
+            return PyDict_Copy(*dictptr);
         }
     }
     Py_RETURN_NONE;
@@ -1265,7 +1265,7 @@ static PyMethodDef dataobject_methods[] = {
     {"__reduce__",   (PyCFunction)dataobject_reduce, METH_NOARGS, dataobject_reduce_doc},
     {"__getstate__", (PyCFunction)dataobject_getstate, METH_NOARGS, dataobject_getstate_doc},
     {"__setstate__", (PyCFunction)dataobject_setstate, METH_O, dataobject_setstate_doc},
-    {"__hash__", (PyCFunction)dataobject_hash2, METH_O, dataobject_hash_doc},
+    {"__hash__",     (PyCFunction)dataobject_hash2, METH_O, dataobject_hash_doc},
     {NULL}
 };
 
