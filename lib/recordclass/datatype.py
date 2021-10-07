@@ -24,6 +24,13 @@
 
 __all__ = 'clsconfig', 'datatype'
 
+import sys as _sys
+if 'PyPy' in _sys.version:
+    is_pypy = True
+else:
+    is_pypy = False
+
+
 def clsconfig(*, sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 
               hashable=False, gc=False, deep_dealloc=False, mapping_only=False):
@@ -62,6 +69,8 @@ class datatype(type):
         from ._dataobject import dataobject
         from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
         from sys import intern as _intern
+        # if is_pypy:
+        # from ._dataobject import _hash_func, _iter_func
 
         options = ns.get('__options__', None)
         if options is None:
@@ -79,7 +88,8 @@ class datatype(type):
         hashable = options.get('hashable', hashable)
         
         if not bases:
-            raise TypeError("The base class in not specified")
+            # raise TypeError("The base class in not specified")
+            bases = (dataobject,)
 
         annotations = ns.get('__annotations__', {})
         
@@ -114,8 +124,6 @@ class datatype(type):
             iterable = True
             options['iterable'] = True
             
-        # print(options)
-            
         if '__iter__' in ns:
             iterable = options['iterable'] = True
         else:
@@ -128,7 +136,7 @@ class datatype(type):
         if readonly:
             hashable = True
         options['hashable'] = hashable
-            
+
         if has_fields:
             if annotations:
                 annotations = {fn:annotations[fn] for fn in fields if fn in annotations}
@@ -168,9 +176,7 @@ class datatype(type):
                 else:
                     for fn in readonly:
                         fields_dict[fn]['readonly'] = True      
-                        
-            # print("###")
-                
+                                        
             if bases and (len(bases) > 1 or bases[0] is not dataobject):
                 _fields, _fields_dict, _use_dict = collect_info_from_bases(bases)
                 if _use_dict:
@@ -196,24 +202,16 @@ class datatype(type):
             fields = tuple(fields)
             n_fields = len(fields)
                 
-            # else:
-            #     _fields = []
-            #     _defaults = {}
-            #     _annotations = {}
-            #     _fields_dict = {} 
-            #     _use_dict = False
-            
             options['use_dict'] = use_dict
-            
 
             if has_fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
-                __new__.__qualname__ = typename + '.' + '__new__'
+                # __new__.__qualname__ = typename + '.' + '__new__'
                 if not __new__.__doc__:
                     __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
 
                 ns['__new__'] = __new__
-
+                
         if has_fields:
             if mapping_only:
                 ns['__fields_dict__'] = {fn:i for i,fn in enumerate(fields)}
@@ -231,7 +229,7 @@ class datatype(type):
                         else:
                             ds = dataobjectproperty(i)
                     ns[name] = ds
-
+                    
         if '__repr__' not in ns:
             if mapping_only:
                 def __repr__(self):
@@ -257,7 +255,18 @@ class datatype(type):
 
             if '__str__' not in ns:
                 ns['__str__'] = __repr__
+                
+        if is_pypy:
+            if hashable and '__hash__' not in ns:
+                def __hash_func__(self):
+                    return _hash_func(self)
+                ns['__hash__'] = __hash_func__
 
+            if iterable and '__iter__' not in ns:
+                def __iter_func__(self):
+                    return _iter_func(self)
+                ns['__iter__'] = __iter_func__
+                
         module = ns.get('__module__', None)
         if module is None:
             try:

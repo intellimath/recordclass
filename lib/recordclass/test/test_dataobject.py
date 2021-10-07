@@ -278,8 +278,9 @@ class dataobjectTest(unittest.TestCase):
             pass
 
         self.assertEqual(type(A), type(B))
-        self.assertEqual(B.__dictoffset__, 0)
-        self.assertEqual(B.__weakrefoffset__, 0)
+        if not is_pypy:
+            self.assertEqual(B.__dictoffset__, 0)
+            self.assertEqual(B.__weakrefoffset__, 0)
         b = B(1,2)
         if not is_pypy:
             self.assertEqual(gc.is_tracked(b), False)
@@ -288,9 +289,10 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(b.y, 2)
         self.assertEqual(asdict(b), {'x':1, 'y':2})
         # self.assertEqual(sys.getsizeof(b), pyobject_size + 2*ref_size)
-        self.assertEqual(A.__basicsize__, B.__basicsize__)
-        with self.assertRaises(TypeError):     
-            weakref.ref(b)
+        if not is_pypy:
+            self.assertEqual(A.__basicsize__, B.__basicsize__)
+            with self.assertRaises(TypeError):     
+                weakref.ref(b)
         with self.assertRaises(AttributeError):     
             b.__dict__        
 
@@ -305,8 +307,9 @@ class dataobjectTest(unittest.TestCase):
 
         self.assertEqual(type(A), type(B))
         self.assertEqual(type(C), type(B))
-        self.assertEqual(C.__dictoffset__, 0)
-        self.assertEqual(C.__weakrefoffset__, 0)
+        if not is_pypy:
+            self.assertEqual(C.__dictoffset__, 0)
+            self.assertEqual(C.__weakrefoffset__, 0)
         c = C(1,2,3)
         if not is_pypy:
             self.assertEqual(gc.is_tracked(c), False)
@@ -316,8 +319,9 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(c.z, 3)
         self.assertEqual(asdict(c), {'x':1, 'y':2, 'z':3})
         # self.assertEqual(sys.getsizeof(c), pyobject_size + 3*ref_size)
-        with self.assertRaises(TypeError):     
-            weakref.ref(c)
+        if not is_pypy:
+            with self.assertRaises(TypeError):     
+                weakref.ref(c)
         with self.assertRaises(AttributeError):     
             c.__dict__
         c = None
@@ -527,8 +531,8 @@ class dataobjectTest(unittest.TestCase):
             iter(a)
             
     def test_iterable_base(self):
-        @clsconfig(iterable=True)
-        class iterable_do(dataobject):
+        # @clsconfig(iterable=True)
+        class iterable_do(dataobject, iterable=True):
             pass
         
         class A(iterable_do):

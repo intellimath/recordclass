@@ -12,6 +12,12 @@ import sys
 # except:
 #     from test import test_support as support
 
+if 'PyPy' in sys.version:
+    is_pypy = True
+else:
+    is_pypy = False
+    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+
 
 TestNT = recordclass('TestNT', 'x y z')    # type used for pickle tests
 
