@@ -672,48 +672,49 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.a, 1)
         self.assertEqual(a.b, 2)
         self.assertEqual(a.c, 3)
-        
-    def test_do_finalizer_tp(self):
-        count = 0
-        class A(dataobject):
-            x:int
-            y:int
-                
-            def __del__(self):
-                nonlocal count
-                count += 1
-                
-        for i in range(100):
-            a = A(1,2)
-            del a
-        
-        self.assertEqual(count, 100)
-        
-    def test_deep_dealloc(self):
-        class LinkedItem(dataobject, fast_new=True):
-            val: object
-            next: 'LinkedItem'
-        
-        @clsconfig(deep_dealloc=True)
-        class LinkedList(dataobject):
-            start: LinkedItem = None
-            end: LinkedItem = None
 
-            def append(self, val):
-                link = LinkedItem(val, None)
-                if self.start is None:
-                    self.start = link
-                else:
-                    self.end.next = link
-                self.end = link
+    if not is_pypy:
+        def test_do_finalizer_tp(self):
+            count = 0
+            class A(dataobject):
+                x:int
+                y:int
 
-        self.assertEqual(LinkedItem.__base__, dataobject)
-                
-        ll = LinkedList()
-        for i in range(10):
-            ll.append(i)
-            
-        del ll
+                def __del__(self):
+                    nonlocal count
+                    count += 1
+
+            for i in range(100):
+                a = A(1,2)
+                del a
+
+            self.assertEqual(count, 100)
+
+        def test_deep_dealloc(self):
+            class LinkedItem(dataobject, fast_new=True):
+                val: object
+                next: 'LinkedItem'
+
+            @clsconfig(deep_dealloc=True)
+            class LinkedList(dataobject):
+                start: LinkedItem = None
+                end: LinkedItem = None
+
+                def append(self, val):
+                    link = LinkedItem(val, None)
+                    if self.start is None:
+                        self.start = link
+                    else:
+                        self.end.next = link
+                    self.end = link
+
+            self.assertEqual(LinkedItem.__base__, dataobject)
+
+            ll = LinkedList()
+            for i in range(10):
+                ll.append(i)
+
+            del ll
         
     def test_readonly(self):
 #         @clsconfig(readonly=True)

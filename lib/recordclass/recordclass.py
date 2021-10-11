@@ -27,6 +27,45 @@ __all__ = 'recordclass', 'RecordclassStorage'
 from .datatype import datatype
 from ._dataobject import dataobject
 
+def _add_namedtuple_api(typename, readonly):
+    from ._dataobject import astuple, asdict
+
+    def _make(_cls, iterable):
+        ob = _cls(*iterable)
+        return ob
+
+    _make.__doc__ = f'Make a new {typename} object from a sequence or iterable'
+
+    if readonly:
+        def _replace(_self, **kwds):
+            result = _self._make(map(kwds.pop, _self.__fields__, _self))
+            if kwds:
+                kwnames = tuple(kwds)
+                raise AttributeError(f'Got unexpected field names: {kwnames}')
+            return result
+    else:
+        def _replace(_self, **kwds):
+            for name, val in kwds.items():
+                setattr(_self, name, val)
+            return _self
+
+    _replace.__doc__ = f'Return a new {typename} object replacing specified fields with new values'
+
+    def _asdict(self):
+        'Return a new dict which maps field names to their values.'
+        return asdict(self)
+
+    for method in (_make, _replace, _asdict,):
+        method.__qualname__ = typename + "." + method.__name__        
+
+    _make = classmethod(_make)
+
+    ns = { '_make': _make, 
+           '_replace': _replace, 
+           '_asdict': _asdict
+         }
+    return ns
+
 def recordclass(typename, fields, defaults=None, *,
                 rename=False, readonly=False, hashable=False, gc=False,
                 use_dict=False, use_weakref=False, fast_new=False, module=None):
@@ -53,6 +92,10 @@ def recordclass(typename, fields, defaults=None, *,
     from .dataclass import make_dataclass
     import sys as _sys
     
+    ns = _add_namedtuple_api(typename, readonly)
+    if readonly:
+        hashable = True
+    
     if module is None:
         try:
             _module = _sys._getframe(1).f_globals.get('__name__', '__main__')
@@ -61,10 +104,9 @@ def recordclass(typename, fields, defaults=None, *,
     else:
         _module = module
 
-    ns = {}
     return make_dataclass(typename, fields, defaults=defaults, namespace=ns,
                 use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
-                sequence=True, mapping=False, iterable=True, rename=rename, api='namedtuple',
+                sequence=True, mapping=False, iterable=True, rename=rename, #api='namedtuple',
                 readonly=readonly, module=_module, 
                 fast_new=fast_new, gc=False)
 
@@ -96,40 +138,7 @@ class recordclassmeta(datatype):
                 gc=False, fast_new=False, readonly=False, 
                 use_dict=False, use_weakref=False, hashable=False):
         
-        def _make(_cls, iterable):
-            ob = _cls(*iterable)
-            return ob
-
-        _make.__doc__ = f'Make a new {typename} object from a sequence or iterable'
-
-        if readonly:
-            def _replace(_self, **kwds):
-                result = _self._make(map(kwds.pop, _self.__fields__, _self))
-                if kwds:
-                    kwnames = tuple(kwds)
-                    raise AttributeError(f'Got unexpected field names: {kwnames}')
-                return result
-        else:
-            def _replace(_self, **kwds):
-                for name, val in kwds.items():
-                    setattr(_self, name, val)
-                return _self
-
-        _replace.__doc__ = f'Return a new {typename} object replacing specified fields with new values'
-
-        def _asdict(self):
-            'Return a new dict which maps field names to their values.'
-            return asdict(self)
-
-        for method in (_make, _replace, _asdict,):
-            method.__qualname__ = typename + "." + method.__name__        
-
-        _make = classmethod(_make)
-
-        ns.update({ '_make': _make, 
-                    '_replace': _replace, 
-                    '_asdict': _asdict,
-                  })
+        ns.update(_add_namedtuple_api(typename, readonly))
         
         if readonly:
             hashable = True

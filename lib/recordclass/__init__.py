@@ -25,7 +25,7 @@ from .datatype import datatype, clsconfig
 from ._dataobject import dataobject, astuple, asdict, make, clone, update
 from .recordclass import recordclass, RecordClass, RecordclassStorage
 
-from .dataclass import make_dataclass, make_class, join_dataclasses, DataclassStorage
+from .dataclass import make_dataclass, make_class, join_dataclasses, DataclassStorage, DataClass
 structclass = make_dataclass
 from .dictclass import make_dictclass
 from .arrayclass import make_arrayclass

@@ -141,12 +141,14 @@ class datatype(type):
             if annotations:
                 annotations = {fn:annotations[fn] for fn in fields if fn in annotations}
 
-            if '__dict__' in fields:
+            if '__dict__' in fields:                
                 fields.remove('__dict__')
                 if '__dict__' in annotations:
                     del annotations['__dict__']
                 use_dict = True
                 options['use_dict'] = True
+                import warnings
+                warnings.warn("Use 'use_dict=True' instead")
 
             if '__weakref__' in fields:
                 fields.remove('__weakref__')
@@ -154,6 +156,8 @@ class datatype(type):
                     del annotations['__weakref__']
                 use_weakref = True
                 options['use_weakref'] = True
+                import warnings
+                warnings.warn("Use 'use_weakref=True' instead")
 
             if '__defaults__' in ns:
                 defaults = ns['__defaults__']
@@ -206,7 +210,7 @@ class datatype(type):
 
             if has_fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
-                # __new__.__qualname__ = typename + '.' + '__new__'
+                __new__.__qualname__ = typename + '.' + '__new__'
                 if not __new__.__doc__:
                     __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
 
