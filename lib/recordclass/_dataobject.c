@@ -279,6 +279,46 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return op;
 }
 
+static PyObject*
+dataobject_new_plain(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    if (type == &PyDataObject_Type) {
+        PyErr_SetString(PyExc_TypeError,
+                        "dataobject base class can't be instantiated");
+        return NULL;        
+    }
+
+    PyTupleObject *tmp = (PyTupleObject*)args;
+    Py_INCREF(tmp);
+
+    const Py_ssize_t n_args = Py_SIZE(tmp);
+    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
+
+    if (n_args != n_items) {
+        PyErr_SetString(PyExc_TypeError,
+                        "number of the arguments have to be equal to the number of the items");
+        Py_DECREF(tmp);
+        return NULL;
+    }
+
+    PyObject *op = type->tp_alloc(type, 0);
+
+    PyObject **items = PyDataObject_ITEMS(op);
+    Py_ssize_t j = n_items - n_args;
+
+    PyObject **pp = tmp->ob_item;
+    Py_ssize_t i;
+    for(i=0; i<n_args; i++) {
+        PyObject *v = *(pp++);
+        Py_INCREF(v);
+        *(items++) = v;
+    }
+    
+    Py_DECREF(tmp);
+    
+    return op;
+}
+
 static int
 dataobject_init(PyObject *ob, PyObject *args, PyObject *kwds) {
     return 0;

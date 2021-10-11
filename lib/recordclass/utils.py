@@ -137,11 +137,13 @@ def collect_info_from_bases(bases):
     fields = []
     fields_dict = {}
     use_dict = False
+    use_weakref = False
     for base in bases:
         if base is dataobject:
             continue
         elif issubclass(base, dataobject):
             use_dict = base.__options__.get('use_dict', False) or use_dict
+            use_weakref = base.__options__.get('use_weakref', False) or use_weakref
             # if base.__dictoffset__ > 0:
             #     use_dict = True
         else:
@@ -167,4 +169,4 @@ def collect_info_from_bases(bases):
         else:
             raise TypeError("invalid fields in base class %r" % base)
         
-    return fields, fields_dict, use_dict
+    return fields, fields_dict, use_dict, use_weakref

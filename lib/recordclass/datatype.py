@@ -88,7 +88,6 @@ class datatype(type):
         hashable = options.get('hashable', hashable)
         
         if not bases:
-            # raise TypeError("The base class in not specified")
             bases = (dataobject,)
 
         annotations = ns.get('__annotations__', {})
@@ -182,9 +181,9 @@ class datatype(type):
                         fields_dict[fn]['readonly'] = True      
                                         
             if bases and (len(bases) > 1 or bases[0] is not dataobject):
-                _fields, _fields_dict, _use_dict = collect_info_from_bases(bases)
-                if _use_dict:
-                    use_dict = _use_dict or use_dict
+                _fields, _fields_dict, _use_dict, _use_weakref = collect_info_from_bases(bases)
+                use_dict = _use_dict or use_dict
+                use_weakref = _use_weakref or use_weakref
                 _defaults = {fn:fd['default'] for fn,fd in _fields_dict.items() if 'default' in fd} 
                 _annotations = {fn:fd['type'] for fn,fd in _fields_dict.items() if 'type' in fd} 
 
@@ -206,7 +205,10 @@ class datatype(type):
             fields = tuple(fields)
             n_fields = len(fields)
                 
-            options['use_dict'] = use_dict
+            if use_dict:
+                options['use_dict'] = use_dict
+            if use_weakref:
+                options['use_weakref'] = use_weakref
 
             if has_fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
