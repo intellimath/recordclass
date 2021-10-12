@@ -280,54 +280,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return op;
 }
 
-static PyObject*
-dataobject_new_plain(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type == &PyDataObject_Type) {
-        PyErr_SetString(PyExc_TypeError,
-                        "dataobject base class can't be instantiated");
-        return NULL;        
-    }
-
-    PyTupleObject *tmp = (PyTupleObject*)args;
-    // Py_INCREF(tmp);
-
-    const Py_ssize_t n_args = Py_SIZE(tmp);
-    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
-
-    if (n_args != n_items) {
-        PyErr_SetString(PyExc_TypeError,
-                        "number of the arguments have to be equal to the number of the items");
-        Py_DECREF(tmp);
-        return NULL;
-    }
-
-    PyObject *op = type->tp_alloc(type, 0);
-
-    PyObject **items = PyDataObject_ITEMS(op);
-
-    PyObject **pp = tmp->ob_item;
-    Py_ssize_t i;
-
-    for(i=0; i<n_args; i++) {
-        PyObject *v = *(pp++);
-        *(items++) = v;
-        Py_INCREF(v);
-    }
-    
-    // Py_DECREF(tmp);
-    
-    if (kwds != NULL) {
-        Py_INCREF(kwds);
-        if (_dataobject_update(op, kwds) < 0) {
-            Py_DECREF(kwds);
-            return NULL;
-        }
-        Py_DECREF(kwds);
-    }
-    
-    return op;
-}
 
 static int
 dataobject_init(PyObject *ob, PyObject *args, PyObject *kwds) {
@@ -2263,7 +2215,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     PyTypeObject *tp;
     PyTypeObject *tp_base;
-    int __init__, __new__, __defaults__;
+    int __init__, __new__;
     PyObject *fields, *dict;
     Py_ssize_t n_fields;
     int has_fields;
@@ -2324,11 +2276,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     if(!__new__ || !has_fields)
         tp->tp_new = dataobject_new;
-        
-    __defaults__ = PyMapping_HasKeyString(dict, "__defaults__");
-    
-    if (!__defaults__ && !tp->tp_dictoffset)
-        tp->tp_new = dataobject_new_plain;        
 
     tp->tp_dealloc = dataobject_dealloc;
     tp->tp_free = PyObject_Del;
