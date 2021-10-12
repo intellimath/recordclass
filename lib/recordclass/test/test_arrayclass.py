@@ -195,16 +195,18 @@ class arrayobjectTest(unittest.TestCase):
     def test_arrayclass_asdict(self):
         from recordclass import asdict
         A = make_arrayclass("A", 3)
-        a = A()
         with self.assertRaises(TypeError):
-            t = asdict(a)        
+            a = A()
+        # with self.assertRaises(TypeError):
+        #     t = asdict(a)        
 
     def test_missing_args(self):
         A = make_arrayclass("A", fields=3)
-        a=A(1)
-        self.assertEqual(a[0], 1)
-        self.assertEqual(a[1], None)
-        self.assertEqual(a[2], None)
+        with self.assertRaises(TypeError):
+            a=A(1)
+        # self.assertEqual(a[0], 1)
+        # self.assertEqual(a[1], None)
+        # self.assertEqual(a[2], None)
 
     def test_pickle1(self):
         p = TPickle1(10, 20, 30)

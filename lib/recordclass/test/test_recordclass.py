@@ -1,6 +1,7 @@
 """Unit tests for recordclass.py."""
 import unittest, doctest, operator
-from recordclass import recordclass, RecordclassStorage
+from recordclass import recordclass
+from recordclass.recordclass import RecordclassStorage
 from collections import OrderedDict
 import pickle, copy
 import keyword

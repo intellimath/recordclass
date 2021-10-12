@@ -7,7 +7,7 @@ import gc
 import weakref
 
 from recordclass import make_dataclass, make_arrayclass, dataobject, make, clone, update
-from recordclass import datatype, asdict, astuple, join_dataclasses, clsconfig
+from recordclass import datatype, asdict, astuple, join_dataclasses
 
 if 'PyPy' in sys.version:
     is_pypy = True
@@ -38,7 +38,7 @@ class dataobjectTest(unittest.TestCase):
             a = A(x=1, y=2, z=3)
 
     def test_caching(self):
-        from recordclass import DataclassStorage
+        from recordclass.dataclass import DataclassStorage
         ds = DataclassStorage()
         A = ds.make_dataclass('A', ('x', 'y'))
         B = ds.make_dataclass('A', ['x', 'y'])
@@ -112,7 +112,6 @@ class dataobjectTest(unittest.TestCase):
             self.assertEqual(sys.getsizeof(a), pyobject_size+2*ref_size)
         # with self.assertRaises(TypeError):     
         #     weakref.ref(a)
-        print('***')
         with self.assertRaises(AttributeError):     
             a.__dict__
         with self.assertRaises(AttributeError):     
@@ -468,8 +467,7 @@ class dataobjectTest(unittest.TestCase):
 
     def test_no_hash2(self):
         A = make_dataclass("A", ("a", "b", "c"), hashable=True)
-        @clsconfig(hashable=False)
-        class B(A):
+        class B(A, hashable=False):
             pass
         b = B(1, 2.0, "a")
         hash(b)

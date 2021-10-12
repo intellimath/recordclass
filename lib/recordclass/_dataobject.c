@@ -200,7 +200,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     }
 
     PyTupleObject *tmp = (PyTupleObject*)args;
-    Py_INCREF(tmp);
+    // Py_INCREF(tmp);
 
     const Py_ssize_t n_args = Py_SIZE(tmp);
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
@@ -219,13 +219,14 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     PyObject **pp = tmp->ob_item;
     Py_ssize_t i;
+
     for(i=0; i<n_args; i++) {
         PyObject *v = *(pp++);
         Py_INCREF(v);
         *(items++) = v;
     }
     
-    Py_DECREF(tmp);
+    // Py_DECREF(tmp);
     
     if (j) {
         PyObject *tp_dict = type->tp_dict;
@@ -289,7 +290,7 @@ dataobject_new_plain(PyTypeObject *type, PyObject *args, PyObject *kwds)
     }
 
     PyTupleObject *tmp = (PyTupleObject*)args;
-    Py_INCREF(tmp);
+    // Py_INCREF(tmp);
 
     const Py_ssize_t n_args = Py_SIZE(tmp);
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
@@ -304,17 +305,26 @@ dataobject_new_plain(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyObject *op = type->tp_alloc(type, 0);
 
     PyObject **items = PyDataObject_ITEMS(op);
-    Py_ssize_t j = n_items - n_args;
 
     PyObject **pp = tmp->ob_item;
     Py_ssize_t i;
+
     for(i=0; i<n_args; i++) {
         PyObject *v = *(pp++);
-        Py_INCREF(v);
         *(items++) = v;
+        Py_INCREF(v);
     }
     
-    Py_DECREF(tmp);
+    // Py_DECREF(tmp);
+    
+    if (kwds != NULL) {
+        Py_INCREF(kwds);
+        if (_dataobject_update(op, kwds) < 0) {
+            Py_DECREF(kwds);
+            return NULL;
+        }
+        Py_DECREF(kwds);
+    }
     
     return op;
 }
@@ -331,13 +341,11 @@ dataobject_clear(PyObject *op)
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-        // if (dictptr != NULL) {
-            PyObject *dict = *dictptr;
-            if (dict != NULL) {
-                Py_CLEAR(dict);
-                *dictptr = NULL;
-            }
-        // }            
+        PyObject *dict = *dictptr;
+        if (dict != NULL) {
+            Py_CLEAR(dict);
+            *dictptr = NULL;
+        }
     }
 
     PyObject **items = PyDataObject_ITEMS(op);
@@ -360,13 +368,11 @@ dataobject_xdecref(PyObject *op)
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-        // if (dictptr != NULL) {
-            PyObject *dict = *dictptr;
-            if (dict != NULL) {
-                Py_DECREF(dict);
-                *dictptr = NULL;
-            }
-        // }            
+        PyObject *dict = *dictptr;
+        if (dict != NULL) {
+            Py_DECREF(dict);
+            *dictptr = NULL;
+        }
     }
 
     PyObject **items = PyDataObject_ITEMS(op);
@@ -393,6 +399,7 @@ dataobject_dealloc(PyObject *op)
     
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_DECREF(type);
+
     type->tp_free((PyObject *)op);
 }
 
@@ -2256,7 +2263,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     PyTypeObject *tp;
     PyTypeObject *tp_base;
-    int __init__, __new__;
+    int __init__, __new__, __defaults__;
     PyObject *fields, *dict;
     Py_ssize_t n_fields;
     int has_fields;
@@ -2317,6 +2324,11 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     if(!__new__ || !has_fields)
         tp->tp_new = dataobject_new;
+        
+    __defaults__ = PyMapping_HasKeyString(dict, "__defaults__");
+    
+    if (!__defaults__ && !tp->tp_dictoffset)
+        tp->tp_new = dataobject_new_plain;        
 
     tp->tp_dealloc = dataobject_dealloc;
     tp->tp_free = PyObject_Del;

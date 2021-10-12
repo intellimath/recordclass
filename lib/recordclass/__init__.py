@@ -21,11 +21,11 @@
 # THE SOFTWARE.
 
 
-from .datatype import datatype, clsconfig
+from .datatype import datatype
 from ._dataobject import dataobject, astuple, asdict, make, clone, update
-from .recordclass import recordclass, RecordClass, RecordclassStorage
+from .recordclass import recordclass
 
-from .dataclass import make_dataclass, make_class, join_dataclasses, DataclassStorage, DataClass
+from .dataclass import make_dataclass, make_class, join_dataclasses
 structclass = make_dataclass
 from .dictclass import make_dictclass
 from .arrayclass import make_arrayclass

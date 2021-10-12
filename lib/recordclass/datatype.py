@@ -31,17 +31,17 @@ else:
     is_pypy = False
 
 
-def clsconfig(*, sequence=False, mapping=False, readonly=False,
-              use_dict=False, use_weakref=False, iterable=False, 
-              hashable=False, gc=False, deep_dealloc=False, mapping_only=False):
-    from ._dataobject import _clsconfig
-    def func(cls, *, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                  use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
-        _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, 
-                        deep_dealloc=deep_dealloc, mapping_only=mapping_only)
-        return cls
-    return func
+# def clsconfig(*, sequence=False, mapping=False, readonly=False,
+#               use_dict=False, use_weakref=False, iterable=False, 
+#               hashable=False, gc=False, deep_dealloc=False, mapping_only=False):
+#     from ._dataobject import _clsconfig
+#     def func(cls, *, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
+#                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
+#         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
+#                         use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, 
+#                         deep_dealloc=deep_dealloc, mapping_only=mapping_only)
+#         return cls
+#     return func
 
 def _matching_annotations_and_defaults(annotations, defaults):
     first_default = 0
@@ -69,8 +69,8 @@ class datatype(type):
         from ._dataobject import dataobject
         from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
         from sys import intern as _intern
-        # if is_pypy:
-        # from ._dataobject import _hash_func, _iter_func
+        if is_pypy:
+            from ._dataobject import _hash_func, _iter_func
 
         options = ns.get('__options__', None)
         if options is None:

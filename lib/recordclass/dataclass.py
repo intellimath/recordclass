@@ -111,9 +111,6 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
 
 make_class = make_dataclass
 
-class DataClass(dataobject):
-    pass
-
 class DataclassStorage:
     #
     def __init__(self):

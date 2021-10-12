@@ -131,22 +131,3 @@ class RecordclassStorage:
             self._storage[key] = cls
         return cls
 
-
-class recordclassmeta(datatype):
-    
-    def __new__(metatype, typename, bases, ns, *,
-                gc=False, fast_new=False, readonly=False, 
-                use_dict=False, use_weakref=False, hashable=False):
-        
-        ns.update(_add_namedtuple_api(typename, readonly))
-        
-        if readonly:
-            hashable = True
-        
-        return datatype.__new__(metatype, typename, bases, ns,
-                    gc=gc, fast_new=fast_new, readonly=readonly, iterable=True,
-                    sequence=True, use_dict=use_dict, use_weakref=use_weakref, hashable=hashable)
-    
-class RecordClass(dataobject, metaclass=recordclassmeta):
-    pass
-

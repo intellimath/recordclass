@@ -8,7 +8,7 @@ import weakref
 
 from recordclass import make_dataclass, datatype #, DataclassStorage
 from recordclass import dataobject
-from recordclass import asdict, clsconfig
+from recordclass import asdict
 
 if 'PyPy' in sys.version:
     is_pypy = True
@@ -111,8 +111,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(A.__fields__, ('x','y'))
 
     def test_datatype4_tp(self):
-        @clsconfig(sequence=True)
-        class A(dataobject):
+        class A(dataobject, sequence=True):
             x:int
             y:int
 
@@ -122,8 +121,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a[1], 2)
 
     def test_datatype5_tp(self):
-        @clsconfig(mapping=True)
-        class A(dataobject):
+        class A(dataobject, mapping=True):
             x:int
             y:int
 
@@ -432,8 +430,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a3.z, 3)
         
     def test_datatype_dict2_tp(self):
-        @clsconfig(use_dict=True, use_weakref=True)
-        class A(dataobject):
+        class A(dataobject, use_dict=True, use_weakref=True):
             __fields__ = 'x', 'y'
 
         a = A(1,2)
@@ -503,8 +500,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
 
     def test_iter3_tp(self):
-        @clsconfig(iterable=True)
-        class A(dataobject):
+        class A(dataobject, iterable=True):
             __fields__ = ('x', 'y', 'z')
         
         a=A(1, 2.0, "a")
@@ -695,8 +691,7 @@ class DataObjectTest3(unittest.TestCase):
                 val: object
                 next: 'LinkedItem'
 
-            @clsconfig(deep_dealloc=True)
-            class LinkedList(dataobject):
+            class LinkedList(dataobject, deep_dealloc=True):
                 start: LinkedItem = None
                 end: LinkedItem = None
 
