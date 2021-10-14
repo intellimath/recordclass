@@ -1,0 +1,67 @@
+# coding: utf-8
+
+# The MIT License (MIT)
+
+# Copyright (c) «2015-2021» «Shibzukhov Zaur, szport at gmail dot com»
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software - recordclass library - and associated documentation files
+# (the "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom
+# the Software is furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
+                    sequence=False, mapping=False, iterable=False, readonly=False, api='',
+                    module=None, fast_new=False, rename=False, gc=False, mapping_only=False):
+
+    """Returns a new class with named fields and small memory footprint.
+    
+        @as_dataclass()
+        class Point:
+            x:int
+            y:int
+    """
+    def _adapter(cls, use_dict=use_dict, use_weakref=use_weakref, hashable=hashable,
+                      sequence=sequence, mapping=mapping, iterable=iterable, readonly=readonly,
+                      fast_new=fast_new, rename=rename, gc=gc, mapping_only=mapping_only):
+        from ._dataobject import dataobject
+        from .datatype import datatype
+        from sys import intern as _intern
+        
+        ns = {}
+        if '__fields__' not in cls.__dict__:
+            ns['__fields__'] = tuple(cls.__annotations__)
+
+        if sequence or mapping:
+            iterable = True
+
+        if '__iter__' in ns:
+            iterable = True
+
+        if readonly:
+            hashable = True
+
+        ns.update(cls.__dict__)
+        ns.pop('__dict__')
+        if '__weakref__' in ns:
+            ns.pop('__weakref__')
+
+        new_cls = datatype(cls.__name__, (dataobject,), ns, 
+                       gc=gc, fast_new=fast_new, readonly=readonly, iterable=iterable,
+                       mapping=mapping, sequence=sequence, use_dict=use_dict, 
+                       use_weakref=use_weakref, hashable=hashable, mapping_only=mapping_only)
+
+        return new_cls
+    return _adapter
