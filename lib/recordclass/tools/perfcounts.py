@@ -5,37 +5,43 @@ from timeit import timeit
 import sys
 import gc
 
-PointNT = namedtuple("PointNT", "x y")
+PointNT = namedtuple("PointNT", "x y z")
 nan = float('nan')
 
 class PointSlots:
-    __slots__ = 'x', 'y'
+    __slots__ = 'x', 'y', 'z'
     
-    def __init__(self, x, y):
+    def __init__(self, x, y, z):
         self.x = x
         self.y = y
+        self.z = z
         
 class Point(dataobject, sequence=True):
     x:int
     y:int
+    z:int
 
 class PointGC(dataobject, sequence=True, gc=True):
     x:int
     y:int
+    z:int
 
 class FastPoint(dataobject, sequence=True, fast_new=True):
     x:int
     y:int
+    z:int
     
 class FastPointGC(dataobject, sequence=True, fast_new=True, gc=True):
     x:int
     y:int
+    z:int
 
 class PointMap(dataobject, mapping=True, fast_new=True):
     x:int
     y:int
+    z:int
     
-PointDict = make_dictclass("PointDict", "x y", fast_new=True)
+PointDict = make_dictclass("PointDict", "x y z", fast_new=True)
     
 results = {'id':[], 'size':[], 'new':[], 
            'getattr':[], 'setattr':[], 
@@ -60,17 +66,17 @@ def test_new():
     print("new")
     def test(cls):
         for i in range(N):
-            ob = cls(i, i)
+            ob = cls(i, i, i)
             prev = ob
         
     def test_tuple():
         for i in range(N):
-            ob = (i, i)
+            ob = (i, i, i)
             prev = ob
 
     def test_dict():
         for i in range(N):
-            ob = {'x':i, 'y':i}
+            ob = {'x':i, 'y':i, 'z':i}
             prev = ob
     
     for cls in classes:
@@ -87,10 +93,11 @@ def test_new():
 def test_getattr():
     print("getattr")
     def test(cls):
-        p = cls(0,0)
+        p = cls(0,0,0)
         for i in range(N):
             x = p.x
             y = p.y
+            z = p.z
             
     for cls in classes:
         gc.collect()
@@ -106,16 +113,18 @@ def test_getkey():
     print("getkey")
 
     def test_dict():
-        p = {'x':0, 'y':0}
+        p = {'x':0, 'y':0, 'z':0}
         for i in range(N):
             x = p['x']
             y = p['y']
+            z = p['z']
             
     def test_dictclass(cls):
-        p = cls(0,0)
+        p = cls(0,0,0)
         for i in range(N):
             x = p['x']
             y = p['y']
+            z = p['z']
             
     for cls in classes:
         gc.collect()
@@ -132,16 +141,18 @@ def test_getkey():
 def test_getitem():
     print("getitem")
     def test(cls):
-        p = cls(0,0)
+        p = cls(0,0,0)
         for i in range(N):
             x = p[0]
             y = p[1]
+            z = p[2]
 
     def test_tuple():
-        p = (0,0)
+        p = (0,0,0)
         for i in range(N):
             x = p[0]
             y = p[1]
+            z = p[2]
             
     for cls in classes:
         gc.collect()
@@ -158,10 +169,11 @@ def test_getitem():
 def test_setattr():
     print("setattr")
     def test(cls):
-        p = cls(0,0)
+        p = cls(0,0,0)
         for i in range(N):
             p.x = 1
             p.y = 2
+            p.z = 3
 
     for cls in classes:
         gc.collect()
@@ -176,16 +188,18 @@ def test_setattr():
 def test_setkey():
     print("setkey")
     def test_dict():
-        p = {'x':0, 'y':0}
+        p = {'x':0, 'y':0, 'z':0}
         for i in range(N):
             p['x'] = 1
             p['y'] = 2
+            p['z'] = 3
 
     def test_dictclass(cls):
-        p = cls(0,0)
+        p = cls(0,0,0)
         for i in range(N):
             p['x'] = 1
             p['y'] = 2
+            p['z'] = 3
             
     for cls in classes:
         gc.collect()
@@ -202,10 +216,11 @@ def test_setkey():
 def test_setitem():
     print("setitem")
     def test(cls):
-        p = cls(0,0)
+        p = cls(0,0,0)
         for i in range(N):
             p[0] = 1
             p[1] = 2
+            p[2] = 2
             
     for cls in classes:
         gc.collect()
@@ -220,19 +235,19 @@ def test_setitem():
 def test_iterate():
     print("iterate")
     def test(cls):
-        p = cls(0,0)
+        p = cls(0,0,0)
         for i in range(N):
             for x in iter(p):
                 s = x
 
     def test_tuple():
-        p = (0,0)
+        p = (0,0,0)
         for i in range(N):
             for x in iter(p):
                 s = x
     
     def test_dict():
-        p = {'x':0, 'y':0}
+        p = {'x':0, 'y':0, 'z':0}
         for i in range(N):
             for x in iter(p):
                 s = x
@@ -263,18 +278,18 @@ test_setkey()
 test_iterate()
 
 results['size'].extend([
-  sys.getsizeof(litetuple(0,0)),   
-  sys.getsizeof(mutabletuple(0,0)),   
-  sys.getsizeof((0,0)),   
-  sys.getsizeof(PointNT(0,0)),   
-  sys.getsizeof(PointSlots(0,0)),   
-  sys.getsizeof(Point(0,0)),   
-  sys.getsizeof(FastPoint(0,0)),   
-  sys.getsizeof(PointGC(0,0)),   
-  sys.getsizeof(FastPointGC(0,0)),   
-  sys.getsizeof({'x':0,'y':0}),   
-  sys.getsizeof(PointMap(0,0)),   
-  sys.getsizeof(PointDict(0,0)),   
+  sys.getsizeof(litetuple(0,0,0)),   
+  sys.getsizeof(mutabletuple(0,0,0)),   
+  sys.getsizeof((0,0,0)),   
+  sys.getsizeof(PointNT(0,0,0)),   
+  sys.getsizeof(PointSlots(0,0,0)),   
+  sys.getsizeof(Point(0,0,0)),   
+  sys.getsizeof(FastPoint(0,0,0)),   
+  sys.getsizeof(PointGC(0,0,0)),   
+  sys.getsizeof(FastPointGC(0,0,0)),   
+  sys.getsizeof({'x':0,'y':0, 'z':0}),   
+  sys.getsizeof(PointMap(0,0,0)),   
+  sys.getsizeof(PointDict(0,0,0)),   
 ])
 
 pd.options.mode.use_inf_as_na = True

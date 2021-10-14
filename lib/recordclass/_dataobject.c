@@ -38,12 +38,12 @@ static PyTypeObject PyDataSlotGetSet_Type;
 PyObject *__fields__name;
 PyObject *__dict__name;
 PyObject *__weakref__name;
+PyObject *__defaults__name;
 
 Py_ssize_t fields_dict_hash;
 PyObject *fields_dict_name;
 
 // Py_ssize_t defaults_hash;
-PyObject *defaults_name;
 
 static inline PyObject *
 type_error(const char *msg, PyObject *obj)
@@ -215,7 +215,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyObject *op = type->tp_alloc(type, 0);
 
     PyObject **items = PyDataObject_ITEMS(op);
-    Py_ssize_t j = n_items - n_args;
 
     PyObject **pp = tmp->ob_item;
     Py_ssize_t i;
@@ -228,10 +227,11 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     
     // Py_DECREF(tmp);
     
+    Py_ssize_t j = n_items - n_args;
     if (j) {
         PyObject *tp_dict = type->tp_dict;
         PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-        PyObject *defaults = mp->mp_subscript(tp_dict, defaults_name);
+        PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
 
         if (defaults == NULL) {
             if (PyErr_Occurred())
@@ -293,13 +293,15 @@ dataobject_clear(PyObject *op)
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-        PyObject *dict = *dictptr;
-        if (dict != NULL) {
-            Py_CLEAR(dict);
-            *dictptr = NULL;
+        if (*dictptr) {
+            PyObject *dict = *dictptr;
+            if (dict != NULL) {
+                Py_CLEAR(dict);
+                *dictptr = NULL;
+            }
         }
     }
-
+ 
     PyObject **items = PyDataObject_ITEMS(op);
     Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
     while (n_items-- > 0) {
@@ -320,10 +322,12 @@ dataobject_xdecref(PyObject *op)
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-        PyObject *dict = *dictptr;
-        if (dict != NULL) {
-            Py_DECREF(dict);
-            *dictptr = NULL;
+        if (*dictptr) {
+            PyObject *dict = *dictptr;
+            if (dict != NULL) {
+                Py_DECREF(dict);
+                *dictptr = NULL;
+            }
         }
     }
 
@@ -2808,10 +2812,10 @@ PyInit__dataobject(void)
         return NULL;
     // Py_INCREF(__weakref__name);
 
-    defaults_name = PyUnicode_FromString("__defaults__");
-    if (defaults_name == NULL)
+    __defaults__name = PyUnicode_FromString("__defaults__");
+    if (__defaults__name == NULL)
         return NULL;
-    // Py_INCREF(defaults_name);
+    // Py_INCREF(__defaults__name);
 
 //     dataobject_as_mapping.mp_subscript = PyDataObject_Type.tp_getattro;
 //     dataobject_as_mapping.mp_ass_subscript = PyDataObject_Type.tp_setattro;
