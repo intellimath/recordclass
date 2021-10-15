@@ -42,7 +42,7 @@ def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
         
         ns = {}
         if '__fields__' not in cls.__dict__:
-            ns['__fields__'] = tuple(cls.__annotations__)
+            ns['__fields__'] = tuple(cls.__dict__.get('__annotations__', ()))
 
         if sequence or mapping:
             iterable = True
@@ -55,10 +55,11 @@ def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
 
         ns.update(cls.__dict__)
         ns.pop('__dict__')
-        if '__weakref__' in ns:
-            ns.pop('__weakref__')
+        ns.pop('__weakref__')
+        
+        typename = cls.__name__
 
-        new_cls = datatype(cls.__name__, (dataobject,), ns, 
+        new_cls = datatype(typename, (dataobject,), ns, 
                        gc=gc, fast_new=fast_new, readonly=readonly, iterable=iterable,
                        mapping=mapping, sequence=sequence, use_dict=use_dict, 
                        use_weakref=use_weakref, hashable=hashable, mapping_only=mapping_only)

@@ -24,7 +24,7 @@
 from .datatype import datatype
 from ._dataobject import dataobject, astuple, asdict, make, clone, update
 from .recordclass import recordclass
-
+from .adapter import as_dataclass
 from .dataclass import make_dataclass, make_class, join_dataclasses
 structclass = make_dataclass
 from .dictclass import make_dictclass

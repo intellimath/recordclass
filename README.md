@@ -17,10 +17,10 @@ In order to illustrate this, consider a simple class with type hints:
         x: int
         y: int
 
-By contract instances of the class `Point` have attributes `x` and `y` with values of `int` type.
-Assigning other types of values, which are not subclass of `int`, should be considered as a violation of the contract.
+By tacit agreement instances of the class `Point` is supposed to have attributes `x` and `y` with values of `int` type.
+Assigning other types of values, which are not subclass of `int`, should be considered as a violation of the agreement.
 
-Another examples are non-recursive data structures in which all leaf elements represent a value of an atomic type.
+Other examples are non-recursive data structures in which all leaf elements represent a value of an atomic type.
 Of course, in python, nothing prevent you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
 But in many cases, this can still be avoided provided that the developer understands what he is doing and uses such classes in the codebase with care.
 Another option is to use static code analyzers along with type annotations to monitor compliance with typehints.
@@ -46,7 +46,7 @@ The `recodeclass` library provide the base class `dataobject`. The type of `data
         {'x':1, 'y':2}
 
 The `recordclass` factory create dataobject-based subclass with specified fields and support `namedtuple`-like API. 
-   By default it will not participate in CGC too.  
+   By default it will not participate in cyclic GC too.  
 
         >>> from recordclass import recordclass
         >>> Point = recordclass('Point', 'x y')
@@ -58,8 +58,8 @@ The `recordclass` factory create dataobject-based subclass with specified fields
         >>> print(p._asdict)
         {'x':1, 'y':-1}
 
-It provide a factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names. 
-   These subclasses support `attrs`/`dataclasses`-like API. This is an equivalent to creating subclasses of dataobject using `class statement`.
+It also provide a factory function `make_dataclass` for creation of subclasses of `dataobject` with the specified field names. 
+   These subclasses support `attrs`/`dataclasses`-like API. It's equivalent to creating subclasses of dataobject using `class statement`.
    For example:
 
         >>> Point = make_dataclass('Point', 'x y')
@@ -224,13 +224,24 @@ or
 
 First load inventory:
 
-    >>> from recordclass import dataobject, asdict, astuple
+    >>> from recordclass import dataobject, asdict, astuple, as_dataclass
 
-Define class:
+Define class one of three ways:
 
     class Point(dataobject):
         x: int
         y: int
+        
+or        
+
+    @as_dataclass()
+    class Point:
+        x: int
+        y: int
+        
+or
+
+    >>> Point = make_dataclass("Point", [("x",int), ("y",int)])
 
 One can't remove attributes from the class:
 
@@ -245,7 +256,7 @@ Annotations of the fields are defined as a dict in `__annotations__`:
 
 Default text representation:
 
-    >>> p = Point(1,2)
+    >>> p = Point(1, 2)
     >>> print(p)
     Point(x=1, y=2)
 
@@ -257,7 +268,7 @@ One can't remove field's value:
 
 The instances has a minimum memory footprint that is possible for CPython objects, which consist only of Python objects:
 
-    >>> sys.getsizeof(p) # the output below for 64bit python 3.8+
+    >>> sys.getsizeof(p) # the output below for python 3.8+ (64bit)
     32
     >>> p.__sizeof__() == sys.getsizeof(p) # no additional space for cyclic GC support
     True    
@@ -388,9 +399,17 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 #### 0.17
 
 * Now recordclass library may be compiled for pypy3, but there is still no complete runtime compatibility with pypy3.
-* From now the function `_PyObject_GetBuiltin` is not used 
-  (see [question](https://stackoverflow.com/questions/67094860/pypy3-pip-install-recordclass) on stackoverflow).
 * Slighly imporove performance of `litetuple` / `mutabletuple`.
+* Add adapter `as_dataclass`. For example:
+
+      @as_dataclass()
+      class Point:
+          x:int
+          y:int
+
+#### 0.16.1
+
+* Fix the packaging bug in 0.16.1.
 
 #### 0.16.1
 

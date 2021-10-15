@@ -6,7 +6,7 @@ import sys
 import gc
 import weakref
 
-from recordclass import make_dataclass, datatype #, DataclassStorage
+from recordclass import make_dataclass, datatype, as_dataclass
 from recordclass import dataobject
 from recordclass import asdict
 
@@ -16,15 +16,14 @@ else:
     is_pypy = False
     from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
-
-# _t = ()
-# _t1 = (1,)
-# _o = object()
-# headgc_size = sys.getsizeof(_t) - _t.__sizeof__()
-# ptr_size = sys.getsizeof(_t1) - sys.getsizeof(_t)
-# pyobject_size = _o.__sizeof__()
-# pyvarobject_size = _t.__sizeof__()
-# del _t, _t1, _o
+    _t = ()
+    _t1 = (1,)
+    _o = object()
+    headgc_size = sys.getsizeof(_t) - _t.__sizeof__()
+    ptr_size = sys.getsizeof(_t1) - sys.getsizeof(_t)
+    pyobject_size = _o.__sizeof__()
+    pyvarobject_size = _t.__sizeof__()
+    del _t, _t1, _o
 
 class TestPickle2(dataobject):
     __fields__ = 'x', 'y', 'z'
@@ -100,6 +99,33 @@ class DataObjectTest3(unittest.TestCase):
             a.z
         a = None
         
+    def test_datatype2_tp2(self):
+        @as_dataclass()
+        class A:
+            x:int
+            y:int
+
+        a = A(1,2)
+        self.assertEqual(repr(a), "A(x=1, y=2)")
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+        self.assertEqual(asdict(a), {'x':1, 'y':2})
+        self.assertEqual(A.__annotations__, {'x':int, 'y':int})
+        self.assertEqual(A.__fields__, ('x', 'y'))
+        if not is_pypy:
+            self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
+        if not is_pypy:
+            with self.assertRaises(TypeError):     
+                weakref.ref(a)
+        print('*')
+        with self.assertRaises(AttributeError):     
+            a.__dict__
+        with self.assertRaises(AttributeError):     
+            a.z = 3
+        with self.assertRaises(AttributeError):     
+            a.z
+        a = None
+
     def test_datatype3_tp(self):
         class A(dataobject):
             x:int
