@@ -444,17 +444,14 @@ static PyObject*
 dataobject_getattr(PyObject *op, PyObject *name) 
 {
     PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
-    // printf("00\n");
         
     if (ob != NULL) {
         PyTypeObject *ob_type = Py_TYPE(ob);
         if (ob_type == &PyDataSlotGetSet_Type) {
-            // printf("11\n");
             return ob_type->tp_descr_get(ob, op, NULL);
         }
     }
     int is__dict__ = PyObject_RichCompareBool(name, __dict__name, Py_EQ);
-    // printf("#%i %i\n", is__dict__, Py_TYPE(op)->tp_dictoffset);
     if (Py_TYPE(op)->tp_dictoffset) {
         PyObject **dictptr = (PyObject**)((char*)op + Py_TYPE(op)->tp_dictoffset);
         if (*dictptr) {
@@ -467,26 +464,21 @@ dataobject_getattr(PyObject *op, PyObject *name)
                 PyObject *res = PyDict_GetItem(dict, name);
                 if (res) {
                     Py_INCREF(res);
-                    // printf("22\n");
                     return res;
                 }
             } 
         } else {
             *dictptr = PyDict_New();
             Py_INCREF(*dictptr);
-            // printf("33\n");
             return *dictptr;
         }
     } else {
         if (is__dict__) {
-            // Py_RETURN_NONE;
             PyErr_Format(PyExc_AttributeError, "do not get __dict__ for type %s\n", Py_TYPE(op)->tp_name);
             return NULL;                            
         }
     }
     return PyObject_GenericGetAttr(op, name);
-    // PyErr_Format(PyExc_AttributeError, "do not get attribute for type %s\n", Py_TYPE(op)->tp_name);
-    // return NULL;                
 }
 
 static int
@@ -497,7 +489,6 @@ dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
     if (ob != NULL) {
         PyTypeObject *ob_type = Py_TYPE(ob);
         if (ob_type == &PyDataSlotGetSet_Type) {
-            // printf("1\n");
             return ob_type->tp_descr_set(ob, op, val);
         }
     }
@@ -508,9 +499,7 @@ dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
             dict = *dictptr;
         else
             dict = *dictptr = PyDict_New();
-        // Py_INCREF(val);
         PyDict_SetItem(dict, name, val);
-        // printf("2\n");
         return 1;
     }
     PyErr_Format(PyExc_AttributeError, "do not set attribute for type %s\n", Py_TYPE(op)->tp_name);
@@ -740,7 +729,7 @@ dataobject_mp_subscript0(PyObject* op, PyObject* item)
     return NULL;
 }
 
-static inline void copy_sequence_methods(PySequenceMethods *out, PySequenceMethods *in) {
+static void copy_sequence_methods(PySequenceMethods *out, PySequenceMethods *in) {
     out->sq_length = in->sq_length;
     out->sq_concat = in->sq_concat;
     out->sq_repeat = in->sq_repeat;
@@ -785,7 +774,7 @@ static PySequenceMethods dataobject_as_sequence_ro = {
     0,                               /* sq_contains */
 };
 
-static inline void copy_mapping_methods(PyMappingMethods *out, PyMappingMethods *in) {
+static void copy_mapping_methods(PyMappingMethods *out, PyMappingMethods *in) {
     out->mp_length = in->mp_length;
     out->mp_subscript = in->mp_subscript;
     out->mp_ass_subscript = in->mp_ass_subscript;
