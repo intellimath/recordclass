@@ -1180,14 +1180,16 @@ dataobject_ass_subscript(PyObject *ob, PyObject *args)
         return NULL;
     }
     
-    PyObject *key = PyTuple_GetItem(args, 0);
-    PyObject *val = PyTuple_GetItem(args, 1);;
+    // PyObject *key = PyTuple_GET_ITEM(args, 0);
+    // PyObject *val = PyTuple_GET_ITEM(args, 1);
     
     
     PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
     
     if (m->mp_ass_subscript) {
-        if (m->mp_ass_subscript(ob, key, val))
+        if (m->mp_ass_subscript(ob, 
+                                PyTuple_GET_ITEM(args, 0), 
+                                PyTuple_GET_ITEM(args, 1)))
             return NULL;
         else 
             Py_RETURN_NONE;

@@ -210,6 +210,8 @@ class datatype(type):
             if use_weakref:
                 options['use_weakref'] = use_weakref
 
+            if fast_new:
+                options['fast_new'] = fast_new
             if has_fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
