@@ -215,10 +215,9 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyObject *op = type->tp_alloc(type, 0);
 
     PyObject **items = PyDataObject_ITEMS(op);
-
     PyObject **pp = tmp->ob_item;
-    Py_ssize_t i;
 
+    Py_ssize_t i;
     for(i=0; i<n_args; i++) {
         PyObject *v = *(pp++);
         Py_INCREF(v);
@@ -279,118 +278,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     return op;
 }
-
-static PyObject*
-dataobject_new_kw(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type == &PyDataObject_Type) {
-        PyErr_SetString(PyExc_TypeError,
-                        "dataobject base class can't be instantiated");
-        return NULL;        
-    }
-
-    // PyTupleObject *tmp = (PyTupleObject*)args;
-    // Py_INCREF(tmp);
-
-    const Py_ssize_t n_args = Py_SIZE((PyTupleObject*)args);
-    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
-
-    if (n_args > 0) {
-        PyErr_SetString(PyExc_TypeError,
-                        "Keyword onlya arguments are allowed");
-        // Py_DECREF(tmp);
-        return NULL;
-    }
-
-    PyObject *op = type->tp_alloc(type, 0);
-
-    PyObject **items = PyDataObject_ITEMS(op);
-
-//     PyObject **pp = tmp->ob_item;
-//     Py_ssize_t i;
-
-//     for(i=0; i<n_args; i++) {
-//         PyObject *v = *(pp++);
-//         Py_INCREF(v);
-//         *(items++) = v;
-//     }
-    
-    // Py_DECREF(tmp);
-    
-    Py_ssize_t j = n_items - n_args;
-    if (j) {
-        PyObject *tp_dict = type->tp_dict;
-        PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-        PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
-
-        if (defaults == NULL) {
-            if (PyErr_Occurred())
-                PyErr_Clear();
-                
-            while (j--) {
-                Py_INCREF(Py_None);
-                *(items++) = Py_None;
-            }            
-        } else {
-            PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
-            Py_ssize_t n_fields = Py_SIZE(fields);
-            
-            if (n_fields != n_items) {
-                PyErr_SetString(PyExc_TypeError,
-                                "number of fields != number of data items");
-                Py_DECREF(defaults);
-                return NULL;                
-            }
-            
-            while (j) {
-                PyObject *fname = PyTuple_GetItem(fields, n_items-j);
-                PyObject *value = PyDict_GetItem(defaults, fname);
-                
-                if (!value)
-                    value = Py_None;
-
-                *(items++) = value; 
-                Py_INCREF(value);
-                j--;
-            }            
-            Py_DECREF(fields);
-            Py_DECREF(defaults);
-        }
-    }
-    
-    PyObject *tp_dict = type->tp_dict;
-
-    PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-    PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
-
-    if (defaults == NULL) {
-        if (PyErr_Occurred())
-            PyErr_Clear();
-    }
-
-    PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
-    Py_ssize_t i, n_fields = Py_SIZE(fields);
-
-    for (i=0; i<n_fields; i++) {
-        PyObject *fname = PyTuple_GetItem(fields, i);
-        PyObject *value = NULL;
-
-        if (kwds) 
-            value = PyDict_GetItem(kwds, fname);
-
-        if (!value)
-            value = PyDict_GetItem(defaults, fname);
-        else 
-            value = Py_None;
-
-        if (value) {
-            items[i] = value;
-            Py_INCREF(value);
-        }
-    }
-    return op;
-}
-
 
 static int
 dataobject_init(PyObject *ob, PyObject *args, PyObject *kwds) {
