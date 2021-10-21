@@ -373,12 +373,11 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
         if fn in defaults:
             fn_txt += "=%r" % defaults[fn]
         fields2.append(fn_txt)
-    fields2 = tuple(fields2)
+    joined_fields2 = ', '.join(fields2)
 
     if use_dict:
-        template = """{0}({1}, **kw)\n--\nCreate class {0} instance"""
+        doc = f"""{typename}({joined_fields2}, **kw)\n--\nCreate class {typename} instance"""
     else:
-        template = """{0}({1})\n--\nCreate class {0} instance"""
-    doc = template.format(typename, ', '.join(fields2))
+        doc = f"""{typename}({joined_fields2})\n--\nCreate class {typename} instance"""
 
     return doc
