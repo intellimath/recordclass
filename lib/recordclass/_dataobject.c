@@ -30,6 +30,23 @@
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
+#define py_incref(o) (((PyObject*)o)->ob_refcnt++)
+#define py_decref(o) (((PyObject*)o)->ob_refcnt--)
+
+#define py_xincref(op)                                \
+    do {                                              \
+        PyObject *_py_xincref_tmp = (PyObject *)(op); \
+        if (_py_xincref_tmp != NULL)                  \
+            py_incref(_py_xincref_tmp);               \
+    } while (0)
+
+#define py_xdecref(op)                                \
+    do {                                              \
+        PyObject *_py_xdecref_tmp = (PyObject *)(op); \
+        if (_py_xdecref_tmp != NULL)                  \
+            py_decref(_py_xdecref_tmp);               \
+    } while (0)
+
 static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataSlotGetSet_Type;
@@ -161,7 +178,7 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 
     Py_TYPE(op) = type;
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_INCREF(type);
+        py_incref(type);
 
     _Py_NewReference(op);
 
@@ -181,7 +198,7 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 
     Py_TYPE(op) = type;
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_INCREF(type);
+        py_incref(type);
 
     _Py_NewReference(op);
 
@@ -208,7 +225,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
                         "number of the arguments greater than the number of the items");
-        Py_DECREF(tmp);
+        // Py_DECREF(tmp);
         return NULL;
     }
 
@@ -217,16 +234,16 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyObject **items = PyDataObject_ITEMS(op);
 
     PyObject **pp = tmp->ob_item;
-    Py_ssize_t i;
 
+    Py_ssize_t i;
     for(i=0; i<n_args; i++) {
-        PyObject *v = *(pp++);
-        Py_INCREF(v);
-        *(items++) = v;
+        PyObject *v;
+        *(items++) = v = *(pp++);
+        py_incref(v);
     }
-    
+
     // Py_DECREF(tmp);
-    
+
     Py_ssize_t j = n_items - n_args;
     if (j) {
         PyObject *tp_dict = type->tp_dict;
@@ -238,7 +255,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 PyErr_Clear();
                 
             while (j--) {
-                Py_INCREF(Py_None);
+                py_incref(Py_None);
                 *(items++) = Py_None;
             }            
         } else {
@@ -260,21 +277,23 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                     value = Py_None;
 
                 *(items++) = value; 
-                Py_INCREF(value);
+                py_incref(value);
                 j--;
             }            
-            Py_DECREF(fields);
-            Py_DECREF(defaults);
+            py_decref(fields);
+            py_decref(defaults);
         }
     }
     
     if (kwds != NULL) {
-        Py_INCREF(kwds);
-        if (_dataobject_update(op, kwds) < 0) {
-            Py_DECREF(kwds);
+        int retval;
+
+        py_incref(kwds);
+        retval = _dataobject_update(op, kwds);
+        py_decref(kwds);
+
+        if (retval < 0)
             return NULL;
-        }
-        Py_DECREF(kwds);
     }
 
     return op;
@@ -441,7 +460,7 @@ dataobject_xdecref(PyObject *op)
         if (*dictptr) {
             PyObject *dict = *dictptr;
             if (dict != NULL) {
-                Py_DECREF(dict);
+                py_decref(dict);
                 *dictptr = NULL;
             }
         }
@@ -452,7 +471,7 @@ dataobject_xdecref(PyObject *op)
 
     while (n_items--) {
         PyObject *ob = *(items++);
-        Py_XDECREF(ob);
+        py_xdecref(ob);
     }
     return 0;
 }
@@ -470,7 +489,7 @@ dataobject_dealloc(PyObject *op)
     dataobject_xdecref(op);
     
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_DECREF(type);
+        py_decref(type);
 
     type->tp_free((PyObject *)op);
 }
@@ -496,7 +515,8 @@ dataobject_dealloc_gc(PyObject *op)
     dataobject_xdecref(op);
 
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_DECREF(type);
+        py_decref(type);
+
     type->tp_free((PyObject *)op);
 
 // #if PY_VERSION_HEX < 0x03080000
@@ -518,7 +538,7 @@ dataobject_finalize_step(PyObject *op, PyObject *stack)
         if (o->ob_refcnt == 1 && Py_METATYPE(o) == datatype) {
             PyList_Append(stack, o);
         } else
-            Py_DECREF(o);
+            py_decref(o);
 
         *(items++) = NULL;
     }
@@ -541,7 +561,7 @@ dataobject_finalize(PyObject *ob) {
         if (op->ob_refcnt == 1)
             dataobject_finalize_step(op, stack);
 
-        Py_DECREF(op);
+        py_decref(op);
 
         {   Py_ssize_t j;
             PyList_SET_ITEM(stack, 0, NULL);
@@ -684,7 +704,8 @@ dataobject_sq_item(PyObject *op, Py_ssize_t i)
         PyErr_SetString(PyExc_IndexError, "item has no value");
         return NULL;
     }
-    Py_INCREF(v);
+
+    py_incref(v);
     return v;
 }
 
@@ -701,11 +722,12 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     }
 
     PyObject **items = PyDataObject_ITEMS(op) + i;
-    PyObject *v = *items;
-    *items = val;
 
-    Py_XINCREF(val);
-    Py_XDECREF(v);
+    py_xdecref(*items);
+    
+    *items = val;
+    py_incref(val);
+
     return 0;
 }
 
@@ -728,7 +750,7 @@ dataobject_mp_subscript_only(PyObject* op, PyObject* name)
 #endif
 
     PyObject *v = PyDataObject_GET_ITEM(op, i);
-    Py_INCREF(v);
+    py_incref(v);
     return v;
 }
 
@@ -754,35 +776,41 @@ dataobject_mp_ass_subscript_only(PyObject* op, PyObject* name, PyObject *val)
     PyObject *v = *items;
     *items = val;
 
-    Py_INCREF(val);
-    Py_XDECREF(v);
+    py_incref(val);
+    py_xdecref(v);
     return 0;
 }
 
 static PyObject*
 dataobject_mp_subscript(PyObject* op, PyObject* item)
 {
-    if (PyLong_Check(item)) {
-        type_error("object %s do not support access by index", op);
-        return NULL;
-    } else
-        return Py_TYPE(op)->tp_getattro(op, item);
+    PyObject *ret = Py_TYPE(op)->tp_getattro(op, item);
+    if (ret == NULL) {
+        if (_PyIndex_Check(item)) {
+            type_error("object %s do not support access by index", op);
+        }
+        return NULL;    
+    }
+    return ret;
 }
 
 static int
 dataobject_mp_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
 {
-    if (PyLong_Check(item)) {
-        type_error("object %s do not support assignment by index", op);
+    int retval = Py_TYPE(op)->tp_setattro(op, item, val);
+    if (retval < 0) {
+        if (_PyIndex_Check(item)) {
+            type_error("object %s do not support assignment by index", op);
+        } 
         return -1;
-    } else
-        return Py_TYPE(op)->tp_setattro(op, item, val);
+    }
+    return retval;
 }
 
 static int
 dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
 {
-    if (PyLong_Check(item)) {
+    if (_PyIndex_Check(item)) {
         Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return -1;
@@ -794,7 +822,7 @@ dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
 static PyObject*
 dataobject_mp_subscript2(PyObject* op, PyObject* item)
 {
-    if (PyLong_Check(item)) {
+    if (_PyIndex_Check(item)) {
         Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return NULL;
@@ -806,7 +834,7 @@ dataobject_mp_subscript2(PyObject* op, PyObject* item)
 static int
 dataobject_mp_ass_subscript_sq(PyObject* op, PyObject* item, PyObject *val)
 {
-    if (PyLong_Check(item)) {
+    if (_PyIndex_Check(item)) {
         Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return -1;
@@ -820,7 +848,7 @@ dataobject_mp_ass_subscript_sq(PyObject* op, PyObject* item, PyObject *val)
 static PyObject*
 dataobject_mp_subscript_sq(PyObject* op, PyObject* item)
 {
-    if (PyLong_Check(item)) {
+    if (_PyIndex_Check(item)) {
         Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return NULL;
@@ -1858,7 +1886,7 @@ static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject 
         return NULL;
     }
 
-    Py_INCREF(v);
+    py_incref(v);
     return v;
 }
 
@@ -1879,10 +1907,9 @@ static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value
 
     PyObject *v = PyDataObject_GET_ITEM(obj, ((dataobjectproperty_object *)self)->index);
 
-    Py_XDECREF(v);
+    py_xdecref(v);
     
-    if (value != NULL)
-        Py_INCREF(value);
+    py_incref(value);
     PyDataObject_SET_ITEM(obj, ((dataobjectproperty_object *)self)->index, value);
 
     return 0;
