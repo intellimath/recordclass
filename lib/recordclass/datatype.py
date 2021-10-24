@@ -325,24 +325,22 @@ def _make_new_function(typename, fields, defaults, annotations, use_dict):
                   ["%s=%r" % (fn,defaults[fn]) for fn in fields if fn in defaults]
     else:
         fields2 = fields
-    fields2 = tuple(fields2)
+
+    joined_fields = ', '.join(fields)
+    joined_fields2 = ', '.join(fields2)
 
     if use_dict:
-        new_func_template = \
-"""
-def __new__(_cls_, {2}, **kw):
-    "Create new instance: {0}({2}, **kw)"
-    return _method_new(_cls_, {1}, **kw)
+        new_func_def = f"""
+def __new__(_cls_, {joined_fields2}, **kw):
+    "Create new instance: {typename}({joined_fields2}, **kw)"
+    return _method_new(_cls_, {joined_fields}, **kw)
 """
     else:
-        new_func_template = \
+        new_func_def = f"""
+def __new__(_cls_, {joined_fields2}):
+    "Create new instance: {typename}({joined_fields2})"
+    return _method_new(_cls_, {joined_fields})
 """
-def __new__(_cls_, {2}):
-    "Create new instance: {0}({2})"
-    return _method_new(_cls_, {1})
-"""
-    new_func_def = new_func_template.format(typename, ', '.join(fields), ', '.join(fields2))
-
     _method_new = dataobject.__new__
 
     namespace = dict(_method_new=_method_new)
@@ -375,12 +373,11 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
         if fn in defaults:
             fn_txt += "=%r" % defaults[fn]
         fields2.append(fn_txt)
-    fields2 = tuple(fields2)
+    joined_fields2 = ', '.join(fields2)
 
     if use_dict:
-        template = """{0}({1}, **kw)\n--\nCreate class {0} instance"""
+        doc = f"""{typename}({joined_fields2}, **kw)\n--\nCreate class {typename} instance"""
     else:
-        template = """{0}({1})\n--\nCreate class {0} instance"""
-    doc = template.format(typename, ', '.join(fields2))
+        doc = f"""{typename}({joined_fields2})\n--\nCreate class {typename} instance"""
 
     return doc
