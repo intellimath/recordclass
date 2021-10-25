@@ -47,7 +47,7 @@ results = {'id':[], 'size':[], 'new':[],
            'getattr':[], 'setattr':[], 
            'getitem':[], 'setitem':[],
            'getkey':[], 'setkey':[],
-           'iterate':[],
+           'iterate':[], 'copy':[],
           }
 
 results['id'].extend(
@@ -90,6 +90,44 @@ def test_new():
         res = "%.2f" % res
         results['new'].append(res)
 
+def test_copy():
+    print("copy")
+    def test(cls):
+        ob = cls(0,0,0)
+        for i in range(N):
+            ob1 = ob.__copy__()
+
+    def test2(cls):
+        ob = cls(0,0,0)
+        for i in range(N):
+            ob1 = ob[:]
+            
+    def test_tuple():
+        ob = (0,0,0)
+        for i in range(N):
+            ob1 = ob[:]
+            
+    def test_dict():
+        ob = {'x':0,'y':0,'z':0}
+        for i in range(N):
+            ob1 = ob.copy()
+    
+    for cls in classes:
+        gc.collect()
+        if cls is dict:
+            res = timeit("test_dict()", number=numbers, globals={'test':test, 'test_dict':test_dict})
+        elif cls is tuple:
+            res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
+        elif cls is PointNT:
+            res = timeit("test2(cls)", number=numbers, globals={'cls':cls, 'test2':test2})
+        elif cls is PointSlots:
+            res = ''
+        else:
+            res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
+        if res != '':
+            res = "%.2f" % res
+        results['copy'].append(res)
+        
 def test_getattr():
     print("getattr")
     def test(cls):
@@ -276,6 +314,7 @@ test_setitem()
 test_getkey()
 test_setkey()
 test_iterate()
+test_copy()
 
 results['size'].extend([
   sys.getsizeof(litetuple(0,0,0)),   

@@ -1004,39 +1004,16 @@ static PyObject *
 dataobject_copy(PyObject* op)
 {
     PyTypeObject *type = Py_TYPE(op);
-    PyObject *new_op = type->tp_alloc(type, 0);
-
-    Py_ssize_t i, n = PyDataObject_LEN(op);
-
-    for(i=0; i<n; i++) {
-        PyObject *v = PyDataObject_GET_ITEM(op, i);
-        if (!v) {
-            Py_DECREF(new_op);
-            return NULL;
-        }
-        PyDataObject_SET_ITEM(new_op, i, v);
-        Py_INCREF(v);
-    }
-
+    PyObject * const* items = (PyObject * const*)PyDataObject_ITEMS(op);
+    Py_ssize_t n = PyDataObject_LEN(op);
+    PyObject* dict = NULL;
+    
     if (type->tp_dictoffset) {
-        PyObject **dictptr = PyObject_GetDictPtr(op);
-        PyObject *dict = *dictptr;
-
-        PyObject **new_dictptr = PyObject_GetDictPtr(new_op);
-
-        if (dict) {
-            PyObject *new_dict = PyDict_Copy(dict);
-            if (!new_dict) {
-                PyErr_SetString(PyExc_TypeError, "it is failed to make copy of the dict");
-                return NULL;
-            }
-            *new_dictptr = new_dict;
-        } else {
-            *new_dictptr = NULL;
-        }
+        PyObject **dictptr = PyDataObject_DICTPTR(type, op);
+        dict = *dictptr;
     }
-
-    return new_op;
+    
+    return dataobject_new_vc(type, items, n, dict);
 }
 
 // static PyObject *
@@ -2554,42 +2531,24 @@ dataobject_make(PyObject *module, PyObject *type_args, PyObject *kw)
     return ret;
 }
 
-// PyDoc_STRVAR(dataobject_new_doc,
-// "Create a new dataobject-based object");
+PyDoc_STRVAR(dataobject_new_doc,
+"Create a new dataobject-based object");
 
-// static PyObject *
-// dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
-// {
-//     PyObject *args;
+static PyObject *
+dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
+{
+    PyTupleObject *tmp = (PyTupleObject *)type_args;
     
-//     const Py_ssize_t n = Py_SIZE(type_args);
-//     if (n >= 1) {
-//         Py_ssize_t i;
-//         PyObject **ss, **tt;
-
-//         args = PyTuple_New(n-1);
-//         tt = ((PyTupleObject*)args)->ob_item;
-//         ss = ((PyTupleObject*)type_args)->ob_item + 1;
-//         for (i=1; i < n; i++) {
-//             PyObject *v = *(ss++);
-//             Py_INCREF(v);
-//             *(tt++) = v;
-//         }
-//     } else {
-//         PyErr_SetString(PyExc_TypeError, "nargs < 1");
-//         return NULL;
-//     }
+    const Py_ssize_t n = Py_SIZE(tmp);
+    if (n < 1) {
+        PyErr_SetString(PyExc_TypeError, "nargs < 1");
+        return NULL;
+    }
         
-//     PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
-// //     Py_INCREF(type);
+    PyObject *ret =  dataobject_new_vc((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], Py_SIZE(tmp)-1, kw);
     
-//     PyObject *ret =  dataobject_new(type, args, kw);
-    
-//     Py_DECREF(args);
-// //     Py_DECREF(type);
-    
-//     return ret;
-// }
+    return ret;
+}
 
 PyDoc_STRVAR(dataobject_clone_doc,
 "Clone dataobject-based object");
@@ -2733,7 +2692,7 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 static PyMethodDef dataobjectmodule_methods[] = {
     {"asdict", asdict, METH_VARARGS, asdict_doc},
     {"astuple", astuple, METH_VARARGS, astuple_doc},
-//     {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
+    {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
 // #ifdef PYPY_VERSION
     {"_hash_func", (PyCFunction)_hash_func, METH_VARARGS, hash_func_doc},
