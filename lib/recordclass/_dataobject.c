@@ -107,7 +107,7 @@ PyDataObject_GetDict(PyObject *obj)
             return NULL;
         }
     }
-    Py_INCREF(dict);
+    py_incref(dict);
     return dict;
 }
 
@@ -146,7 +146,7 @@ pyobject_get_builtin(const char *attrname_c)
         return NULL;
     mod = PyImport_Import(modname);
     if (mod == NULL) {
-        Py_DECREF(modname);    
+        Py_DECREF(modname);
         return NULL;
     }
     ob = PyObject_GetAttrString(mod, attrname_c);
@@ -154,7 +154,7 @@ pyobject_get_builtin(const char *attrname_c)
         Py_DECREF(mod);
         return NULL;
     }
-    Py_DECREF(modname);    
+    Py_DECREF(modname);
     Py_DECREF(mod);
     return ob;
 }
@@ -208,43 +208,28 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 }
 
 static PyObject*
-dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_args, PyObject *kwds)
 {
-    if (type == &PyDataObject_Type) {
-        PyErr_SetString(PyExc_TypeError,
-                        "dataobject base class can't be instantiated");
-        return NULL;        
-    }
-
-    PyTupleObject *tmp = (PyTupleObject*)args;
-    // Py_INCREF(tmp);
-
-    const Py_ssize_t n_args = Py_SIZE(tmp);
-    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
+    Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
                         "number of the arguments greater than the number of the items");
-        // Py_DECREF(tmp);
         return NULL;
     }
 
     PyObject *op = type->tp_alloc(type, 0);
 
-    PyObject **items = PyDataObject_ITEMS(op);
-    PyObject **pp = tmp->ob_item;
+    const PyObject **items = (const PyObject**)PyDataObject_ITEMS(op);
 
     Py_ssize_t i;
     for(i=0; i<n_args; i++) {
-        PyObject *v;
-        *(items++) = v = *(pp++);
+        PyObject *v = args[i];
+        items[i] = v;
         py_incref(v);
     }
 
-    // Py_DECREF(tmp);
-
-    Py_ssize_t j = n_items - n_args;
-    if (j) {
+    if (n_items > n_args) {
         PyObject *tp_dict = type->tp_dict;
         PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
         PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
@@ -252,10 +237,10 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         if (defaults == NULL) {
             if (PyErr_Occurred())
                 PyErr_Clear();
-                
-            while (j--) {
+            
+            for (; i < n_items; i++) {
                 py_incref(Py_None);
-                *(items++) = Py_None;
+                items[i] = Py_None;
             }            
         } else {
             PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
@@ -268,16 +253,15 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 return NULL;                
             }
             
-            while (j) {
-                PyObject *fname = PyTuple_GetItem(fields, n_items-j);
+            for(; i<n_items; i++) {
+                PyObject *fname = PyTuple_GetItem(fields, i);
                 PyObject *value = PyDict_GetItem(defaults, fname);
                 
                 if (!value)
                     value = Py_None;
 
-                *(items++) = value; 
+                items[i] = value; 
                 py_incref(value);
-                j--;
             }            
             py_decref(fields);
             py_decref(defaults);
@@ -296,6 +280,20 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     }
 
     return op;
+}
+
+static PyObject*
+dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    if (type == &PyDataObject_Type) {
+        PyErr_SetString(PyExc_TypeError,
+                        "dataobject base class can't be instantiated");
+        return NULL;        
+    }
+
+    PyTupleObject *tmp = (PyTupleObject*)args;
+    
+    return dataobject_new_vc(type, (PyObject * const*)tmp->ob_item, Py_SIZE(tmp), kwds);
 }
 
 static int
