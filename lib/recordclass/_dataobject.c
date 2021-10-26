@@ -1284,16 +1284,6 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
     Py_RETURN_NONE;
 }
 
-// #define GETITEM_ID  0
-// #define SETITEM_ID  1
-// #define COPY_ID     2
-// #define LEN_ID      3
-// #define SIZEOF_ID   4
-// #define REDUCE_ID   5
-// #define GETSTATE_ID 6
-// #define SETSTATE_ID 7
-// #define HASH_ID     8
-
 static PyMethodDef dataobject_methods[] = {
     {"__getitem__",  (PyCFunction)(void(*)(void))dataobject_subscript, METH_O|METH_COEXIST, dataobject_subscript_doc},
     {"__setitem__",  (PyCFunction)dataobject_ass_subscript, METH_VARARGS|METH_COEXIST, dataobject_ass_subscript_doc},
@@ -1355,12 +1345,9 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_str */
 #ifdef PYPY_VERSION
     dataobject_getattr,                                      /* tp_setattro */
-#else
-    0,                                      /* tp_getattro */
-#endif
-#ifdef PYPY_VERSION
     dataobject_setattr,                                      /* tp_setattro */
 #else
+    0,                                      /* tp_getattro */
     0,                                      /* tp_setattro */
 #endif
     0,                                      /* tp_as_buffer */

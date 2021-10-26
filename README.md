@@ -114,20 +114,20 @@ As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4
 
 Here is the table with performance counters (python 3.9, debian linux, x86-64), which was measured using `utils/perfcount.py` script:
 
-|    | id                      |   size |   new | getattr   | setattr   | getitem   | setitem   | getkey   | setkey   | iterate   |
-|---:|:------------------------|-------:|------:|:----------|:----------|:----------|:----------|:---------|:---------|:----------|
-|  0 | litetuple               |     40 |  0.7  |           |           | 0.51      |           |          |          | 0.97      |
-|  1 | mutabletuple            |     40 |  0.72 |           |           | 0.51      | 0.53      |          |          | 0.99      |
-|  2 | tuple                   |     56 |  0.44 |           |           | 0.45      |           |          |          | 0.95      |
-|  3 | namedtuple              |     56 |  2.11 | 0.48      |           | 0.45      |           |          |          | 0.93      |
-|  4 | class+slots             |     48 |  1.62 | 0.50      | 0.56      |           |           |          |          |           |
-|  5 | dataobject              |     32 |  1.82 | 0.46      | 0.54      | 0.45      | 0.47      |          |          | 0.91      |
-|  6 | dataobject+fast_new     |     32 |  0.73 | 0.46      | 0.53      | 0.45      | 0.47      |          |          | 0.89      |
-|  7 | dataobject+gc           |     48 |  1.89 | 0.47      | 0.55      | 0.46      | 0.47      |          |          | 0.92      |
-|  8 | dataobject+fast_new+gc  |     48 |  0.79 | 0.48      | 0.54      | 0.46      | 0.48      |          |          | 0.91      |
-|  9 | dict                    |    232 |  0.79 |           |           |           |           | 0.51     | 0.62     | 1.04      |
-| 10 | dataobject+fast_new+map |     32 |  0.72 |           |           |           |           | 0.53     | 0.58     | 0.90      |
-| 11 | dictclass               |     32 |  0.72 |           |           |           |           | 0.78     | 0.81     | 0.91      |
+|    | id                      |   size |   new | getattr   | setattr   | getitem   | setitem   | getkey   | setkey   | iterate   | copy   |
+|---:|:------------------------|-------:|------:|:----------|:----------|:----------|:----------|:---------|:---------|:----------|:-------|
+|  0 | litetuple               |     48 |  0.73 |           |           | 0.65      |           |          |          | 1.10      | 0.55   |
+|  1 | mutabletuple            |     48 |  0.71 |           |           | 0.64      | 0.72      |          |          | 1.10      | 0.56   |
+|  2 | tuple                   |     64 |  0.45 |           |           | 0.57      |           |          |          | 1.07      | 0.50   |
+|  3 | namedtuple              |     64 |  2.31 | 0.65      |           | 0.57      |           |          |          | 1.07      | 0.63   |
+|  4 | class+slots             |     56 |  1.96 | 0.70      | 0.92      |           |           |          |          |           |        |
+|  5 | dataobject              |     40 |  1.9  | 0.62      | 0.76      | 0.59      | 0.69      |          |          | 1.07      | 0.61   |
+|  6 | dataobject+fast_new     |     40 |  0.84 | 0.63      | 0.76      | 0.59      | 0.68      |          |          | 1.07      | 0.61   |
+|  7 | dataobject+gc           |     56 |  1.87 | 0.62      | 0.76      | 0.58      | 0.68      |          |          | 1.07      | 0.68   |
+|  8 | dataobject+fast_new+gc  |     56 |  0.89 | 0.62      | 0.76      | 0.58      | 0.68      |          |          | 1.07      | 0.69   |
+|  9 | dict                    |    232 |  0.93 |           |           |           |           | 0.63     | 0.81     | 1.19      | 0.70   |
+| 10 | dataobject+fast_new+map |     40 |  0.83 |           |           |           |           | 0.95     | 0.96     | 1.07      | 0.60   |
+| 11 | dictclass               |     40 |  0.82 |           |           |           |           | 1.23     | 1.24     | 1.07      | 0.60   |
 
 Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
@@ -400,6 +400,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 * Now recordclass library may be compiled for pypy3, but there is still no complete runtime compatibility with pypy3.
 * Slighly imporove performance of `litetuple` / `mutabletuple`.
+* Slighly imporove performance of `dataobject`-based subclasses.
 * Add adapter `as_dataclass`. For example:
 
       @as_dataclass()
