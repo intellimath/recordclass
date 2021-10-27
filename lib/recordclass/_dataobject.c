@@ -30,8 +30,8 @@
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
-#define py_incref(o) (((PyObject*)o)->ob_refcnt++)
-#define py_decref(o) (((PyObject*)o)->ob_refcnt--)
+#define py_incref(o) ((PyObject*)(o))->ob_refcnt++
+#define py_decref(o) if (--(((PyObject*)(o))->ob_refcnt) == 0) Py_TYPE((PyObject*)(o))->tp_dealloc((PyObject*)(o))
 
 #define py_xincref(op)                                \
     do {                                              \
