@@ -57,7 +57,7 @@ PyObject *__dict__name;
 PyObject *__weakref__name;
 PyObject *__defaults__name;
 
-Py_ssize_t fields_dict_hash;
+// Py_ssize_t fields_dict_hash;
 PyObject *fields_dict_name;
 
 // Py_ssize_t defaults_hash;
