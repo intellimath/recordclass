@@ -51,15 +51,15 @@ static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataSlotGetSet_Type;
 
-// Py_ssize_t fields_hash;
 PyObject *__fields__name;
 PyObject *__dict__name;
 PyObject *__weakref__name;
 PyObject *__defaults__name;
 
-// Py_ssize_t fields_dict_hash;
 PyObject *fields_dict_name;
 
+// Py_ssize_t fields_hash;
+// Py_ssize_t fields_dict_hash;
 // Py_ssize_t defaults_hash;
 
 static inline PyObject *
@@ -690,7 +690,8 @@ dataobject_mp_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
 static int
 dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
 {
-    if (_PyIndex_Check(item)) {
+    PyNumberMethods *tp_as_number = Py_TYPE(item)->tp_as_number;
+    if (tp_as_number != NULL && tp_as_number->nb_index != NULL) {
         Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return -1;
@@ -702,7 +703,8 @@ dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
 static PyObject*
 dataobject_mp_subscript2(PyObject* op, PyObject* item)
 {
-    if (_PyIndex_Check(item)) {
+    PyNumberMethods *tp_as_number = Py_TYPE(item)->tp_as_number;
+    if (tp_as_number != NULL && tp_as_number->nb_index != NULL) {
         Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return NULL;
@@ -714,7 +716,8 @@ dataobject_mp_subscript2(PyObject* op, PyObject* item)
 static int
 dataobject_mp_ass_subscript_sq(PyObject* op, PyObject* item, PyObject *val)
 {
-    if (_PyIndex_Check(item)) {
+    PyNumberMethods *tp_as_number = Py_TYPE(item)->tp_as_number;
+    if (tp_as_number != NULL && tp_as_number->nb_index != NULL) {
         Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return -1;
@@ -728,7 +731,8 @@ dataobject_mp_ass_subscript_sq(PyObject* op, PyObject* item, PyObject *val)
 static PyObject*
 dataobject_mp_subscript_sq(PyObject* op, PyObject* item)
 {
-    if (_PyIndex_Check(item)) {
+    PyNumberMethods *tp_as_number = Py_TYPE(item)->tp_as_number;
+    if (tp_as_number != NULL && tp_as_number->nb_index != NULL) {
         Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return NULL;
