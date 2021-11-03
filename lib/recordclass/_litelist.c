@@ -834,7 +834,7 @@ static const char *__pyx_f[] = {
 struct PyLiteListObject;
 struct __pyx_obj_11recordclass_9_litelist_litelistiter;
 
-/* "recordclass/_litelist.pyx":67
+/* "recordclass/_litelist.pyx":86
  * 
  * @cython.no_gc
  * cdef public class litelist[object PyLiteListObject, type PyLiteListType]:             # <<<<<<<<<<<<<<
@@ -851,7 +851,7 @@ struct PyLiteListObject {
 
 __PYX_EXTERN_C DL_EXPORT(PyTypeObject) PyLiteListType;
 
-/* "recordclass/_litelist.pyx":273
+/* "recordclass/_litelist.pyx":309
  *         return litelistiter(self)
  * 
  * cdef class litelistiter:             # <<<<<<<<<<<<<<
@@ -867,7 +867,7 @@ struct __pyx_obj_11recordclass_9_litelist_litelistiter {
 
 __PYX_EXTERN_C DL_EXPORT(PyTypeObject) PyLiteListType;
 
-/* "recordclass/_litelist.pyx":67
+/* "recordclass/_litelist.pyx":86
  * 
  * @cython.no_gc
  * cdef public class litelist[object PyLiteListObject, type PyLiteListType]:             # <<<<<<<<<<<<<<
@@ -957,6 +957,9 @@ static PyObject *__Pyx_GetBuiltinName(PyObject *name);
 
 /* None.proto */
 static CYTHON_INLINE Py_ssize_t __Pyx_div_Py_ssize_t(Py_ssize_t, Py_ssize_t);
+
+/* KeywordStringCheck.proto */
+static int __Pyx_CheckKeywordStrings(PyObject *kwdict, const char* function_name, int kw_allowed);
 
 /* RaiseDoubleKeywords.proto */
 static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
@@ -1310,7 +1313,10 @@ static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_IndexError;
 static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_StopIteration;
+static const char __pyx_k_i[] = "i";
+static const char __pyx_k_p[] = "p";
 static const char __pyx_k_s[] = "%s";
+static const char __pyx_k_v[] = "v";
 static const char __pyx_k__5[] = ", ";
 static const char __pyx_k__6[] = "])";
 static const char __pyx_k_op[] = "op";
@@ -1319,6 +1325,7 @@ static const char __pyx_k_args[] = "args";
 static const char __pyx_k_dict[] = "__dict__";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
+static const char __pyx_k_size[] = "size";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_class[] = "__class__";
 static const char __pyx_k_range[] = "range";
@@ -1340,11 +1347,13 @@ static const char __pyx_k_pyx_result[] = "__pyx_result";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static const char __pyx_k_PickleError[] = "PickleError";
 static const char __pyx_k_litelistiter[] = "litelistiter";
+static const char __pyx_k_new_litelist[] = "new_litelist";
 static const char __pyx_k_pyx_checksum[] = "__pyx_checksum";
 static const char __pyx_k_stringsource[] = "stringsource";
 static const char __pyx_k_Invalid_slice[] = "Invalid slice";
 static const char __pyx_k_StopIteration[] = "StopIteration";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
+static const char __pyx_k_invalid_index_s[] = "invalid index: %s";
 static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
@@ -1352,6 +1361,7 @@ static const char __pyx_k_recordclass__litelist[] = "recordclass._litelist";
 static const char __pyx_k_The_slice_is_too_large[] = "The slice is too large";
 static const char __pyx_k_pyx_unpickle_litelistiter[] = "__pyx_unpickle_litelistiter";
 static const char __pyx_k_incompatible_range_of_indexes[] = "incompatible range of indexes";
+static const char __pyx_k_lib_recordclass__litelist_pyx[] = "lib/recordclass/_litelist.pyx";
 static const char __pyx_k_Incompatible_checksums_s_vs_0xbb[] = "Incompatible checksums (%s vs 0xbbd1266 = (i, op))";
 static PyObject *__pyx_kp_s_Incompatible_checksums_s_vs_0xbb;
 static PyObject *__pyx_n_s_IndexError;
@@ -1367,8 +1377,11 @@ static PyObject *__pyx_n_s_class;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_dict;
 static PyObject *__pyx_n_s_getstate;
+static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_kp_u_incompatible_range_of_indexes;
+static PyObject *__pyx_kp_u_invalid_index_s;
+static PyObject *__pyx_kp_s_lib_recordclass__litelist_pyx;
 static PyObject *__pyx_kp_u_litelist;
 static PyObject *__pyx_kp_u_litelist_2;
 static PyObject *__pyx_n_s_litelist_3;
@@ -1376,7 +1389,9 @@ static PyObject *__pyx_n_s_litelistiter;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_new;
+static PyObject *__pyx_n_s_new_litelist;
 static PyObject *__pyx_n_s_op;
+static PyObject *__pyx_n_s_p;
 static PyObject *__pyx_n_s_pickle;
 static PyObject *__pyx_n_s_pyx_PickleError;
 static PyObject *__pyx_n_s_pyx_checksum;
@@ -1393,9 +1408,12 @@ static PyObject *__pyx_n_s_reduce_ex;
 static PyObject *__pyx_kp_u_s;
 static PyObject *__pyx_n_s_setstate;
 static PyObject *__pyx_n_s_setstate_cython;
+static PyObject *__pyx_n_s_size;
 static PyObject *__pyx_kp_s_stringsource;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_update;
+static PyObject *__pyx_n_s_v;
+static PyObject *__pyx_pf_11recordclass_9_litelist_new_litelist(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_args); /* proto */
 static int __pyx_pf_11recordclass_9_litelist_8litelist___cinit__(struct PyLiteListObject *__pyx_v_self, PyObject *__pyx_v_args); /* proto */
 static void __pyx_pf_11recordclass_9_litelist_8litelist_2__dealloc__(struct PyLiteListObject *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_4__getitem__(struct PyLiteListObject *__pyx_v_self, PyObject *__pyx_v_index); /* proto */
@@ -1409,7 +1427,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
 static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_20trim(struct PyLiteListObject *__pyx_v_self); /* proto */
 static Py_ssize_t __pyx_pf_11recordclass_9_litelist_8litelist_22__len__(struct PyLiteListObject *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_24__sizeof__(struct PyLiteListObject *__pyx_v_self); /* proto */
-static int __pyx_pf_11recordclass_9_litelist_8litelist_26__nonzero__(struct PyLiteListObject *__pyx_v_self); /* proto */
+static int __pyx_pf_11recordclass_9_litelist_8litelist_26__bool__(struct PyLiteListObject *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_28__iter__(struct PyLiteListObject *__pyx_v_self); /* proto */
 static int __pyx_pf_11recordclass_9_litelist_12litelistiter___init__(struct __pyx_obj_11recordclass_9_litelist_litelistiter *__pyx_v_self, struct PyLiteListObject *__pyx_v_op); /* proto */
 static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_2__length_hint__(struct __pyx_obj_11recordclass_9_litelist_litelistiter *__pyx_v_self); /* proto */
@@ -1417,7 +1435,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_4__next__(stru
 static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_6__iter__(struct __pyx_obj_11recordclass_9_litelist_litelistiter *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_8__reduce_cython__(struct __pyx_obj_11recordclass_9_litelist_litelistiter *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_10__setstate_cython__(struct __pyx_obj_11recordclass_9_litelist_litelistiter *__pyx_v_self, PyObject *__pyx_v___pyx_state); /* proto */
-static PyObject *__pyx_pf_11recordclass_9_litelist___pyx_unpickle_litelistiter(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_11recordclass_9_litelist_2__pyx_unpickle_litelistiter(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_tp_new_11recordclass_9_litelist_litelist(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_11recordclass_9_litelist_litelistiter(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_int_196940390;
@@ -1426,11 +1444,13 @@ static PyObject *__pyx_tuple__2;
 static PyObject *__pyx_tuple__3;
 static PyObject *__pyx_tuple__4;
 static PyObject *__pyx_tuple__7;
+static PyObject *__pyx_tuple__9;
 static PyObject *__pyx_codeobj__8;
+static PyObject *__pyx_codeobj__10;
 /* Late includes */
 
-/* "recordclass/_litelist.pyx":47
- *     cdef inline Py_ssize_t Py_SIZE(PyObject*)
+/* "recordclass/_litelist.pyx":50
+ *     cdef inline PyObject* PyTuple_GET_ITEM(PyObject*, Py_ssize_t)
  * 
  * cdef inline Py_ssize_t resize(Py_ssize_t size):             # <<<<<<<<<<<<<<
  *     if size < 9:
@@ -1443,7 +1463,7 @@ static CYTHON_INLINE Py_ssize_t __pyx_f_11recordclass_9_litelist_resize(Py_ssize
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("resize", 0);
 
-  /* "recordclass/_litelist.pyx":48
+  /* "recordclass/_litelist.pyx":51
  * 
  * cdef inline Py_ssize_t resize(Py_ssize_t size):
  *     if size < 9:             # <<<<<<<<<<<<<<
@@ -1453,7 +1473,7 @@ static CYTHON_INLINE Py_ssize_t __pyx_f_11recordclass_9_litelist_resize(Py_ssize
   __pyx_t_1 = ((__pyx_v_size < 9) != 0);
   if (__pyx_t_1) {
 
-    /* "recordclass/_litelist.pyx":49
+    /* "recordclass/_litelist.pyx":52
  * cdef inline Py_ssize_t resize(Py_ssize_t size):
  *     if size < 9:
  *         return size + (size // 8) + 3             # <<<<<<<<<<<<<<
@@ -1463,7 +1483,7 @@ static CYTHON_INLINE Py_ssize_t __pyx_f_11recordclass_9_litelist_resize(Py_ssize
     __pyx_r = ((__pyx_v_size + __Pyx_div_Py_ssize_t(__pyx_v_size, 8)) + 3);
     goto __pyx_L0;
 
-    /* "recordclass/_litelist.pyx":48
+    /* "recordclass/_litelist.pyx":51
  * 
  * cdef inline Py_ssize_t resize(Py_ssize_t size):
  *     if size < 9:             # <<<<<<<<<<<<<<
@@ -1472,7 +1492,7 @@ static CYTHON_INLINE Py_ssize_t __pyx_f_11recordclass_9_litelist_resize(Py_ssize
  */
   }
 
-  /* "recordclass/_litelist.pyx":51
+  /* "recordclass/_litelist.pyx":54
  *         return size + (size // 8) + 3
  *     else:
  *         return size + (size // 8) + 6             # <<<<<<<<<<<<<<
@@ -1484,8 +1504,8 @@ static CYTHON_INLINE Py_ssize_t __pyx_f_11recordclass_9_litelist_resize(Py_ssize
     goto __pyx_L0;
   }
 
-  /* "recordclass/_litelist.pyx":47
- *     cdef inline Py_ssize_t Py_SIZE(PyObject*)
+  /* "recordclass/_litelist.pyx":50
+ *     cdef inline PyObject* PyTuple_GET_ITEM(PyObject*, Py_ssize_t)
  * 
  * cdef inline Py_ssize_t resize(Py_ssize_t size):             # <<<<<<<<<<<<<<
  *     if size < 9:
@@ -1498,11 +1518,11 @@ static CYTHON_INLINE Py_ssize_t __pyx_f_11recordclass_9_litelist_resize(Py_ssize
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":53
+/* "recordclass/_litelist.pyx":56
  *         return size + (size // 8) + 6
  * 
  * cdef litelist make_empty(Py_ssize_t size):             # <<<<<<<<<<<<<<
- *     cdef litelist op = litelist.__new__(litelist, ())
+ *     cdef litelist op = <litelist>litelist.__new__(litelist, None)
  *     cdef Py_ssize_t i
  */
 
@@ -1513,39 +1533,43 @@ static struct PyLiteListObject *__pyx_f_11recordclass_9_litelist_make_empty(Py_s
   struct PyLiteListObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject **__pyx_t_2;
-  Py_ssize_t __pyx_t_3;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject **__pyx_t_3;
   Py_ssize_t __pyx_t_4;
   Py_ssize_t __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("make_empty", 0);
 
-  /* "recordclass/_litelist.pyx":54
+  /* "recordclass/_litelist.pyx":57
  * 
  * cdef litelist make_empty(Py_ssize_t size):
- *     cdef litelist op = litelist.__new__(litelist, ())             # <<<<<<<<<<<<<<
+ *     cdef litelist op = <litelist>litelist.__new__(litelist, None)             # <<<<<<<<<<<<<<
  *     cdef Py_ssize_t i
  *     cdef PyObject **p;
  */
-  __pyx_t_1 = ((PyObject *)__pyx_tp_new_11recordclass_9_litelist_litelist(((PyTypeObject *)__pyx_ptype_11recordclass_9_litelist_litelist), __pyx_tuple_, NULL)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 54, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_tp_new_11recordclass_9_litelist_litelist(((PyTypeObject *)__pyx_ptype_11recordclass_9_litelist_litelist), __pyx_tuple_, NULL)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
   __Pyx_GOTREF(((PyObject *)__pyx_t_1));
-  __pyx_v_op = ((struct PyLiteListObject *)__pyx_t_1);
-  __pyx_t_1 = 0;
+  __pyx_t_2 = ((PyObject *)__pyx_t_1);
+  __Pyx_INCREF(__pyx_t_2);
+  __Pyx_DECREF(((PyObject *)__pyx_t_1)); __pyx_t_1 = 0;
+  __pyx_v_op = ((struct PyLiteListObject *)__pyx_t_2);
+  __pyx_t_2 = 0;
 
-  /* "recordclass/_litelist.pyx":58
+  /* "recordclass/_litelist.pyx":61
  *     cdef PyObject **p;
  * 
- *     op.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))             # <<<<<<<<<<<<<<
+ *     op.items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))             # <<<<<<<<<<<<<<
  *     op.size = op.allocated = size
  *     p = op.items
  */
-  __pyx_v_op->items = ((PyObject **)PyObject_Malloc((__pyx_v_size * (sizeof(PyObject *)))));
+  __pyx_v_op->items = ((PyObject **)PyMem_Malloc((__pyx_v_size * (sizeof(PyObject *)))));
 
-  /* "recordclass/_litelist.pyx":59
+  /* "recordclass/_litelist.pyx":62
  * 
- *     op.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
+ *     op.items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
  *     op.size = op.allocated = size             # <<<<<<<<<<<<<<
  *     p = op.items
  *     for i in range(size):
@@ -1553,29 +1577,29 @@ static struct PyLiteListObject *__pyx_f_11recordclass_9_litelist_make_empty(Py_s
   __pyx_v_op->size = __pyx_v_size;
   __pyx_v_op->allocated = __pyx_v_size;
 
-  /* "recordclass/_litelist.pyx":60
- *     op.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
+  /* "recordclass/_litelist.pyx":63
+ *     op.items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
  *     op.size = op.allocated = size
  *     p = op.items             # <<<<<<<<<<<<<<
  *     for i in range(size):
  *         p[i] = NULL
  */
-  __pyx_t_2 = __pyx_v_op->items;
-  __pyx_v_p = __pyx_t_2;
+  __pyx_t_3 = __pyx_v_op->items;
+  __pyx_v_p = __pyx_t_3;
 
-  /* "recordclass/_litelist.pyx":61
+  /* "recordclass/_litelist.pyx":64
  *     op.size = op.allocated = size
  *     p = op.items
  *     for i in range(size):             # <<<<<<<<<<<<<<
  *         p[i] = NULL
  * 
  */
-  __pyx_t_3 = __pyx_v_size;
-  __pyx_t_4 = __pyx_t_3;
-  for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
-    __pyx_v_i = __pyx_t_5;
+  __pyx_t_4 = __pyx_v_size;
+  __pyx_t_5 = __pyx_t_4;
+  for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+    __pyx_v_i = __pyx_t_6;
 
-    /* "recordclass/_litelist.pyx":62
+    /* "recordclass/_litelist.pyx":65
  *     p = op.items
  *     for i in range(size):
  *         p[i] = NULL             # <<<<<<<<<<<<<<
@@ -1585,29 +1609,30 @@ static struct PyLiteListObject *__pyx_f_11recordclass_9_litelist_make_empty(Py_s
     (__pyx_v_p[__pyx_v_i]) = NULL;
   }
 
-  /* "recordclass/_litelist.pyx":64
+  /* "recordclass/_litelist.pyx":67
  *         p[i] = NULL
  * 
  *     return <litelist>op             # <<<<<<<<<<<<<<
  * 
- * @cython.no_gc
+ * def new_litelist(*args):
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
   __Pyx_INCREF(((PyObject *)((struct PyLiteListObject *)__pyx_v_op)));
   __pyx_r = __pyx_v_op;
   goto __pyx_L0;
 
-  /* "recordclass/_litelist.pyx":53
+  /* "recordclass/_litelist.pyx":56
  *         return size + (size // 8) + 6
  * 
  * cdef litelist make_empty(Py_ssize_t size):             # <<<<<<<<<<<<<<
- *     cdef litelist op = litelist.__new__(litelist, ())
+ *     cdef litelist op = <litelist>litelist.__new__(litelist, None)
  *     cdef Py_ssize_t i
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_AddTraceback("recordclass._litelist.make_empty", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
@@ -1617,10 +1642,183 @@ static struct PyLiteListObject *__pyx_f_11recordclass_9_litelist_make_empty(Py_s
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":72
+/* "recordclass/_litelist.pyx":69
+ *     return <litelist>op
+ * 
+ * def new_litelist(*args):             # <<<<<<<<<<<<<<
+ *     cdef Py_ssize_t i, size = Py_SIZE(<PyObject*>args)
+ *     cdef litelist op = <litelist>litelist.__new__(litelist, None)
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_11recordclass_9_litelist_1new_litelist(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_11recordclass_9_litelist_new_litelist[] = "new_litelist(*args)";
+static PyMethodDef __pyx_mdef_11recordclass_9_litelist_1new_litelist = {"new_litelist", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_11recordclass_9_litelist_1new_litelist, METH_VARARGS|METH_KEYWORDS, __pyx_doc_11recordclass_9_litelist_new_litelist};
+static PyObject *__pyx_pw_11recordclass_9_litelist_1new_litelist(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_args = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("new_litelist (wrapper)", 0);
+  if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "new_litelist", 0))) return NULL;
+  __Pyx_INCREF(__pyx_args);
+  __pyx_v_args = __pyx_args;
+  __pyx_r = __pyx_pf_11recordclass_9_litelist_new_litelist(__pyx_self, __pyx_v_args);
+
+  /* function exit code */
+  __Pyx_XDECREF(__pyx_v_args);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_11recordclass_9_litelist_new_litelist(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_args) {
+  Py_ssize_t __pyx_v_i;
+  Py_ssize_t __pyx_v_size;
+  struct PyLiteListObject *__pyx_v_op = 0;
+  PyObject **__pyx_v_p;
+  PyObject *__pyx_v_v;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject **__pyx_t_3;
+  Py_ssize_t __pyx_t_4;
+  Py_ssize_t __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("new_litelist", 0);
+
+  /* "recordclass/_litelist.pyx":70
+ * 
+ * def new_litelist(*args):
+ *     cdef Py_ssize_t i, size = Py_SIZE(<PyObject*>args)             # <<<<<<<<<<<<<<
+ *     cdef litelist op = <litelist>litelist.__new__(litelist, None)
+ *     cdef PyObject **p;
+ */
+  __pyx_v_size = Py_SIZE(((PyObject *)__pyx_v_args));
+
+  /* "recordclass/_litelist.pyx":71
+ * def new_litelist(*args):
+ *     cdef Py_ssize_t i, size = Py_SIZE(<PyObject*>args)
+ *     cdef litelist op = <litelist>litelist.__new__(litelist, None)             # <<<<<<<<<<<<<<
+ *     cdef PyObject **p;
+ *     cdef PyObject *v
+ */
+  __pyx_t_1 = ((PyObject *)__pyx_tp_new_11recordclass_9_litelist_litelist(((PyTypeObject *)__pyx_ptype_11recordclass_9_litelist_litelist), __pyx_tuple_, NULL)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __Pyx_GOTREF(((PyObject *)__pyx_t_1));
+  __pyx_t_2 = ((PyObject *)__pyx_t_1);
+  __Pyx_INCREF(__pyx_t_2);
+  __Pyx_DECREF(((PyObject *)__pyx_t_1)); __pyx_t_1 = 0;
+  __pyx_v_op = ((struct PyLiteListObject *)__pyx_t_2);
+  __pyx_t_2 = 0;
+
+  /* "recordclass/_litelist.pyx":75
+ *     cdef PyObject *v
+ * 
+ *     op.items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))             # <<<<<<<<<<<<<<
+ *     op.size = op.allocated = size
+ *     p = op.items
+ */
+  __pyx_v_op->items = ((PyObject **)PyMem_Malloc((__pyx_v_size * (sizeof(PyObject *)))));
+
+  /* "recordclass/_litelist.pyx":76
+ * 
+ *     op.items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
+ *     op.size = op.allocated = size             # <<<<<<<<<<<<<<
+ *     p = op.items
+ *     for i in range(size):
+ */
+  __pyx_v_op->size = __pyx_v_size;
+  __pyx_v_op->allocated = __pyx_v_size;
+
+  /* "recordclass/_litelist.pyx":77
+ *     op.items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
+ *     op.size = op.allocated = size
+ *     p = op.items             # <<<<<<<<<<<<<<
+ *     for i in range(size):
+ *         v = PyTuple_GET_ITEM(<PyObject*>args, i)
+ */
+  __pyx_t_3 = __pyx_v_op->items;
+  __pyx_v_p = __pyx_t_3;
+
+  /* "recordclass/_litelist.pyx":78
+ *     op.size = op.allocated = size
+ *     p = op.items
+ *     for i in range(size):             # <<<<<<<<<<<<<<
+ *         v = PyTuple_GET_ITEM(<PyObject*>args, i)
+ *         Py_INCREF(v)
+ */
+  __pyx_t_4 = __pyx_v_size;
+  __pyx_t_5 = __pyx_t_4;
+  for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+    __pyx_v_i = __pyx_t_6;
+
+    /* "recordclass/_litelist.pyx":79
+ *     p = op.items
+ *     for i in range(size):
+ *         v = PyTuple_GET_ITEM(<PyObject*>args, i)             # <<<<<<<<<<<<<<
+ *         Py_INCREF(v)
+ *         p[i] = v
+ */
+    __pyx_v_v = PyTuple_GET_ITEM(((PyObject *)__pyx_v_args), __pyx_v_i);
+
+    /* "recordclass/_litelist.pyx":80
+ *     for i in range(size):
+ *         v = PyTuple_GET_ITEM(<PyObject*>args, i)
+ *         Py_INCREF(v)             # <<<<<<<<<<<<<<
+ *         p[i] = v
+ * 
+ */
+    Py_INCREF(__pyx_v_v);
+
+    /* "recordclass/_litelist.pyx":81
+ *         v = PyTuple_GET_ITEM(<PyObject*>args, i)
+ *         Py_INCREF(v)
+ *         p[i] = v             # <<<<<<<<<<<<<<
+ * 
+ *     return <litelist>op
+ */
+    (__pyx_v_p[__pyx_v_i]) = __pyx_v_v;
+  }
+
+  /* "recordclass/_litelist.pyx":83
+ *         p[i] = v
+ * 
+ *     return <litelist>op             # <<<<<<<<<<<<<<
+ * 
+ * @cython.no_gc
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(((PyObject *)((struct PyLiteListObject *)__pyx_v_op)));
+  __pyx_r = ((PyObject *)__pyx_v_op);
+  goto __pyx_L0;
+
+  /* "recordclass/_litelist.pyx":69
+ *     return <litelist>op
+ * 
+ * def new_litelist(*args):             # <<<<<<<<<<<<<<
+ *     cdef Py_ssize_t i, size = Py_SIZE(<PyObject*>args)
+ *     cdef litelist op = <litelist>litelist.__new__(litelist, None)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("recordclass._litelist.new_litelist", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF((PyObject *)__pyx_v_op);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "recordclass/_litelist.pyx":91
  *     cdef PyObject **items
  * 
- *     def __cinit__(self, args):             # <<<<<<<<<<<<<<
+ *     def __cinit__(self, args=None):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i, size
  *         cdef PyObject *v
  */
@@ -1638,6 +1836,7 @@ static int __pyx_pw_11recordclass_9_litelist_8litelist_1__cinit__(PyObject *__py
   {
     static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_args,0};
     PyObject* values[1] = {0};
+    values[0] = ((PyObject *)Py_None);
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
@@ -1650,22 +1849,27 @@ static int __pyx_pw_11recordclass_9_litelist_8litelist_1__cinit__(PyObject *__py
       kw_args = PyDict_Size(__pyx_kwds);
       switch (pos_args) {
         case  0:
-        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_args)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
+        if (kw_args > 0) {
+          PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_args);
+          if (value) { values[0] = value; kw_args--; }
+        }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 72, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 91, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
-      goto __pyx_L5_argtuple_error;
     } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      switch (PyTuple_GET_SIZE(__pyx_args)) {
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
     }
     __pyx_v_args = values[0];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 72, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 91, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("recordclass._litelist.litelist.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -1682,62 +1886,74 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist___cinit__(struct PyLiteLi
   Py_ssize_t __pyx_v_i;
   Py_ssize_t __pyx_v_size;
   PyObject *__pyx_v_v;
+  PyObject **__pyx_v_items;
   PyObject *__pyx_v_tpl = NULL;
   int __pyx_r;
   __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
-  PyObject *__pyx_t_2 = NULL;
-  Py_ssize_t __pyx_t_3;
+  PyObject **__pyx_t_1;
+  int __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
   Py_ssize_t __pyx_t_4;
   Py_ssize_t __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "recordclass/_litelist.pyx":76
+  /* "recordclass/_litelist.pyx":94
+ *         cdef Py_ssize_t i, size
  *         cdef PyObject *v
+ *         cdef PyObject **items = self.items             # <<<<<<<<<<<<<<
+ * 
+ *         if args:
+ */
+  __pyx_t_1 = __pyx_v_self->items;
+  __pyx_v_items = __pyx_t_1;
+
+  /* "recordclass/_litelist.pyx":96
+ *         cdef PyObject **items = self.items
  * 
  *         if args:             # <<<<<<<<<<<<<<
  *             tpl = PySequence_Fast(args, "Invalid arguments")
  *             size = PySequence_Fast_GET_SIZE(tpl)
  */
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_args); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 76, __pyx_L1_error)
-  if (__pyx_t_1) {
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_args); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 96, __pyx_L1_error)
+  if (__pyx_t_2) {
 
-    /* "recordclass/_litelist.pyx":77
+    /* "recordclass/_litelist.pyx":97
  * 
  *         if args:
  *             tpl = PySequence_Fast(args, "Invalid arguments")             # <<<<<<<<<<<<<<
  *             size = PySequence_Fast_GET_SIZE(tpl)
- *             self.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
+ *             items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
  */
-    __pyx_t_2 = PySequence_Fast(__pyx_v_args, ((char *)"Invalid arguments")); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_v_tpl = __pyx_t_2;
-    __pyx_t_2 = 0;
+    __pyx_t_3 = PySequence_Fast(__pyx_v_args, ((char *)"Invalid arguments")); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_v_tpl = __pyx_t_3;
+    __pyx_t_3 = 0;
 
-    /* "recordclass/_litelist.pyx":78
+    /* "recordclass/_litelist.pyx":98
  *         if args:
  *             tpl = PySequence_Fast(args, "Invalid arguments")
  *             size = PySequence_Fast_GET_SIZE(tpl)             # <<<<<<<<<<<<<<
- *             self.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
+ *             items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
  *             self.size = self.allocated = size
  */
     __pyx_v_size = PySequence_Fast_GET_SIZE(__pyx_v_tpl);
 
-    /* "recordclass/_litelist.pyx":79
+    /* "recordclass/_litelist.pyx":99
  *             tpl = PySequence_Fast(args, "Invalid arguments")
  *             size = PySequence_Fast_GET_SIZE(tpl)
- *             self.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))             # <<<<<<<<<<<<<<
+ *             items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))             # <<<<<<<<<<<<<<
  *             self.size = self.allocated = size
  *             for i in range(size):
  */
-    __pyx_v_self->items = ((PyObject **)PyObject_Malloc((__pyx_v_size * (sizeof(PyObject *)))));
+    __pyx_v_items = ((PyObject **)PyMem_Malloc((__pyx_v_size * (sizeof(PyObject *)))));
 
-    /* "recordclass/_litelist.pyx":80
+    /* "recordclass/_litelist.pyx":100
  *             size = PySequence_Fast_GET_SIZE(tpl)
- *             self.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
+ *             items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
  *             self.size = self.allocated = size             # <<<<<<<<<<<<<<
  *             for i in range(size):
  *                 v = PySequence_Fast_GET_ITEM(tpl, i)
@@ -1745,48 +1961,48 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist___cinit__(struct PyLiteLi
     __pyx_v_self->size = __pyx_v_size;
     __pyx_v_self->allocated = __pyx_v_size;
 
-    /* "recordclass/_litelist.pyx":81
- *             self.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
+    /* "recordclass/_litelist.pyx":101
+ *             items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
  *             self.size = self.allocated = size
  *             for i in range(size):             # <<<<<<<<<<<<<<
  *                 v = PySequence_Fast_GET_ITEM(tpl, i)
  *                 Py_INCREF(v)
  */
-    __pyx_t_3 = __pyx_v_size;
-    __pyx_t_4 = __pyx_t_3;
-    for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
-      __pyx_v_i = __pyx_t_5;
+    __pyx_t_4 = __pyx_v_size;
+    __pyx_t_5 = __pyx_t_4;
+    for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+      __pyx_v_i = __pyx_t_6;
 
-      /* "recordclass/_litelist.pyx":82
+      /* "recordclass/_litelist.pyx":102
  *             self.size = self.allocated = size
  *             for i in range(size):
  *                 v = PySequence_Fast_GET_ITEM(tpl, i)             # <<<<<<<<<<<<<<
  *                 Py_INCREF(v)
- *                 self.items[i] = v
+ *                 items[i] = v
  */
       __pyx_v_v = PySequence_Fast_GET_ITEM(__pyx_v_tpl, __pyx_v_i);
 
-      /* "recordclass/_litelist.pyx":83
+      /* "recordclass/_litelist.pyx":103
  *             for i in range(size):
  *                 v = PySequence_Fast_GET_ITEM(tpl, i)
  *                 Py_INCREF(v)             # <<<<<<<<<<<<<<
- *                 self.items[i] = v
+ *                 items[i] = v
  *         else:
  */
       Py_INCREF(__pyx_v_v);
 
-      /* "recordclass/_litelist.pyx":84
+      /* "recordclass/_litelist.pyx":104
  *                 v = PySequence_Fast_GET_ITEM(tpl, i)
  *                 Py_INCREF(v)
- *                 self.items[i] = v             # <<<<<<<<<<<<<<
+ *                 items[i] = v             # <<<<<<<<<<<<<<
  *         else:
- *             self.items = NULL
+ *             items = NULL
  */
-      (__pyx_v_self->items[__pyx_v_i]) = __pyx_v_v;
+      (__pyx_v_items[__pyx_v_i]) = __pyx_v_v;
     }
 
-    /* "recordclass/_litelist.pyx":76
- *         cdef PyObject *v
+    /* "recordclass/_litelist.pyx":96
+ *         cdef PyObject **items = self.items
  * 
  *         if args:             # <<<<<<<<<<<<<<
  *             tpl = PySequence_Fast(args, "Invalid arguments")
@@ -1795,32 +2011,41 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist___cinit__(struct PyLiteLi
     goto __pyx_L3;
   }
 
-  /* "recordclass/_litelist.pyx":86
- *                 self.items[i] = v
+  /* "recordclass/_litelist.pyx":106
+ *                 items[i] = v
  *         else:
- *             self.items = NULL             # <<<<<<<<<<<<<<
+ *             items = NULL             # <<<<<<<<<<<<<<
  *             self.size = self.allocated = 0
- * 
+ *         self.items = items
  */
   /*else*/ {
-    __pyx_v_self->items = NULL;
+    __pyx_v_items = NULL;
 
-    /* "recordclass/_litelist.pyx":87
+    /* "recordclass/_litelist.pyx":107
  *         else:
- *             self.items = NULL
+ *             items = NULL
  *             self.size = self.allocated = 0             # <<<<<<<<<<<<<<
+ *         self.items = items
  * 
- *     def __dealloc__(self):
  */
     __pyx_v_self->size = 0;
     __pyx_v_self->allocated = 0;
   }
   __pyx_L3:;
 
-  /* "recordclass/_litelist.pyx":72
+  /* "recordclass/_litelist.pyx":108
+ *             items = NULL
+ *             self.size = self.allocated = 0
+ *         self.items = items             # <<<<<<<<<<<<<<
+ * 
+ *     def __dealloc__(self):
+ */
+  __pyx_v_self->items = __pyx_v_items;
+
+  /* "recordclass/_litelist.pyx":91
  *     cdef PyObject **items
  * 
- *     def __cinit__(self, args):             # <<<<<<<<<<<<<<
+ *     def __cinit__(self, args=None):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i, size
  *         cdef PyObject *v
  */
@@ -1829,7 +2054,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist___cinit__(struct PyLiteLi
   __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
   __Pyx_AddTraceback("recordclass._litelist.litelist.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
@@ -1838,12 +2063,12 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist___cinit__(struct PyLiteLi
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":89
- *             self.size = self.allocated = 0
+/* "recordclass/_litelist.pyx":110
+ *         self.items = items
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i, size = self.size
- *         for i in range(size):
+ *         cdef PyObject **items = self.items
  */
 
 /* Python wrapper */
@@ -1860,134 +2085,183 @@ static void __pyx_pw_11recordclass_9_litelist_8litelist_3__dealloc__(PyObject *_
 static void __pyx_pf_11recordclass_9_litelist_8litelist_2__dealloc__(struct PyLiteListObject *__pyx_v_self) {
   Py_ssize_t __pyx_v_i;
   Py_ssize_t __pyx_v_size;
+  PyObject **__pyx_v_items;
+  PyObject *__pyx_v_v;
   __Pyx_RefNannyDeclarations
   Py_ssize_t __pyx_t_1;
-  Py_ssize_t __pyx_t_2;
+  PyObject **__pyx_t_2;
   Py_ssize_t __pyx_t_3;
+  Py_ssize_t __pyx_t_4;
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "recordclass/_litelist.pyx":90
+  /* "recordclass/_litelist.pyx":111
  * 
  *     def __dealloc__(self):
  *         cdef Py_ssize_t i, size = self.size             # <<<<<<<<<<<<<<
- *         for i in range(size):
- *             Py_XDECREF(self.items[i])
+ *         cdef PyObject **items = self.items
+ * 
  */
   __pyx_t_1 = __pyx_v_self->size;
   __pyx_v_size = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":91
+  /* "recordclass/_litelist.pyx":112
  *     def __dealloc__(self):
  *         cdef Py_ssize_t i, size = self.size
+ *         cdef PyObject **items = self.items             # <<<<<<<<<<<<<<
+ * 
+ *         for i in range(size):
+ */
+  __pyx_t_2 = __pyx_v_self->items;
+  __pyx_v_items = __pyx_t_2;
+
+  /* "recordclass/_litelist.pyx":114
+ *         cdef PyObject **items = self.items
+ * 
  *         for i in range(size):             # <<<<<<<<<<<<<<
- *             Py_XDECREF(self.items[i])
- *             self.items[i] = NULL
+ *             v = items[i]
+ *             Py_XDECREF(v)
  */
   __pyx_t_1 = __pyx_v_size;
-  __pyx_t_2 = __pyx_t_1;
-  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
-    __pyx_v_i = __pyx_t_3;
+  __pyx_t_3 = __pyx_t_1;
+  for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
+    __pyx_v_i = __pyx_t_4;
 
-    /* "recordclass/_litelist.pyx":92
- *         cdef Py_ssize_t i, size = self.size
+    /* "recordclass/_litelist.pyx":115
+ * 
  *         for i in range(size):
- *             Py_XDECREF(self.items[i])             # <<<<<<<<<<<<<<
- *             self.items[i] = NULL
- *         PyObject_Free(self.items)
+ *             v = items[i]             # <<<<<<<<<<<<<<
+ *             Py_XDECREF(v)
+ *             items[i] = NULL
  */
-    Py_XDECREF((__pyx_v_self->items[__pyx_v_i]));
+    __pyx_v_v = (__pyx_v_items[__pyx_v_i]);
 
-    /* "recordclass/_litelist.pyx":93
+    /* "recordclass/_litelist.pyx":116
  *         for i in range(size):
- *             Py_XDECREF(self.items[i])
- *             self.items[i] = NULL             # <<<<<<<<<<<<<<
- *         PyObject_Free(self.items)
+ *             v = items[i]
+ *             Py_XDECREF(v)             # <<<<<<<<<<<<<<
+ *             items[i] = NULL
+ *         PyMem_Free(items)
+ */
+    Py_XDECREF(__pyx_v_v);
+
+    /* "recordclass/_litelist.pyx":117
+ *             v = items[i]
+ *             Py_XDECREF(v)
+ *             items[i] = NULL             # <<<<<<<<<<<<<<
+ *         PyMem_Free(items)
  * 
  */
-    (__pyx_v_self->items[__pyx_v_i]) = NULL;
+    (__pyx_v_items[__pyx_v_i]) = NULL;
   }
 
-  /* "recordclass/_litelist.pyx":94
- *             Py_XDECREF(self.items[i])
- *             self.items[i] = NULL
- *         PyObject_Free(self.items)             # <<<<<<<<<<<<<<
+  /* "recordclass/_litelist.pyx":118
+ *             Py_XDECREF(v)
+ *             items[i] = NULL
+ *         PyMem_Free(items)             # <<<<<<<<<<<<<<
  * 
  *     cdef object get_slice(self, Py_ssize_t i, Py_ssize_t n):
  */
-  PyObject_Free(__pyx_v_self->items);
+  PyMem_Free(__pyx_v_items);
 
-  /* "recordclass/_litelist.pyx":89
- *             self.size = self.allocated = 0
+  /* "recordclass/_litelist.pyx":110
+ *         self.items = items
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i, size = self.size
- *         for i in range(size):
+ *         cdef PyObject **items = self.items
  */
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
 }
 
-/* "recordclass/_litelist.pyx":96
- *         PyObject_Free(self.items)
+/* "recordclass/_litelist.pyx":120
+ *         PyMem_Free(items)
  * 
  *     cdef object get_slice(self, Py_ssize_t i, Py_ssize_t n):             # <<<<<<<<<<<<<<
- *         cdef litelist op = make_empty(n)
+ *         cdef litelist op = <litelist>make_empty(n)
  *         cdef Py_ssize_t j
  */
 
 static PyObject *__pyx_f_11recordclass_9_litelist_8litelist_get_slice(struct PyLiteListObject *__pyx_v_self, Py_ssize_t __pyx_v_i, Py_ssize_t __pyx_v_n) {
   struct PyLiteListObject *__pyx_v_op = 0;
   Py_ssize_t __pyx_v_j;
+  PyObject **__pyx_v_op_items;
+  PyObject **__pyx_v_items;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  int __pyx_t_2;
-  Py_ssize_t __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject **__pyx_t_3;
+  int __pyx_t_4;
   Py_ssize_t __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  Py_ssize_t __pyx_t_7;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_slice", 0);
 
-  /* "recordclass/_litelist.pyx":97
+  /* "recordclass/_litelist.pyx":121
  * 
  *     cdef object get_slice(self, Py_ssize_t i, Py_ssize_t n):
- *         cdef litelist op = make_empty(n)             # <<<<<<<<<<<<<<
+ *         cdef litelist op = <litelist>make_empty(n)             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t j
+ *         cdef PyObject **op_items = op.items
+ */
+  __pyx_t_1 = ((PyObject *)__pyx_f_11recordclass_9_litelist_make_empty(__pyx_v_n)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 121, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __pyx_t_1;
+  __Pyx_INCREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_op = ((struct PyLiteListObject *)__pyx_t_2);
+  __pyx_t_2 = 0;
+
+  /* "recordclass/_litelist.pyx":123
+ *         cdef litelist op = <litelist>make_empty(n)
+ *         cdef Py_ssize_t j
+ *         cdef PyObject **op_items = op.items             # <<<<<<<<<<<<<<
+ *         cdef PyObject **items = self.items
  * 
  */
-  __pyx_t_1 = ((PyObject *)__pyx_f_11recordclass_9_litelist_make_empty(__pyx_v_n)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_op = ((struct PyLiteListObject *)__pyx_t_1);
-  __pyx_t_1 = 0;
+  __pyx_t_3 = __pyx_v_op->items;
+  __pyx_v_op_items = __pyx_t_3;
 
-  /* "recordclass/_litelist.pyx":100
+  /* "recordclass/_litelist.pyx":124
  *         cdef Py_ssize_t j
+ *         cdef PyObject **op_items = op.items
+ *         cdef PyObject **items = self.items             # <<<<<<<<<<<<<<
+ * 
+ *         if self.allocated < i + n - 1:
+ */
+  __pyx_t_3 = __pyx_v_self->items;
+  __pyx_v_items = __pyx_t_3;
+
+  /* "recordclass/_litelist.pyx":126
+ *         cdef PyObject **items = self.items
  * 
  *         if self.allocated < i + n - 1:             # <<<<<<<<<<<<<<
  *             raise IndexError('The slice is too large')
  * 
  */
-  __pyx_t_2 = ((__pyx_v_self->allocated < ((__pyx_v_i + __pyx_v_n) - 1)) != 0);
-  if (unlikely(__pyx_t_2)) {
+  __pyx_t_4 = ((__pyx_v_self->allocated < ((__pyx_v_i + __pyx_v_n) - 1)) != 0);
+  if (unlikely(__pyx_t_4)) {
 
-    /* "recordclass/_litelist.pyx":101
+    /* "recordclass/_litelist.pyx":127
  * 
  *         if self.allocated < i + n - 1:
  *             raise IndexError('The slice is too large')             # <<<<<<<<<<<<<<
  * 
  *         for j in range(n):
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 101, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 101, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 127, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_Raise(__pyx_t_2, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __PYX_ERR(0, 127, __pyx_L1_error)
 
-    /* "recordclass/_litelist.pyx":100
- *         cdef Py_ssize_t j
+    /* "recordclass/_litelist.pyx":126
+ *         cdef PyObject **items = self.items
  * 
  *         if self.allocated < i + n - 1:             # <<<<<<<<<<<<<<
  *             raise IndexError('The slice is too large')
@@ -1995,30 +2269,30 @@ static PyObject *__pyx_f_11recordclass_9_litelist_8litelist_get_slice(struct PyL
  */
   }
 
-  /* "recordclass/_litelist.pyx":103
+  /* "recordclass/_litelist.pyx":129
  *             raise IndexError('The slice is too large')
  * 
  *         for j in range(n):             # <<<<<<<<<<<<<<
- *             op.items[j] = self.items[i+j]
+ *             op_items[j] = items[i+j]
  * 
  */
-  __pyx_t_3 = __pyx_v_n;
-  __pyx_t_4 = __pyx_t_3;
-  for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
-    __pyx_v_j = __pyx_t_5;
+  __pyx_t_5 = __pyx_v_n;
+  __pyx_t_6 = __pyx_t_5;
+  for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
+    __pyx_v_j = __pyx_t_7;
 
-    /* "recordclass/_litelist.pyx":104
+    /* "recordclass/_litelist.pyx":130
  * 
  *         for j in range(n):
- *             op.items[j] = self.items[i+j]             # <<<<<<<<<<<<<<
+ *             op_items[j] = items[i+j]             # <<<<<<<<<<<<<<
  * 
  *         return op
  */
-    (__pyx_v_op->items[__pyx_v_j]) = (__pyx_v_self->items[(__pyx_v_i + __pyx_v_j)]);
+    (__pyx_v_op_items[__pyx_v_j]) = (__pyx_v_items[(__pyx_v_i + __pyx_v_j)]);
   }
 
-  /* "recordclass/_litelist.pyx":106
- *             op.items[j] = self.items[i+j]
+  /* "recordclass/_litelist.pyx":132
+ *             op_items[j] = items[i+j]
  * 
  *         return op             # <<<<<<<<<<<<<<
  * 
@@ -2029,17 +2303,18 @@ static PyObject *__pyx_f_11recordclass_9_litelist_8litelist_get_slice(struct PyL
   __pyx_r = ((PyObject *)__pyx_v_op);
   goto __pyx_L0;
 
-  /* "recordclass/_litelist.pyx":96
- *         PyObject_Free(self.items)
+  /* "recordclass/_litelist.pyx":120
+ *         PyMem_Free(items)
  * 
  *     cdef object get_slice(self, Py_ssize_t i, Py_ssize_t n):             # <<<<<<<<<<<<<<
- *         cdef litelist op = make_empty(n)
+ *         cdef litelist op = <litelist>make_empty(n)
  *         cdef Py_ssize_t j
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_AddTraceback("recordclass._litelist.litelist.get_slice", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
@@ -2049,57 +2324,69 @@ static PyObject *__pyx_f_11recordclass_9_litelist_8litelist_get_slice(struct PyL
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":108
+/* "recordclass/_litelist.pyx":134
  *         return op
  * 
  *     cdef object set_slice(self, Py_ssize_t i, Py_ssize_t n, vals):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t j
- * 
+ *         cdef PyObject *v, *u
  */
 
 static PyObject *__pyx_f_11recordclass_9_litelist_8litelist_set_slice(struct PyLiteListObject *__pyx_v_self, Py_ssize_t __pyx_v_i, Py_ssize_t __pyx_v_n, PyObject *__pyx_v_vals) {
   Py_ssize_t __pyx_v_j;
-  PyObject *__pyx_v_tpl = NULL;
-  CYTHON_UNUSED Py_ssize_t __pyx_v_size;
   PyObject *__pyx_v_v;
   PyObject *__pyx_v_u;
+  PyObject **__pyx_v_items;
+  PyObject *__pyx_v_tpl = NULL;
+  CYTHON_UNUSED Py_ssize_t __pyx_v_size;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
-  PyObject *__pyx_t_2 = NULL;
-  Py_ssize_t __pyx_t_3;
+  PyObject **__pyx_t_1;
+  int __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
   Py_ssize_t __pyx_t_4;
   Py_ssize_t __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("set_slice", 0);
 
-  /* "recordclass/_litelist.pyx":111
+  /* "recordclass/_litelist.pyx":137
  *         cdef Py_ssize_t j
+ *         cdef PyObject *v, *u
+ *         cdef PyObject **items = self.items             # <<<<<<<<<<<<<<
+ * 
+ *         if self.allocated < i + n - 1:
+ */
+  __pyx_t_1 = __pyx_v_self->items;
+  __pyx_v_items = __pyx_t_1;
+
+  /* "recordclass/_litelist.pyx":139
+ *         cdef PyObject **items = self.items
  * 
  *         if self.allocated < i + n - 1:             # <<<<<<<<<<<<<<
  *             raise IndexError('The slice is too large')
  * 
  */
-  __pyx_t_1 = ((__pyx_v_self->allocated < ((__pyx_v_i + __pyx_v_n) - 1)) != 0);
-  if (unlikely(__pyx_t_1)) {
+  __pyx_t_2 = ((__pyx_v_self->allocated < ((__pyx_v_i + __pyx_v_n) - 1)) != 0);
+  if (unlikely(__pyx_t_2)) {
 
-    /* "recordclass/_litelist.pyx":112
+    /* "recordclass/_litelist.pyx":140
  * 
  *         if self.allocated < i + n - 1:
  *             raise IndexError('The slice is too large')             # <<<<<<<<<<<<<<
  * 
  *         tpl = PySequence_Fast(vals, "Invalid arguments")
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_Raise(__pyx_t_2, 0, 0, 0);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 112, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 140, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_Raise(__pyx_t_3, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __PYX_ERR(0, 140, __pyx_L1_error)
 
-    /* "recordclass/_litelist.pyx":111
- *         cdef Py_ssize_t j
+    /* "recordclass/_litelist.pyx":139
+ *         cdef PyObject **items = self.items
  * 
  *         if self.allocated < i + n - 1:             # <<<<<<<<<<<<<<
  *             raise IndexError('The slice is too large')
@@ -2107,19 +2394,19 @@ static PyObject *__pyx_f_11recordclass_9_litelist_8litelist_set_slice(struct PyL
  */
   }
 
-  /* "recordclass/_litelist.pyx":114
+  /* "recordclass/_litelist.pyx":142
  *             raise IndexError('The slice is too large')
  * 
  *         tpl = PySequence_Fast(vals, "Invalid arguments")             # <<<<<<<<<<<<<<
  *         size = Py_SIZE(<PyObject*>tpl)
  * 
  */
-  __pyx_t_2 = PySequence_Fast(__pyx_v_vals, ((char *)"Invalid arguments")); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 114, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_v_tpl = __pyx_t_2;
-  __pyx_t_2 = 0;
+  __pyx_t_3 = PySequence_Fast(__pyx_v_vals, ((char *)"Invalid arguments")); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 142, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_v_tpl = __pyx_t_3;
+  __pyx_t_3 = 0;
 
-  /* "recordclass/_litelist.pyx":115
+  /* "recordclass/_litelist.pyx":143
  * 
  *         tpl = PySequence_Fast(vals, "Invalid arguments")
  *         size = Py_SIZE(<PyObject*>tpl)             # <<<<<<<<<<<<<<
@@ -2128,30 +2415,30 @@ static PyObject *__pyx_f_11recordclass_9_litelist_8litelist_set_slice(struct PyL
  */
   __pyx_v_size = Py_SIZE(((PyObject *)__pyx_v_tpl));
 
-  /* "recordclass/_litelist.pyx":117
+  /* "recordclass/_litelist.pyx":145
  *         size = Py_SIZE(<PyObject*>tpl)
  * 
  *         if n != Py_SIZE(<PyObject*>tpl):             # <<<<<<<<<<<<<<
  *             raise ValueError("incompatible range of indexes")
  * 
  */
-  __pyx_t_1 = ((__pyx_v_n != Py_SIZE(((PyObject *)__pyx_v_tpl))) != 0);
-  if (unlikely(__pyx_t_1)) {
+  __pyx_t_2 = ((__pyx_v_n != Py_SIZE(((PyObject *)__pyx_v_tpl))) != 0);
+  if (unlikely(__pyx_t_2)) {
 
-    /* "recordclass/_litelist.pyx":118
+    /* "recordclass/_litelist.pyx":146
  * 
  *         if n != Py_SIZE(<PyObject*>tpl):
  *             raise ValueError("incompatible range of indexes")             # <<<<<<<<<<<<<<
  * 
  *         for j in range(n):
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 118, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_Raise(__pyx_t_2, 0, 0, 0);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 118, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_Raise(__pyx_t_3, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __PYX_ERR(0, 146, __pyx_L1_error)
 
-    /* "recordclass/_litelist.pyx":117
+    /* "recordclass/_litelist.pyx":145
  *         size = Py_SIZE(<PyObject*>tpl)
  * 
  *         if n != Py_SIZE(<PyObject*>tpl):             # <<<<<<<<<<<<<<
@@ -2160,77 +2447,77 @@ static PyObject *__pyx_f_11recordclass_9_litelist_8litelist_set_slice(struct PyL
  */
   }
 
-  /* "recordclass/_litelist.pyx":120
+  /* "recordclass/_litelist.pyx":148
  *             raise ValueError("incompatible range of indexes")
  * 
  *         for j in range(n):             # <<<<<<<<<<<<<<
  *             v = PySequence_Fast_GET_ITEM(tpl, j)
  *             Py_INCREF(v)
  */
-  __pyx_t_3 = __pyx_v_n;
-  __pyx_t_4 = __pyx_t_3;
-  for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
-    __pyx_v_j = __pyx_t_5;
+  __pyx_t_4 = __pyx_v_n;
+  __pyx_t_5 = __pyx_t_4;
+  for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+    __pyx_v_j = __pyx_t_6;
 
-    /* "recordclass/_litelist.pyx":121
+    /* "recordclass/_litelist.pyx":149
  * 
  *         for j in range(n):
  *             v = PySequence_Fast_GET_ITEM(tpl, j)             # <<<<<<<<<<<<<<
  *             Py_INCREF(v)
- *             u = self.items[i+j]
+ *             u = items[i+j]
  */
     __pyx_v_v = PySequence_Fast_GET_ITEM(__pyx_v_tpl, __pyx_v_j);
 
-    /* "recordclass/_litelist.pyx":122
+    /* "recordclass/_litelist.pyx":150
  *         for j in range(n):
  *             v = PySequence_Fast_GET_ITEM(tpl, j)
  *             Py_INCREF(v)             # <<<<<<<<<<<<<<
- *             u = self.items[i+j]
+ *             u = items[i+j]
  *             Py_XDECREF(u)
  */
     Py_INCREF(__pyx_v_v);
 
-    /* "recordclass/_litelist.pyx":123
+    /* "recordclass/_litelist.pyx":151
  *             v = PySequence_Fast_GET_ITEM(tpl, j)
  *             Py_INCREF(v)
- *             u = self.items[i+j]             # <<<<<<<<<<<<<<
+ *             u = items[i+j]             # <<<<<<<<<<<<<<
  *             Py_XDECREF(u)
- *             self.items[i+j] = v
+ *             items[i+j] = v
  */
-    __pyx_v_u = (__pyx_v_self->items[(__pyx_v_i + __pyx_v_j)]);
+    __pyx_v_u = (__pyx_v_items[(__pyx_v_i + __pyx_v_j)]);
 
-    /* "recordclass/_litelist.pyx":124
+    /* "recordclass/_litelist.pyx":152
  *             Py_INCREF(v)
- *             u = self.items[i+j]
+ *             u = items[i+j]
  *             Py_XDECREF(u)             # <<<<<<<<<<<<<<
- *             self.items[i+j] = v
+ *             items[i+j] = v
  * 
  */
     Py_XDECREF(__pyx_v_u);
 
-    /* "recordclass/_litelist.pyx":125
- *             u = self.items[i+j]
+    /* "recordclass/_litelist.pyx":153
+ *             u = items[i+j]
  *             Py_XDECREF(u)
- *             self.items[i+j] = v             # <<<<<<<<<<<<<<
+ *             items[i+j] = v             # <<<<<<<<<<<<<<
  * 
  *     def __getitem__(self, index):
  */
-    (__pyx_v_self->items[(__pyx_v_i + __pyx_v_j)]) = __pyx_v_v;
+    (__pyx_v_items[(__pyx_v_i + __pyx_v_j)]) = __pyx_v_v;
   }
 
-  /* "recordclass/_litelist.pyx":108
+  /* "recordclass/_litelist.pyx":134
  *         return op
  * 
  *     cdef object set_slice(self, Py_ssize_t i, Py_ssize_t n, vals):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t j
- * 
+ *         cdef PyObject *v, *u
  */
 
   /* function exit code */
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
   __Pyx_AddTraceback("recordclass._litelist.litelist.set_slice", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
@@ -2240,8 +2527,8 @@ static PyObject *__pyx_f_11recordclass_9_litelist_8litelist_set_slice(struct PyL
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":127
- *             self.items[i+j] = v
+/* "recordclass/_litelist.pyx":155
+ *             items[i+j] = v
  * 
  *     def __getitem__(self, index):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i
@@ -2273,14 +2560,14 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_4__getitem__(struct
   int __pyx_t_2;
   int __pyx_t_3;
   PyObject *__pyx_t_4 = NULL;
-  int __pyx_t_5;
-  PyObject *__pyx_t_6 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__getitem__", 0);
 
-  /* "recordclass/_litelist.pyx":129
+  /* "recordclass/_litelist.pyx":157
  *     def __getitem__(self, index):
  *         cdef Py_ssize_t i
  *         cdef Py_ssize_t size = self.size             # <<<<<<<<<<<<<<
@@ -2290,85 +2577,28 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_4__getitem__(struct
   __pyx_t_1 = __pyx_v_self->size;
   __pyx_v_size = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":132
+  /* "recordclass/_litelist.pyx":160
  *         cdef Py_ssize_t start, stop, step
  * 
- *         if PySlice_Check(index):             # <<<<<<<<<<<<<<
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
- *                 raise IndexError("Invalid slice")
+ *         if PyIndex_Check(<PyObject*>index):             # <<<<<<<<<<<<<<
+ *             i = index
+ *             if i < 0:
  */
-  __pyx_t_2 = (PySlice_Check(__pyx_v_index) != 0);
+  __pyx_t_2 = (PyIndex_Check(((PyObject *)__pyx_v_index)) != 0);
   if (__pyx_t_2) {
 
-    /* "recordclass/_litelist.pyx":133
+    /* "recordclass/_litelist.pyx":161
  * 
- *         if PySlice_Check(index):
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:             # <<<<<<<<<<<<<<
- *                 raise IndexError("Invalid slice")
- *             return self.get_slice(start, stop-start)
- */
-    __pyx_t_3 = PySlice_GetIndices(__pyx_v_index, __pyx_v_self->size, (&__pyx_v_start), (&__pyx_v_stop), (&__pyx_v_step)); if (unlikely(__pyx_t_3 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 133, __pyx_L1_error)
-    __pyx_t_2 = ((__pyx_t_3 < 0) != 0);
-    if (unlikely(__pyx_t_2)) {
-
-      /* "recordclass/_litelist.pyx":134
- *         if PySlice_Check(index):
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
- *                 raise IndexError("Invalid slice")             # <<<<<<<<<<<<<<
- *             return self.get_slice(start, stop-start)
- *         else:
- */
-      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 134, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_Raise(__pyx_t_4, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __PYX_ERR(0, 134, __pyx_L1_error)
-
-      /* "recordclass/_litelist.pyx":133
- * 
- *         if PySlice_Check(index):
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:             # <<<<<<<<<<<<<<
- *                 raise IndexError("Invalid slice")
- *             return self.get_slice(start, stop-start)
- */
-    }
-
-    /* "recordclass/_litelist.pyx":135
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
- *                 raise IndexError("Invalid slice")
- *             return self.get_slice(start, stop-start)             # <<<<<<<<<<<<<<
- *         else:
- *             i = index
- */
-    __Pyx_XDECREF(__pyx_r);
-    __pyx_t_4 = ((struct __pyx_vtabstruct_11recordclass_9_litelist_litelist *)__pyx_v_self->__pyx_vtab)->get_slice(__pyx_v_self, __pyx_v_start, (__pyx_v_stop - __pyx_v_start)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 135, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_r = __pyx_t_4;
-    __pyx_t_4 = 0;
-    goto __pyx_L0;
-
-    /* "recordclass/_litelist.pyx":132
- *         cdef Py_ssize_t start, stop, step
- * 
- *         if PySlice_Check(index):             # <<<<<<<<<<<<<<
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
- *                 raise IndexError("Invalid slice")
- */
-  }
-
-  /* "recordclass/_litelist.pyx":137
- *             return self.get_slice(start, stop-start)
- *         else:
+ *         if PyIndex_Check(<PyObject*>index):
  *             i = index             # <<<<<<<<<<<<<<
  *             if i < 0:
  *                 i += size
  */
-  /*else*/ {
-    __pyx_t_1 = __Pyx_PyIndex_AsSsize_t(__pyx_v_index); if (unlikely((__pyx_t_1 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 137, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyIndex_AsSsize_t(__pyx_v_index); if (unlikely((__pyx_t_1 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 161, __pyx_L1_error)
     __pyx_v_i = __pyx_t_1;
 
-    /* "recordclass/_litelist.pyx":138
- *         else:
+    /* "recordclass/_litelist.pyx":162
+ *         if PyIndex_Check(<PyObject*>index):
  *             i = index
  *             if i < 0:             # <<<<<<<<<<<<<<
  *                 i += size
@@ -2377,7 +2607,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_4__getitem__(struct
     __pyx_t_2 = ((__pyx_v_i < 0) != 0);
     if (__pyx_t_2) {
 
-      /* "recordclass/_litelist.pyx":139
+      /* "recordclass/_litelist.pyx":163
  *             i = index
  *             if i < 0:
  *                 i += size             # <<<<<<<<<<<<<<
@@ -2386,8 +2616,8 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_4__getitem__(struct
  */
       __pyx_v_i = (__pyx_v_i + __pyx_v_size);
 
-      /* "recordclass/_litelist.pyx":138
- *         else:
+      /* "recordclass/_litelist.pyx":162
+ *         if PyIndex_Check(<PyObject*>index):
  *             i = index
  *             if i < 0:             # <<<<<<<<<<<<<<
  *                 i += size
@@ -2395,64 +2625,156 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_4__getitem__(struct
  */
     }
 
-    /* "recordclass/_litelist.pyx":140
+    /* "recordclass/_litelist.pyx":164
  *             if i < 0:
  *                 i += size
  *             if i < 0 or i >= size:             # <<<<<<<<<<<<<<
  *                 raise IndexError('%s' % index)
- *         return <object>(self.items[i])
+ * 
  */
-    __pyx_t_5 = ((__pyx_v_i < 0) != 0);
-    if (!__pyx_t_5) {
+    __pyx_t_3 = ((__pyx_v_i < 0) != 0);
+    if (!__pyx_t_3) {
     } else {
-      __pyx_t_2 = __pyx_t_5;
-      goto __pyx_L7_bool_binop_done;
+      __pyx_t_2 = __pyx_t_3;
+      goto __pyx_L6_bool_binop_done;
     }
-    __pyx_t_5 = ((__pyx_v_i >= __pyx_v_size) != 0);
-    __pyx_t_2 = __pyx_t_5;
-    __pyx_L7_bool_binop_done:;
+    __pyx_t_3 = ((__pyx_v_i >= __pyx_v_size) != 0);
+    __pyx_t_2 = __pyx_t_3;
+    __pyx_L6_bool_binop_done:;
     if (unlikely(__pyx_t_2)) {
 
-      /* "recordclass/_litelist.pyx":141
+      /* "recordclass/_litelist.pyx":165
  *                 i += size
  *             if i < 0 or i >= size:
  *                 raise IndexError('%s' % index)             # <<<<<<<<<<<<<<
- *         return <object>(self.items[i])
  * 
+ *             return <object>(self.items[i])
  */
-      __pyx_t_4 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_s, __pyx_v_index); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 141, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_s, __pyx_v_index); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 165, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 141, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 165, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __Pyx_Raise(__pyx_t_6, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __PYX_ERR(0, 141, __pyx_L1_error)
+      __Pyx_Raise(__pyx_t_5, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __PYX_ERR(0, 165, __pyx_L1_error)
 
-      /* "recordclass/_litelist.pyx":140
+      /* "recordclass/_litelist.pyx":164
  *             if i < 0:
  *                 i += size
  *             if i < 0 or i >= size:             # <<<<<<<<<<<<<<
  *                 raise IndexError('%s' % index)
- *         return <object>(self.items[i])
+ * 
  */
     }
+
+    /* "recordclass/_litelist.pyx":167
+ *                 raise IndexError('%s' % index)
+ * 
+ *             return <object>(self.items[i])             # <<<<<<<<<<<<<<
+ *         elif PySlice_Check(index):
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(((PyObject *)(__pyx_v_self->items[__pyx_v_i])));
+    __pyx_r = ((PyObject *)(__pyx_v_self->items[__pyx_v_i]));
+    goto __pyx_L0;
+
+    /* "recordclass/_litelist.pyx":160
+ *         cdef Py_ssize_t start, stop, step
+ * 
+ *         if PyIndex_Check(<PyObject*>index):             # <<<<<<<<<<<<<<
+ *             i = index
+ *             if i < 0:
+ */
   }
 
-  /* "recordclass/_litelist.pyx":142
- *             if i < 0 or i >= size:
- *                 raise IndexError('%s' % index)
- *         return <object>(self.items[i])             # <<<<<<<<<<<<<<
+  /* "recordclass/_litelist.pyx":168
+ * 
+ *             return <object>(self.items[i])
+ *         elif PySlice_Check(index):             # <<<<<<<<<<<<<<
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+ *                 raise IndexError("Invalid slice")
+ */
+  __pyx_t_2 = (PySlice_Check(__pyx_v_index) != 0);
+  if (likely(__pyx_t_2)) {
+
+    /* "recordclass/_litelist.pyx":169
+ *             return <object>(self.items[i])
+ *         elif PySlice_Check(index):
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:             # <<<<<<<<<<<<<<
+ *                 raise IndexError("Invalid slice")
+ *             return self.get_slice(start, stop-start)
+ */
+    __pyx_t_6 = PySlice_GetIndices(__pyx_v_index, __pyx_v_self->size, (&__pyx_v_start), (&__pyx_v_stop), (&__pyx_v_step)); if (unlikely(__pyx_t_6 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 169, __pyx_L1_error)
+    __pyx_t_2 = ((__pyx_t_6 < 0) != 0);
+    if (unlikely(__pyx_t_2)) {
+
+      /* "recordclass/_litelist.pyx":170
+ *         elif PySlice_Check(index):
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+ *                 raise IndexError("Invalid slice")             # <<<<<<<<<<<<<<
+ *             return self.get_slice(start, stop-start)
+ *         else:
+ */
+      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 170, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __Pyx_Raise(__pyx_t_5, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __PYX_ERR(0, 170, __pyx_L1_error)
+
+      /* "recordclass/_litelist.pyx":169
+ *             return <object>(self.items[i])
+ *         elif PySlice_Check(index):
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:             # <<<<<<<<<<<<<<
+ *                 raise IndexError("Invalid slice")
+ *             return self.get_slice(start, stop-start)
+ */
+    }
+
+    /* "recordclass/_litelist.pyx":171
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+ *                 raise IndexError("Invalid slice")
+ *             return self.get_slice(start, stop-start)             # <<<<<<<<<<<<<<
+ *         else:
+ *             raise IndexError('invalid index: %s' % index)
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_5 = ((struct __pyx_vtabstruct_11recordclass_9_litelist_litelist *)__pyx_v_self->__pyx_vtab)->get_slice(__pyx_v_self, __pyx_v_start, (__pyx_v_stop - __pyx_v_start)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 171, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_r = __pyx_t_5;
+    __pyx_t_5 = 0;
+    goto __pyx_L0;
+
+    /* "recordclass/_litelist.pyx":168
+ * 
+ *             return <object>(self.items[i])
+ *         elif PySlice_Check(index):             # <<<<<<<<<<<<<<
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+ *                 raise IndexError("Invalid slice")
+ */
+  }
+
+  /* "recordclass/_litelist.pyx":173
+ *             return self.get_slice(start, stop-start)
+ *         else:
+ *             raise IndexError('invalid index: %s' % index)             # <<<<<<<<<<<<<<
  * 
  *     def __setitem__(self, index, val):
  */
-  __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(((PyObject *)(__pyx_v_self->items[__pyx_v_i])));
-  __pyx_r = ((PyObject *)(__pyx_v_self->items[__pyx_v_i]));
-  goto __pyx_L0;
+  /*else*/ {
+    __pyx_t_5 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_invalid_index_s, __pyx_v_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_Raise(__pyx_t_4, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __PYX_ERR(0, 173, __pyx_L1_error)
+  }
 
-  /* "recordclass/_litelist.pyx":127
- *             self.items[i+j] = v
+  /* "recordclass/_litelist.pyx":155
+ *             items[i+j] = v
  * 
  *     def __getitem__(self, index):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i
@@ -2462,7 +2784,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_4__getitem__(struct
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_5);
   __Pyx_AddTraceback("recordclass._litelist.litelist.__getitem__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -2471,8 +2793,8 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_4__getitem__(struct
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":144
- *         return <object>(self.items[i])
+/* "recordclass/_litelist.pyx":175
+ *             raise IndexError('invalid index: %s' % index)
  * 
  *     def __setitem__(self, index, val):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i
@@ -2498,20 +2820,22 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_6__setitem__(struct PyLit
   Py_ssize_t __pyx_v_start;
   Py_ssize_t __pyx_v_stop;
   Py_ssize_t __pyx_v_step;
+  PyObject **__pyx_v_items;
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   Py_ssize_t __pyx_t_1;
-  int __pyx_t_2;
+  PyObject **__pyx_t_2;
   int __pyx_t_3;
-  PyObject *__pyx_t_4 = NULL;
-  int __pyx_t_5;
+  int __pyx_t_4;
+  PyObject *__pyx_t_5 = NULL;
   PyObject *__pyx_t_6 = NULL;
+  int __pyx_t_7;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setitem__", 0);
 
-  /* "recordclass/_litelist.pyx":146
+  /* "recordclass/_litelist.pyx":177
  *     def __setitem__(self, index, val):
  *         cdef Py_ssize_t i
  *         cdef Py_ssize_t size = self.size             # <<<<<<<<<<<<<<
@@ -2521,92 +2845,47 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_6__setitem__(struct PyLit
   __pyx_t_1 = __pyx_v_self->size;
   __pyx_v_size = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":150
+  /* "recordclass/_litelist.pyx":180
+ *         cdef Py_ssize_t start, stop, step
  *         cdef PyObject *v
+ *         cdef PyObject **items = self.items             # <<<<<<<<<<<<<<
  * 
- *         if PySlice_Check(index):             # <<<<<<<<<<<<<<
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
- *                 raise IndexError("Invalid slice")
+ *         if PyIndex_Check(<PyObject*>index):
  */
-  __pyx_t_2 = (PySlice_Check(__pyx_v_index) != 0);
-  if (__pyx_t_2) {
+  __pyx_t_2 = __pyx_v_self->items;
+  __pyx_v_items = __pyx_t_2;
 
-    /* "recordclass/_litelist.pyx":151
+  /* "recordclass/_litelist.pyx":182
+ *         cdef PyObject **items = self.items
  * 
- *         if PySlice_Check(index):
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:             # <<<<<<<<<<<<<<
- *                 raise IndexError("Invalid slice")
- *             self.set_slice(start, stop-start, val)
- */
-    __pyx_t_3 = PySlice_GetIndices(__pyx_v_index, __pyx_v_self->size, (&__pyx_v_start), (&__pyx_v_stop), (&__pyx_v_step)); if (unlikely(__pyx_t_3 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 151, __pyx_L1_error)
-    __pyx_t_2 = ((__pyx_t_3 < 0) != 0);
-    if (unlikely(__pyx_t_2)) {
-
-      /* "recordclass/_litelist.pyx":152
- *         if PySlice_Check(index):
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
- *                 raise IndexError("Invalid slice")             # <<<<<<<<<<<<<<
- *             self.set_slice(start, stop-start, val)
- *         else:
- */
-      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 152, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_Raise(__pyx_t_4, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __PYX_ERR(0, 152, __pyx_L1_error)
-
-      /* "recordclass/_litelist.pyx":151
- * 
- *         if PySlice_Check(index):
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:             # <<<<<<<<<<<<<<
- *                 raise IndexError("Invalid slice")
- *             self.set_slice(start, stop-start, val)
- */
-    }
-
-    /* "recordclass/_litelist.pyx":153
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
- *                 raise IndexError("Invalid slice")
- *             self.set_slice(start, stop-start, val)             # <<<<<<<<<<<<<<
- *         else:
+ *         if PyIndex_Check(<PyObject*>index):             # <<<<<<<<<<<<<<
  *             i = index
+ *             if i < 0:
  */
-    __pyx_t_4 = ((struct __pyx_vtabstruct_11recordclass_9_litelist_litelist *)__pyx_v_self->__pyx_vtab)->set_slice(__pyx_v_self, __pyx_v_start, (__pyx_v_stop - __pyx_v_start), __pyx_v_val); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 153, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_3 = (PyIndex_Check(((PyObject *)__pyx_v_index)) != 0);
+  if (__pyx_t_3) {
 
-    /* "recordclass/_litelist.pyx":150
- *         cdef PyObject *v
+    /* "recordclass/_litelist.pyx":183
  * 
- *         if PySlice_Check(index):             # <<<<<<<<<<<<<<
- *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
- *                 raise IndexError("Invalid slice")
- */
-    goto __pyx_L3;
-  }
-
-  /* "recordclass/_litelist.pyx":155
- *             self.set_slice(start, stop-start, val)
- *         else:
+ *         if PyIndex_Check(<PyObject*>index):
  *             i = index             # <<<<<<<<<<<<<<
  *             if i < 0:
  *                 i += size
  */
-  /*else*/ {
-    __pyx_t_1 = __Pyx_PyIndex_AsSsize_t(__pyx_v_index); if (unlikely((__pyx_t_1 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 155, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyIndex_AsSsize_t(__pyx_v_index); if (unlikely((__pyx_t_1 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 183, __pyx_L1_error)
     __pyx_v_i = __pyx_t_1;
 
-    /* "recordclass/_litelist.pyx":156
- *         else:
+    /* "recordclass/_litelist.pyx":184
+ *         if PyIndex_Check(<PyObject*>index):
  *             i = index
  *             if i < 0:             # <<<<<<<<<<<<<<
  *                 i += size
  *             if i < 0 or i >= size:
  */
-    __pyx_t_2 = ((__pyx_v_i < 0) != 0);
-    if (__pyx_t_2) {
+    __pyx_t_3 = ((__pyx_v_i < 0) != 0);
+    if (__pyx_t_3) {
 
-      /* "recordclass/_litelist.pyx":157
+      /* "recordclass/_litelist.pyx":185
  *             i = index
  *             if i < 0:
  *                 i += size             # <<<<<<<<<<<<<<
@@ -2615,8 +2894,8 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_6__setitem__(struct PyLit
  */
       __pyx_v_i = (__pyx_v_i + __pyx_v_size);
 
-      /* "recordclass/_litelist.pyx":156
- *         else:
+      /* "recordclass/_litelist.pyx":184
+ *         if PyIndex_Check(<PyObject*>index):
  *             i = index
  *             if i < 0:             # <<<<<<<<<<<<<<
  *                 i += size
@@ -2624,41 +2903,41 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_6__setitem__(struct PyLit
  */
     }
 
-    /* "recordclass/_litelist.pyx":158
+    /* "recordclass/_litelist.pyx":186
  *             if i < 0:
  *                 i += size
  *             if i < 0 or i >= size:             # <<<<<<<<<<<<<<
  *                 raise IndexError('%s' % index)
  * 
  */
-    __pyx_t_5 = ((__pyx_v_i < 0) != 0);
-    if (!__pyx_t_5) {
+    __pyx_t_4 = ((__pyx_v_i < 0) != 0);
+    if (!__pyx_t_4) {
     } else {
-      __pyx_t_2 = __pyx_t_5;
-      goto __pyx_L7_bool_binop_done;
+      __pyx_t_3 = __pyx_t_4;
+      goto __pyx_L6_bool_binop_done;
     }
-    __pyx_t_5 = ((__pyx_v_i >= __pyx_v_size) != 0);
-    __pyx_t_2 = __pyx_t_5;
-    __pyx_L7_bool_binop_done:;
-    if (unlikely(__pyx_t_2)) {
+    __pyx_t_4 = ((__pyx_v_i >= __pyx_v_size) != 0);
+    __pyx_t_3 = __pyx_t_4;
+    __pyx_L6_bool_binop_done:;
+    if (unlikely(__pyx_t_3)) {
 
-      /* "recordclass/_litelist.pyx":159
+      /* "recordclass/_litelist.pyx":187
  *                 i += size
  *             if i < 0 or i >= size:
  *                 raise IndexError('%s' % index)             # <<<<<<<<<<<<<<
  * 
- *             Py_XDECREF(self.items[i])
+ *             Py_XDECREF(items[i])
  */
-      __pyx_t_4 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_s, __pyx_v_index); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 159, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 159, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_s, __pyx_v_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 187, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 187, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_Raise(__pyx_t_6, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __PYX_ERR(0, 159, __pyx_L1_error)
+      __PYX_ERR(0, 187, __pyx_L1_error)
 
-      /* "recordclass/_litelist.pyx":158
+      /* "recordclass/_litelist.pyx":186
  *             if i < 0:
  *                 i += size
  *             if i < 0 or i >= size:             # <<<<<<<<<<<<<<
@@ -2667,37 +2946,128 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_6__setitem__(struct PyLit
  */
     }
 
-    /* "recordclass/_litelist.pyx":161
+    /* "recordclass/_litelist.pyx":189
  *                 raise IndexError('%s' % index)
  * 
- *             Py_XDECREF(self.items[i])             # <<<<<<<<<<<<<<
+ *             Py_XDECREF(items[i])             # <<<<<<<<<<<<<<
  *             Py_INCREF(<PyObject*>val)
- *             self.items[i] = <PyObject*>val
+ *             items[i] = <PyObject*>val
  */
-    Py_XDECREF((__pyx_v_self->items[__pyx_v_i]));
+    Py_XDECREF((__pyx_v_items[__pyx_v_i]));
 
-    /* "recordclass/_litelist.pyx":162
+    /* "recordclass/_litelist.pyx":190
  * 
- *             Py_XDECREF(self.items[i])
+ *             Py_XDECREF(items[i])
  *             Py_INCREF(<PyObject*>val)             # <<<<<<<<<<<<<<
- *             self.items[i] = <PyObject*>val
- * 
+ *             items[i] = <PyObject*>val
+ *         elif PySlice_Check(index):
  */
     Py_INCREF(((PyObject *)__pyx_v_val));
 
-    /* "recordclass/_litelist.pyx":163
- *             Py_XDECREF(self.items[i])
+    /* "recordclass/_litelist.pyx":191
+ *             Py_XDECREF(items[i])
  *             Py_INCREF(<PyObject*>val)
- *             self.items[i] = <PyObject*>val             # <<<<<<<<<<<<<<
+ *             items[i] = <PyObject*>val             # <<<<<<<<<<<<<<
+ *         elif PySlice_Check(index):
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+ */
+    (__pyx_v_items[__pyx_v_i]) = ((PyObject *)__pyx_v_val);
+
+    /* "recordclass/_litelist.pyx":182
+ *         cdef PyObject **items = self.items
+ * 
+ *         if PyIndex_Check(<PyObject*>index):             # <<<<<<<<<<<<<<
+ *             i = index
+ *             if i < 0:
+ */
+    goto __pyx_L3;
+  }
+
+  /* "recordclass/_litelist.pyx":192
+ *             Py_INCREF(<PyObject*>val)
+ *             items[i] = <PyObject*>val
+ *         elif PySlice_Check(index):             # <<<<<<<<<<<<<<
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+ *                 raise IndexError("Invalid slice")
+ */
+  __pyx_t_3 = (PySlice_Check(__pyx_v_index) != 0);
+  if (likely(__pyx_t_3)) {
+
+    /* "recordclass/_litelist.pyx":193
+ *             items[i] = <PyObject*>val
+ *         elif PySlice_Check(index):
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:             # <<<<<<<<<<<<<<
+ *                 raise IndexError("Invalid slice")
+ *             self.set_slice(start, stop-start, val)
+ */
+    __pyx_t_7 = PySlice_GetIndices(__pyx_v_index, __pyx_v_self->size, (&__pyx_v_start), (&__pyx_v_stop), (&__pyx_v_step)); if (unlikely(__pyx_t_7 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 193, __pyx_L1_error)
+    __pyx_t_3 = ((__pyx_t_7 < 0) != 0);
+    if (unlikely(__pyx_t_3)) {
+
+      /* "recordclass/_litelist.pyx":194
+ *         elif PySlice_Check(index):
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+ *                 raise IndexError("Invalid slice")             # <<<<<<<<<<<<<<
+ *             self.set_slice(start, stop-start, val)
+ *         else:
+ */
+      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 194, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __Pyx_Raise(__pyx_t_6, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __PYX_ERR(0, 194, __pyx_L1_error)
+
+      /* "recordclass/_litelist.pyx":193
+ *             items[i] = <PyObject*>val
+ *         elif PySlice_Check(index):
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:             # <<<<<<<<<<<<<<
+ *                 raise IndexError("Invalid slice")
+ *             self.set_slice(start, stop-start, val)
+ */
+    }
+
+    /* "recordclass/_litelist.pyx":195
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+ *                 raise IndexError("Invalid slice")
+ *             self.set_slice(start, stop-start, val)             # <<<<<<<<<<<<<<
+ *         else:
+ *             raise IndexError('invalid index: %s' % index)
+ */
+    __pyx_t_6 = ((struct __pyx_vtabstruct_11recordclass_9_litelist_litelist *)__pyx_v_self->__pyx_vtab)->set_slice(__pyx_v_self, __pyx_v_start, (__pyx_v_stop - __pyx_v_start), __pyx_v_val); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 195, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+    /* "recordclass/_litelist.pyx":192
+ *             Py_INCREF(<PyObject*>val)
+ *             items[i] = <PyObject*>val
+ *         elif PySlice_Check(index):             # <<<<<<<<<<<<<<
+ *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+ *                 raise IndexError("Invalid slice")
+ */
+    goto __pyx_L3;
+  }
+
+  /* "recordclass/_litelist.pyx":197
+ *             self.set_slice(start, stop-start, val)
+ *         else:
+ *             raise IndexError('invalid index: %s' % index)             # <<<<<<<<<<<<<<
  * 
  *     def __delitem__(self, index):
  */
-    (__pyx_v_self->items[__pyx_v_i]) = ((PyObject *)__pyx_v_val);
+  /*else*/ {
+    __pyx_t_6 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_invalid_index_s, __pyx_v_index); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 197, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 197, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __Pyx_Raise(__pyx_t_5, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __PYX_ERR(0, 197, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "recordclass/_litelist.pyx":144
- *         return <object>(self.items[i])
+  /* "recordclass/_litelist.pyx":175
+ *             raise IndexError('invalid index: %s' % index)
  * 
  *     def __setitem__(self, index, val):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i
@@ -2708,7 +3078,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_6__setitem__(struct PyLit
   __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_AddTraceback("recordclass._litelist.litelist.__setitem__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
@@ -2717,8 +3087,8 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_6__setitem__(struct PyLit
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":165
- *             self.items[i] = <PyObject*>val
+/* "recordclass/_litelist.pyx":199
+ *             raise IndexError('invalid index: %s' % index)
  * 
  *     def __delitem__(self, index):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i = index
@@ -2757,17 +3127,17 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__delitem__", 0);
 
-  /* "recordclass/_litelist.pyx":166
+  /* "recordclass/_litelist.pyx":200
  * 
  *     def __delitem__(self, index):
  *         cdef Py_ssize_t i = index             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t size = self.size
  *         cdef PyObject **items = self.items
  */
-  __pyx_t_1 = __Pyx_PyIndex_AsSsize_t(__pyx_v_index); if (unlikely((__pyx_t_1 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 166, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyIndex_AsSsize_t(__pyx_v_index); if (unlikely((__pyx_t_1 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 200, __pyx_L1_error)
   __pyx_v_i = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":167
+  /* "recordclass/_litelist.pyx":201
  *     def __delitem__(self, index):
  *         cdef Py_ssize_t i = index
  *         cdef Py_ssize_t size = self.size             # <<<<<<<<<<<<<<
@@ -2777,7 +3147,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
   __pyx_t_1 = __pyx_v_self->size;
   __pyx_v_size = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":168
+  /* "recordclass/_litelist.pyx":202
  *         cdef Py_ssize_t i = index
  *         cdef Py_ssize_t size = self.size
  *         cdef PyObject **items = self.items             # <<<<<<<<<<<<<<
@@ -2787,7 +3157,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
   __pyx_t_2 = __pyx_v_self->items;
   __pyx_v_items = __pyx_t_2;
 
-  /* "recordclass/_litelist.pyx":170
+  /* "recordclass/_litelist.pyx":204
  *         cdef PyObject **items = self.items
  * 
  *         if i < 0:             # <<<<<<<<<<<<<<
@@ -2797,7 +3167,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
   __pyx_t_3 = ((__pyx_v_i < 0) != 0);
   if (__pyx_t_3) {
 
-    /* "recordclass/_litelist.pyx":171
+    /* "recordclass/_litelist.pyx":205
  * 
  *         if i < 0:
  *             i += size             # <<<<<<<<<<<<<<
@@ -2806,7 +3176,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
  */
     __pyx_v_i = (__pyx_v_i + __pyx_v_size);
 
-    /* "recordclass/_litelist.pyx":170
+    /* "recordclass/_litelist.pyx":204
  *         cdef PyObject **items = self.items
  * 
  *         if i < 0:             # <<<<<<<<<<<<<<
@@ -2815,7 +3185,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
  */
   }
 
-  /* "recordclass/_litelist.pyx":172
+  /* "recordclass/_litelist.pyx":206
  *         if i < 0:
  *             i += size
  *         if i < 0 or i >= size:             # <<<<<<<<<<<<<<
@@ -2833,23 +3203,23 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
   __pyx_L5_bool_binop_done:;
   if (unlikely(__pyx_t_3)) {
 
-    /* "recordclass/_litelist.pyx":173
+    /* "recordclass/_litelist.pyx":207
  *             i += size
  *         if i < 0 or i >= size:
  *             raise IndexError('%s' % index)             # <<<<<<<<<<<<<<
  * 
  *         Py_DECREF(items[i])
  */
-    __pyx_t_5 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_s, __pyx_v_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_s, __pyx_v_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 207, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 207, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_Raise(__pyx_t_6, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __PYX_ERR(0, 173, __pyx_L1_error)
+    __PYX_ERR(0, 207, __pyx_L1_error)
 
-    /* "recordclass/_litelist.pyx":172
+    /* "recordclass/_litelist.pyx":206
  *         if i < 0:
  *             i += size
  *         if i < 0 or i >= size:             # <<<<<<<<<<<<<<
@@ -2858,7 +3228,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
  */
   }
 
-  /* "recordclass/_litelist.pyx":175
+  /* "recordclass/_litelist.pyx":209
  *             raise IndexError('%s' % index)
  * 
  *         Py_DECREF(items[i])             # <<<<<<<<<<<<<<
@@ -2867,7 +3237,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
  */
   Py_DECREF((__pyx_v_items[__pyx_v_i]));
 
-  /* "recordclass/_litelist.pyx":176
+  /* "recordclass/_litelist.pyx":210
  * 
  *         Py_DECREF(items[i])
  *         size -= 1             # <<<<<<<<<<<<<<
@@ -2876,7 +3246,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
  */
   __pyx_v_size = (__pyx_v_size - 1);
 
-  /* "recordclass/_litelist.pyx":177
+  /* "recordclass/_litelist.pyx":211
  *         Py_DECREF(items[i])
  *         size -= 1
  *         self.size = size             # <<<<<<<<<<<<<<
@@ -2885,7 +3255,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
  */
   __pyx_v_self->size = __pyx_v_size;
 
-  /* "recordclass/_litelist.pyx":178
+  /* "recordclass/_litelist.pyx":212
  *         size -= 1
  *         self.size = size
  *         while i < size:             # <<<<<<<<<<<<<<
@@ -2896,84 +3266,93 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
     __pyx_t_3 = ((__pyx_v_i < __pyx_v_size) != 0);
     if (!__pyx_t_3) break;
 
-    /* "recordclass/_litelist.pyx":179
+    /* "recordclass/_litelist.pyx":213
  *         self.size = size
  *         while i < size:
  *             items[i] = items[i+1]             # <<<<<<<<<<<<<<
  *             i += 1
- * 
+ *         items[i] = NULL
  */
     (__pyx_v_items[__pyx_v_i]) = (__pyx_v_items[(__pyx_v_i + 1)]);
 
-    /* "recordclass/_litelist.pyx":180
+    /* "recordclass/_litelist.pyx":214
  *         while i < size:
  *             items[i] = items[i+1]
  *             i += 1             # <<<<<<<<<<<<<<
+ *         items[i] = NULL
  * 
- *         if size + size < self.allocated:
  */
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "recordclass/_litelist.pyx":182
+  /* "recordclass/_litelist.pyx":215
+ *             items[i] = items[i+1]
  *             i += 1
+ *         items[i] = NULL             # <<<<<<<<<<<<<<
+ * 
+ *         if size + size < self.allocated:
+ */
+  (__pyx_v_items[__pyx_v_i]) = NULL;
+
+  /* "recordclass/_litelist.pyx":217
+ *         items[i] = NULL
  * 
  *         if size + size < self.allocated:             # <<<<<<<<<<<<<<
  *             newsize = size + (size // 8)
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
  */
   __pyx_t_3 = (((__pyx_v_size + __pyx_v_size) < __pyx_v_self->allocated) != 0);
   if (__pyx_t_3) {
 
-    /* "recordclass/_litelist.pyx":183
+    /* "recordclass/_litelist.pyx":218
  * 
  *         if size + size < self.allocated:
  *             newsize = size + (size // 8)             # <<<<<<<<<<<<<<
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
  *             self.allocated = newsize
  */
-    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_size + __Pyx_div_Py_ssize_t(__pyx_v_size, 8))); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 183, __pyx_L1_error)
+    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_size + __Pyx_div_Py_ssize_t(__pyx_v_size, 8))); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 218, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_v_newsize = __pyx_t_6;
     __pyx_t_6 = 0;
 
-    /* "recordclass/_litelist.pyx":184
+    /* "recordclass/_litelist.pyx":219
  *         if size + size < self.allocated:
  *             newsize = size + (size // 8)
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))             # <<<<<<<<<<<<<<
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))             # <<<<<<<<<<<<<<
  *             self.allocated = newsize
  * 
  */
-    __pyx_t_6 = __Pyx_PyInt_FromSize_t((sizeof(PyObject *))); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 184, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_FromSize_t((sizeof(PyObject *))); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 219, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_5 = PyNumber_Multiply(__pyx_v_newsize, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 184, __pyx_L1_error)
+    __pyx_t_5 = PyNumber_Multiply(__pyx_v_newsize, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 219, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_7 = __Pyx_PyInt_As_size_t(__pyx_t_5); if (unlikely((__pyx_t_7 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 184, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyInt_As_size_t(__pyx_t_5); if (unlikely((__pyx_t_7 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 219, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_v_self->items = ((PyObject **)PyObject_Realloc(__pyx_v_self->items, __pyx_t_7));
+    __pyx_v_self->items = ((PyObject **)PyMem_Realloc(__pyx_v_self->items, __pyx_t_7));
 
-    /* "recordclass/_litelist.pyx":185
+    /* "recordclass/_litelist.pyx":220
  *             newsize = size + (size // 8)
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
  *             self.allocated = newsize             # <<<<<<<<<<<<<<
  * 
  *     def __repr__(self):
  */
-    __pyx_t_1 = __Pyx_PyIndex_AsSsize_t(__pyx_v_newsize); if (unlikely((__pyx_t_1 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 185, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyIndex_AsSsize_t(__pyx_v_newsize); if (unlikely((__pyx_t_1 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 220, __pyx_L1_error)
     __pyx_v_self->allocated = __pyx_t_1;
 
-    /* "recordclass/_litelist.pyx":182
- *             i += 1
+    /* "recordclass/_litelist.pyx":217
+ *         items[i] = NULL
  * 
  *         if size + size < self.allocated:             # <<<<<<<<<<<<<<
  *             newsize = size + (size // 8)
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
  */
   }
 
-  /* "recordclass/_litelist.pyx":165
- *             self.items[i] = <PyObject*>val
+  /* "recordclass/_litelist.pyx":199
+ *             raise IndexError('invalid index: %s' % index)
  * 
  *     def __delitem__(self, index):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i = index
@@ -2994,7 +3373,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_8__delitem__(struct PyLit
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":187
+/* "recordclass/_litelist.pyx":222
  *             self.allocated = newsize
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -3034,7 +3413,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_10__repr__(struct P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__repr__", 0);
 
-  /* "recordclass/_litelist.pyx":189
+  /* "recordclass/_litelist.pyx":224
  *     def __repr__(self):
  *         cdef Py_ssize_t i
  *         cdef Py_ssize_t size = self.size             # <<<<<<<<<<<<<<
@@ -3044,7 +3423,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_10__repr__(struct P
   __pyx_t_1 = __pyx_v_self->size;
   __pyx_v_size = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":192
+  /* "recordclass/_litelist.pyx":227
  *         cdef list temp
  * 
  *         if size == 0:             # <<<<<<<<<<<<<<
@@ -3054,7 +3433,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_10__repr__(struct P
   __pyx_t_2 = ((__pyx_v_size == 0) != 0);
   if (__pyx_t_2) {
 
-    /* "recordclass/_litelist.pyx":193
+    /* "recordclass/_litelist.pyx":228
  * 
  *         if size == 0:
  *             return "litelist([])"             # <<<<<<<<<<<<<<
@@ -3066,7 +3445,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_10__repr__(struct P
     __pyx_r = __pyx_kp_u_litelist;
     goto __pyx_L0;
 
-    /* "recordclass/_litelist.pyx":192
+    /* "recordclass/_litelist.pyx":227
  *         cdef list temp
  * 
  *         if size == 0:             # <<<<<<<<<<<<<<
@@ -3075,19 +3454,19 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_10__repr__(struct P
  */
   }
 
-  /* "recordclass/_litelist.pyx":195
+  /* "recordclass/_litelist.pyx":230
  *             return "litelist([])"
  * 
  *         temp = []             # <<<<<<<<<<<<<<
  *         for i in range(size):
  *             val = <object>self.items[i]
  */
-  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 195, __pyx_L1_error)
+  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 230, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_v_temp = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "recordclass/_litelist.pyx":196
+  /* "recordclass/_litelist.pyx":231
  * 
  *         temp = []
  *         for i in range(size):             # <<<<<<<<<<<<<<
@@ -3099,7 +3478,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_10__repr__(struct P
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "recordclass/_litelist.pyx":197
+    /* "recordclass/_litelist.pyx":232
  *         temp = []
  *         for i in range(size):
  *             val = <object>self.items[i]             # <<<<<<<<<<<<<<
@@ -3111,20 +3490,20 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_10__repr__(struct P
     __Pyx_XDECREF_SET(__pyx_v_val, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "recordclass/_litelist.pyx":198
+    /* "recordclass/_litelist.pyx":233
  *         for i in range(size):
  *             val = <object>self.items[i]
  *             temp.append(repr(val))             # <<<<<<<<<<<<<<
  * 
  *         return "litelist([" + ", ".join(temp) + "])"
  */
-    __pyx_t_3 = PyObject_Repr(__pyx_v_val); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 198, __pyx_L1_error)
+    __pyx_t_3 = PyObject_Repr(__pyx_v_val); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 233, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_6 = __Pyx_PyList_Append(__pyx_v_temp, __pyx_t_3); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 198, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyList_Append(__pyx_v_temp, __pyx_t_3); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 233, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
 
-  /* "recordclass/_litelist.pyx":200
+  /* "recordclass/_litelist.pyx":235
  *             temp.append(repr(val))
  * 
  *         return "litelist([" + ", ".join(temp) + "])"             # <<<<<<<<<<<<<<
@@ -3132,19 +3511,19 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_10__repr__(struct P
  *     def __reduce__(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_3 = PyUnicode_Join(__pyx_kp_u__5, __pyx_v_temp); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 200, __pyx_L1_error)
+  __pyx_t_3 = PyUnicode_Join(__pyx_kp_u__5, __pyx_v_temp); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 235, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_7 = __Pyx_PyUnicode_Concat(__pyx_kp_u_litelist_2, __pyx_t_3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 200, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyUnicode_Concat(__pyx_kp_u_litelist_2, __pyx_t_3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 235, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyUnicode_Concat(__pyx_t_7, __pyx_kp_u__6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 200, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyUnicode_Concat(__pyx_t_7, __pyx_kp_u__6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 235, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "recordclass/_litelist.pyx":187
+  /* "recordclass/_litelist.pyx":222
  *             self.allocated = newsize
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -3166,7 +3545,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_10__repr__(struct P
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":202
+/* "recordclass/_litelist.pyx":237
  *         return "litelist([" + ", ".join(temp) + "])"
  * 
  *     def __reduce__(self):             # <<<<<<<<<<<<<<
@@ -3199,7 +3578,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_12__reduce__(struct
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce__", 0);
 
-  /* "recordclass/_litelist.pyx":203
+  /* "recordclass/_litelist.pyx":238
  * 
  *     def __reduce__(self):
  *         return self.__class__, (tuple(self),)             # <<<<<<<<<<<<<<
@@ -3207,16 +3586,16 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_12__reduce__(struct
  *     def append(self, val):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PySequence_Tuple(((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 203, __pyx_L1_error)
+  __pyx_t_2 = PySequence_Tuple(((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 203, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 203, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
@@ -3228,7 +3607,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_12__reduce__(struct
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "recordclass/_litelist.pyx":202
+  /* "recordclass/_litelist.pyx":237
  *         return "litelist([" + ", ".join(temp) + "])"
  * 
  *     def __reduce__(self):             # <<<<<<<<<<<<<<
@@ -3249,11 +3628,11 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_12__reduce__(struct
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":205
+/* "recordclass/_litelist.pyx":240
  *         return self.__class__, (tuple(self),)
  * 
  *     def append(self, val):             # <<<<<<<<<<<<<<
- *         cdef Py_ssize_t i, newsize, size = self.size
+ *         cdef Py_ssize_t newsize, size = self.size
  * 
  */
 
@@ -3280,63 +3659,63 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_14append(struct PyL
   int __pyx_t_2;
   __Pyx_RefNannySetupContext("append", 0);
 
-  /* "recordclass/_litelist.pyx":206
+  /* "recordclass/_litelist.pyx":241
  * 
  *     def append(self, val):
- *         cdef Py_ssize_t i, newsize, size = self.size             # <<<<<<<<<<<<<<
+ *         cdef Py_ssize_t newsize, size = self.size             # <<<<<<<<<<<<<<
  * 
  *         if size == self.allocated:
  */
   __pyx_t_1 = __pyx_v_self->size;
   __pyx_v_size = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":208
- *         cdef Py_ssize_t i, newsize, size = self.size
+  /* "recordclass/_litelist.pyx":243
+ *         cdef Py_ssize_t newsize, size = self.size
  * 
  *         if size == self.allocated:             # <<<<<<<<<<<<<<
  *             newsize = resize(size+1)
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
  */
   __pyx_t_2 = ((__pyx_v_size == __pyx_v_self->allocated) != 0);
   if (__pyx_t_2) {
 
-    /* "recordclass/_litelist.pyx":209
+    /* "recordclass/_litelist.pyx":244
  * 
  *         if size == self.allocated:
  *             newsize = resize(size+1)             # <<<<<<<<<<<<<<
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
  *             self.allocated = newsize
  */
     __pyx_v_newsize = __pyx_f_11recordclass_9_litelist_resize((__pyx_v_size + 1));
 
-    /* "recordclass/_litelist.pyx":210
+    /* "recordclass/_litelist.pyx":245
  *         if size == self.allocated:
  *             newsize = resize(size+1)
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))             # <<<<<<<<<<<<<<
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))             # <<<<<<<<<<<<<<
  *             self.allocated = newsize
  * 
  */
-    __pyx_v_self->items = ((PyObject **)PyObject_Realloc(__pyx_v_self->items, (__pyx_v_newsize * (sizeof(PyObject *)))));
+    __pyx_v_self->items = ((PyObject **)PyMem_Realloc(__pyx_v_self->items, (__pyx_v_newsize * (sizeof(PyObject *)))));
 
-    /* "recordclass/_litelist.pyx":211
+    /* "recordclass/_litelist.pyx":246
  *             newsize = resize(size+1)
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
  *             self.allocated = newsize             # <<<<<<<<<<<<<<
  * 
  *         Py_INCREF(<PyObject*>val)
  */
     __pyx_v_self->allocated = __pyx_v_newsize;
 
-    /* "recordclass/_litelist.pyx":208
- *         cdef Py_ssize_t i, newsize, size = self.size
+    /* "recordclass/_litelist.pyx":243
+ *         cdef Py_ssize_t newsize, size = self.size
  * 
  *         if size == self.allocated:             # <<<<<<<<<<<<<<
  *             newsize = resize(size+1)
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
  */
   }
 
-  /* "recordclass/_litelist.pyx":213
+  /* "recordclass/_litelist.pyx":248
  *             self.allocated = newsize
  * 
  *         Py_INCREF(<PyObject*>val)             # <<<<<<<<<<<<<<
@@ -3345,7 +3724,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_14append(struct PyL
  */
   Py_INCREF(((PyObject *)__pyx_v_val));
 
-  /* "recordclass/_litelist.pyx":214
+  /* "recordclass/_litelist.pyx":249
  * 
  *         Py_INCREF(<PyObject*>val)
  *         self.items[self.size] = <PyObject*>val             # <<<<<<<<<<<<<<
@@ -3354,7 +3733,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_14append(struct PyL
  */
   (__pyx_v_self->items[__pyx_v_self->size]) = ((PyObject *)__pyx_v_val);
 
-  /* "recordclass/_litelist.pyx":215
+  /* "recordclass/_litelist.pyx":250
  *         Py_INCREF(<PyObject*>val)
  *         self.items[self.size] = <PyObject*>val
  *         self.size += 1             # <<<<<<<<<<<<<<
@@ -3363,11 +3742,11 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_14append(struct PyL
  */
   __pyx_v_self->size = (__pyx_v_self->size + 1);
 
-  /* "recordclass/_litelist.pyx":205
+  /* "recordclass/_litelist.pyx":240
  *         return self.__class__, (tuple(self),)
  * 
  *     def append(self, val):             # <<<<<<<<<<<<<<
- *         cdef Py_ssize_t i, newsize, size = self.size
+ *         cdef Py_ssize_t newsize, size = self.size
  * 
  */
 
@@ -3378,7 +3757,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_14append(struct PyL
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":217
+/* "recordclass/_litelist.pyx":252
  *         self.size += 1
  * 
  *     def remove(self, ob):             # <<<<<<<<<<<<<<
@@ -3411,7 +3790,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
   int __pyx_t_3;
   __Pyx_RefNannySetupContext("remove", 0);
 
-  /* "recordclass/_litelist.pyx":218
+  /* "recordclass/_litelist.pyx":253
  * 
  *     def remove(self, ob):
  *         cdef Py_ssize_t i, size = self.size             # <<<<<<<<<<<<<<
@@ -3421,7 +3800,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
   __pyx_t_1 = __pyx_v_self->size;
   __pyx_v_size = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":219
+  /* "recordclass/_litelist.pyx":254
  *     def remove(self, ob):
  *         cdef Py_ssize_t i, size = self.size
  *         cdef PyObject **items = self.items             # <<<<<<<<<<<<<<
@@ -3431,7 +3810,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
   __pyx_t_2 = __pyx_v_self->items;
   __pyx_v_items = __pyx_t_2;
 
-  /* "recordclass/_litelist.pyx":221
+  /* "recordclass/_litelist.pyx":256
  *         cdef PyObject **items = self.items
  * 
  *         i = 0             # <<<<<<<<<<<<<<
@@ -3440,7 +3819,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
  */
   __pyx_v_i = 0;
 
-  /* "recordclass/_litelist.pyx":222
+  /* "recordclass/_litelist.pyx":257
  * 
  *         i = 0
  *         while i < size:             # <<<<<<<<<<<<<<
@@ -3451,7 +3830,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
     __pyx_t_3 = ((__pyx_v_i < __pyx_v_size) != 0);
     if (!__pyx_t_3) break;
 
-    /* "recordclass/_litelist.pyx":223
+    /* "recordclass/_litelist.pyx":258
  *         i = 0
  *         while i < size:
  *             if items[i] == <PyObject*>ob:             # <<<<<<<<<<<<<<
@@ -3461,7 +3840,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
     __pyx_t_3 = (((__pyx_v_items[__pyx_v_i]) == ((PyObject *)__pyx_v_ob)) != 0);
     if (__pyx_t_3) {
 
-      /* "recordclass/_litelist.pyx":224
+      /* "recordclass/_litelist.pyx":259
  *         while i < size:
  *             if items[i] == <PyObject*>ob:
  *                 break             # <<<<<<<<<<<<<<
@@ -3470,7 +3849,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
  */
       goto __pyx_L4_break;
 
-      /* "recordclass/_litelist.pyx":223
+      /* "recordclass/_litelist.pyx":258
  *         i = 0
  *         while i < size:
  *             if items[i] == <PyObject*>ob:             # <<<<<<<<<<<<<<
@@ -3479,7 +3858,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
  */
     }
 
-    /* "recordclass/_litelist.pyx":225
+    /* "recordclass/_litelist.pyx":260
  *             if items[i] == <PyObject*>ob:
  *                 break
  *             i += 1             # <<<<<<<<<<<<<<
@@ -3490,7 +3869,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
   }
   __pyx_L4_break:;
 
-  /* "recordclass/_litelist.pyx":227
+  /* "recordclass/_litelist.pyx":262
  *             i += 1
  * 
  *         if i == size:             # <<<<<<<<<<<<<<
@@ -3500,7 +3879,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
   __pyx_t_3 = ((__pyx_v_i == __pyx_v_size) != 0);
   if (__pyx_t_3) {
 
-    /* "recordclass/_litelist.pyx":228
+    /* "recordclass/_litelist.pyx":263
  * 
  *         if i == size:
  *             return             # <<<<<<<<<<<<<<
@@ -3511,7 +3890,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
     __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "recordclass/_litelist.pyx":227
+    /* "recordclass/_litelist.pyx":262
  *             i += 1
  * 
  *         if i == size:             # <<<<<<<<<<<<<<
@@ -3520,7 +3899,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
  */
   }
 
-  /* "recordclass/_litelist.pyx":230
+  /* "recordclass/_litelist.pyx":265
  *             return
  * 
  *         Py_DECREF(items[i])             # <<<<<<<<<<<<<<
@@ -3529,7 +3908,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
  */
   Py_DECREF((__pyx_v_items[__pyx_v_i]));
 
-  /* "recordclass/_litelist.pyx":231
+  /* "recordclass/_litelist.pyx":266
  * 
  *         Py_DECREF(items[i])
  *         size -= 1             # <<<<<<<<<<<<<<
@@ -3538,7 +3917,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
  */
   __pyx_v_size = (__pyx_v_size - 1);
 
-  /* "recordclass/_litelist.pyx":232
+  /* "recordclass/_litelist.pyx":267
  *         Py_DECREF(items[i])
  *         size -= 1
  *         self.size = size             # <<<<<<<<<<<<<<
@@ -3547,7 +3926,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
  */
   __pyx_v_self->size = __pyx_v_size;
 
-  /* "recordclass/_litelist.pyx":233
+  /* "recordclass/_litelist.pyx":268
  *         size -= 1
  *         self.size = size
  *         while i < size:             # <<<<<<<<<<<<<<
@@ -3558,26 +3937,35 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
     __pyx_t_3 = ((__pyx_v_i < __pyx_v_size) != 0);
     if (!__pyx_t_3) break;
 
-    /* "recordclass/_litelist.pyx":234
+    /* "recordclass/_litelist.pyx":269
  *         self.size = size
  *         while i < size:
  *             items[i] = items[i+1]             # <<<<<<<<<<<<<<
  *             i += 1
- * 
+ *         items[i] = NULL
  */
     (__pyx_v_items[__pyx_v_i]) = (__pyx_v_items[(__pyx_v_i + 1)]);
 
-    /* "recordclass/_litelist.pyx":235
+    /* "recordclass/_litelist.pyx":270
  *         while i < size:
  *             items[i] = items[i+1]
  *             i += 1             # <<<<<<<<<<<<<<
+ *         items[i] = NULL
  * 
- *     def extend(self, vals):
  */
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "recordclass/_litelist.pyx":217
+  /* "recordclass/_litelist.pyx":271
+ *             items[i] = items[i+1]
+ *             i += 1
+ *         items[i] = NULL             # <<<<<<<<<<<<<<
+ * 
+ *     def extend(self, vals):
+ */
+  (__pyx_v_items[__pyx_v_i]) = NULL;
+
+  /* "recordclass/_litelist.pyx":252
  *         self.size += 1
  * 
  *     def remove(self, ob):             # <<<<<<<<<<<<<<
@@ -3593,8 +3981,8 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_16remove(struct PyL
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":237
- *             i += 1
+/* "recordclass/_litelist.pyx":273
+ *         items[i] = NULL
  * 
  *     def extend(self, vals):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i, newsize, size = self.size
@@ -3634,7 +4022,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("extend", 0);
 
-  /* "recordclass/_litelist.pyx":238
+  /* "recordclass/_litelist.pyx":274
  * 
  *     def extend(self, vals):
  *         cdef Py_ssize_t i, newsize, size = self.size             # <<<<<<<<<<<<<<
@@ -3644,17 +4032,17 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
   __pyx_t_1 = __pyx_v_self->size;
   __pyx_v_size = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":239
+  /* "recordclass/_litelist.pyx":275
  *     def extend(self, vals):
  *         cdef Py_ssize_t i, newsize, size = self.size
  *         cdef Py_ssize_t n=len(vals)             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t size_n = size + n
  * 
  */
-  __pyx_t_1 = PyObject_Length(__pyx_v_vals); if (unlikely(__pyx_t_1 == ((Py_ssize_t)-1))) __PYX_ERR(0, 239, __pyx_L1_error)
+  __pyx_t_1 = PyObject_Length(__pyx_v_vals); if (unlikely(__pyx_t_1 == ((Py_ssize_t)-1))) __PYX_ERR(0, 275, __pyx_L1_error)
   __pyx_v_n = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":240
+  /* "recordclass/_litelist.pyx":276
  *         cdef Py_ssize_t i, newsize, size = self.size
  *         cdef Py_ssize_t n=len(vals)
  *         cdef Py_ssize_t size_n = size + n             # <<<<<<<<<<<<<<
@@ -3663,7 +4051,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
  */
   __pyx_v_size_n = (__pyx_v_size + __pyx_v_n);
 
-  /* "recordclass/_litelist.pyx":242
+  /* "recordclass/_litelist.pyx":278
  *         cdef Py_ssize_t size_n = size + n
  * 
  *         if size_n > self.allocated:             # <<<<<<<<<<<<<<
@@ -3673,34 +4061,34 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
   __pyx_t_2 = ((__pyx_v_size_n > __pyx_v_self->allocated) != 0);
   if (__pyx_t_2) {
 
-    /* "recordclass/_litelist.pyx":243
+    /* "recordclass/_litelist.pyx":279
  * 
  *         if size_n > self.allocated:
  *             newsize = resize(size_n)             # <<<<<<<<<<<<<<
  * 
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
  */
     __pyx_v_newsize = __pyx_f_11recordclass_9_litelist_resize(__pyx_v_size_n);
 
-    /* "recordclass/_litelist.pyx":245
+    /* "recordclass/_litelist.pyx":281
  *             newsize = resize(size_n)
  * 
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))             # <<<<<<<<<<<<<<
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))             # <<<<<<<<<<<<<<
  *             self.allocated = newsize
  * 
  */
-    __pyx_v_self->items = ((PyObject **)PyObject_Realloc(__pyx_v_self->items, (__pyx_v_newsize * (sizeof(PyObject *)))));
+    __pyx_v_self->items = ((PyObject **)PyMem_Realloc(__pyx_v_self->items, (__pyx_v_newsize * (sizeof(PyObject *)))));
 
-    /* "recordclass/_litelist.pyx":246
+    /* "recordclass/_litelist.pyx":282
  * 
- *             self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+ *             self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
  *             self.allocated = newsize             # <<<<<<<<<<<<<<
  * 
  *         i = size
  */
     __pyx_v_self->allocated = __pyx_v_newsize;
 
-    /* "recordclass/_litelist.pyx":242
+    /* "recordclass/_litelist.pyx":278
  *         cdef Py_ssize_t size_n = size + n
  * 
  *         if size_n > self.allocated:             # <<<<<<<<<<<<<<
@@ -3709,7 +4097,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
  */
   }
 
-  /* "recordclass/_litelist.pyx":248
+  /* "recordclass/_litelist.pyx":284
  *             self.allocated = newsize
  * 
  *         i = size             # <<<<<<<<<<<<<<
@@ -3718,7 +4106,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
  */
   __pyx_v_i = __pyx_v_size;
 
-  /* "recordclass/_litelist.pyx":249
+  /* "recordclass/_litelist.pyx":285
  * 
  *         i = size
  *         for val in vals:             # <<<<<<<<<<<<<<
@@ -3729,26 +4117,26 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
     __pyx_t_3 = __pyx_v_vals; __Pyx_INCREF(__pyx_t_3); __pyx_t_1 = 0;
     __pyx_t_4 = NULL;
   } else {
-    __pyx_t_1 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_v_vals); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 249, __pyx_L1_error)
+    __pyx_t_1 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_v_vals); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 285, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 249, __pyx_L1_error)
+    __pyx_t_4 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 285, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_4)) {
       if (likely(PyList_CheckExact(__pyx_t_3))) {
         if (__pyx_t_1 >= PyList_GET_SIZE(__pyx_t_3)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_1); __Pyx_INCREF(__pyx_t_5); __pyx_t_1++; if (unlikely(0 < 0)) __PYX_ERR(0, 249, __pyx_L1_error)
+        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_1); __Pyx_INCREF(__pyx_t_5); __pyx_t_1++; if (unlikely(0 < 0)) __PYX_ERR(0, 285, __pyx_L1_error)
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_1); __pyx_t_1++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 249, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_1); __pyx_t_1++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 285, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       } else {
         if (__pyx_t_1 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_1); __Pyx_INCREF(__pyx_t_5); __pyx_t_1++; if (unlikely(0 < 0)) __PYX_ERR(0, 249, __pyx_L1_error)
+        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_1); __Pyx_INCREF(__pyx_t_5); __pyx_t_1++; if (unlikely(0 < 0)) __PYX_ERR(0, 285, __pyx_L1_error)
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_1); __pyx_t_1++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 249, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_1); __pyx_t_1++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 285, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       }
@@ -3758,7 +4146,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 249, __pyx_L1_error)
+          else __PYX_ERR(0, 285, __pyx_L1_error)
         }
         break;
       }
@@ -3767,7 +4155,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
     __Pyx_XDECREF_SET(__pyx_v_val, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "recordclass/_litelist.pyx":250
+    /* "recordclass/_litelist.pyx":286
  *         i = size
  *         for val in vals:
  *             Py_INCREF(<PyObject*>val)             # <<<<<<<<<<<<<<
@@ -3776,7 +4164,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
  */
     Py_INCREF(((PyObject *)__pyx_v_val));
 
-    /* "recordclass/_litelist.pyx":251
+    /* "recordclass/_litelist.pyx":287
  *         for val in vals:
  *             Py_INCREF(<PyObject*>val)
  *             self.items[i] = <PyObject*>val             # <<<<<<<<<<<<<<
@@ -3785,7 +4173,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
  */
     (__pyx_v_self->items[__pyx_v_i]) = ((PyObject *)__pyx_v_val);
 
-    /* "recordclass/_litelist.pyx":252
+    /* "recordclass/_litelist.pyx":288
  *             Py_INCREF(<PyObject*>val)
  *             self.items[i] = <PyObject*>val
  *             i += 1             # <<<<<<<<<<<<<<
@@ -3794,7 +4182,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
  */
     __pyx_v_i = (__pyx_v_i + 1);
 
-    /* "recordclass/_litelist.pyx":249
+    /* "recordclass/_litelist.pyx":285
  * 
  *         i = size
  *         for val in vals:             # <<<<<<<<<<<<<<
@@ -3804,7 +4192,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "recordclass/_litelist.pyx":253
+  /* "recordclass/_litelist.pyx":289
  *             self.items[i] = <PyObject*>val
  *             i += 1
  *         self.size += n             # <<<<<<<<<<<<<<
@@ -3813,8 +4201,8 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
  */
   __pyx_v_self->size = (__pyx_v_self->size + __pyx_v_n);
 
-  /* "recordclass/_litelist.pyx":237
- *             i += 1
+  /* "recordclass/_litelist.pyx":273
+ *         items[i] = NULL
  * 
  *     def extend(self, vals):             # <<<<<<<<<<<<<<
  *         cdef Py_ssize_t i, newsize, size = self.size
@@ -3836,7 +4224,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_18extend(struct PyL
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":255
+/* "recordclass/_litelist.pyx":291
  *         self.size += n
  * 
  *     def trim(self):             # <<<<<<<<<<<<<<
@@ -3865,35 +4253,35 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_20trim(struct PyLit
   Py_ssize_t __pyx_t_1;
   __Pyx_RefNannySetupContext("trim", 0);
 
-  /* "recordclass/_litelist.pyx":256
+  /* "recordclass/_litelist.pyx":292
  * 
  *     def trim(self):
  *         cdef Py_ssize_t size = self.size             # <<<<<<<<<<<<<<
  * 
- *         self.items = <PyObject**>PyObject_Realloc(self.items, size*sizeof(PyObject*))
+ *         self.items = <PyObject**>PyMem_Realloc(self.items, size*sizeof(PyObject*))
  */
   __pyx_t_1 = __pyx_v_self->size;
   __pyx_v_size = __pyx_t_1;
 
-  /* "recordclass/_litelist.pyx":258
+  /* "recordclass/_litelist.pyx":294
  *         cdef Py_ssize_t size = self.size
  * 
- *         self.items = <PyObject**>PyObject_Realloc(self.items, size*sizeof(PyObject*))             # <<<<<<<<<<<<<<
+ *         self.items = <PyObject**>PyMem_Realloc(self.items, size*sizeof(PyObject*))             # <<<<<<<<<<<<<<
  *         self.allocated = size
  * 
  */
-  __pyx_v_self->items = ((PyObject **)PyObject_Realloc(__pyx_v_self->items, (__pyx_v_size * (sizeof(PyObject *)))));
+  __pyx_v_self->items = ((PyObject **)PyMem_Realloc(__pyx_v_self->items, (__pyx_v_size * (sizeof(PyObject *)))));
 
-  /* "recordclass/_litelist.pyx":259
+  /* "recordclass/_litelist.pyx":295
  * 
- *         self.items = <PyObject**>PyObject_Realloc(self.items, size*sizeof(PyObject*))
+ *         self.items = <PyObject**>PyMem_Realloc(self.items, size*sizeof(PyObject*))
  *         self.allocated = size             # <<<<<<<<<<<<<<
  * 
  *     def __len__(self):
  */
   __pyx_v_self->allocated = __pyx_v_size;
 
-  /* "recordclass/_litelist.pyx":255
+  /* "recordclass/_litelist.pyx":291
  *         self.size += n
  * 
  *     def trim(self):             # <<<<<<<<<<<<<<
@@ -3908,7 +4296,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_20trim(struct PyLit
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":261
+/* "recordclass/_litelist.pyx":297
  *         self.allocated = size
  * 
  *     def __len__(self):             # <<<<<<<<<<<<<<
@@ -3934,7 +4322,7 @@ static Py_ssize_t __pyx_pf_11recordclass_9_litelist_8litelist_22__len__(struct P
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__len__", 0);
 
-  /* "recordclass/_litelist.pyx":262
+  /* "recordclass/_litelist.pyx":298
  * 
  *     def __len__(self):
  *         return self.size             # <<<<<<<<<<<<<<
@@ -3944,7 +4332,7 @@ static Py_ssize_t __pyx_pf_11recordclass_9_litelist_8litelist_22__len__(struct P
   __pyx_r = __pyx_v_self->size;
   goto __pyx_L0;
 
-  /* "recordclass/_litelist.pyx":261
+  /* "recordclass/_litelist.pyx":297
  *         self.allocated = size
  * 
  *     def __len__(self):             # <<<<<<<<<<<<<<
@@ -3958,7 +4346,7 @@ static Py_ssize_t __pyx_pf_11recordclass_9_litelist_8litelist_22__len__(struct P
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":264
+/* "recordclass/_litelist.pyx":300
  *         return self.size
  * 
  *     def __sizeof__(self):             # <<<<<<<<<<<<<<
@@ -3989,21 +4377,21 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_24__sizeof__(struct
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__sizeof__", 0);
 
-  /* "recordclass/_litelist.pyx":265
+  /* "recordclass/_litelist.pyx":301
  * 
  *     def __sizeof__(self):
  *         return sizeof(litelist) + sizeof(PyObject*) * self.allocated             # <<<<<<<<<<<<<<
  * 
- *     def __nonzero__(self):
+ *     def __bool__(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(((sizeof(struct PyLiteListObject)) + ((sizeof(PyObject *)) * __pyx_v_self->allocated))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 265, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(((sizeof(struct PyLiteListObject)) + ((sizeof(PyObject *)) * __pyx_v_self->allocated))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 301, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "recordclass/_litelist.pyx":264
+  /* "recordclass/_litelist.pyx":300
  *         return self.size
  * 
  *     def __sizeof__(self):             # <<<<<<<<<<<<<<
@@ -4022,35 +4410,35 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_24__sizeof__(struct
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":267
+/* "recordclass/_litelist.pyx":303
  *         return sizeof(litelist) + sizeof(PyObject*) * self.allocated
  * 
- *     def __nonzero__(self):             # <<<<<<<<<<<<<<
+ *     def __bool__(self):             # <<<<<<<<<<<<<<
  *         return self.size > 0
  * 
  */
 
 /* Python wrapper */
-static int __pyx_pw_11recordclass_9_litelist_8litelist_27__nonzero__(PyObject *__pyx_v_self); /*proto*/
-static int __pyx_pw_11recordclass_9_litelist_8litelist_27__nonzero__(PyObject *__pyx_v_self) {
+static int __pyx_pw_11recordclass_9_litelist_8litelist_27__bool__(PyObject *__pyx_v_self); /*proto*/
+static int __pyx_pw_11recordclass_9_litelist_8litelist_27__bool__(PyObject *__pyx_v_self) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__nonzero__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_11recordclass_9_litelist_8litelist_26__nonzero__(((struct PyLiteListObject *)__pyx_v_self));
+  __Pyx_RefNannySetupContext("__bool__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_11recordclass_9_litelist_8litelist_26__bool__(((struct PyLiteListObject *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_11recordclass_9_litelist_8litelist_26__nonzero__(struct PyLiteListObject *__pyx_v_self) {
+static int __pyx_pf_11recordclass_9_litelist_8litelist_26__bool__(struct PyLiteListObject *__pyx_v_self) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__nonzero__", 0);
+  __Pyx_RefNannySetupContext("__bool__", 0);
 
-  /* "recordclass/_litelist.pyx":268
+  /* "recordclass/_litelist.pyx":304
  * 
- *     def __nonzero__(self):
+ *     def __bool__(self):
  *         return self.size > 0             # <<<<<<<<<<<<<<
  * 
  *     def __iter__(self):
@@ -4058,10 +4446,10 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_26__nonzero__(struct PyLi
   __pyx_r = (__pyx_v_self->size > 0);
   goto __pyx_L0;
 
-  /* "recordclass/_litelist.pyx":267
+  /* "recordclass/_litelist.pyx":303
  *         return sizeof(litelist) + sizeof(PyObject*) * self.allocated
  * 
- *     def __nonzero__(self):             # <<<<<<<<<<<<<<
+ *     def __bool__(self):             # <<<<<<<<<<<<<<
  *         return self.size > 0
  * 
  */
@@ -4072,7 +4460,7 @@ static int __pyx_pf_11recordclass_9_litelist_8litelist_26__nonzero__(struct PyLi
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":270
+/* "recordclass/_litelist.pyx":306
  *         return self.size > 0
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -4102,7 +4490,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_28__iter__(struct P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__iter__", 0);
 
-  /* "recordclass/_litelist.pyx":271
+  /* "recordclass/_litelist.pyx":307
  * 
  *     def __iter__(self):
  *         return litelistiter(self)             # <<<<<<<<<<<<<<
@@ -4110,13 +4498,13 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_28__iter__(struct P
  * cdef class litelistiter:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_ptype_11recordclass_9_litelist_litelistiter), ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 271, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_ptype_11recordclass_9_litelist_litelistiter), ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 307, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "recordclass/_litelist.pyx":270
+  /* "recordclass/_litelist.pyx":306
  *         return self.size > 0
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -4135,7 +4523,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_8litelist_28__iter__(struct P
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":277
+/* "recordclass/_litelist.pyx":313
  *     cdef Py_ssize_t i
  * 
  *     def __init__(self, litelist op):             # <<<<<<<<<<<<<<
@@ -4172,7 +4560,7 @@ static int __pyx_pw_11recordclass_9_litelist_12litelistiter_1__init__(PyObject *
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 277, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 313, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
       goto __pyx_L5_argtuple_error;
@@ -4183,13 +4571,13 @@ static int __pyx_pw_11recordclass_9_litelist_12litelistiter_1__init__(PyObject *
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 277, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 313, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("recordclass._litelist.litelistiter.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_op), __pyx_ptype_11recordclass_9_litelist_litelist, 1, "op", 0))) __PYX_ERR(0, 277, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_op), __pyx_ptype_11recordclass_9_litelist_litelist, 1, "op", 0))) __PYX_ERR(0, 313, __pyx_L1_error)
   __pyx_r = __pyx_pf_11recordclass_9_litelist_12litelistiter___init__(((struct __pyx_obj_11recordclass_9_litelist_litelistiter *)__pyx_v_self), __pyx_v_op);
 
   /* function exit code */
@@ -4206,7 +4594,7 @@ static int __pyx_pf_11recordclass_9_litelist_12litelistiter___init__(struct __py
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "recordclass/_litelist.pyx":278
+  /* "recordclass/_litelist.pyx":314
  * 
  *     def __init__(self, litelist op):
  *         self.op = op             # <<<<<<<<<<<<<<
@@ -4219,7 +4607,7 @@ static int __pyx_pf_11recordclass_9_litelist_12litelistiter___init__(struct __py
   __Pyx_DECREF(((PyObject *)__pyx_v_self->op));
   __pyx_v_self->op = __pyx_v_op;
 
-  /* "recordclass/_litelist.pyx":279
+  /* "recordclass/_litelist.pyx":315
  *     def __init__(self, litelist op):
  *         self.op = op
  *         self.i = 0             # <<<<<<<<<<<<<<
@@ -4228,7 +4616,7 @@ static int __pyx_pf_11recordclass_9_litelist_12litelistiter___init__(struct __py
  */
   __pyx_v_self->i = 0;
 
-  /* "recordclass/_litelist.pyx":277
+  /* "recordclass/_litelist.pyx":313
  *     cdef Py_ssize_t i
  * 
  *     def __init__(self, litelist op):             # <<<<<<<<<<<<<<
@@ -4242,7 +4630,7 @@ static int __pyx_pf_11recordclass_9_litelist_12litelistiter___init__(struct __py
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":281
+/* "recordclass/_litelist.pyx":317
  *         self.i = 0
  * 
  *     def __length_hint__(self):             # <<<<<<<<<<<<<<
@@ -4273,7 +4661,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_2__length_hint
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__length_hint__", 0);
 
-  /* "recordclass/_litelist.pyx":282
+  /* "recordclass/_litelist.pyx":318
  * 
  *     def __length_hint__(self):
  *         return self.op.size             # <<<<<<<<<<<<<<
@@ -4281,13 +4669,13 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_2__length_hint
  *     def __next__(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyInt_FromSsize_t(__pyx_v_self->op->size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 282, __pyx_L1_error)
+  __pyx_t_1 = PyInt_FromSsize_t(__pyx_v_self->op->size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 318, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "recordclass/_litelist.pyx":281
+  /* "recordclass/_litelist.pyx":317
  *         self.i = 0
  * 
  *     def __length_hint__(self):             # <<<<<<<<<<<<<<
@@ -4306,7 +4694,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_2__length_hint
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":284
+/* "recordclass/_litelist.pyx":320
  *         return self.op.size
  * 
  *     def __next__(self):             # <<<<<<<<<<<<<<
@@ -4338,7 +4726,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_4__next__(stru
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__next__", 0);
 
-  /* "recordclass/_litelist.pyx":285
+  /* "recordclass/_litelist.pyx":321
  * 
  *     def __next__(self):
  *         if self.i < self.op.size:             # <<<<<<<<<<<<<<
@@ -4348,19 +4736,19 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_4__next__(stru
   __pyx_t_1 = ((__pyx_v_self->i < __pyx_v_self->op->size) != 0);
   if (likely(__pyx_t_1)) {
 
-    /* "recordclass/_litelist.pyx":286
+    /* "recordclass/_litelist.pyx":322
  *     def __next__(self):
  *         if self.i < self.op.size:
  *             v = self.op[self.i]             # <<<<<<<<<<<<<<
  *             self.i += 1
  *             return v
  */
-    __pyx_t_2 = __Pyx_GetItemInt(((PyObject *)__pyx_v_self->op), __pyx_v_self->i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 286, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_GetItemInt(((PyObject *)__pyx_v_self->op), __pyx_v_self->i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 322, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_v_v = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "recordclass/_litelist.pyx":287
+    /* "recordclass/_litelist.pyx":323
  *         if self.i < self.op.size:
  *             v = self.op[self.i]
  *             self.i += 1             # <<<<<<<<<<<<<<
@@ -4369,7 +4757,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_4__next__(stru
  */
     __pyx_v_self->i = (__pyx_v_self->i + 1);
 
-    /* "recordclass/_litelist.pyx":288
+    /* "recordclass/_litelist.pyx":324
  *             v = self.op[self.i]
  *             self.i += 1
  *             return v             # <<<<<<<<<<<<<<
@@ -4381,7 +4769,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_4__next__(stru
     __pyx_r = __pyx_v_v;
     goto __pyx_L0;
 
-    /* "recordclass/_litelist.pyx":285
+    /* "recordclass/_litelist.pyx":321
  * 
  *     def __next__(self):
  *         if self.i < self.op.size:             # <<<<<<<<<<<<<<
@@ -4390,7 +4778,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_4__next__(stru
  */
   }
 
-  /* "recordclass/_litelist.pyx":290
+  /* "recordclass/_litelist.pyx":326
  *             return v
  *         else:
  *             raise StopIteration             # <<<<<<<<<<<<<<
@@ -4399,10 +4787,10 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_4__next__(stru
  */
   /*else*/ {
     __Pyx_Raise(__pyx_builtin_StopIteration, 0, 0, 0);
-    __PYX_ERR(0, 290, __pyx_L1_error)
+    __PYX_ERR(0, 326, __pyx_L1_error)
   }
 
-  /* "recordclass/_litelist.pyx":284
+  /* "recordclass/_litelist.pyx":320
  *         return self.op.size
  * 
  *     def __next__(self):             # <<<<<<<<<<<<<<
@@ -4422,7 +4810,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_4__next__(stru
   return __pyx_r;
 }
 
-/* "recordclass/_litelist.pyx":292
+/* "recordclass/_litelist.pyx":328
  *             raise StopIteration
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -4448,7 +4836,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_6__iter__(stru
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__iter__", 0);
 
-  /* "recordclass/_litelist.pyx":293
+  /* "recordclass/_litelist.pyx":329
  * 
  *     def __iter__(self):
  *         return self             # <<<<<<<<<<<<<<
@@ -4459,7 +4847,7 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_6__iter__(stru
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "recordclass/_litelist.pyx":292
+  /* "recordclass/_litelist.pyx":328
  *             raise StopIteration
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -4781,10 +5169,10 @@ static PyObject *__pyx_pf_11recordclass_9_litelist_12litelistiter_10__setstate_c
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_9_litelist_1__pyx_unpickle_litelistiter(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_11recordclass_9_litelist___pyx_unpickle_litelistiter[] = "__pyx_unpickle_litelistiter(__pyx_type, long __pyx_checksum, __pyx_state)";
-static PyMethodDef __pyx_mdef_11recordclass_9_litelist_1__pyx_unpickle_litelistiter = {"__pyx_unpickle_litelistiter", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_11recordclass_9_litelist_1__pyx_unpickle_litelistiter, METH_VARARGS|METH_KEYWORDS, __pyx_doc_11recordclass_9_litelist___pyx_unpickle_litelistiter};
-static PyObject *__pyx_pw_11recordclass_9_litelist_1__pyx_unpickle_litelistiter(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_11recordclass_9_litelist_3__pyx_unpickle_litelistiter(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_11recordclass_9_litelist_2__pyx_unpickle_litelistiter[] = "__pyx_unpickle_litelistiter(__pyx_type, long __pyx_checksum, __pyx_state)";
+static PyMethodDef __pyx_mdef_11recordclass_9_litelist_3__pyx_unpickle_litelistiter = {"__pyx_unpickle_litelistiter", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_11recordclass_9_litelist_3__pyx_unpickle_litelistiter, METH_VARARGS|METH_KEYWORDS, __pyx_doc_11recordclass_9_litelist_2__pyx_unpickle_litelistiter};
+static PyObject *__pyx_pw_11recordclass_9_litelist_3__pyx_unpickle_litelistiter(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v___pyx_type = 0;
   long __pyx_v___pyx_checksum;
   PyObject *__pyx_v___pyx_state = 0;
@@ -4850,14 +5238,14 @@ static PyObject *__pyx_pw_11recordclass_9_litelist_1__pyx_unpickle_litelistiter(
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_11recordclass_9_litelist___pyx_unpickle_litelistiter(__pyx_self, __pyx_v___pyx_type, __pyx_v___pyx_checksum, __pyx_v___pyx_state);
+  __pyx_r = __pyx_pf_11recordclass_9_litelist_2__pyx_unpickle_litelistiter(__pyx_self, __pyx_v___pyx_type, __pyx_v___pyx_checksum, __pyx_v___pyx_state);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_11recordclass_9_litelist___pyx_unpickle_litelistiter(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_11recordclass_9_litelist_2__pyx_unpickle_litelistiter(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_v___pyx_PickleError = 0;
   PyObject *__pyx_v___pyx_result = 0;
   PyObject *__pyx_r = NULL;
@@ -5249,7 +5637,7 @@ static PyNumberMethods __pyx_tp_as_number_litelist = {
   0, /*nb_negative*/
   0, /*nb_positive*/
   0, /*nb_absolute*/
-  __pyx_pw_11recordclass_9_litelist_8litelist_27__nonzero__, /*nb_nonzero*/
+  __pyx_pw_11recordclass_9_litelist_8litelist_27__bool__, /*nb_nonzero*/
   0, /*nb_invert*/
   0, /*nb_lshift*/
   0, /*nb_rshift*/
@@ -5569,8 +5957,11 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_dict, __pyx_k_dict, sizeof(__pyx_k_dict), 0, 0, 1, 1},
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
+  {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_kp_u_incompatible_range_of_indexes, __pyx_k_incompatible_range_of_indexes, sizeof(__pyx_k_incompatible_range_of_indexes), 0, 1, 0, 0},
+  {&__pyx_kp_u_invalid_index_s, __pyx_k_invalid_index_s, sizeof(__pyx_k_invalid_index_s), 0, 1, 0, 0},
+  {&__pyx_kp_s_lib_recordclass__litelist_pyx, __pyx_k_lib_recordclass__litelist_pyx, sizeof(__pyx_k_lib_recordclass__litelist_pyx), 0, 0, 1, 0},
   {&__pyx_kp_u_litelist, __pyx_k_litelist, sizeof(__pyx_k_litelist), 0, 1, 0, 0},
   {&__pyx_kp_u_litelist_2, __pyx_k_litelist_2, sizeof(__pyx_k_litelist_2), 0, 1, 0, 0},
   {&__pyx_n_s_litelist_3, __pyx_k_litelist_3, sizeof(__pyx_k_litelist_3), 0, 0, 1, 1},
@@ -5578,7 +5969,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_new, __pyx_k_new, sizeof(__pyx_k_new), 0, 0, 1, 1},
+  {&__pyx_n_s_new_litelist, __pyx_k_new_litelist, sizeof(__pyx_k_new_litelist), 0, 0, 1, 1},
   {&__pyx_n_s_op, __pyx_k_op, sizeof(__pyx_k_op), 0, 0, 1, 1},
+  {&__pyx_n_s_p, __pyx_k_p, sizeof(__pyx_k_p), 0, 0, 1, 1},
   {&__pyx_n_s_pickle, __pyx_k_pickle, sizeof(__pyx_k_pickle), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_PickleError, __pyx_k_pyx_PickleError, sizeof(__pyx_k_pyx_PickleError), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_checksum, __pyx_k_pyx_checksum, sizeof(__pyx_k_pyx_checksum), 0, 0, 1, 1},
@@ -5595,16 +5988,18 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_u_s, __pyx_k_s, sizeof(__pyx_k_s), 0, 1, 0, 0},
   {&__pyx_n_s_setstate, __pyx_k_setstate, sizeof(__pyx_k_setstate), 0, 0, 1, 1},
   {&__pyx_n_s_setstate_cython, __pyx_k_setstate_cython, sizeof(__pyx_k_setstate_cython), 0, 0, 1, 1},
+  {&__pyx_n_s_size, __pyx_k_size, sizeof(__pyx_k_size), 0, 0, 1, 1},
   {&__pyx_kp_s_stringsource, __pyx_k_stringsource, sizeof(__pyx_k_stringsource), 0, 0, 1, 0},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_update, __pyx_k_update, sizeof(__pyx_k_update), 0, 0, 1, 1},
+  {&__pyx_n_s_v, __pyx_k_v, sizeof(__pyx_k_v), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 61, __pyx_L1_error)
-  __pyx_builtin_IndexError = __Pyx_GetBuiltinName(__pyx_n_s_IndexError); if (!__pyx_builtin_IndexError) __PYX_ERR(0, 101, __pyx_L1_error)
-  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 118, __pyx_L1_error)
-  __pyx_builtin_StopIteration = __Pyx_GetBuiltinName(__pyx_n_s_StopIteration); if (!__pyx_builtin_StopIteration) __PYX_ERR(0, 290, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_builtin_IndexError = __Pyx_GetBuiltinName(__pyx_n_s_IndexError); if (!__pyx_builtin_IndexError) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 146, __pyx_L1_error)
+  __pyx_builtin_StopIteration = __Pyx_GetBuiltinName(__pyx_n_s_StopIteration); if (!__pyx_builtin_StopIteration) __PYX_ERR(0, 326, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -5614,59 +6009,71 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "recordclass/_litelist.pyx":54
+  /* "recordclass/_litelist.pyx":57
  * 
  * cdef litelist make_empty(Py_ssize_t size):
- *     cdef litelist op = litelist.__new__(litelist, ())             # <<<<<<<<<<<<<<
+ *     cdef litelist op = <litelist>litelist.__new__(litelist, None)             # <<<<<<<<<<<<<<
  *     cdef Py_ssize_t i
  *     cdef PyObject **p;
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_empty_tuple); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 54, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(1, Py_None); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 57, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
-  /* "recordclass/_litelist.pyx":101
+  /* "recordclass/_litelist.pyx":127
  * 
  *         if self.allocated < i + n - 1:
  *             raise IndexError('The slice is too large')             # <<<<<<<<<<<<<<
  * 
  *         for j in range(n):
  */
-  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_u_The_slice_is_too_large); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 101, __pyx_L1_error)
+  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_u_The_slice_is_too_large); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
 
-  /* "recordclass/_litelist.pyx":118
+  /* "recordclass/_litelist.pyx":146
  * 
  *         if n != Py_SIZE(<PyObject*>tpl):
  *             raise ValueError("incompatible range of indexes")             # <<<<<<<<<<<<<<
  * 
  *         for j in range(n):
  */
-  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_kp_u_incompatible_range_of_indexes); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_kp_u_incompatible_range_of_indexes); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 146, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
 
-  /* "recordclass/_litelist.pyx":134
- *         if PySlice_Check(index):
+  /* "recordclass/_litelist.pyx":170
+ *         elif PySlice_Check(index):
  *             if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
  *                 raise IndexError("Invalid slice")             # <<<<<<<<<<<<<<
  *             return self.get_slice(start, stop-start)
  *         else:
  */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_u_Invalid_slice); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_u_Invalid_slice); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 170, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
+
+  /* "recordclass/_litelist.pyx":69
+ *     return <litelist>op
+ * 
+ * def new_litelist(*args):             # <<<<<<<<<<<<<<
+ *     cdef Py_ssize_t i, size = Py_SIZE(<PyObject*>args)
+ *     cdef litelist op = <litelist>litelist.__new__(litelist, None)
+ */
+  __pyx_tuple__7 = PyTuple_Pack(6, __pyx_n_s_args, __pyx_n_s_i, __pyx_n_s_size, __pyx_n_s_op, __pyx_n_s_p, __pyx_n_s_v); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
+  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(0, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS|CO_VARARGS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_lib_recordclass__litelist_pyx, __pyx_n_s_new_litelist, 69, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 69, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_litelistiter(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
  */
-  __pyx_tuple__7 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__7);
-  __Pyx_GIVEREF(__pyx_tuple__7);
-  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_litelistiter, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_tuple__9 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__9);
+  __Pyx_GIVEREF(__pyx_tuple__9);
+  __pyx_codeobj__10 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__9, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_litelistiter, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__10)) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -5724,25 +6131,25 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtabptr_11recordclass_9_litelist_litelist = &__pyx_vtable_11recordclass_9_litelist_litelist;
   __pyx_vtable_11recordclass_9_litelist_litelist.get_slice = (PyObject *(*)(struct PyLiteListObject *, Py_ssize_t, Py_ssize_t))__pyx_f_11recordclass_9_litelist_8litelist_get_slice;
   __pyx_vtable_11recordclass_9_litelist_litelist.set_slice = (PyObject *(*)(struct PyLiteListObject *, Py_ssize_t, Py_ssize_t, PyObject *))__pyx_f_11recordclass_9_litelist_8litelist_set_slice;
-  if (PyType_Ready(&PyLiteListType) < 0) __PYX_ERR(0, 67, __pyx_L1_error)
+  if (PyType_Ready(&PyLiteListType) < 0) __PYX_ERR(0, 86, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   PyLiteListType.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!PyLiteListType.tp_dictoffset && PyLiteListType.tp_getattro == PyObject_GenericGetAttr)) {
     PyLiteListType.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(PyLiteListType.tp_dict, __pyx_vtabptr_11recordclass_9_litelist_litelist) < 0) __PYX_ERR(0, 67, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_litelist_3, (PyObject *)&PyLiteListType) < 0) __PYX_ERR(0, 67, __pyx_L1_error)
+  if (__Pyx_SetVtable(PyLiteListType.tp_dict, __pyx_vtabptr_11recordclass_9_litelist_litelist) < 0) __PYX_ERR(0, 86, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_litelist_3, (PyObject *)&PyLiteListType) < 0) __PYX_ERR(0, 86, __pyx_L1_error)
   __pyx_ptype_11recordclass_9_litelist_litelist = &PyLiteListType;
-  if (PyType_Ready(&__pyx_type_11recordclass_9_litelist_litelistiter) < 0) __PYX_ERR(0, 273, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_11recordclass_9_litelist_litelistiter) < 0) __PYX_ERR(0, 309, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_11recordclass_9_litelist_litelistiter.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_11recordclass_9_litelist_litelistiter.tp_dictoffset && __pyx_type_11recordclass_9_litelist_litelistiter.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_11recordclass_9_litelist_litelistiter.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_litelistiter, (PyObject *)&__pyx_type_11recordclass_9_litelist_litelistiter) < 0) __PYX_ERR(0, 273, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_11recordclass_9_litelist_litelistiter) < 0) __PYX_ERR(0, 273, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_litelistiter, (PyObject *)&__pyx_type_11recordclass_9_litelist_litelistiter) < 0) __PYX_ERR(0, 309, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_11recordclass_9_litelist_litelistiter) < 0) __PYX_ERR(0, 309, __pyx_L1_error)
   __pyx_ptype_11recordclass_9_litelist_litelistiter = &__pyx_type_11recordclass_9_litelist_litelistiter;
   __Pyx_RefNannyFinishContext();
   return 0;
@@ -5994,12 +6401,24 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
+  /* "recordclass/_litelist.pyx":69
+ *     return <litelist>op
+ * 
+ * def new_litelist(*args):             # <<<<<<<<<<<<<<
+ *     cdef Py_ssize_t i, size = Py_SIZE(<PyObject*>args)
+ *     cdef litelist op = <litelist>litelist.__new__(litelist, None)
+ */
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_11recordclass_9_litelist_1new_litelist, NULL, __pyx_n_s_recordclass__litelist); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_new_litelist, __pyx_t_1) < 0) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
   /* "(tree fragment)":1
  * def __pyx_unpickle_litelistiter(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_11recordclass_9_litelist_1__pyx_unpickle_litelistiter, NULL, __pyx_n_s_recordclass__litelist); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_11recordclass_9_litelist_3__pyx_unpickle_litelistiter, NULL, __pyx_n_s_recordclass__litelist); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyx_unpickle_litelistiter, __pyx_t_1) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -6090,6 +6509,46 @@ static CYTHON_INLINE Py_ssize_t __Pyx_div_Py_ssize_t(Py_ssize_t a, Py_ssize_t b)
     Py_ssize_t r = a - q*b;
     q -= ((r != 0) & ((r ^ b) < 0));
     return q;
+}
+
+/* KeywordStringCheck */
+static int __Pyx_CheckKeywordStrings(
+    PyObject *kwdict,
+    const char* function_name,
+    int kw_allowed)
+{
+    PyObject* key = 0;
+    Py_ssize_t pos = 0;
+#if CYTHON_COMPILING_IN_PYPY
+    if (!kw_allowed && PyDict_Next(kwdict, &pos, &key, 0))
+        goto invalid_keyword;
+    return 1;
+#else
+    while (PyDict_Next(kwdict, &pos, &key, 0)) {
+        #if PY_MAJOR_VERSION < 3
+        if (unlikely(!PyString_Check(key)))
+        #endif
+            if (unlikely(!PyUnicode_Check(key)))
+                goto invalid_keyword_type;
+    }
+    if ((!kw_allowed) && unlikely(key))
+        goto invalid_keyword;
+    return 1;
+invalid_keyword_type:
+    PyErr_Format(PyExc_TypeError,
+        "%.200s() keywords must be strings", function_name);
+    return 0;
+#endif
+invalid_keyword:
+    PyErr_Format(PyExc_TypeError,
+    #if PY_MAJOR_VERSION < 3
+        "%.200s() got an unexpected keyword argument '%.200s'",
+        function_name, PyString_AsString(key));
+    #else
+        "%s() got an unexpected keyword argument '%U'",
+        function_name, key);
+    #endif
+    return 0;
 }
 
 /* RaiseDoubleKeywords */

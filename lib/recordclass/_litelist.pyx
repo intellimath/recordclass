@@ -43,6 +43,9 @@ cdef extern from "Python.h":
     cdef inline void Py_INCREF(PyObject*)
     cdef inline void Py_XINCREF(PyObject*)
     cdef inline Py_ssize_t Py_SIZE(PyObject*)
+    cdef inline int PyIndex_Check(PyObject*)
+    cdef inline object Py_TYPE(PyObject*)
+    cdef inline PyObject* PyTuple_GET_ITEM(PyObject*, Py_ssize_t)
 
 cdef inline Py_ssize_t resize(Py_ssize_t size):
     if size < 9:
@@ -51,15 +54,31 @@ cdef inline Py_ssize_t resize(Py_ssize_t size):
         return size + (size // 8) + 6
 
 cdef litelist make_empty(Py_ssize_t size):
-    cdef litelist op = litelist.__new__(litelist, ())
+    cdef litelist op = <litelist>litelist.__new__(litelist, None)
     cdef Py_ssize_t i
     cdef PyObject **p;
     
-    op.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
+    op.items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
     op.size = op.allocated = size
     p = op.items
     for i in range(size):
         p[i] = NULL
+        
+    return <litelist>op
+
+def new_litelist(*args):
+    cdef Py_ssize_t i, size = Py_SIZE(<PyObject*>args)
+    cdef litelist op = <litelist>litelist.__new__(litelist, None)
+    cdef PyObject **p;
+    cdef PyObject *v
+    
+    op.items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
+    op.size = op.allocated = size
+    p = op.items
+    for i in range(size):
+        v = PyTuple_GET_ITEM(<PyObject*>args, i)
+        Py_INCREF(v)
+        p[i] = v
         
     return <litelist>op
     
@@ -69,44 +88,53 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
     cdef Py_ssize_t allocated
     cdef PyObject **items
     
-    def __cinit__(self, args):
+    def __cinit__(self, args=None):
         cdef Py_ssize_t i, size
         cdef PyObject *v
-
+        cdef PyObject **items = self.items
+        
         if args:
             tpl = PySequence_Fast(args, "Invalid arguments")
             size = PySequence_Fast_GET_SIZE(tpl)
-            self.items = <PyObject**>PyObject_Malloc(size*sizeof(PyObject*))
+            items = <PyObject**>PyMem_Malloc(size*sizeof(PyObject*))
             self.size = self.allocated = size
             for i in range(size):
                 v = PySequence_Fast_GET_ITEM(tpl, i)
                 Py_INCREF(v)
-                self.items[i] = v
+                items[i] = v
         else:
-            self.items = NULL
+            items = NULL
             self.size = self.allocated = 0
+        self.items = items
 
     def __dealloc__(self):
         cdef Py_ssize_t i, size = self.size
+        cdef PyObject **items = self.items
+
         for i in range(size):
-            Py_XDECREF(self.items[i])
-            self.items[i] = NULL
-        PyObject_Free(self.items)
+            v = items[i]
+            Py_XDECREF(v)
+            items[i] = NULL
+        PyMem_Free(items)
 
     cdef object get_slice(self, Py_ssize_t i, Py_ssize_t n):
-        cdef litelist op = make_empty(n)
+        cdef litelist op = <litelist>make_empty(n)
         cdef Py_ssize_t j
+        cdef PyObject **op_items = op.items
+        cdef PyObject **items = self.items
         
         if self.allocated < i + n - 1:
             raise IndexError('The slice is too large')
 
         for j in range(n):
-            op.items[j] = self.items[i+j]
+            op_items[j] = items[i+j]
             
         return op
             
     cdef object set_slice(self, Py_ssize_t i, Py_ssize_t n, vals):
         cdef Py_ssize_t j
+        cdef PyObject *v, *u
+        cdef PyObject **items = self.items
             
         if self.allocated < i + n - 1:
             raise IndexError('The slice is too large')
@@ -120,47 +148,53 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
         for j in range(n):
             v = PySequence_Fast_GET_ITEM(tpl, j)
             Py_INCREF(v)
-            u = self.items[i+j]
+            u = items[i+j]
             Py_XDECREF(u)
-            self.items[i+j] = v
+            items[i+j] = v
             
     def __getitem__(self, index):
         cdef Py_ssize_t i
         cdef Py_ssize_t size = self.size
         cdef Py_ssize_t start, stop, step
         
-        if PySlice_Check(index):
-            if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
-                raise IndexError("Invalid slice")
-            return self.get_slice(start, stop-start)
-        else:
+        if PyIndex_Check(<PyObject*>index):
             i = index
             if i < 0:
                 i += size
             if i < 0 or i >= size:
                 raise IndexError('%s' % index)
-        return <object>(self.items[i])
+            
+            return <object>(self.items[i])
+        elif PySlice_Check(index):
+            if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+                raise IndexError("Invalid slice")
+            return self.get_slice(start, stop-start)
+        else:
+            raise IndexError('invalid index: %s' % index)
 
     def __setitem__(self, index, val):
         cdef Py_ssize_t i
         cdef Py_ssize_t size = self.size
         cdef Py_ssize_t start, stop, step
         cdef PyObject *v
+        cdef PyObject **items = self.items
 
-        if PySlice_Check(index):
-            if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
-                raise IndexError("Invalid slice")
-            self.set_slice(start, stop-start, val)
-        else:
+        if PyIndex_Check(<PyObject*>index):
             i = index
             if i < 0:
                 i += size
             if i < 0 or i >= size:
                 raise IndexError('%s' % index)
-
-            Py_XDECREF(self.items[i])
+            
+            Py_XDECREF(items[i])
             Py_INCREF(<PyObject*>val)
-            self.items[i] = <PyObject*>val
+            items[i] = <PyObject*>val
+        elif PySlice_Check(index):
+            if PySlice_GetIndices(index, self.size, &start, &stop, &step) < 0:
+                raise IndexError("Invalid slice")
+            self.set_slice(start, stop-start, val)
+        else:
+            raise IndexError('invalid index: %s' % index)
 
     def __delitem__(self, index):
         cdef Py_ssize_t i = index
@@ -178,10 +212,11 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
         while i < size:
             items[i] = items[i+1]
             i += 1
+        items[i] = NULL
 
         if size + size < self.allocated:
             newsize = size + (size // 8)
-            self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+            self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
             self.allocated = newsize
 
     def __repr__(self):
@@ -203,11 +238,11 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
         return self.__class__, (tuple(self),)
 
     def append(self, val):
-        cdef Py_ssize_t i, newsize, size = self.size
+        cdef Py_ssize_t newsize, size = self.size
 
         if size == self.allocated:
             newsize = resize(size+1)
-            self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+            self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
             self.allocated = newsize
         
         Py_INCREF(<PyObject*>val)
@@ -233,6 +268,7 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
         while i < size:
             items[i] = items[i+1]
             i += 1
+        items[i] = NULL
 
     def extend(self, vals):
         cdef Py_ssize_t i, newsize, size = self.size
@@ -242,7 +278,7 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
         if size_n > self.allocated:
             newsize = resize(size_n)
 
-            self.items = <PyObject**>PyObject_Realloc(self.items, newsize*sizeof(PyObject*))
+            self.items = <PyObject**>PyMem_Realloc(self.items, newsize*sizeof(PyObject*))
             self.allocated = newsize
 
         i = size
@@ -255,7 +291,7 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
     def trim(self):
         cdef Py_ssize_t size = self.size
 
-        self.items = <PyObject**>PyObject_Realloc(self.items, size*sizeof(PyObject*))
+        self.items = <PyObject**>PyMem_Realloc(self.items, size*sizeof(PyObject*))
         self.allocated = size
             
     def __len__(self):
@@ -264,7 +300,7 @@ cdef public class litelist[object PyLiteListObject, type PyLiteListType]:
     def __sizeof__(self):
         return sizeof(litelist) + sizeof(PyObject*) * self.allocated
     
-    def __nonzero__(self):
+    def __bool__(self):
         return self.size > 0
     
     def __iter__(self):

@@ -6,7 +6,7 @@
 #include "Python.h"
 struct PyLiteListObject;
 
-/* "recordclass/_litelist.pyx":67
+/* "recordclass/_litelist.pyx":86
  * 
  * @cython.no_gc
  * cdef public class litelist[object PyLiteListObject, type PyLiteListType]:             # <<<<<<<<<<<<<<

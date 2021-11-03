@@ -29,7 +29,7 @@ from .dataclass import make_dataclass, make_class, join_dataclasses
 structclass = make_dataclass
 from .dictclass import make_dictclass
 from .arrayclass import make_arrayclass
-from ._litelist import litelist
+from ._litelist import litelist, new_litelist
 from ._litetuple import litetuple, mutabletuple
 
 __version__ = '0.17'
