@@ -983,12 +983,12 @@ litelist_iter(PyObject *seq)
     return (PyObject *)it;
 }
 
-PyDoc_STRVAR(new_litelist_doc,
+PyDoc_STRVAR(litelist_fromargs_doc,
 "Create new litelist from args");
 
 
 static PyObject *
-new_litelist(PyObject *module, PyObject *args)
+litelist_fromargs(PyObject *module, PyObject *args)
 {
     const Py_ssize_t n_args = Py_SIZE(args);
                      
@@ -1014,7 +1014,7 @@ PyDoc_STRVAR(litelistmodule_doc,
 "Litetuple module provide mutable and immutable tuple types without cyclic garbage collection (reference count only).");
 
 static PyMethodDef litelistmodule_methods[] = {
-    {"new_litelist", (PyCFunction)new_litelist, METH_VARARGS, new_litelist_doc},
+    {"litelist_fromargs", (PyCFunction)litelist_fromargs, METH_VARARGS, litelist_fromargs_doc},
 //   {"getitem", get_item,     METH_VARARGS,   "__getitem__"},
 //   {"freeze", litelist_freeze,     METH_VARARGS,   "freeze litelist object (make it readonly and hashable)"},
    {0, 0, 0, 0}

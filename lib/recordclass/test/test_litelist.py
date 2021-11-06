@@ -1,5 +1,5 @@
 import unittest
-from recordclass import litelist, new_litelist
+from recordclass import litelist, litelist_fromargs
 
 import gc
 import pickle
@@ -158,13 +158,13 @@ class litelistTest(unittest.TestCase):
         ll[0] = None        
         self.assertEqual(sys.getrefcount(a), c)
         
-    def test_new_litelist1(self):
-        a = new_litelist()
+    def test_litelist_fromargs1(self):
+        a = litelist_fromargs()
         self.assertEqual(len(a), 0)
         self.assertEqual(repr(a), "litelist([])")
 
-    def test_new_litelist2(self):
-        a = new_litelist(1,2,3,4,5)
+    def test_litelist_fromargs2(self):
+        a = litelist_fromargs(1,2,3,4,5)
         self.assertEqual(len(a), 5)
         self.assertEqual(repr(a), "litelist([1, 2, 3, 4, 5])")
         
