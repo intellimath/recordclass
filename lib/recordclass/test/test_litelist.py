@@ -74,44 +74,44 @@ class litelistTest(unittest.TestCase):
         self.assertEqual(list(a), [1,2,3])
         self.assertEqual(tuple(a), (1,2,3))
 
-    def test_iter2(self):
-        from recordclass._litelist import litelistiter
-        a = litelist([1,2,3])
-        # print(iter(iter(a)), litelistiter)
-        self.assertTrue(isinstance(iter(a), litelistiter))        
+    # def test_iter2(self):
+    #     from recordclass._litelist import litelistiter
+    #     a = litelist([1,2,3])
+    #     # print(iter(iter(a)), litelistiter)
+    #     self.assertTrue(isinstance(iter(a), litelistiter))        
 
-    def test_getslice1(self):
-        a = litelist([1,2,3])
-        self.assertEqual(len(a[1:1]), 0)
-        self.assertEqual(repr(a[1:1]), "litelist([])")
-        self.assertEqual(len(a[1:2]), 1)
-        self.assertEqual(repr(a[1:2]), "litelist([2])")
-        self.assertEqual(len(a[:-1]), 2)
-        self.assertEqual(repr(a[:-1]), "litelist([1, 2])")
+#     def test_getslice1(self):
+#         a = litelist([1,2,3])
+#         self.assertEqual(len(a[1:1]), 0)
+#         self.assertEqual(repr(a[1:1]), "litelist([])")
+#         self.assertEqual(len(a[1:2]), 1)
+#         self.assertEqual(repr(a[1:2]), "litelist([2])")
+#         self.assertEqual(len(a[:-1]), 2)
+#         self.assertEqual(repr(a[:-1]), "litelist([1, 2])")
 
-    def test_getslice2(self):
-        a = litelist([1,2,3])
-        self.assertEqual(repr(a[:]), "litelist([1, 2, 3])")
+#     def test_getslice2(self):
+#         a = litelist([1,2,3])
+#         self.assertEqual(repr(a[:]), "litelist([1, 2, 3])")
 
-    def test_setslice1(self):
-        a = litelist([1,2,3])
-        a[1:1] = []
-        self.assertEqual(repr(a), "litelist([1, 2, 3])")
+#     def test_setslice1(self):
+#         a = litelist([1,2,3])
+#         a[1:1] = []
+#         self.assertEqual(repr(a), "litelist([1, 2, 3])")
 
-    def test_setslice2(self):
-        a = litelist([1,2,3])
-        a[1:2] = [100]
-        self.assertEqual(repr(a), "litelist([1, 100, 3])")
+#     def test_setslice2(self):
+#         a = litelist([1,2,3])
+#         a[1:2] = [100]
+#         self.assertEqual(repr(a), "litelist([1, 100, 3])")
 
-    def test_setslice3(self):
-        a = litelist([1,2,3])
-        a[:-1] = [100,200]
-        self.assertEqual(repr(a), "litelist([100, 200, 3])")
+#     def test_setslice3(self):
+#         a = litelist([1,2,3])
+#         a[:-1] = [100,200]
+#         self.assertEqual(repr(a), "litelist([100, 200, 3])")
 
-    def test_setslice4(self):
-        a = litelist([1,2,3])
-        a[:] = [100,200,300]
-        self.assertEqual(repr(a), "litelist([100, 200, 300])")
+#     def test_setslice4(self):
+#         a = litelist([1,2,3])
+#         a[:] = [100,200,300]
+#         self.assertEqual(repr(a), "litelist([100, 200, 300])")
         
     def test_delitem1(self):
         a = litelist([1,2,3,4,5])
@@ -160,10 +160,12 @@ class litelistTest(unittest.TestCase):
         
     def test_new_litelist1(self):
         a = new_litelist()
+        self.assertEqual(len(a), 0)
         self.assertEqual(repr(a), "litelist([])")
 
     def test_new_litelist2(self):
         a = new_litelist(1,2,3,4,5)
+        self.assertEqual(len(a), 5)
         self.assertEqual(repr(a), "litelist([1, 2, 3, 4, 5])")
         
 def main():

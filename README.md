@@ -403,12 +403,13 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 * Slighly imporove performance of `dataobject`-based subclasses.
 * Add adapter `as_dataclass`. For example:
 
-      @as_dataclass()
-      class Point:
-          x:int
-          y:int
+        @as_dataclass()
+        class Point:
+            x:int
+            y:int
+* Module _litelist is implemented in pure C.
 
-#### 0.16.1
+#### 0.16.2
 
 * Fix the packaging bug in 0.16.1.
 
