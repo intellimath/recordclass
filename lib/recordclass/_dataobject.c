@@ -174,7 +174,8 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
     if (!op)
         return PyErr_NoMemory();
 
-    memset(op, '\0', size);
+    if (type->tp_dictoffset || type->tp_weaklistoffset)
+        memset(op, '\0', size);
 
     Py_TYPE(op) = type;
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
@@ -194,7 +195,8 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
     if (!op)
         return PyErr_NoMemory();
 
-    memset(op, '\0', size);
+    if (type->tp_dictoffset || type->tp_weaklistoffset)
+        memset(op, '\0', size);
 
     Py_TYPE(op) = type;
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
@@ -210,7 +212,7 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 static PyObject*
 dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_args, PyObject *kwds)
 {
-    Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
+    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type); 
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
@@ -351,7 +353,8 @@ dataobject_xdecref(PyObject *op)
 
     while (n_items--) {
         PyObject *ob = *(items++);
-        py_xdecref(ob);
+        if (ob)
+            py_decref(ob);
     }
     return 0;
 }
@@ -606,7 +609,8 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     py_xdecref(*items);
     
     *items = val;
-    py_incref(val);
+    if (val)
+        py_incref(val);
 
     return 0;
 }
