@@ -1031,9 +1031,8 @@ PyInit__litetuple(void)
     Py_INCREF(&PyMLiteTuple_Type);
     PyModule_AddObject(m, "mutabletuple", (PyObject *)&PyMLiteTuple_Type);
 
-//     Py_INCREF(&PyLiteTupleIter_Type);    
-//     PyModule_AddObject(m, "litetupleiter", (PyObject *)&PyLiteTupleIter_Type);
-    
+    Py_INCREF(&PyLiteTupleIter_Type);    
+    PyModule_AddObject(m, "litetupleiter", (PyObject *)&PyLiteTupleIter_Type);
 
     return m;
 }
