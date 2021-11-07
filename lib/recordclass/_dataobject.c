@@ -30,6 +30,8 @@
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
+#define pyobject_size(tp) ( (tp)->tp_basicsize )
+
 #define py_incref(o) ((PyObject*)(o))->ob_refcnt++
 #define py_decref(o) if (--(((PyObject*)(o))->ob_refcnt) == 0) Py_TYPE((PyObject*)(o))->tp_dealloc((PyObject*)(o))
 
@@ -168,7 +170,7 @@ static int _dataobject_update(PyObject *op, PyObject *kw);
 static PyObject *
 dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 {
-    Py_ssize_t size = _PyObject_SIZE(type);
+    Py_ssize_t size = pyobject_size(type);
     PyObject *op = (PyObject*)PyObject_Malloc(size);
 
     if (!op)
