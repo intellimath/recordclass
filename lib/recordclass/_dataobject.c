@@ -51,7 +51,7 @@
 
 static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
-static PyTypeObject PyDataSlotGetSet_Type;
+static PyTypeObject PyDataObjectProperty_Type;
 
 PyObject *__fields__name;
 PyObject *__dict__name;
@@ -468,7 +468,7 @@ dataobject_getattr(PyObject *op, PyObject *name)
         
     if (ob != NULL) {
         PyTypeObject *ob_type = Py_TYPE(ob);
-        if (ob_type == &PyDataSlotGetSet_Type) {
+        if (ob_type == &PyDataObjectProperty_Type) {
             return ob_type->tp_descr_get(ob, op, NULL);
         }
     }
@@ -509,7 +509,7 @@ dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
         
     if (ob != NULL) {
         PyTypeObject *ob_type = Py_TYPE(ob);
-        if (ob_type == &PyDataSlotGetSet_Type) {
+        if (ob_type == &PyDataObjectProperty_Type) {
             return ob_type->tp_descr_set(ob, op, val);
         }
     }
@@ -1795,7 +1795,7 @@ static PyGetSetDef dataobjectproperty_getsets[] = {
     {0}
 };
 
-static PyTypeObject PyDataSlotGetSet_Type = {
+static PyTypeObject PyDataObjectProperty_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
     "recordclass._dataobject.dataobjectproperty", /*tp_name*/
     sizeof(dataobjectproperty_object), /*tp_basicsize*/
@@ -2749,7 +2749,7 @@ PyInit__dataobject(void)
     if (PyType_Ready(&PyDataObjectIter_Type) < 0)
         Py_FatalError("Can't initialize dataobjectiter type");
 
-    if (PyType_Ready(&PyDataSlotGetSet_Type) < 0)
+    if (PyType_Ready(&PyDataObjectProperty_Type) < 0)
         Py_FatalError("Can't initialize dataobjectproperty type");
 
     Py_INCREF(&PyDataObject_Type);
@@ -2758,8 +2758,8 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataObjectIter_Type);
     PyModule_AddObject(m, "dataobjectiter", (PyObject *)&PyDataObjectIter_Type);
 
-    Py_INCREF(&PyDataSlotGetSet_Type);
-    PyModule_AddObject(m, "dataobjectproperty", (PyObject *)&PyDataSlotGetSet_Type);
+    Py_INCREF(&PyDataObjectProperty_Type);
+    PyModule_AddObject(m, "dataobjectproperty", (PyObject *)&PyDataObjectProperty_Type);
 
     fields_dict_name = PyUnicode_FromString("__fields_dict__");
     if (fields_dict_name == NULL)
