@@ -12,7 +12,7 @@ include lib/recordclass/utils.py
 include lib/recordclass/adapter.py
 include lib/recordclass/_dataobject.c
 include lib/recordclass/_dataobject.h
-include lib/recordclass/litelist.c
+include lib/recordclass/_litelist.c
 include lib/recordclass/_litetuple.c
 include lib/recordclass/_linkedlist.c
 include lib/recordclass/tools/*.py

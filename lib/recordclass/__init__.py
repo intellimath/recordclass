@@ -23,13 +23,14 @@
 
 from .datatype import datatype
 from ._dataobject import dataobject, astuple, asdict, make, clone, update
-from .recordclass import recordclass
-from .adapter import as_dataclass
-from .dataclass import make_dataclass, make_class, join_dataclasses
-structclass = make_dataclass
-from .dictclass import make_dictclass
-from .arrayclass import make_arrayclass
 from ._litelist import litelist, litelist_fromargs
 from ._litetuple import litetuple, mutabletuple
+from .recordclass import recordclass
+from .dataclass import make_dataclass, make_class, join_dataclasses
+from .dictclass import make_dictclass
+from .arrayclass import make_arrayclass
+from .adapter import as_dataclass
+
+structclass = make_dataclass
 
 __version__ = '0.17'

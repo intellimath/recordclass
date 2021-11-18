@@ -409,6 +409,15 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
             y:int
 * Module _litelist is implemented in pure C.
 
+#### 0.16.3
+
+* Add possibility for recordclasses to assighn values by key: 
+
+        A = recordclass("A", "x y", mapping=True)
+        a = A(1,2)
+        a['x'] = 100 
+        a['y'] = 200 
+
 #### 0.16.2
 
 * Fix the packaging bug in 0.16.1.

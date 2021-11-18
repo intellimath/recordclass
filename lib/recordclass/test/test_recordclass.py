@@ -301,7 +301,22 @@ class RecordClassTest(unittest.TestCase):
 #         print(dir(A))
         a = A(1,2)
         hash(a)
-        
+
+    def test_mapping(self):
+        A = recordclass("A", "x y", mapping=True)
+        a=A(1,2)
+        a['x'] = 100
+        a['y'] = 200
+        self.assertEqual(a.x, 100)
+        self.assertEqual(a.y, 200)
+
+    def test_mapping2(self):
+        A = recordclass("A", "x y")
+        a=A(1,2)
+        with self.assertRaises(TypeError):
+            a['x'] = 100
+            a['y'] = 200
+
     def test_hash_subcls(self):
         A = recordclass('A', 'x y', hashable=True)
         class B(A): pass
