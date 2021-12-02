@@ -696,7 +696,6 @@ static PyMethodDef litetuple_methods[] = {
 static PyObject* 
 litetuple_iter(PyObject *seq);
 
-
 static PyTypeObject PyLiteTuple_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
     "recordclass.litetuple.litetuple",          /* tp_name */
@@ -823,11 +822,9 @@ litetupleiter_next(litetupleiterobject *it)
     PyTupleObject *seq;
     PyObject *item;
 
-//     assert(it != NULL);
     seq = it->it_seq;
     if (seq == NULL)
         return NULL;
-//     assert(PyTuple_Check(seq));
 
     if (it->it_index < PyLiteTuple_GET_SIZE(seq)) {
         item = PyLiteTuple_GET_ITEM(seq, it->it_index);
@@ -864,7 +861,6 @@ litetupleiter_reduce(litetupleiterobject *it) //, PyObject *Py_UNUSED(ignore))
 
 PyDoc_STRVAR(litetupleiter_reduce_doc, "D.__reduce__()");
 
-
 static PyObject *
 litetupleiter_setstate(litetupleiterobject *it, PyObject *state)
 {
@@ -884,7 +880,6 @@ litetupleiter_setstate(litetupleiterobject *it, PyObject *state)
 }
 
 PyDoc_STRVAR(setstate_doc, "Set state information for unpickling.");
-
 
 static PyMethodDef litetupleiter_methods[] = {
     {"__length_hint__", (PyCFunction)litetupleiter_len, METH_NOARGS, length_hint_doc},
@@ -941,36 +936,10 @@ litetuple_iter(PyObject *seq)
     return (PyObject *)it;
 }
 
-
 /* List of functions defined in the module */
 
 PyDoc_STRVAR(litetuplemodule_doc,
 "Litetuple module provide mutable and immutable tuple types without cyclic garbage collection (reference count only).");
-
-// static PyObject *
-// litetuple_freeze(PyObject *module, PyObject *args)
-// {
-//     if (Py_SIZE(args) > 2) 
-//         return NULL;
-//     PyObject *ob = PyTuple_GET_ITEM(args, 0);
-//     PyObject *is_copy = PyTuple_GET_ITEM(args, 1);
-    
-//     if (PyObject_IsInstance(&PyLiteTupleTypeRO_Type) {
-//         Py_INCREF(ob);
-//         return ob;
-//     }
-        
-//     if (PyObject_Bool(is_copy))
-//         ob = litetuple_slice(ob, 0, Py_SIZE(ob));
-    
-//     if (PyObject_IsInstance(&PyLiteTupleType_Type) {
-//         Py_DECREF((PyObject*)Py_TYPE(ob));
-//         Py_TYPE(ob) = &PyLiteTupleType_Type;
-//         Py_INCREF((PyObject*)&PyLiteTupleType_Type);
-//     }
-    
-//     return litetuple_slice(ob, 0, PyTuple_GET_SIZE(ob));
-// }
 
 static PyMethodDef litetuplemodule_methods[] = {
 //   {"getitem", get_item,     METH_VARARGS,   "__getitem__"},

@@ -654,9 +654,8 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(py.default, 2)
         
     def test_fast_new_tp(self):
-        class A(dataobject):
+        class A(dataobject, fast_new=True):
             __fields__ = 'x', 'y'
-            __options__ = {'fast_new':True}
 
         self.assertTrue('__new__' not in A.__dict__)
         a = A(1,2)

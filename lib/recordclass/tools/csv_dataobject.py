@@ -2,8 +2,14 @@ from csv import writer, reader
 
 __all__ = 'GeneralReader', 'GeneralWriter'
 
+_type_conv = {
+    'str':str,
+    'int':int,
+    'float':float
+}
+
 class GeneralReader:
-    def __init__(self, f, fieldnames=None, dialect="excel", *args, **kwds):
+    def __init__(self, f, fieldnames=None, dialect="excel", fieldtypes=None, *args, **kwds):
         self._fieldnames = fieldnames   # list of keys for the dict
         self.restkey = restkey          # key to catch long rows
         self.restval = restval          # default value for short rows
@@ -11,6 +17,12 @@ class GeneralReader:
         self.dialect = dialect
         self.factory = None
         self.row_factory = None
+        self.field_conv = None
+        if fieldtypes:
+            conv_dict = {}
+            for name, ftype in fieldtypes:
+                conv_dict[name] = _type_conv[ftype]
+            self.field_conv = conv_dict
 
     def __iter__(self):
         return self
@@ -59,7 +71,13 @@ class GeneralReader:
             else:                   
                 self.row_factory = self.factory(self._fieldnames)
 
-        return self.row_factory(*row)
+        row = self.row_factory(*row)
+        if self.field_conv:
+            for name, func in self.field_conv.items():
+                v = getattr(row, name)
+                if type(v) is str:
+                    setattr(row, name, func(v))
+            
 
 
 class GeneralWriter:

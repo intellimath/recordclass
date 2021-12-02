@@ -51,6 +51,10 @@
             py_decref(_py_xdecref_tmp);               \
     } while (0)
 
+#define py_set_type(ob, type) (((PyObject*)(ob))->ob_type) = (type)
+
+#define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
+
 static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataObjectProperty_Type;
@@ -178,11 +182,11 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
     if (!op)
         return PyErr_NoMemory();
 
-    if (type->tp_dictoffset || type->tp_weaklistoffset)
-        memset(op, '\0', size);
+    memset(op, '\0', size);
 
-    Py_TYPE(op) = type;
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    py_set_type(op, type);
+    // Py_TYPE(op) = type;
+    // if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(type);
 
     _Py_NewReference(op);
@@ -199,11 +203,10 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
     if (!op)
         return PyErr_NoMemory();
 
-    if (type->tp_dictoffset || type->tp_weaklistoffset)
-        memset(op, '\0', size);
+    memset(op, '\0', size);
 
     Py_TYPE(op) = type;
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    // if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(type);
 
     _Py_NewReference(op);
@@ -375,7 +378,7 @@ dataobject_dealloc(PyObject *op)
 
     dataobject_xdecref(op);
 
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    // if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_decref(type);
 
     type->tp_free((PyObject *)op);
@@ -401,7 +404,7 @@ dataobject_dealloc_gc(PyObject *op)
 
     dataobject_xdecref(op);
 
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    // if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_decref(type);
 
     type->tp_free((PyObject *)op);
@@ -422,7 +425,7 @@ dataobject_finalize_step(PyObject *op, PyObject *stack)
     while (n_items--) {
         PyObject *o = *items;
 
-        if (o->ob_refcnt == 1 && Py_METATYPE(o) == datatype) {
+        if (py_refcnt(o) == 1 && Py_METATYPE(o) == datatype) {
             PyList_Append(stack, o);
         } else
             py_decref(o);
@@ -445,7 +448,7 @@ dataobject_finalize(PyObject *ob) {
     while (n_stack) {
         PyObject *op = PyList_GET_ITEM(stack, 0);
 
-        if (op->ob_refcnt == 1)
+        if (py_refcnt(op) == 1)
             dataobject_finalize_step(op, stack);
 
         py_decref(op);
