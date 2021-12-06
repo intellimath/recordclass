@@ -87,7 +87,11 @@ class datatype(type):
         use_weakref = options.get('use_weakref', use_weakref)
         hashable = options.get('hashable', hashable)
         
-        if not bases:
+        if bases:
+            base0 = bases[0]
+            if not issubclass(base0, dataobject):
+                raise TypeError("First base class should be subclass of dataobject")
+        else:
             bases = (dataobject,)
 
         annotations = ns.get('__annotations__', {})

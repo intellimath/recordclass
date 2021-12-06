@@ -52,7 +52,7 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     >>> Point(**d)                      # convert from a dictionary
     Point(x=1, y=-1)
     """
-    from ._dataobject import dataobject, astuple, asdict
+    from ._dataobject import dataobject
     from .datatype import datatype
     import sys as _sys
 
@@ -74,22 +74,9 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
     n_fields = len(fields)
     n_defaults = len(defaults) if defaults else 0
 
-    # if use_dict and '__dict__' not in fields:
-    #     fields.append('__dict__')
-    # if use_weakref and '__weakref__' not in fields:
-    #     fields.append('__weakref__')
-
     ns['__fields__'] = fields
     ns['__annotations__'] = annotations
     ns['__defaults__'] = defaults
-            
-
-    if bases:
-        base0 = bases[0]
-        if not isinstance(base0, dataobject):
-            raise TypeError("First base class should be subclass of dataobject")
-    else:
-        bases = (dataobject,)
 
     if module is None:
         try:

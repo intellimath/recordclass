@@ -106,8 +106,8 @@ def recordclass(typename, fields, defaults=None, *,
 
     return make_dataclass(typename, fields, defaults=defaults, namespace=ns,
                 use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
-                sequence=True, mapping=mapping, iterable=True, rename=rename, #api='namedtuple',
-                readonly=readonly, module=_module, 
+                sequence=True, mapping=mapping, iterable=True, rename=rename, 
+                readonly=readonly, module=_module, api='namedtuple', 
                 fast_new=fast_new, gc=False)
 
 class RecordclassStorage:
