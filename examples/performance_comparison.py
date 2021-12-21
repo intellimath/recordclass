@@ -116,7 +116,7 @@ class TradeDayRecordClass(RecordClass):
     prices: PricesRecordClass
 
     def return_change(self):
-        return int((self.prices.close - self.prices.open) / self.prices.open)
+        return round((self.prices.close - self.prices.open) / self.prices.open, 2)
 
     def update_symbol(self, symb):
         self.symbol = symb
@@ -134,7 +134,7 @@ class TradeDayDataobject(dataobject, fast_new=True):
     prices: PricesDataobject
 
     def return_change(self):
-        return int((self.prices.close - self.prices.open) / self.prices.open)
+        return round((self.prices.close - self.prices.open) / self.prices.open, 2)
 
     def update_symbol(self, symb):
         self.symbol = symb
@@ -163,7 +163,7 @@ class TradeDayClass():
         self.prices = _prices
 
     def return_change(self):
-        return int((self.prices.close - self.prices.open) / self.prices.open)
+        return round((self.prices.close - self.prices.open) / self.prices.open, 2)
 
     def update_symbol(self, symb):
         self.symbol = symb
@@ -195,7 +195,7 @@ class TradeDayClassSlots():
         self.prices = _prices
 
     def return_change(self):
-        return int((self.prices.close - self.prices.open) / self.prices.open)
+        return round((self.prices.close - self.prices.open) / self.prices.open, 2)
 
     def update_symbol(self, symb):
         self.symbol = symb
@@ -309,6 +309,6 @@ if __name__ == '__main__':
         maxval = np.max([df[key][tn] for key in df.keys()])
         maxval = float(maxval)
         for key in df.keys():
-            df[key][tn] = df[key][tn] / maxval
+            df[key][tn] = round(df[key][tn] / maxval, 2)
     pd.set_option("float_format", lambda x: "%.2f" % x)
     print(df)

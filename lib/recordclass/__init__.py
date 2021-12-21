@@ -26,6 +26,7 @@ from ._dataobject import dataobject, astuple, asdict, make, clone, update
 from ._litelist import litelist, litelist_fromargs
 from ._litetuple import litetuple, mutabletuple
 from .recordclass import recordclass
+from .typing import RecordClass
 from .dataclass import make_dataclass, make_class, join_dataclasses
 from .dictclass import make_dictclass
 from .arrayclass import make_arrayclass
