@@ -15,31 +15,53 @@ class PointSlots:
         self.x = x
         self.y = y
         self.z = z
+
+    def norm2(self):
+        return self.x*self.x + self.y*self.y + self.z*self.z
         
 class Point(dataobject, sequence=True):
     x:int
     y:int
     z:int
 
+    def norm2(self):
+        return self.x*self.x + self.y*self.y + self.z*self.z
+
 class PointGC(dataobject, sequence=True, gc=True):
     x:int
     y:int
     z:int
 
+    def norm2(self):
+        return self.x*self.x + self.y*self.y + self.z*self.z
+
+
 class FastPoint(dataobject, sequence=True, fast_new=True):
     x:int
     y:int
     z:int
+
+    def norm2(self):
+        return self.x*self.x + self.y*self.y + self.z*self.z
+
     
 class FastPointGC(dataobject, sequence=True, fast_new=True, gc=True):
     x:int
     y:int
     z:int
 
+    def norm2(self):
+        return self.x*self.x + self.y*self.y + self.z*self.z
+
+
 class PointMap(dataobject, mapping=True, fast_new=True):
     x:int
     y:int
     z:int
+
+    def norm2(self):
+        return self.x*self.x + self.y*self.y + self.z*self.z
+
     
 PointDict = make_dictclass("PointDict", "x y z", fast_new=True)
     
@@ -47,6 +69,7 @@ results = {'id':[], 'size':[], 'new':[],
            'getattr':[], 'setattr':[], 
            'getitem':[], 'setitem':[],
            'getkey':[], 'setkey':[],
+           # 'call':[],
            'iterate':[], 'copy':[],
           }
 
@@ -270,6 +293,23 @@ def test_setitem():
             res = "%.2f" % res
         results['setitem'].append(res)
 
+def test_call():
+    print("call")
+    def test(cls):
+        p = cls(0,0,0)
+        for i in range(N):
+            p.norm2()
+            
+    for cls in classes:
+        gc.collect()
+        if cls in (litetuple, mutabletuple, dict, tuple, PointDict, PointNT):
+            res = ''
+        else:
+            res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
+        if res != '':
+            res = "%.2f" % res
+        results['call'].append(res)
+        
 def test_iterate():
     print("iterate")
     def test(cls):
@@ -313,6 +353,7 @@ test_getitem()
 test_setitem()
 test_getkey()
 test_setkey()
+# test_call()
 test_iterate()
 test_copy()
 

@@ -186,8 +186,7 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
     memset(op, '\0', size);
 
     py_set_type(op, type);
-    // py_type(op) = type;
-    // if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(type);
 
     _Py_NewReference(op);
@@ -207,7 +206,7 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
     memset(op, '\0', size);
 
     py_type(op) = type;
-    // if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(type);
 
     _Py_NewReference(op);
@@ -379,7 +378,7 @@ dataobject_dealloc(PyObject *op)
 
     dataobject_xdecref(op);
 
-    // if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_decref(type);
 
     type->tp_free((PyObject *)op);
@@ -405,7 +404,7 @@ dataobject_dealloc_gc(PyObject *op)
 
     dataobject_xdecref(op);
 
-    // if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_decref(type);
 
     type->tp_free((PyObject *)op);
@@ -1020,16 +1019,19 @@ static PyObject *
 dataobject_copy(PyObject* op)
 {
     PyTypeObject *type = py_type(op);
-    PyObject * const* items = (PyObject * const*)PyDataObject_ITEMS(op);
-    Py_ssize_t n = PyDataObject_LEN(op);
     PyObject* dict = NULL;
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-        dict = *dictptr;
+        if (*dictptr)
+            dict = *dictptr;
     }
 
-    return dataobject_new_vc(type, items, n, dict);
+    return dataobject_new_vc(
+        type, 
+        (PyObject * const*)PyDataObject_ITEMS(op), 
+        PyDataObject_LEN(op), 
+        dict);
 }
 
 // static PyObject *
@@ -1282,9 +1284,10 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
     if (tp->tp_dictoffset) {
         dict = PyDataObject_GetDict(ob);
 
-        if (!dict)
+        if (!dict) {
             // PyErr_SetString(PyExc_TypeError, "failed to create new dict");
             return NULL;
+        }
 
         if (PyDict_Update(dict, state) < 0) {
             PyErr_SetString(PyExc_TypeError, "dict update failed");
@@ -1911,10 +1914,8 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
 
     if (mo) {
         if (ro) {
-            // tp->tp_as_mapping = &dataobject_as_mapping_only_ro;
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_only_ro);
         } else {
-            // tp->tp_as_mapping = &dataobject_as_mapping_only;
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_only);
         }
     }
@@ -1927,7 +1928,6 @@ static PyObject*
 _set_hashable(PyObject *cls, PyObject *hashable) {
     PyTypeObject *tp = (PyTypeObject*)cls;
     int state = PyObject_IsTrue(hashable);
-    // printf("hashable: %i\n", state);
 
     PyObject *bases = tp->tp_bases;
     Py_ssize_t i, n_bases = Py_SIZE(bases);
@@ -1943,7 +1943,6 @@ _set_hashable(PyObject *cls, PyObject *hashable) {
 
     if (state) {
         tp->tp_hash = dataobject_hash;
-        // printf("1\n");
     }
     // else
     //     tp->tp_hash = NULL;
@@ -2616,22 +2615,18 @@ PyInit__dataobject(void)
     __fields__name = PyUnicode_FromString("__fields__");
     if (__fields__name == NULL)
         return NULL;
-    // Py_INCREF(__fields__name);
 
     __dict__name = PyUnicode_FromString("__dict__");
     if (__dict__name == NULL)
         return NULL;
-    // Py_INCREF(__dict__name);
 
     __weakref__name = PyUnicode_FromString("__weakref__");
     if (__weakref__name == NULL)
         return NULL;
-    // Py_INCREF(__weakref__name);
 
     __defaults__name = PyUnicode_FromString("__defaults__");
     if (__defaults__name == NULL)
         return NULL;
-    // Py_INCREF(__defaults__name);
 
 //     dataobject_as_mapping.mp_subscript = PyDataObject_Type.tp_getattro;
 //     dataobject_as_mapping.mp_ass_subscript = PyDataObject_Type.tp_setattro;
