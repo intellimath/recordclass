@@ -1858,146 +1858,6 @@ static PyTypeObject PyDataObjectProperty_Type = {
 // }
 
 
-// static PyObject*
-// datatype_new(PyTypeObject type, PyObject *typename, PyObject *bases, PyObject *ns) {
-
-//     PyObject *options;
-//     PyObject *annotations;
-//     PyObject *fields;
-//     int varsize = 0;
-//     int has_fields = 1;
-//     int fields_from_annotations = 0;
-//     int is_int = 0;
-//     int sequence, mapping, iterable;
-//     int n_fields;
-
-//     // options = ns.pop('__otpions__', {})
-//     options = PyMapping_GetItemString(ns, "__options__");
-//     // if options:
-//     if (options) {
-//         // varsize = options.get('varsize', False)
-//         varsize = _get_bool_value(options, "varsize");
-//         // sequence = options.get('sequence', False)
-//         sequence = _get_bool_value(options, "sequence");
-//         // mapping = options.get('mapping', False)
-//         mapping = _get_bool_value(options, "mapping");
-//         // iterable = options.get('iterable', False)
-//         iterable = _get_bool_value(options, "iterable");
-
-//         PyMapping_DelItemString(ns, "__options__");
-//     }
-
-//     // if not bases:
-//     if (!bases || !PySequence_Length(bases)) {
-//         Py_XDECREF(bases);
-//         // if varsize:
-//         if (varsize) {
-//             if (bases) {
-//                 // bases = (datatuple,)
-//                 bases = PyTuple_Pack(1, (PyObject*)&PyDataTuple_Type);
-//             } else {
-//                 // bases = (dataobject,)
-//                 bases = PyTuple_Pack(1, (PyObject*)&PyDataObject_Type);
-//             }
-//         }
-//     } else {
-//         // base0 = bases[0]
-//         PyObject* base0 = PyTuple_GET_ITEM(bases, 0);
-//         // if issubclass(base0, dataobject)
-//         if (PyObject_IsSubclass(base0, (PyObject*)&PyDataObject_Type)) {
-//             // varsize = False
-//             varsize = 0;
-//         } else {
-//             // elif isdubclaass(base0, datatuple)
-//             if (PyObject_IsSubclass(base0, (PyObject*)&PyDataTuple_Type)) {
-//                 // varsize = True
-//                 varsize = 1;
-//             } else {
-//                 // else:
-//                 //.   raise TypeError('...')
-//                 PyErr_SetString(PyExc_TypeError,
-//                         "First base class should be instance of dataobject or datatuple");
-//                 return NULL;
-//             }
-//         }
-//     }
-
-//     // annotation = ns.get('__annotations__', {})
-//     annotations = PyMapping_GetItemString(ns, "__annotations__");
-
-//     // fields = ns.get('__fields__', None)
-//     fields = PyMapping_GetItemString(ns, "__fields__");
-//     // if fields is not None:
-//     if (fields && PyIndex_Check(fields)) {
-//             is_int = 1;
-//             has_fields = 0;
-//             n_fields = PyNumber_AsSsize_t(fields, &PyExc_TypeError);
-//             sequence = 1;
-//             iterable = 1;
-//     }
-//     if (fields && PySequence_Check(fields)) {
-//         PyObject *lst, *o;
-//         Py_ssize_t i, size = PySequence_Length(fields);
-
-//         // fields = list(fields)
-//         lst = PyList_New(size);
-//         for (i=0; i<size; i++) {
-//             o = PySequence_GetItem(fields, i);
-//             PyList_Append(lst, o);
-//         }
-//         Py_DECREF(fields);
-//         fields = lst;
-//         has_fields = 1;
-//         is_int = 0;
-//         n_fields = size;
-//     }
-//     if (!fields && annotations) {
-//         // elif annotations:
-//         PyObject *keys, *iterkeys;
-//         Py_ssize_t i, size;
-
-//         size = PyMapping_Length(annotations);
-//         fields = PyList_New(size);
-//         keys = PyMapping_Keys(annotations);
-//         iterkeys = PyObject_GetIter(keys);
-
-//         // fields = [fn for fn in annotations]
-//         for (i=0; i<size; i++) {
-//             PyObject *o;
-
-//             o = PyIter_Next(iterkeys);
-//             Py_INCREF(o);
-//             PyList_SET_ITEM(fields, i, o);
-//         }
-
-//         Py_DECREF(keys);
-//         Py_DECREF(iterkeys);
-
-//         has_fields = 1;
-//         is_int = 0;
-//         n_fields = size;
-//     }
-
-//     if (varsize) {
-//         sequence = 1;
-//         iterable = 1;
-//     }
-
-//     if (sequence || mapping)
-//         iterable = 1;
-
-//     if (has_fields) {
-// //     if annotations:
-// //         annotations = {fn:annotations[fn] for fn in fields if fn in annotations}
-//         if (annotations) {
-//             //PyObject
-//         }
-
-//     }
-
-//     return NULL;
-
-// }
 
 //////////////////// module level functions //////////////////////////////
 
@@ -2021,40 +1881,30 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
     }
 
     copy_mapping_methods(tp->tp_as_mapping, tp_base->tp_as_mapping);
-    // tp->tp_as_mapping = tp_base->tp_as_mapping;
     copy_sequence_methods(tp->tp_as_sequence, tp_base->tp_as_sequence);
-    // tp->tp_as_sequence = tp_base->tp_as_sequence;
 
     if (!mo && sq) {
         if (ro) {
-            // tp->tp_as_sequence = &dataobject_as_sequence_ro;
             copy_sequence_methods(tp->tp_as_sequence, &dataobject_as_sequence_ro);
-            // tp->tp_as_mapping = &dataobject_as_mapping_sq_ro;
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_sq_ro);
         } else {
-            // tp->tp_as_sequence = &dataobject_as_sequence;
             copy_sequence_methods(tp->tp_as_sequence, &dataobject_as_sequence);
-            // tp->tp_as_mapping = &dataobject_as_mapping_sq;
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_sq);
         }
     }
 
     if (!mo && mp) {
         if (ro) {
-            // tp->tp_as_mapping = &dataobject_as_mapping_ro;
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_ro);
         } else {
-            // tp->tp_as_mapping = &dataobject_as_mapping;
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping);
         }
     }
 
     if (!mo && mp && sq) {
         if (ro) {
-            // tp->tp_as_mapping = &dataobject_as_mapping2_ro;
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping2_ro);
         } else {
-            // tp->tp_as_mapping = &dataobject_as_mapping2;
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping2);
         }
     }
@@ -2156,16 +2006,6 @@ _set_dictoffset(PyObject *cls, PyObject *add_dict) {
             tp->tp_basicsize += sizeof(PyObject*);
         }
     }
-
-//     if (tp->tp_dictoffset && !state) {
-//         if (!tp->tp_weaklistoffset) {
-//             tp->tp_dictoffset = 0;
-//             tp->tp_basicsize -= sizeof(PyObject*);
-//         } else {
-//             tp->tp_basicsize -= sizeof(PyObject*);
-//             tp->tp_weaklistoffset = tp->tp_basicsize - sizeof(PyObject*);
-//         }
-//     }
 
     Py_RETURN_NONE;
 }
