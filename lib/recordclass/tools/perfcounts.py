@@ -69,7 +69,7 @@ results = {'id':[], 'size':[], 'new':[],
            'getattr':[], 'setattr':[], 
            'getitem':[], 'setitem':[],
            'getkey':[], 'setkey':[],
-           'getmethod':[],
+           # 'getmethod':[],
            'iterate':[], 'copy':[],
           }
 
@@ -353,7 +353,7 @@ test_getitem()
 test_setitem()
 test_getkey()
 test_setkey()
-test_getmethod()
+# test_getmethod()
 test_iterate()
 test_copy()
 
