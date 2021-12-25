@@ -27,9 +27,9 @@ from setuptools import setup
 from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
 
-# extra_compile_args = ["-O3", "-Wfatal-errors"]
+extra_compile_args = ["-O3", "-Wfatal-errors"]
 # extra_compile_args = ["-Wfatal-errors"]
-extra_compile_args = []
+# extra_compile_args = []
 extra_link_args = []
 
 use_cython = 1
@@ -75,7 +75,7 @@ else:
         extra_link_args = extra_link_args,
     ))
 
-description = """Mutable variant of collections.namedtuple -- recordclass.recordclass, which support assignments, and other memory saving variants."""
+description = """Mutable variant of namedtuple -- recordclass, which support assignments, and other memory saving variants."""
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()

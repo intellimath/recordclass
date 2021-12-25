@@ -1019,19 +1019,48 @@ static PyObject *
 dataobject_copy(PyObject* op)
 {
     PyTypeObject *type = py_type(op);
-    PyObject* dict = NULL;
+
+    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
+
+    PyObject *new_op = type->tp_alloc(type, 0);
+
+    PyObject **items = (PyObject**)PyDataObject_ITEMS(new_op);
+    PyObject **args = (PyObject**)PyDataObject_ITEMS(op);
+
+    Py_ssize_t i;
+    for(i=0; i<n_items; i++) {
+        PyObject *v = args[i];
+        items[i] = v;
+        py_incref(v);
+    }
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
+        PyObject* dict = NULL;
+
         if (*dictptr)
             dict = *dictptr;
-    }
 
-    return dataobject_new_vc(
-        type, 
-        (PyObject * const*)PyDataObject_ITEMS(op), 
-        PyDataObject_LEN(op), 
-        dict);
+        if (dict != NULL) {
+            int retval;
+
+            py_incref(dict);
+            retval = _dataobject_update(new_op, dict);
+            py_decref(dict);
+
+            if (retval < 0)
+                return NULL;
+        }
+    }
+    
+    
+    // return dataobject_new_vc(
+    //     type, 
+    //     (PyObject * const*)PyDataObject_ITEMS(op), 
+    //     PyDataObject_LEN(op), 
+    //     dict);
+    
+    return new_op;
 }
 
 // static PyObject *

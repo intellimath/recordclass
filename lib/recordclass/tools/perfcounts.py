@@ -69,7 +69,7 @@ results = {'id':[], 'size':[], 'new':[],
            'getattr':[], 'setattr':[], 
            'getitem':[], 'setitem':[],
            'getkey':[], 'setkey':[],
-           # 'call':[],
+           'getmethod':[],
            'iterate':[], 'copy':[],
           }
 
@@ -293,12 +293,12 @@ def test_setitem():
             res = "%.2f" % res
         results['setitem'].append(res)
 
-def test_call():
-    print("call")
+def test_getmethod():
+    print("getmethod")
     def test(cls):
         p = cls(0,0,0)
         for i in range(N):
-            p.norm2()
+            a = p.norm2
             
     for cls in classes:
         gc.collect()
@@ -308,7 +308,7 @@ def test_call():
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
         if res != '':
             res = "%.2f" % res
-        results['call'].append(res)
+        results['getmethod'].append(res)
         
 def test_iterate():
     print("iterate")
@@ -353,7 +353,7 @@ test_getitem()
 test_setitem()
 test_getkey()
 test_setkey()
-# test_call()
+test_getmethod()
 test_iterate()
 test_copy()
 
