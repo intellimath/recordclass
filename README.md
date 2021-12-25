@@ -408,6 +408,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
             x:int
             y:int
 * Module _litelist is implemented in pure C.
+* Make dataobject.__copy__ faster.
 
 #### 0.16.3
 
