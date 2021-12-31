@@ -129,7 +129,7 @@ Here is the table with performance counters (python 3.9, debian linux, x86-64), 
 | dataobject+fast_new+map |     40 |  0.82 |           |           |           |           | 0.95     | 1.00     | 1.15      | 0.64   |
 | dictclass               |     40 |  0.81 |           |           |           |           | 1.19     | 1.27     | 1.15      | 0.64   |
 
-Main repository for `recordclass`is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
+Main repository for `recordclass` is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
 Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/intellimath/recordclass/raw/master/examples/what_is_recordclass.ipynb).
 
