@@ -1053,13 +1053,6 @@ dataobject_copy(PyObject* op)
         }
     }
     
-    
-    // return dataobject_new_vc(
-    //     type, 
-    //     (PyObject * const*)PyDataObject_ITEMS(op), 
-    //     PyDataObject_LEN(op), 
-    //     dict);
-    
     return new_op;
 }
 
@@ -2303,7 +2296,7 @@ asdict(PyObject *module, PyObject *args)
     return _asdict(op);
 }
 
-// #ifdef PYPY_VERSION
+#ifdef PYPY_VERSION
 PyDoc_STRVAR(hash_func_doc,
 "Get hash value of the dataobject");
 
@@ -2345,7 +2338,7 @@ _iter_func(PyObject *module, PyObject *args)
 
     return dataobject_iter(op);
 }
-// #endif
+#endif
 
 PyDoc_STRVAR(astuple_doc,
 "Convert object to a tuple");
@@ -2565,10 +2558,10 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"astuple", astuple, METH_VARARGS, astuple_doc},
     {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
-// #ifdef PYPY_VERSION
+#ifdef PYPY_VERSION
     {"_hash_func", (PyCFunction)_hash_func, METH_VARARGS, hash_func_doc},
     {"_iter_func", (PyCFunction)_iter_func, METH_VARARGS, iter_func_doc},
-// #endif
+#endif
     {"clone", (PyCFunction)dataobject_clone, METH_VARARGS | METH_KEYWORDS, dataobject_clone_doc},
     {"update", (PyCFunction)dataobject_update, METH_VARARGS | METH_KEYWORDS, dataobject_update_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
