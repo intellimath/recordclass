@@ -2499,9 +2499,10 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     PyObject *set_dd = PyMapping_GetItemString(kw, "deep_dealloc");
     PyObject *mapping_only = PyMapping_GetItemString(kw, "mapping_only");
 
-    _collection_protocol(cls, sequence, mapping, readonly, mapping_only);
     _set_dictoffset(cls, use_dict);
     _set_weaklistoffset(cls, use_weakref);
+
+    _collection_protocol(cls, sequence, mapping, readonly, mapping_only);
     _set_iterable(cls, iterable);
 
 #ifndef PYPY_VERSION

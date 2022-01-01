@@ -311,7 +311,7 @@ class datatype(type):
         from ._dataobject import dataobjectproperty
         if name in cls.__dict__:
             o = getattr(cls, name)
-            if type(o) is dataobjectproperty or name == '__fields__':
+            if type(o) is dataobjectproperty or name in ('__fields__', '__defaults__'):
                 raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be deleted")
         type.__delattr__(cls, name)
         
