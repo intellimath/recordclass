@@ -63,7 +63,7 @@ class PointMap(dataobject, mapping=True, fast_new=True):
         return self.x*self.x + self.y*self.y + self.z*self.z
 
     
-PointDict = make_dictclass("PointDict", "x y z", fast_new=True)
+# PointDict = make_dictclass("PointDict", "x y z", fast_new=True)
     
 results = {'id':[], 'size':[], 'new':[], 
            'getattr':[], 'setattr':[], 
@@ -75,11 +75,11 @@ results = {'id':[], 'size':[], 'new':[],
 
 results['id'].extend(
     ['litetuple', 'mutabletuple', 'tuple', 'namedtuple', 'class+slots', 'dataobject',  
-     'dataobject+fast_new', 'dataobject+gc', 'dataobject+fast_new+gc', 'dict', 'dataobject+fast_new+map', 'dictclass'])
+     'dataobject+fast_new', 'dataobject+gc', 'dataobject+fast_new+gc', 'dict', 'dataobject+fast_new+map'])
 
 classes = (litetuple, mutabletuple, tuple, PointNT, PointSlots, 
            Point, FastPoint, PointGC, FastPointGC, 
-           dict, PointMap, PointDict)
+           dict, PointMap)
 
 N = 1_000_000
 
@@ -162,7 +162,7 @@ def test_getattr():
             
     for cls in classes:
         gc.collect()
-        if cls in (litetuple,mutabletuple,tuple,dict,PointMap,PointDict):
+        if cls in (litetuple,mutabletuple,tuple,dict,PointMap):
             res = ''
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
@@ -191,7 +191,7 @@ def test_getkey():
         gc.collect()
         if cls is dict:
             res = timeit("test_dict()", number=numbers, globals={'test_dict':test_dict})
-        elif cls in (PointMap, PointDict):
+        elif cls in (PointMap,):
             res = timeit("test_dictclass(cls)", number=numbers, globals={'cls':cls, 'test_dictclass':test_dictclass})
         else:
             res = ''
@@ -217,7 +217,7 @@ def test_getitem():
             
     for cls in classes:
         gc.collect()
-        if cls in (dict, PointSlots, PointMap, PointDict):
+        if cls in (dict, PointSlots, PointMap,):
             res = ''
         elif cls is tuple:
             res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
@@ -238,7 +238,7 @@ def test_setattr():
 
     for cls in classes:
         gc.collect()
-        if cls in (litetuple, mutabletuple, tuple, PointNT, dict, PointMap, PointDict):
+        if cls in (litetuple, mutabletuple, tuple, PointNT, dict, PointMap):
             res = ''
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test, 'tuple':tuple, 'PointNT':PointNT})
@@ -264,7 +264,7 @@ def test_setkey():
             
     for cls in classes:
         gc.collect()
-        if cls in (PointMap, PointDict):
+        if cls in (PointMap,):
             res = timeit("test_dictclass(cls)", number=numbers, globals={'cls':cls, 'test_dictclass':test_dictclass})
         elif cls is dict:
             res = timeit("test_dict()", number=numbers, globals={'test_dict':test_dict})
@@ -285,7 +285,7 @@ def test_setitem():
             
     for cls in classes:
         gc.collect()
-        if cls in (litetuple, dict, tuple, PointNT, PointSlots, PointDict, PointMap):
+        if cls in (litetuple, dict, tuple, PointNT, PointSlots, PointMap):
             res = ''
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
@@ -302,7 +302,7 @@ def test_getmethod():
             
     for cls in classes:
         gc.collect()
-        if cls in (litetuple, mutabletuple, dict, tuple, PointDict, PointNT):
+        if cls in (litetuple, mutabletuple, dict, tuple, PointNT):
             res = ''
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
@@ -369,7 +369,7 @@ results['size'].extend([
   sys.getsizeof(FastPointGC(0,0,0)),   
   sys.getsizeof({'x':0,'y':0, 'z':0}),   
   sys.getsizeof(PointMap(0,0,0)),   
-  sys.getsizeof(PointDict(0,0,0)),   
+  # sys.getsizeof(PointDict(0,0,0)),   
 ])
 
 pd.options.mode.use_inf_as_na = True
