@@ -110,7 +110,7 @@ def test_new():
             res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
-        res = "%.2f" % res
+        # res = "%.2f" % res
         results['new'].append(res)
 
 def test_copy():
@@ -144,11 +144,9 @@ def test_copy():
         elif cls is PointNT:
             res = timeit("test2(cls)", number=numbers, globals={'cls':cls, 'test2':test2})
         elif cls is PointSlots:
-            res = ''
+            res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
-        if res != '':
-            res = "%.2f" % res
         results['copy'].append(res)
         
 def test_getattr():
@@ -163,11 +161,9 @@ def test_getattr():
     for cls in classes:
         gc.collect()
         if cls in (litetuple,mutabletuple,tuple,dict,PointMap):
-            res = ''
+            res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
-        if res != '':
-            res = "%.2f" % res
         results['getattr'].append(res)
 
 def test_getkey():
@@ -194,9 +190,7 @@ def test_getkey():
         elif cls in (PointMap,):
             res = timeit("test_dictclass(cls)", number=numbers, globals={'cls':cls, 'test_dictclass':test_dictclass})
         else:
-            res = ''
-        if res != '':
-            res = "%.2f" % res
+            res = nan
         results['getkey'].append(res)
         
 def test_getitem():
@@ -218,13 +212,11 @@ def test_getitem():
     for cls in classes:
         gc.collect()
         if cls in (dict, PointSlots, PointMap,):
-            res = ''
+            res = nan
         elif cls is tuple:
             res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
-        if res != '':
-            res = "%.2f" % res
         results['getitem'].append(res)
         
 def test_setattr():
@@ -239,11 +231,9 @@ def test_setattr():
     for cls in classes:
         gc.collect()
         if cls in (litetuple, mutabletuple, tuple, PointNT, dict, PointMap):
-            res = ''
+            res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test, 'tuple':tuple, 'PointNT':PointNT})
-        if res != '':
-            res = "%.2f" % res
         results['setattr'].append(res)
 
 def test_setkey():
@@ -269,9 +259,7 @@ def test_setkey():
         elif cls is dict:
             res = timeit("test_dict()", number=numbers, globals={'test_dict':test_dict})
         else:
-            res = ''
-        if res != '':
-            res = "%.2f" % res
+            res = nan
         results['setkey'].append(res)
         
 def test_setitem():
@@ -286,11 +274,9 @@ def test_setitem():
     for cls in classes:
         gc.collect()
         if cls in (litetuple, dict, tuple, PointNT, PointSlots, PointMap):
-            res = ''
+            res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
-        if res != '':
-            res = "%.2f" % res
         results['setitem'].append(res)
 
 def test_getmethod():
@@ -303,11 +289,9 @@ def test_getmethod():
     for cls in classes:
         gc.collect()
         if cls in (litetuple, mutabletuple, dict, tuple, PointNT):
-            res = ''
+            res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
-        if res != '':
-            res = "%.2f" % res
         results['getmethod'].append(res)
         
 def test_iterate():
@@ -337,42 +321,57 @@ def test_iterate():
         elif cls is tuple:
             res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
         elif cls is PointSlots:
-            res = ''
+            res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
-        if res != '':
-            res = "%.2f" % res
         results['iterate'].append(res)
-        
-import pandas as pd
 
-test_new()
-test_getattr()
-test_setattr()
-test_getitem()
-test_setitem()
-test_getkey()
-test_setkey()
-# test_getmethod()
-test_iterate()
-test_copy()
+def test_all(relative=True):
+    import pandas as pd
+    from math import isnan
 
-results['size'].extend([
-  sys.getsizeof(litetuple(0,0,0)),   
-  sys.getsizeof(mutabletuple(0,0,0)),   
-  sys.getsizeof((0,0,0)),   
-  sys.getsizeof(PointNT(0,0,0)),   
-  sys.getsizeof(PointSlots(0,0,0)),   
-  sys.getsizeof(Point(0,0,0)),   
-  sys.getsizeof(FastPoint(0,0,0)),   
-  sys.getsizeof(PointGC(0,0,0)),   
-  sys.getsizeof(FastPointGC(0,0,0)),   
-  sys.getsizeof({'x':0,'y':0, 'z':0}),   
-  sys.getsizeof(PointMap(0,0,0)),   
-  # sys.getsizeof(PointDict(0,0,0)),   
-])
+    test_new()
+    test_getattr()
+    test_setattr()
+    test_getitem()
+    test_setitem()
+    test_getkey()
+    test_setkey()
+    # test_getmethod()
+    test_iterate()
+    test_copy()
 
-pd.options.mode.use_inf_as_na = True
-df = pd.DataFrame.from_dict(results)
-df.fillna('', inplace=True)
+    results['size'].extend([
+      sys.getsizeof(litetuple(0,0,0)),   
+      sys.getsizeof(mutabletuple(0,0,0)),   
+      sys.getsizeof((0,0,0)),   
+      sys.getsizeof(PointNT(0,0,0)),   
+      sys.getsizeof(PointSlots(0,0,0)),   
+      sys.getsizeof(Point(0,0,0)),   
+      sys.getsizeof(FastPoint(0,0,0)),   
+      sys.getsizeof(PointGC(0,0,0)),   
+      sys.getsizeof(FastPointGC(0,0,0)),   
+      sys.getsizeof({'x':0,'y':0, 'z':0}),   
+      sys.getsizeof(PointMap(0,0,0)),   
+      # sys.getsizeof(PointDict(0,0,0)),   
+    ])
+
+    if relative:
+        for key in results.keys():
+            if key in ('id', 'size'):
+                continue
+            minval = min([x for x in results[key] if not isnan(x)])
+            results[key] = [(round(x/minval,2) if not isnan(x) else x)  for x in results[key]]
+    else:
+        for key in results.keys():
+            if key in ('id', 'size'):
+                continue
+            results[key] = [(round(x,2) if not isnan(x) else x)  for x in results[key]]
+
+    pd.options.mode.use_inf_as_na = True
+    df = pd.DataFrame.from_dict(results)
+    df.fillna('', inplace=True)
+    return df
+
+df = test_all(relative=False)
 print(df.to_markdown(index=False))
