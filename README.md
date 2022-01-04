@@ -397,6 +397,10 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 #### 0.17
 
+* Fix packaging issue with cython=1 in setup.py
+
+#### 0.17
+
 * Now recordclass library may be compiled for pypy3, but there is still no complete runtime compatibility with pypy3.
 * Slighly imporove performance of `litetuple` / `mutabletuple`.
 * Slighly imporove performance of `dataobject`-based subclasses.
