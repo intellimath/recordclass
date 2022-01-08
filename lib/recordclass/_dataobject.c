@@ -234,8 +234,8 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
     Py_ssize_t i;
     for(i=0; i<n_args; i++) {
         PyObject *v = args[i];
-        items[i] = v;
         py_incref(v);
+        items[i] = v;
     }
 
     if (n_items > n_args) {
@@ -269,8 +269,8 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
                 if (!value)
                     value = Py_None;
 
-                items[i] = value;
                 py_incref(value);
+                items[i] = value;
             }
             py_decref(fields);
             py_decref(defaults);
@@ -615,9 +615,9 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 
     py_xdecref(*items);
 
-    *items = val;
     if (val)
         py_incref(val);
+    *items = val;
 
     return 0;
 }
@@ -664,11 +664,13 @@ dataobject_mp_ass_subscript_only(PyObject* op, PyObject* name, PyObject *val)
 #endif
 
     PyObject **items = PyDataObject_ITEMS(op) + i;
-    PyObject *v = *items;
-    *items = val;
+    // PyObject *v = *items;
+
+    py_xdecref(*items);
 
     py_incref(val);
-    py_xdecref(v);
+    *items = val;
+
     return 0;
 }
 
@@ -1030,8 +1032,8 @@ dataobject_copy(PyObject* op)
     Py_ssize_t i;
     for(i=0; i<n_items; i++) {
         PyObject *v = args[i];
-        items[i] = v;
         py_incref(v);
+        items[i] = v;
     }
 
     if (type->tp_dictoffset) {
