@@ -247,7 +247,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
             if (PyErr_Occurred())
                 PyErr_Clear();
 
-            for (; i < n_items; i++) {
+            for (i=n_args; i < n_items; i++) {
                 py_incref(Py_None);
                 items[i] = Py_None;
             }
@@ -1793,7 +1793,6 @@ static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value
     }
 
     PyObject *v = PyDataObject_GET_ITEM(obj, ((dataobjectproperty_object *)self)->index);
-
     py_xdecref(v);
 
     py_incref(value);
