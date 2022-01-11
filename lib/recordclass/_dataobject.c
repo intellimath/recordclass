@@ -247,7 +247,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
             if (PyErr_Occurred())
                 PyErr_Clear();
 
-            for (i=n_args; i < n_items; i++) {
+            for (; i < n_items; i++) {
                 py_incref(Py_None);
                 items[i] = Py_None;
             }
@@ -280,9 +280,9 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
     if (kwds != NULL) {
         int retval;
 
-        py_incref(kwds);
+        // py_incref(kwds);
         retval = _dataobject_update(op, kwds);
-        py_decref(kwds);
+        // py_decref(kwds);
 
         if (retval < 0)
             return NULL;
