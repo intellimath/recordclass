@@ -2127,8 +2127,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_basicsize = sizeof(PyObject) + n_fields * sizeof(PyObject*);
     tp->tp_itemsize = n_fields;
 
-    tp->tp_dictoffset = 0; //tp_base->tp_dictoffset;
-    tp->tp_weaklistoffset = 0; //tp_base->tp_weaklistoffset;
+    tp->tp_dictoffset = tp_base->tp_dictoffset;
+    tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
 
     tp->tp_alloc = dataobject_alloc;
 
@@ -2161,8 +2161,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_clear = NULL;
     tp->tp_is_gc = NULL;
 
-//     tp->tp_finalize = NULL;
-
 #if PY_VERSION_HEX == 0x03080000
     tp->tp_vectorcall_offset = 0
 #endif
@@ -2171,8 +2169,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 //     if (tp->tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
 //         tp->tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
 // #endif
-
-//     Py_DECREF(dict);
 
     Py_RETURN_NONE;
 }
@@ -2206,6 +2202,7 @@ _set_deep_dealloc(PyObject *cls, PyObject *state)
 {
     PyTypeObject *type;
     int have_gc;
+    int  is_deep = PyObject_IsTrue(state);
 
     if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
         PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of a type");
@@ -2214,10 +2211,10 @@ _set_deep_dealloc(PyObject *cls, PyObject *state)
 
     type = (PyTypeObject*)cls;
     have_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
-    if (have_gc || !PyObject_IsTrue(state))
-        Py_RETURN_NONE;
 
-    type->tp_finalize = dataobject_finalize;
+    if (!have_gc && is_deep) {
+        type->tp_finalize = dataobject_finalize;
+    }
 
 //     PyType_Modified(type);
 
