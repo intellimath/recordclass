@@ -231,8 +231,8 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
 
     const PyObject **items = (const PyObject**)PyDataObject_ITEMS(op);
 
-    Py_ssize_t i;
-    for(i=0; i<n_args; i++) {
+    // Py_ssize_t i;
+    for(Py_ssize_t i=0; i<n_args; i++) {
         PyObject *v = args[i];
         py_incref(v);
         items[i] = v;
@@ -247,7 +247,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
             if (PyErr_Occurred())
                 PyErr_Clear();
 
-            for (; i < n_items; i++) {
+            for (Py_ssize_t i=n_args; i < n_items; i++) {
                 py_incref(Py_None);
                 items[i] = Py_None;
             }
@@ -262,7 +262,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
                 return NULL;
             }
 
-            for(; i<n_items; i++) {
+            for(Py_ssize_t i=n_args; i<n_items; i++) {
                 PyObject *fname = PyTuple_GetItem(fields, i);
                 PyObject *value = PyDict_GetItem(defaults, fname);
 
@@ -453,9 +453,8 @@ dataobject_finalize(PyObject *ob) {
 
         py_decref(op);
 
-        {   Py_ssize_t j;
-            PyList_SET_ITEM(stack, 0, NULL);
-            for(j=1; j<n_stack; j++) {
+        {   PyList_SET_ITEM(stack, 0, NULL);
+            for(Py_ssize_t j=1; j<n_stack; j++) {
                 PyList_SET_ITEM(stack, j-1, PyList_GET_ITEM(stack, j));
             }
             n_stack--;
@@ -554,14 +553,11 @@ dataobject_len(PyObject *op)
 static int
 dataobject_traverse(PyObject *op, visitproc visit, void *arg)
 {
-    Py_ssize_t n_items;
-    PyObject **items;
     PyTypeObject *type = py_type(op);
-
-    n_items = PyDataObject_NUMITEMS(type);
+    Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
 
     if (n_items) {
-        items = PyDataObject_ITEMS(op);
+        PyObject **items = PyDataObject_ITEMS(op);
         while (n_items--) {
             Py_VISIT(*items);
             items++;
@@ -883,17 +879,13 @@ static PyMappingMethods dataobject_as_mapping_sq_ro = {
 static Py_hash_t
 dataobject_hash(PyObject *op)
 {
-    Py_uhash_t x;
-    Py_hash_t y;
-    Py_ssize_t i;
     const Py_ssize_t len = PyDataObject_LEN(op);
     Py_hash_t mult = _PyHASH_MULTIPLIER;
-    PyObject *o;
 
-    x = 0x345678L;
-    for(i=0; i<len; i++) {
-        o = PyDataObject_GET_ITEM(op, i);
-        y = PyObject_Hash(o);
+    Py_uhash_t x = 0x345678L;
+    for(Py_ssize_t i=0; i<len; i++) {
+        PyObject *o = PyDataObject_GET_ITEM(op, i);
+        Py_hash_t y = PyObject_Hash(o);
 //         Py_DECREF(o);
         if (y == -1)
             return -1;
@@ -1029,8 +1021,7 @@ dataobject_copy(PyObject* op)
     PyObject **items = (PyObject**)PyDataObject_ITEMS(new_op);
     PyObject **args = (PyObject**)PyDataObject_ITEMS(op);
 
-    Py_ssize_t i;
-    for(i=0; i<n_items; i++) {
+    for(Py_ssize_t i=0; i<n_items; i++) {
         PyObject *v = args[i];
         py_incref(v);
         items[i] = v;
@@ -1054,7 +1045,7 @@ dataobject_copy(PyObject* op)
                 return NULL;
         }
     }
-    
+
     return new_op;
 }
 
