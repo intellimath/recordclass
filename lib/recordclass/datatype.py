@@ -52,6 +52,17 @@ def _matching_annotations_and_defaults(annotations, defaults):
             if first_default:
                 raise TypeError('A field without default value appears after a field with default value')
 
+def get_option(options, name, default=False):
+    if name in options:
+        val = options[name]
+        if not val:
+            del options[name]
+    else:
+        val = default
+        if val:
+            options[name] = val
+    return val
+                
 _ds_cache = {}
 _ds_ro_cache = {}
                 
@@ -76,16 +87,16 @@ class datatype(type):
         if options is None:
             options = ns['__options__'] = {}
 
-        gc = options.get('gc', gc)
-        fast_new = options.get('fast_new', fast_new)
-        readonly = options.get('readonly', readonly)
-        iterable = options.get('iterable', iterable)
-        deep_dealloc = options.get('deep_dealloc', deep_dealloc)
-        sequence = options.get('sequence', sequence)
-        mapping = options.get('mapping', mapping)
-        use_dict = options.get('use_dict', use_dict)
-        use_weakref = options.get('use_weakref', use_weakref)
-        hashable = options.get('hashable', hashable)
+        gc = get_option(options, 'gc', gc)
+        fast_new = get_option(options, 'fast_new', fast_new)
+        readonly = get_option(options, 'readonly', readonly)
+        iterable = get_option(options, 'iterable', iterable)
+        deep_dealloc = get_option(options, 'deep_dealloc', deep_dealloc)
+        sequence = get_option(options, 'sequence', sequence)
+        mapping = get_option(options, 'mapping', mapping)
+        use_dict = get_option(options, 'use_dict', use_dict)
+        use_weakref = get_option(options, 'use_weakref', use_weakref)
+        hashable = get_option(options, 'hashable', hashable)
         
         if bases:
             base0 = bases[0]
@@ -138,7 +149,8 @@ class datatype(type):
             
         if readonly:
             hashable = True
-        options['hashable'] = hashable
+        if hashable:
+            options['hashable'] = hashable
 
         if has_fields:
             if annotations:

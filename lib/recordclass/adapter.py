@@ -23,7 +23,7 @@
 # THE SOFTWARE.
 
 def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
-                    sequence=False, mapping=False, iterable=False, readonly=False, api='',
+                    sequence=False, mapping=False, iterable=False, readonly=False,
                     module=None, fast_new=False, rename=False, gc=False, mapping_only=False):
 
     """Returns a new class with named fields and small memory footprint.

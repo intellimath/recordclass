@@ -104,10 +104,12 @@ def recordclass(typename, fields, defaults=None, *,
     else:
         _module = module
 
+    invalid_names = ('_make', '_replace', '_asdict')
+
     return make_dataclass(typename, fields, defaults=defaults, namespace=ns,
                 use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
                 sequence=True, mapping=mapping, iterable=True, rename=rename, 
-                readonly=readonly, module=_module, api='namedtuple', 
+                readonly=readonly, module=_module, invalid_names = invalid_names,
                 fast_new=fast_new, gc=False)
 
 class RecordclassStorage:
