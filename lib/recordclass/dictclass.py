@@ -143,24 +143,3 @@ class DictclassStorage:
             cls = make_datadict(name, fields, defaults, **kw)
             self._storage[key] = cls
         return cls
-
-# def join_dataclasses(name, classes, *, readonly=False, use_dict=False, gc=False,
-#                  use_weakref=False, hashable=True, sequence=False, fast_new=False, iterable=True, module=None):
-
-#     from ._dataobject import dataobject
-
-#     if not all(issubclass(cls, dataobject) for cls in classes):
-#         raise TypeError('All arguments should be children of dataobject')
-#     if not all(hasattr(cls, '__fields__') for cls in classes):
-#         raise TypeError('Some of the base classes has not __fields__')
-
-#     _attrs = []
-#     for cls in classes:
-#         for a in cls.__fields__:
-#             if a in _attrs:
-#                 raise AttributeError(f'Duplicate attribute %s in the base classes {a}')
-#             _attrs.append(a)
-
-#     return make_dataclass(name, _attrs,
-#                           readonly=readonly, use_dict=use_dict, gc=gc, use_weakref=use_weakref,
-#                           hashable=hashable, sequence=sequence, iterable=iterable, module=module)
