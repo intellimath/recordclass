@@ -55,6 +55,7 @@
 #define py_type(ob) ((PyObject*)(ob))->ob_type
 
 #define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
+#define py_set_size(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
 
 static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
@@ -456,7 +457,7 @@ dataobject_finalize(PyObject *ob) {
             }
             n_stack--;
             PyList_SET_ITEM(stack, n_stack, NULL);
-            Py_SIZE(stack) = n_stack;
+            py_set_size(stack, n_stack);
         }
     }
 }
@@ -2395,7 +2396,7 @@ dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
         return NULL;
     }
 
-    PyObject *ret =  dataobject_new_vc((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], Py_SIZE(tmp)-1, kw);
+    PyObject *ret =  dataobject_new_vc((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], n-1, kw);
 
     return ret;
 }

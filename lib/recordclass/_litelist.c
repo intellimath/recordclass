@@ -33,6 +33,7 @@ static PyTypeObject PyLiteList_Type;
 #define PyLiteList_SET_ITEM(op, i, v) (((PyLiteListObject *)(op))->ob_item[i] = v)
 #define PyLiteList_GET_SIZE(seq) Py_SIZE(seq)
 #define PyLiteList_ALLOCATED(op) (((PyLiteListObject *)(op))->allocated)
+#define PyLiteList_SET_ALLOCATED(op, n) (((PyLiteListObject *)(op))->allocated = (n))
 
 #define PyLiteList_CheckExact(op) (Py_TYPE(op) == &PyLiteList_Type)
 #define PyLiteList_Check(op) (PyLiteList_CheckExact(op) || PyObject_IsInstance(op, (PyObject*)&PyLiteList_Type))
@@ -40,6 +41,7 @@ static PyTypeObject PyLiteList_Type;
 #define DEFERRED_ADDRESS(addr) 0
 
 #define pyobject_size(tp) ( (tp)->tp_basicsize )
+#define py_set_size(ob, size) (((PyVarObject*)(ob))->ob_size) = (size)
 
 #define py_incref(o) ((PyObject*)(o))->ob_refcnt++
 #define py_decref(o) if (--(((PyObject*)(o))->ob_refcnt) == 0) Py_TYPE((PyObject*)(o))->tp_dealloc((PyObject*)(o))
@@ -71,7 +73,7 @@ litelist_resize(PyObject *op, Py_ssize_t size) {
         newsize =  size + (size / 8) + 6;
 
     PyLiteList_ITEMS(op) = (PyObject**)PyMem_Realloc(PyLiteList_ITEMS(op), newsize*sizeof(PyObject*));
-    PyLiteList_ALLOCATED(op) = newsize;
+    PyLiteList_SET_ALLOCATED(op, newsize);
 }
 
 
@@ -116,7 +118,8 @@ litelist_alloc(PyTypeObject *tp, Py_ssize_t n_items)
     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(tp);
 
-    PyLiteList_ALLOCATED(op) = Py_SIZE(op) = n_items;
+    PyLiteList_SET_ALLOCATED(op, n_items);
+    py_set_size(op, n_items);
     _Py_NewReference(op);
 
     return op;
@@ -201,7 +204,7 @@ litelist_init(PyObject *ob, PyObject *args, PyObject *kwds) {
 //     for (i = Py_SIZE(op); --i >= 0; ) {
 //         Py_CLEAR(op->ob_item[i]);
 //     }
-//     Py_SIZE(op) = 0;
+//     py_set_size(op, 0);
 //     return 0;
 // }
 
@@ -424,7 +427,7 @@ litelist_ass_item(PyLiteListObject *a, Py_ssize_t i, PyObject *v)
             i++;
         }
         *dst = NULL;
-        Py_SIZE(a) -= 1;
+        py_set_size(a, Py_SIZE(a)-1);
         return 0;
     }
     
@@ -744,7 +747,7 @@ litelist_append(PyObject *op, PyObject *o) {
     
     py_incref(o);
     PyLiteList_SET_ITEM(op, size, o);
-    Py_SIZE(op) = size + 1;
+    py_set_size(op, size + 1);
     
     Py_RETURN_NONE;
     
@@ -769,7 +772,7 @@ litelist_extend(PyObject *op, PyObject *o) {
         py_incref(v);
         PyLiteList_SET_ITEM(op, size+i, v);
     }
-    Py_SIZE(op) = size + size_o;
+    py_set_size(op, size + size_o);
     
     py_decref(seq);
     
