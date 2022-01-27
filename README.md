@@ -395,7 +395,12 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
-#### 0.17
+#### 0.17.2
+
+* Add support for python 3.10.
+* There are no use of "Py_SIZE(op)" and "Py_TYPE(op)" as l-value.
+
+#### 0.17.1
 
 * Fix packaging issue with cython=1 in setup.py
 
@@ -410,6 +415,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
         class Point:
             x:int
             y:int
+
 * Module _litelist is implemented in pure C.
 * Make dataobject.__copy__ faster.
 
