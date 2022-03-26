@@ -2530,7 +2530,7 @@ __fix_type(PyObject *tp, PyTypeObject *meta) {
         val = (PyObject*)py_type(tp);
         if (val)
             Py_DECREF(val);
-        py_type(tp) = meta;
+        py_set_type(tp, meta);
         Py_INCREF(meta);
         // PyType_Modified((PyTypeObject*)tp);
     }

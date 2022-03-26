@@ -77,7 +77,7 @@ It also provide a factory function `make_arrayclass` in order to create subclass
         >>> print(p)
         Pair(2, -1)
 
-It provide in addition the classes `lightlist` and `litetuple`, which considers as list-like and tuple-like *light* containers in order to save memory. They do not supposed to participate in CGC too.  Mutable variant of litetuple is called by `mutabletuple`. 
+It provide in addition the classes `lightlist` (immutable) and `litetuple`, which considers as list-like and tuple-like *light* containers in order to save memory. They do not supposed to participate in CGC too.  Mutable variant of litetuple is called by `mutabletuple`. 
     For example: 
 
         >>> lt = litetuple(1, 2, 3)

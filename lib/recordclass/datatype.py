@@ -146,7 +146,7 @@ class datatype(type):
                     iterable = True
                     options['iterable'] = True
                     break
-            
+
         if readonly:
             hashable = True
         if hashable:
