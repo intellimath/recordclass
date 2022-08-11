@@ -221,6 +221,7 @@ static PyObject*
 dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_args, PyObject *kwds)
 {
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
+    Py_ssize_t i;
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
@@ -232,7 +233,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
 
     const PyObject **items = (const PyObject**)PyDataObject_ITEMS(op);
 
-    for(Py_ssize_t i=0; i<n_args; i++) {
+    for(i=0; i<n_args; i++) {
         PyObject *v = args[i];
         py_incref(v);
         items[i] = v;
@@ -247,7 +248,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
             if (PyErr_Occurred())
                 PyErr_Clear();
 
-            for (Py_ssize_t i=n_args; i < n_items; i++) {
+            for (i=n_args; i < n_items; i++) {
                 py_incref(Py_None);
                 items[i] = Py_None;
             }
@@ -262,7 +263,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
                 return NULL;
             }
 
-            for(Py_ssize_t i=n_args; i<n_items; i++) {
+            for(i=n_args; i<n_items; i++) {
                 PyObject *fname = PyTuple_GetItem(fields, i);
                 PyObject *value = PyDict_GetItem(defaults, fname);
 
@@ -879,9 +880,10 @@ dataobject_hash(PyObject *op)
 {
     const Py_ssize_t len = PyDataObject_LEN(op);
     Py_hash_t mult = _PyHASH_MULTIPLIER;
+    Py_ssize_t i;
 
     Py_uhash_t x = 0x345678L;
-    for(Py_ssize_t i=0; i<len; i++) {
+    for(i=0; i<len; i++) {
         PyObject *o = PyDataObject_GET_ITEM(op, i);
         Py_hash_t y = PyObject_Hash(o);
 //         py_decref(o);
@@ -1011,6 +1013,7 @@ static PyObject *
 dataobject_copy(PyObject* op)
 {
     PyTypeObject *type = py_type(op);
+    Py_ssize_t i;
 
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
 
@@ -1019,7 +1022,7 @@ dataobject_copy(PyObject* op)
     PyObject **items = (PyObject**)PyDataObject_ITEMS(new_op);
     PyObject **args = (PyObject**)PyDataObject_ITEMS(op);
 
-    for(Py_ssize_t i=0; i<n_items; i++) {
+    for(i=0; i<n_items; i++) {
         PyObject *v = args[i];
         py_incref(v);
         items[i] = v;
