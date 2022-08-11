@@ -132,16 +132,16 @@ _PyObject_GetObject(const char *modname_c, const char *attrname_c)
         return NULL;
     mod = PyImport_Import(modname);
     if (mod == NULL) {
-        Py_DECREF(modname);
+        py_decref(modname);
         return NULL;
     }
     ob = PyObject_GetAttrString(mod, attrname_c);
     if (ob == NULL) {
-        Py_DECREF(mod);
+        py_decref(mod);
         return NULL;
     }
-    Py_DECREF(modname);
-    Py_DECREF(mod);
+    py_decref(modname);
+    py_decref(mod);
     return ob;
 }
 
@@ -156,22 +156,22 @@ pyobject_get_builtin(const char *attrname_c)
         return NULL;
     mod = PyImport_Import(modname);
     if (mod == NULL) {
-        Py_DECREF(modname);
+        py_decref(modname);
         return NULL;
     }
     ob = PyObject_GetAttrString(mod, attrname_c);
     if (ob == NULL) {
-        Py_DECREF(mod);
+        py_decref(mod);
         return NULL;
     }
-    Py_DECREF(modname);
-    Py_DECREF(mod);
+    py_decref(modname);
+    py_decref(mod);
     return ob;
 }
 
 // forward decaration
-static Py_ssize_t dataobject_len(PyObject *op);
-static PyObject* dataobject_sq_item(PyObject *op, Py_ssize_t i);
+// static Py_ssize_t dataobject_len(PyObject *op);
+// static PyObject* dataobject_sq_item(PyObject *op, Py_ssize_t i);
 static PyObject* _astuple(PyObject *op);
 static int _dataobject_update(PyObject *op, PyObject *kw);
 
@@ -258,7 +258,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
             if (n_fields != n_items) {
                 PyErr_SetString(PyExc_TypeError,
                                 "number of fields != number of data items");
-                Py_DECREF(defaults);
+                py_decref(defaults);
                 return NULL;
             }
 
@@ -480,19 +480,19 @@ dataobject_getattr(PyObject *op, PyObject *name)
         if (*dictptr) {
             PyObject *dict = *dictptr;
             if (is__dict__) {
-                Py_INCREF(dict);
+                py_incref(dict);
                 return dict;
             }
             if (PyMapping_HasKey(dict, name)) {
                 PyObject *res = PyDict_GetItem(dict, name);
                 if (res) {
-                    Py_INCREF(res);
+                    py_incref(res);
                     return res;
                 }
             }
         } else {
             *dictptr = PyDict_New();
-            Py_INCREF(*dictptr);
+            py_incref(*dictptr);
             return *dictptr;
         }
     } else {
@@ -884,7 +884,7 @@ dataobject_hash(PyObject *op)
     for(Py_ssize_t i=0; i<len; i++) {
         PyObject *o = PyDataObject_GET_ITEM(op, i);
         Py_hash_t y = PyObject_Hash(o);
-//         Py_DECREF(o);
+//         py_decref(o);
         if (y == -1)
             return -1;
         x = (x ^ y) * mult;
@@ -938,7 +938,7 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
             res = Py_False;
         else
             res = Py_True;
-        Py_INCREF(res);
+        py_incref(res);
         return res;
     }
 
@@ -946,8 +946,8 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
         vv = PyDataObject_GET_ITEM(v, i);
         ww = PyDataObject_GET_ITEM(w, i);
         k = PyObject_RichCompareBool(vv, ww, Py_EQ);
-//         Py_DECREF(vv);
-//         Py_DECREF(ww);
+//         py_decref(vv);
+//         py_decref(ww);
         if (k < 0)
             return NULL;
         if (!k)
@@ -971,17 +971,17 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
             res = Py_True;
         else
             res = Py_False;
-        Py_INCREF(res);
+        py_incref(res);
         return res;
     }
 
     /* We have an item that differs -- shortcuts for EQ/NE */
     if (op == Py_EQ) {
-        Py_INCREF(Py_False);
+        py_incref(Py_False);
         return Py_False;
     }
     if (op == Py_NE) {
-        Py_INCREF(Py_True);
+        py_incref(Py_True);
         return Py_True;
     }
 
@@ -989,8 +989,8 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
     vv = PyDataObject_GET_ITEM(v, i);
     ww = PyDataObject_GET_ITEM(w, i);
     ret = PyObject_RichCompare(vv, ww, op);
-//     Py_DECREF(vv);
-//     Py_DECREF(ww);
+//     py_decref(vv);
+//     py_decref(ww);
 
     return ret;
 }
@@ -1064,8 +1064,8 @@ dataobject_copy(PyObject* op)
 //         } else {
 //             n_fs = (Py_ssize_t)PyNumber_AsSsize_t(fs, PyExc_IndexError);
 //             if (n_fs < 0) {
-//                 Py_DECREF(fs);
-//                 Py_DECREF(tp_name);
+//                 py_decref(fs);
+//                 py_decref(tp_name);
 //                 return NULL;
 //             }
 //             n_fs = 0;
@@ -1077,14 +1077,14 @@ dataobject_copy(PyObject* op)
 //     if (n == 0) {
 //         PyObject *s = PyUnicode_FromString("()");
 //         text = PyUnicode_Concat(tp_name, s);
-//         Py_DECREF(s);
-//         Py_DECREF(tp_name);
+//         py_decref(s);
+//         py_decref(tp_name);
 //         return text;
 //     }
 
 //     i = Py_ReprEnter((PyObject *)self);
 //     if (i != 0) {
-//         Py_DECREF(tp_name);
+//         py_decref(tp_name);
 //         return i > 0 ? PyUnicode_FromString("(...)") : NULL;
 //     }
 
@@ -1102,7 +1102,7 @@ dataobject_copy(PyObject* op)
 //     if (_PyUnicodeWriter_WriteStr(&writer, tp_name) < 0)
 //         goto error;
 
-//     Py_DECREF(tp_name);
+//     py_decref(tp_name);
 
 //     if (_PyUnicodeWriter_WriteChar(&writer, '(') < 0)
 //         goto error;
@@ -1114,12 +1114,12 @@ dataobject_copy(PyObject* op)
 
 //         if (n_fs > 0 && i < n_fs) {
 //             fn = PyTuple_GET_ITEM(fs, i);
-//             Py_INCREF(fn);
+//             py_incref(fn);
 //             if (_PyUnicodeWriter_WriteStr(&writer, fn) < 0) {
-//                 Py_DECREF(fn);
+//                 py_decref(fn);
 //                 goto error;
 //             }
-//             Py_DECREF(fn);
+//             py_decref(fn);
 //             if (_PyUnicodeWriter_WriteChar(&writer, '=') < 0)
 //                 goto error;
 //         }
@@ -1130,17 +1130,17 @@ dataobject_copy(PyObject* op)
 
 //         s = PyObject_Repr(ob);
 //         if (s == NULL) {
-//             Py_DECREF(ob);
+//             py_decref(ob);
 //             goto error;
 //         }
 
 //         if (_PyUnicodeWriter_WriteStr(&writer, s) < 0) {
-//             Py_DECREF(s);
-//             Py_DECREF(ob);
+//             py_decref(s);
+//             py_decref(ob);
 //             goto error;
 //         }
-//         Py_DECREF(s);
-//         Py_DECREF(ob);
+//         py_decref(s);
+//         py_decref(ob);
 
 //         if (i < n-1) {
 //             if (_PyUnicodeWriter_WriteASCIIString(&writer, ", ", 2) < 0)
@@ -1160,13 +1160,13 @@ dataobject_copy(PyObject* op)
 //                     goto error;
 //                 s = PyObject_Repr(dict);
 //                 if (_PyUnicodeWriter_WriteStr(&writer, s) < 0) {
-//                     Py_DECREF(s);
-//                     Py_DECREF(dict);
+//                     py_decref(s);
+//                     py_decref(dict);
 //                     goto error;
 //                 }
-//                 Py_DECREF(s);
+//                 py_decref(s);
 //             }
-//             Py_DECREF(dict);
+//             py_decref(dict);
 //         }
 //     }
 
@@ -1261,7 +1261,7 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
     else
         result = PyTuple_Pack(2, tp, args);
 
-    Py_DECREF(args);
+    py_decref(args);
     Py_XDECREF(kw);
     return result;
 }
@@ -1304,10 +1304,10 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
 
         if (PyDict_Update(dict, state) < 0) {
             PyErr_SetString(PyExc_TypeError, "dict update failed");
-            Py_DECREF(dict);
+            py_decref(dict);
             return NULL;
         }
-        Py_DECREF(dict);
+        py_decref(dict);
     } else {
         PyErr_SetString(PyExc_TypeError, "object has no __dict__");
         return NULL;
@@ -1343,7 +1343,7 @@ static PyObject *dataobject_iter(PyObject *seq);
 //         } else {
 //             *dictptr = dict = PyDict_New();
 //         }
-//         Py_INCREF(dict);
+//         py_incref(dict);
 //         return dict;
 //     }
 // }
@@ -1433,7 +1433,7 @@ static PyObject* dataobject_iter(PyObject *seq);
 //     if (value == NULL)
 //         value = Py_None;
 //     wref->value = value;
-//     Py_INCREF(value);
+//     py_incref(value);
 //     return (PyObject *)wref;
 // }
 
@@ -1449,7 +1449,7 @@ static PyObject* dataobject_iter(PyObject *seq);
 // {
 //     PyObject *value;
 //     value = ((struct dataobject_weakref*)self)->value;
-//     Py_INCREF(value);
+//     py_incref(value);
 //     return value;
 // }
 
@@ -1458,7 +1458,7 @@ static PyObject* dataobject_iter(PyObject *seq);
 // {
 //     PyObject *value = ((struct dataobject_weakref*)self)->value;
 //     Py_XDECREF(value);
-//     Py_INCREF(val);
+//     py_incref(val);
 //     ((struct dataobject_weakref*)self)->value = val;
 //     return 0;
 // }
@@ -1530,7 +1530,7 @@ dataobjectiter_dealloc(dataobjectiterobject *it)
 
 #if PY_VERSION_HEX < 0x03080000
     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
-    Py_DECREF(tp);
+    py_decref(tp);
 #endif
 
     Py_XDECREF(it->it_seq);
@@ -1561,12 +1561,12 @@ dataobjectiter_next(dataobjectiterobject *it)
 
     if (it->it_index < it->it_len) {
         item = PyDataObject_GET_ITEM(op, it->it_index);
-        Py_INCREF(item);
+        py_incref(item);
         it->it_index++;
         return item;
     }
 
-//     Py_DECREF(it->it_seq);
+//     py_decref(it->it_seq);
 //     it->it_seq = NULL;
     return NULL;
 }
@@ -1676,13 +1676,13 @@ dataobject_iter(PyObject *seq)
     {
         PyTypeObject *t = py_type(it);
         if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
-            Py_INCREF(t);
+            py_incref(t);
     }
 #endif
 
     it->it_index = 0;
     it->it_seq = seq;
-    Py_INCREF(seq);
+    py_incref(seq);
     it->it_len = PyDataObject_LEN(seq);
 
     return (PyObject *)it;
@@ -1731,7 +1731,7 @@ static PyObject* dataobjectproperty_new(PyTypeObject *t, PyObject *args, PyObjec
 
 #if PY_VERSION_HEX < 0x03080000
         if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
-            Py_INCREF(t);
+            py_incref(t);
 #endif
     ob->readonly = readonly;
     ob->index = index;
@@ -1745,14 +1745,14 @@ static void dataobjectproperty_dealloc(PyObject *o) {
 
 #if PY_VERSION_HEX >= 0x03080000
     if (t->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_DECREF(t);
+        py_decref(t);
 #endif
 }
 
 static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type) {
 
     if (obj == NULL || obj == Py_None) {
-        Py_INCREF(self);
+        py_incref(self);
         return self;
     }
 
@@ -2101,7 +2101,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     } else {
         n_fields = PyNumber_AsSsize_t(fields, PyExc_IndexError);
         if (n_fields == -1 && PyErr_Occurred()) {
-            Py_DECREF(fields);
+            py_decref(fields);
             return NULL;
         }
         if (n_fields < 0) {
@@ -2111,7 +2111,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         has_fields = 0;
     }
 
-    Py_DECREF(fields);
+    py_decref(fields);
 
     tp->tp_basicsize = sizeof(PyObject) + n_fields * sizeof(PyObject*);
     tp->tp_itemsize = n_fields;
@@ -2220,7 +2220,7 @@ _astuple(PyObject *op)
     PyObject *tpl = PyTuple_New(n);
     for (i=0; i<n; i++) {
         PyObject *v = PyDataObject_GET_ITEM(op, i);
-        Py_INCREF(v);
+        py_incref(v);
         PyTuple_SetItem(tpl, i, v);
     }
     return (PyObject*)tpl;
@@ -2246,19 +2246,19 @@ _asdict(PyObject *op)
     PyObject *dict = PyDict_New();
 
     if (n == 0) {
-        Py_DECREF(fields);
+        py_decref(fields);
         return dict;
     }
 
     for (i=0; i<n; i++) {
         fn = PyTuple_GetItem(fields, i);
-        Py_INCREF(fn);
+        py_incref(fn);
         v = PyDataObject_GET_ITEM(op, i);
-        Py_INCREF(v);
+        py_incref(v);
         PyDict_SetItem(dict, fn, v);
     }
 
-    Py_DECREF(fields);
+    py_decref(fields);
     return dict;
 }
 
@@ -2362,7 +2362,7 @@ dataobject_make(PyObject *module, PyObject *type_args, PyObject *kw)
         args0 = PyTuple_GET_ITEM(type_args, 1);
         if (py_type(args0) == &PyTuple_Type) {
             args = args0;
-            Py_INCREF(args);
+            py_incref(args);
         } else {
             args = PySequence_Tuple(args0);
         }
@@ -2372,12 +2372,12 @@ dataobject_make(PyObject *module, PyObject *type_args, PyObject *kw)
     }
 
     PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
-    Py_INCREF(type);
+    py_incref(type);
 
     PyObject *ret =  dataobject_new(type, args, kw);
 
-    Py_DECREF(args);
-    Py_DECREF(type);
+    py_decref(args);
+    py_decref(type);
 
     return ret;
 }
@@ -2411,14 +2411,14 @@ dataobject_clone(PyObject *module, PyObject *args0, PyObject *kw)
 
     PyObject *ob = PyTuple_GET_ITEM(args0, 0);
     PyTypeObject *type = py_type(ob);
-    Py_INCREF(type);
+    py_incref(type);
 
     args = _astuple(ob);
 
     PyObject *ret =  dataobject_new(type, args, kw);
 
-    Py_DECREF(args);
-    Py_DECREF(type);
+    py_decref(args);
+    py_decref(type);
 
     return ret;
 }
@@ -2433,21 +2433,21 @@ _dataobject_update(PyObject *op, PyObject *kwds)
             val = PyObject_GetItem(kwds, key);
             if (!val) {
                 PyErr_SetString(PyExc_KeyError, "Invalid kwarg");
-                Py_DECREF(key);
-                Py_DECREF(iter);
+                py_decref(key);
+                py_decref(iter);
                 return -1;
             }
             if (PyObject_SetAttr(op, key, val) < 0) {
                 PyErr_SetString(PyExc_AttributeError, "Set attribute failed");
-                Py_DECREF(val);
-                Py_DECREF(key);
-                Py_DECREF(iter);
+                py_decref(val);
+                py_decref(key);
+                py_decref(iter);
                 return -1;
             }
-            Py_DECREF(val);
-            Py_DECREF(key);
+            py_decref(val);
+            py_decref(key);
         }
-        Py_DECREF(iter);
+        py_decref(iter);
     return 0;
 }
 
@@ -2529,9 +2529,9 @@ __fix_type(PyObject *tp, PyTypeObject *meta) {
     if (py_type(tp) != meta) {
         val = (PyObject*)py_type(tp);
         if (val)
-            Py_DECREF(val);
+            py_decref(val);
         py_set_type(tp, meta);
-        Py_INCREF(meta);
+        py_incref(meta);
         // PyType_Modified((PyTypeObject*)tp);
     }
 }
@@ -2580,7 +2580,7 @@ PyInit__dataobject(void)
 #ifndef PYPY_VERSION
     m = PyState_FindModule(&dataobjectmodule);
     if (m) {
-        Py_INCREF(m);
+        py_incref(m);
         return m;
     }
 #endif
@@ -2591,10 +2591,10 @@ PyInit__dataobject(void)
 
     datatype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
     __fix_type((PyObject*)&PyDataObject_Type, datatype);
-    Py_DECREF(datatype);
+    py_decref(datatype);
 
     // PyDataObject_Type.tp_base = &PyBaseObject_Type;
-    // Py_INCREF(&PyBaseObject_Type);
+    // py_incref(&PyBaseObject_Type);
 // #if PY_VERSION_HEX == 0x03080000
 //     PyDataObject_Type.tp_vectorcall_offset = 0
 // #endif
@@ -2607,19 +2607,19 @@ PyInit__dataobject(void)
     if (PyType_Ready(&PyDataObjectProperty_Type) < 0)
         Py_FatalError("Can't initialize dataobjectproperty type");
 
-    Py_INCREF(&PyDataObject_Type);
+    py_incref(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
 
-    Py_INCREF(&PyDataObjectIter_Type);
+    py_incref(&PyDataObjectIter_Type);
     PyModule_AddObject(m, "dataobjectiter", (PyObject *)&PyDataObjectIter_Type);
 
-    Py_INCREF(&PyDataObjectProperty_Type);
+    py_incref(&PyDataObjectProperty_Type);
     PyModule_AddObject(m, "dataobjectproperty", (PyObject *)&PyDataObjectProperty_Type);
 
     fields_dict_name = PyUnicode_FromString("__fields_dict__");
     if (fields_dict_name == NULL)
         return NULL;
-    // Py_INCREF(fields_dict_name);
+    // py_incref(fields_dict_name);
     // fields_dict_hash = PyObject_Hash(fields_dict_name);
 
     __fields__name = PyUnicode_FromString("__fields__");

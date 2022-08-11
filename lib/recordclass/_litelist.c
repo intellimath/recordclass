@@ -41,7 +41,6 @@ static PyTypeObject PyLiteList_Type;
 #define DEFERRED_ADDRESS(addr) 0
 
 #define pyobject_size(tp) ( (tp)->tp_basicsize )
-#define py_set_size(ob, size) (((PyVarObject*)(ob))->ob_size) = (size)
 
 #define py_incref(o) ((PyObject*)(o))->ob_refcnt++
 #define py_decref(o) if (--(((PyObject*)(o))->ob_refcnt) == 0) Py_TYPE((PyObject*)(o))->tp_dealloc((PyObject*)(o))
@@ -59,6 +58,12 @@ static PyTypeObject PyLiteList_Type;
         if (_py_xdecref_tmp != NULL)                  \
             py_decref(_py_xdecref_tmp);               \
     } while (0)
+
+#define py_set_type(ob, type) (((PyObject*)(ob))->ob_type) = (type)
+#define py_type(ob) ((PyObject*)(ob))->ob_type
+
+#define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
+#define py_set_size(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
 
 static PyTypeObject PyLiteList_Type;
 typedef PyListObject PyLiteListObject;
@@ -114,7 +119,7 @@ litelist_alloc(PyTypeObject *tp, Py_ssize_t n_items)
     
     PyLiteList_ITEMS(op) = (PyObject**)PyMem_Malloc(n_items*sizeof(PyObject*));
 
-    Py_TYPE(op) = tp;
+    py_set_type(op, tp);
     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(tp);
 
