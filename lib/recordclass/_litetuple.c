@@ -55,7 +55,10 @@ static PyTypeObject PyMLiteTuple_Type;
             py_decref(_py_xdecref_tmp);               \
     } while (0)
 
-#define py_set_type(ob, type) (((PyObject*)(ob))->ob_type) = (type)
+#if !defined(Py_SET_TYPE)
+#define Py_SET_TYPE(ob, type) (((PyObject*)(ob))->ob_type) = (type)
+#endif
+
 #define py_type(ob) ((PyObject*)(ob))->ob_type
 
 #define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
@@ -104,7 +107,7 @@ PyLiteTuple_New(PyTypeObject *tp, Py_ssize_t nitems)
 
     memset(op, '\0', size);
 
-    py_set_type(op, tp);
+    Py_SET_TYPE(op, tp);
     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(tp);
 

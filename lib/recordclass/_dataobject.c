@@ -51,7 +51,10 @@
             py_decref(_py_xdecref_tmp);               \
     } while (0)
 
-#define py_set_type(ob, type) (((PyObject*)(ob))->ob_type) = (type)
+#if !defined(Py_SET_TYPE)
+#define Py_SET_TYPE(ob, type) (((PyObject*)(ob))->ob_type) = (type)
+#endif
+
 #define py_type(ob) ((PyObject*)(ob))->ob_type
 
 #define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
@@ -189,7 +192,7 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 
     memset(op, '\0', size);
 
-    py_set_type(op, type);
+    Py_SET_TYPE(op, type);
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(type);
 
@@ -2536,7 +2539,7 @@ __fix_type(PyObject *tp, PyTypeObject *meta) {
         val = (PyObject*)py_type(tp);
         if (val)
             py_decref(val);
-        py_set_type(tp, meta);
+        Py_SET_TYPE(tp, meta);
         py_incref(meta);
         // PyType_Modified((PyTypeObject*)tp);
     }
