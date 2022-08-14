@@ -59,7 +59,10 @@ static PyTypeObject PyMLiteTuple_Type;
 #define py_type(ob) ((PyObject*)(ob))->ob_type
 
 #define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
-#define py_set_size(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
+
+#if !defined(Py_SET_SIZE)
+#define Py_SET_SIZE(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
+#endif
 
 #define DEFERRED_ADDRESS(addr) 0
 
@@ -105,7 +108,7 @@ PyLiteTuple_New(PyTypeObject *tp, Py_ssize_t nitems)
     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(tp);
 
-    py_set_size(op, nitems);
+    Py_SET_SIZE(op, nitems);
     _Py_NewReference(op);
 
     return op;

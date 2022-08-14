@@ -63,7 +63,10 @@ static PyTypeObject PyLiteList_Type;
 #define py_type(ob) ((PyObject*)(ob))->ob_type
 
 #define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
-#define py_set_size(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
+
+#if !defined(Py_SET_SIZE)
+#define Py_SET_SIZE(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
+#endif
 
 static PyTypeObject PyLiteList_Type;
 typedef PyListObject PyLiteListObject;
@@ -124,7 +127,7 @@ litelist_alloc(PyTypeObject *tp, Py_ssize_t n_items)
         py_incref(tp);
 
     PyLiteList_SET_ALLOCATED(op, n_items);
-    py_set_size(op, n_items);
+    Py_SET_SIZE(op, n_items);
     _Py_NewReference(op);
 
     return op;
@@ -209,7 +212,7 @@ litelist_init(PyObject *ob, PyObject *args, PyObject *kwds) {
 //     for (i = Py_SIZE(op); --i >= 0; ) {
 //         Py_CLEAR(op->ob_item[i]);
 //     }
-//     py_set_size(op, 0);
+//     Py_SET_SIZE(op, 0);
 //     return 0;
 // }
 
@@ -432,7 +435,7 @@ litelist_ass_item(PyLiteListObject *a, Py_ssize_t i, PyObject *v)
             i++;
         }
         *dst = NULL;
-        py_set_size(a, Py_SIZE(a)-1);
+        Py_SET_SIZE(a, Py_SIZE(a)-1);
         return 0;
     }
     
@@ -752,7 +755,7 @@ litelist_append(PyObject *op, PyObject *o) {
     
     py_incref(o);
     PyLiteList_SET_ITEM(op, size, o);
-    py_set_size(op, size + 1);
+    Py_SET_SIZE(op, size + 1);
     
     Py_RETURN_NONE;
     
@@ -777,7 +780,7 @@ litelist_extend(PyObject *op, PyObject *o) {
         py_incref(v);
         PyLiteList_SET_ITEM(op, size+i, v);
     }
-    py_set_size(op, size + size_o);
+    Py_SET_SIZE(op, size + size_o);
     
     py_decref(seq);
     
