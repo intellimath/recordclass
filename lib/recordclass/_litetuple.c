@@ -39,7 +39,7 @@ static PyTypeObject PyMLiteTuple_Type;
 #define py_incref(o) ((PyObject*)(o))->ob_refcnt++
 #define py_decref(o) \
         if (--(((PyObject*)(o))->ob_refcnt) == 0) \
-              py_type((PyObject*)(o))->tp_dealloc((PyObject*)(o))
+              Py_TYPE((PyObject*)(o))->tp_dealloc((PyObject*)(o))
 
 #define py_xincref(op)                                \
     do {                                              \
@@ -59,7 +59,9 @@ static PyTypeObject PyMLiteTuple_Type;
 #define Py_SET_TYPE(ob, type) (((PyObject*)(ob))->ob_type) = (type)
 #endif
 
-#define py_type(ob) ((PyObject*)(ob))->ob_type
+#if !defined(Py_TYPE)
+#define Py_TYPE(ob) ((PyObject*)(ob))->ob_type
+#endif
 
 #define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
 

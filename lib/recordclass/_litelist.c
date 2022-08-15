@@ -63,7 +63,9 @@ static PyTypeObject PyLiteList_Type;
 #define Py_SET_TYPE(ob, type) (((PyObject*)(ob))->ob_type) = (type)
 #endif
 
-#define py_type(ob) ((PyObject*)(ob))->ob_type
+#if !defined(Py_TYPE)
+#define Py_TYPE(ob) ((PyObject*)(ob))->ob_type
+#endif
 
 #define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
 
