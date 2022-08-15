@@ -21,7 +21,6 @@
 #ifdef Py_LIMITED_API
 #undef Py_LIMITED_API
 #endif
-// #define Py_LIMITED_API 1
 
 #include "Python.h"
 #include "_dataobject.h"
@@ -63,6 +62,28 @@
 
 #if !defined(Py_SET_SIZE)
 #define Py_SET_SIZE(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
+#endif
+
+#if PY_VERSION_HEX > 0x03100000
+static PyObject *
+_PyObject_GC_Malloc(size_t basicsize)
+{
+    size_t presize = sizeof(PyGC_Head);
+    PyThreadState *tstate = _PyThreadState_GET();
+    if (basicsize > PY_SSIZE_T_MAX - presize) {
+        return _PyErr_NoMemory(tstate);
+    }
+    size_t size = presize + basicsize;
+    char *mem = PyObject_Malloc(size);
+    if (mem == NULL) {
+        return _PyErr_NoMemory(tstate);
+    }
+    ((PyObject **)mem)[0] = NULL;
+    ((PyObject **)mem)[1] = NULL;
+    PyObject *op = (PyObject *)(mem + presize);
+    _PyObject_GC_Link(op);
+    return op;
+}
 #endif
 
 static PyTypeObject PyDataObject_Type;
@@ -1425,103 +1446,6 @@ static PyTypeObject PyDataObject_Type = {
 static PyObject* dataobject_iter(PyObject *seq);
 
 //////////////////////////////////////////////////////////////////////////
-
-// /*********************** DataObjectWRef **************************/
-
-// typedef struct {
-//     PyObject_HEAD
-//     PyObject *value;
-// } dataobject_weakref;
-
-// static PyObject *
-// dataobject_weakref_new(PyObject *value)
-// {
-//     dataobject_weakref *wref;
-
-//     wref = PyObject_New(dataobject_weakref, &PyDataObjectWRef_Type);
-//     if (wref == NULL)
-//         return NULL;
-//     if (value == NULL)
-//         value = Py_None;
-//     wref->value = value;
-//     py_incref(value);
-//     return (PyObject *)wref;
-// }
-
-// static void
-// dataobject_weakref_dealloc(dataobject_weakref *wref)
-// {
-//     Py_CLEAR(wref->value);
-//     PyObject_Del(wref);
-// }
-
-// static PyObject*
-// dataobject_weakref_get_value(PyObject *self)
-// {
-//     PyObject *value;
-//     value = ((struct dataobject_weakref*)self)->value;
-//     py_incref(value);
-//     return value;
-// }
-
-// static int
-// dataobject_weakref_set_value(PyObject *self, PyObject *val)
-// {
-//     PyObject *value = ((struct dataobject_weakref*)self)->value;
-//     Py_XDECREF(value);
-//     py_incref(val);
-//     ((struct dataobject_weakref*)self)->value = val;
-//     return 0;
-// }
-
-// static PyGetSetDef dataobject_weakref_getsets[] = {
-//     {"value", (getter)dataobject_weakref_value, (setter)dataobject_weakref_set_value, NULL},
-//     {0}
-// };
-
-// PyTypeObject PyDataObjectWRef_Type = {
-//     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
-//     "recordclass._dataobject.dataobject_weakref",                           /* tp_name */
-//     sizeof(dataobject_weakref),                    /* tp_basicsize */
-//     0,                                          /* tp_itemsize */
-//     /* methods */
-//     (destructor)dataobject_weakref_dealloc,              /* tp_dealloc */
-//     0,                                          /* tp_print */
-//     0,                                          /* tp_getattr */
-//     0,                                          /* tp_setattr */
-//     0,                                          /* tp_reserved */
-//     0,                                          /* tp_repr */
-//     0,                                          /* tp_as_number */
-//     0,                                          /* tp_as_sequence */
-//     0,                                          /* tp_as_mapping */
-//     0,                                          /* tp_hash */
-//     0,                                          /* tp_call */
-//     0,                                          /* tp_str */
-//     PyObject_GenericGetAttr,                    /* tp_getattro */
-//     0,                                          /* tp_setattro */
-//     0,                                          /* tp_as_buffer */
-//     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,                         /* tp_flags */
-//     0,                                          /* tp_doc */
-//     0,     /* tp_traverse */
-//     0,             /* tp_clear */
-//     0,                                          /* tp_richcompare */
-//     0,                                          /* tp_weaklistoffset */
-//     PyObject_SelfIter,                          /* tp_iter */
-//     (iternextfunc)dataobjectiter_next,         /* tp_iternext */
-//     dataobjectiter_methods,                    /* tp_methods */
-//     0,                                      /* tp_members */
-//     dataobject_weakref_getsets,                                      /* tp_getset */
-//     0,                                      /* tp_base */
-//     0,                                      /* tp_memoryslots */
-//     0,                                      /* tp_descr_get */
-//     0,                                      /* tp_descr_set */
-//     0,                                      /* tp_memoryslotsoffset */
-//     0,                                      /* tp_init */
-//     0,                         /* tp_alloc */
-//     dataobject_weakref_new,                           /* tp_new */
-//     PyObject_Del,                          /* tp_free */
-//     0                                       /* tp_is_gc */
-// };
 
 
 /*********************** DataObject Iterator **************************/
