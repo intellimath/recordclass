@@ -395,11 +395,14 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.17.4
+
+* Fixed error with missing `_PyObject_GC_Malloc` in 3.11.
+
 #### 0.17.3
 
 * Fix compatibility issue: restore gnu98 C-syntax.
 * Fix remained issues with use of "Py_SIZE(op)" and "Py_TYPE(op)" as l-value.
-* Fixed error with missing `_PyObject_GC_Malloc` in 3.11.
 
 #### 0.17.2
 

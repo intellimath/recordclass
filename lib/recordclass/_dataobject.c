@@ -64,7 +64,7 @@
 #define Py_SET_SIZE(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
 #endif
 
-#if PY_VERSION_HEX > 0x03100000
+#if PY_VERSION_HEX >= 0x030B0000
 static PyObject *
 _PyObject_GC_Malloc(size_t basicsize)
 {
@@ -235,7 +235,7 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 
     memset(op, '\0', size);
 
-    Py_TYPE(op) = type;
+    Py_SET_TYPE(op, type);
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(type);
 
