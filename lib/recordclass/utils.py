@@ -100,8 +100,6 @@ def process_fields(fields, defaults, rename, invalid_names):
 
     if isinstance(defaults, (tuple,list)) and n_defaults > 0:
         defaults = {fields[i]:defaults[i] for i in range(-n_defaults,0)}
-
-        
     return fields, annotations, defaults
 
 def check_name(name, i=0, rename=False, invalid_names=()):

@@ -197,16 +197,16 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
     if (!op)
         return PyErr_NoMemory();
 
-    // memset(op, '\0', size);
+    memset(op, '\0', size);
 
-    if (type->tp_dictoffset) {
-        PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-        *dictptr = NULL;
-    }
-    if (type->tp_weaklistoffset) {
-        PyObject **weakrefptr = PyDataObject_WEAKLISTPTR(type, op);
-        *weakrefptr = NULL;
-    }
+    // if (type->tp_dictoffset) {
+    //     PyObject **dictptr = PyDataObject_DICTPTR(type, op);
+    //     *dictptr = NULL;
+    // }
+    // if (type->tp_weaklistoffset) {
+    //     PyObject **weakrefptr = PyDataObject_WEAKLISTPTR(type, op);
+    //     *weakrefptr = NULL;
+    // }
     
     Py_SET_TYPE(op, type);
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
@@ -264,10 +264,11 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
 
     const PyObject **items = (const PyObject**)PyDataObject_ITEMS(op);
 
-    for(i=0; i<n_args; i++) {
+    i = 0;
+    while(i < n_args) {
         PyObject *v = args[i];
         py_incref(v);
-        items[i] = v;
+        items[i++] = v;
     }
 
     if (n_items > n_args) {
@@ -279,9 +280,10 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
             if (PyErr_Occurred())
                 PyErr_Clear();
 
-            for (i=n_args; i < n_items; i++) {
+            i = n_args;
+            while(i < n_items) {
                 py_incref(Py_None);
-                items[i] = Py_None;
+                items[i++] = Py_None;
             }
         } else {
             PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
@@ -294,7 +296,8 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
                 return NULL;
             }
 
-            for(i=n_args; i<n_items; i++) {
+            i = n_args;
+            while(i<n_items) {
                 PyObject *fname = PyTuple_GetItem(fields, i);
                 PyObject *value = PyDict_GetItem(defaults, fname);
 
@@ -302,7 +305,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
                     value = Py_None;
 
                 py_incref(value);
-                items[i] = value;
+                items[i++] = value;
             }
             py_decref(fields);
             py_decref(defaults);
