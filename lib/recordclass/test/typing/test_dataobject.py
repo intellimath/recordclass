@@ -117,7 +117,7 @@ class DataObjectTest3(unittest.TestCase):
         if not is_pypy:
             with self.assertRaises(TypeError):     
                 weakref.ref(a)
-        print('*')
+        # print('*')
         with self.assertRaises(AttributeError):     
             a.__dict__
         with self.assertRaises(AttributeError):     
