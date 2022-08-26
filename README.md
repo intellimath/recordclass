@@ -395,6 +395,10 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.17.5
+
+* Make to compile, to build and to test successfully for python 3.11.
+
 #### 0.17.4
 
 * Fixed error with missing `_PyObject_GC_Malloc` in 3.11.

@@ -34,4 +34,4 @@ from .adapter import as_dataclass
 
 structclass = make_dataclass
 
-__version__ = '0.17.4'
+__version__ = '0.17.5'
