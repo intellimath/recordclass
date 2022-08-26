@@ -22,12 +22,6 @@
 #undef Py_LIMITED_API
 #endif
 
-// #if PY_VERSION_HEX >= 0x030B0000
-// #ifndef Py_BUILD_CORE
-// #define Py_BUILD_CORE 1
-// #endif
-// #endif
-
 #include "Python.h"
 #include "_dataobject.h"
 
@@ -204,8 +198,8 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
         *dictptr = NULL;
     }
     if (type->tp_weaklistoffset) {
-        PyObject **weakrefptr = PyDataObject_WEAKLISTPTR(type, op);
-        *weakrefptr = NULL;
+        PyObject **weakrefsptr = PyDataObject_WEAKLISTPTR(type, op);
+        *weakrefsptr = NULL;
     }
     
 //     Py_SET_TYPE(op, type);
@@ -241,8 +235,8 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
         *dictptr = NULL;
     }
     if (type->tp_weaklistoffset) {
-        PyObject **weakrefptr = PyDataObject_WEAKLISTPTR(type, op);
-        *weakrefptr = NULL;
+        PyObject **weakrefsptr = PyDataObject_WEAKLISTPTR(type, op);
+        *weakrefsptr = NULL;
     }
     
     PyObject_GC_Track(op);
