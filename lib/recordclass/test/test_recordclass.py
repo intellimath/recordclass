@@ -74,10 +74,7 @@ class RecordClassTest(unittest.TestCase):
         Point = recordclass('Point', 'x y', defaults=(10, 20))              # 2 defaults
         self.assertEqual(Point(1, 2), Point(1, 2))
         self.assertEqual(Point(1), Point(1, 20))
-        p = Point()
-        print(p.x, p.y)
         self.assertEqual(Point(), Point(10, 20))
-        print('*')
 
         Point = recordclass('Point', 'x y', defaults=(20,))                 # 1 default
         self.assertEqual(Point(1, 2), Point(1, 2))

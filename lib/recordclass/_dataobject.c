@@ -191,28 +191,30 @@ static int _dataobject_update(PyObject *op, PyObject *kw);
 static PyObject *
 dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 {
-    Py_ssize_t size = pyobject_size(type);
-    PyObject *op = (PyObject*)PyObject_Malloc(size);
+    // Py_ssize_t size = pyobject_size(type);
+    PyObject *op = (PyObject*)_PyObject_New(type);
 
-    if (!op)
-        return PyErr_NoMemory();
+    // if (!op)
+    //     return PyErr_NoMemory();
 
-    memset(op, '\0', size);
+    // memset(op, '\0', size);
 
-    // if (type->tp_dictoffset) {
-    //     PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-    //     *dictptr = NULL;
-    // }
-    // if (type->tp_weaklistoffset) {
-    //     PyObject **weakrefptr = PyDataObject_WEAKLISTPTR(type, op);
-    //     *weakrefptr = NULL;
-    // }
+    if (type->tp_dictoffset) {
+        PyObject **dictptr = PyDataObject_DICTPTR(type, op);
+        *dictptr = NULL;
+    }
+    if (type->tp_weaklistoffset) {
+        PyObject **weakrefptr = PyDataObject_WEAKLISTPTR(type, op);
+        *weakrefptr = NULL;
+    }
     
-    Py_SET_TYPE(op, type);
+//     Py_SET_TYPE(op, type);
+#if PY_VERSION_HEX < 0x03080000
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(type);
+#endif
 
-    _Py_NewReference(op);
+//     _Py_NewReference(op);
 
     return op;
 }
@@ -410,9 +412,11 @@ dataobject_dealloc(PyObject *op)
     }
 
     dataobject_xdecref(op);
-
+    
+#if PY_VERSION_HEX < 0x03080000
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_decref(type);
+#endif
 
     type->tp_free((PyObject *)op);
 }
