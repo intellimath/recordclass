@@ -453,6 +453,7 @@ static PyObject* stack = NULL;
 
 static void
 dataobject_finalize(PyObject *ob) {
+    Py_ssize_t j;
 
     if (!stack)
         stack = PyList_New(0);
@@ -469,7 +470,7 @@ dataobject_finalize(PyObject *ob) {
         py_decref(op);
 
         {   PyList_SET_ITEM(stack, 0, NULL);
-            for(Py_ssize_t j=1; j<n_stack; j++) {
+            for(j=1; j<n_stack; j++) {
                 PyList_SET_ITEM(stack, j-1, PyList_GET_ITEM(stack, j));
             }
             n_stack--;
@@ -1035,7 +1036,7 @@ dataobject_copy(PyObject* op)
 
     PyObject *new_op = type->tp_alloc(type, 0);
 
-    PyObject **items = (PyObject**)PyDataObject_ITEMS(new_op);
+    const PyObject **items = (const PyObject**)PyDataObject_ITEMS(new_op);
     PyObject **args = (PyObject**)PyDataObject_ITEMS(op);
 
     for(i=0; i<n_items; i++) {
