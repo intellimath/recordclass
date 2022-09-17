@@ -330,12 +330,9 @@ dataobject_clear(PyObject *op)
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-        if (*dictptr) {
-            PyObject *dict = *dictptr;
-            if (dict != NULL) {
-                Py_CLEAR(dict);
-                *dictptr = NULL;
-            }
+        if (dictptr && *dictptr) {
+            Py_CLEAR(*dictptr);
+            *dictptr = NULL;
         }
     }
 
@@ -359,12 +356,9 @@ dataobject_xdecref(PyObject *op)
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-        if (*dictptr) {
-            PyObject *dict = *dictptr;
-            if (dict != NULL) {
-                py_decref(dict);
-                *dictptr = NULL;
-            }
+        if (dictptr && *dictptr) {
+            py_decref(*dictptr);
+            *dictptr = NULL;
         }
     }
 
@@ -557,10 +551,8 @@ dataobject_len(PyObject *op)
     Py_ssize_t n = PyDataObject_LEN(op);
     if (Py_TYPE(op)->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_GetDictPtr(op);
-        if (dictptr != NULL) {
-            PyObject *dict = *dictptr;
-            if (dict != NULL)
-                n += PyDict_Size(dict);
+        if (dictptr && *dictptr) {
+            n += PyDict_Size(*dictptr);
         }
     }
     return n;
@@ -1829,6 +1821,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
             copy_sequence_methods(tp->tp_as_sequence, &dataobject_as_sequence);
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_sq);
         }
+        tp->tp_flags &= ~Py_TPFLAGS_SEQUENCE;
     }
 
     if (!mo && mp) {
@@ -1837,6 +1830,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
         } else {
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping);
         }
+        tp->tp_flags &= ~Py_TPFLAGS_MAPPING;
     }
 
     if (!mo && mp && sq) {
@@ -1845,6 +1839,8 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
         } else {
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping2);
         }
+        tp->tp_flags &= ~Py_TPFLAGS_SEQUENCE;
+        tp->tp_flags &= ~Py_TPFLAGS_MAPPING;
     }
 
     if (mo) {
