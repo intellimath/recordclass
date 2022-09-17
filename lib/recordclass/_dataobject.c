@@ -1821,7 +1821,9 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
             copy_sequence_methods(tp->tp_as_sequence, &dataobject_as_sequence);
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_sq);
         }
+#if PY_VERSION_HEX >= 0x030A0000
         tp->tp_flags &= ~Py_TPFLAGS_SEQUENCE;
+#endif
     }
 
     if (!mo && mp) {
@@ -1830,7 +1832,9 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
         } else {
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping);
         }
+#if PY_VERSION_HEX >= 0x030A0000
         tp->tp_flags &= ~Py_TPFLAGS_MAPPING;
+#endif
     }
 
     if (!mo && mp && sq) {
@@ -1839,8 +1843,10 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
         } else {
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping2);
         }
+#if PY_VERSION_HEX >= 0x030A0000
         tp->tp_flags &= ~Py_TPFLAGS_SEQUENCE;
         tp->tp_flags &= ~Py_TPFLAGS_MAPPING;
+#endif
     }
 
     if (mo) {
