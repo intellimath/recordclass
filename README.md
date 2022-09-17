@@ -395,6 +395,11 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.18
+
+* Python 3.11 support.
+* Add Py_TPFLAGS_SEQUENCE and Py_TPFLAGS_MAPPING.
+
 #### 0.17.5
 
 * Make to compile, to build and to test successfully for python 3.11.
