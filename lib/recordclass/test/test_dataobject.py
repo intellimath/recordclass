@@ -244,7 +244,7 @@ class dataobjectTest(unittest.TestCase):
         self.assertEqual(asdict(a3), {'x':1, 'y':2, 'z':400})
 
     def test_dictlike_1(self):
-        A = make_dataclass("A", 'x y', mapping_only=True)
+        A = make_dataclass("A", 'x y', mapping=True)
         a = A(x=1, y=2)
         self.assertEqual(a['x'], 1)
         self.assertEqual(a['y'], 2)

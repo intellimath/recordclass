@@ -79,6 +79,16 @@ PyObject *fields_dict_name;
 // Py_ssize_t fields_dict_hash;
 // Py_ssize_t defaults_hash;
 
+typedef struct {
+    PyObject_HEAD
+    Py_ssize_t index;
+    int readonly;
+} dataobjectproperty_object;
+
+static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value);
+static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type);
+
+
 static inline PyObject *
 type_error(const char *msg, PyObject *obj)
 {
@@ -627,82 +637,92 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 }
 
 static PyObject*
-dataobject_mp_subscript_only(PyObject* op, PyObject* name)
+dataobject_mp_subscript(PyObject* op, PyObject* name)
 {
     PyObject* tp_dict = Py_TYPE(op)->tp_dict;
-    PyObject* fields_dict = Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, fields_dict_name);
+    PyObject* doproperty = Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
+    if (!doproperty) {
+        if (_PyIndex_Check(name)) {
+            return type_error("object %s do not support access by index", op);
+        } else {
+            PyErr_SetString(PyExc_KeyError, "the key does not exist");
+            return NULL;
+        }
+    }
+    if (Py_TYPE(doproperty) != &PyDataObjectProperty_Type) {
+        return type_error("Invalid type", doproperty);
+    }
 
-    PyObject* tp_dict2 = Py_TYPE(fields_dict)->tp_dict;
-    PyObject* index = Py_TYPE(tp_dict2)->tp_as_mapping->mp_subscript(fields_dict, name);
-
-    if (index == NULL)
+    PyObject *val = PyDataObject_GET_ITEM(op, ((dataobjectproperty_object *)doproperty)->index);
+    if (val == NULL) {
+        PyErr_SetString(PyExc_AttributeError, "the attribute has no value");
         return NULL;
+    }
 
-#ifdef PYPY_VERSION
-    Py_ssize_t i = PyLong_AsSsize_t(index);
-#else
-    Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
-#endif
-
-    PyObject *v = PyDataObject_GET_ITEM(op, i);
-    py_incref(v);
-    return v;
+    py_incref(val);
+    return val;
 }
 
 static int
-dataobject_mp_ass_subscript_only(PyObject* op, PyObject* name, PyObject *val)
+dataobject_mp_ass_subscript(PyObject* op, PyObject* name, PyObject *val)
 {
     PyObject* tp_dict = Py_TYPE(op)->tp_dict;
-    PyObject* fields_dict = Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, fields_dict_name);
+    dataobjectproperty_object* doproperty = 
+            (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
 
-    PyObject* tp_dict2 = Py_TYPE(fields_dict)->tp_dict;
-    PyObject* index = Py_TYPE(tp_dict2)->tp_as_mapping->mp_subscript(fields_dict, name);
+    if (!doproperty) {
+        if (_PyIndex_Check(name)) {
+            type_error("object %s do not support access by index", op);
+        } else {
+            PyErr_SetString(PyExc_KeyError, "the key does not exist");
+        }
+        return 1;
+    }
 
-    if (index == NULL)
+    if (Py_TYPE(doproperty) != &PyDataObjectProperty_Type) {
+        type_error("Invalid type", doproperty);
         return -1;
+    }
 
-#ifdef PYPY_VERSION
-    Py_ssize_t i = PyLong_AsSsize_t(index);
-#else
-    Py_ssize_t i = ((PyLongObject*)index)->ob_digit[0];
-#endif
-
-    PyObject **items = PyDataObject_ITEMS(op) + i;
-    // PyObject *v = *items;
-
-    py_xdecref(*items);
+    if (doproperty->readonly) {
+        PyErr_SetString(PyExc_TypeError, "item is readonly");
+        return -1;
+    }
+    
+    PyObject *v = PyDataObject_GET_ITEM(op, doproperty->index);
+    py_xdecref(v);
 
     py_incref(val);
-    *items = val;
+    PyDataObject_SET_ITEM(op, doproperty->index, val);
 
     return 0;
 }
 
-static PyObject*
-dataobject_mp_subscript(PyObject* op, PyObject* item)
-{
-    PyObject *ret = Py_TYPE(op)->tp_getattro(op, item);
-    if (ret == NULL) {
-        if (_PyIndex_Check(item)) {
-            type_error("object %s do not support access by index", op);
-        }
-        return NULL;
-    }
-    return ret;
-}
+// static PyObject*
+// dataobject_mp_subscript(PyObject* op, PyObject* item)
+// {
+//     PyObject *ret = Py_TYPE(op)->tp_getattro(op, item);
+//     if (ret == NULL) {
+//         if (_PyIndex_Check(item)) {
+//             type_error("object %s do not support access by index", op);
+//         }
+//         return NULL;
+//     }
+//     return ret;
+// }
 
-static int
-dataobject_mp_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
-{
-    int retval = Py_TYPE(op)->tp_setattro(op, item, val);
-    if (retval < 0) {
-        if (_PyIndex_Check(item)) {
-            type_error("object %s do not support assignment by index", op);
-        }
-        return -1;
-    }
-    return retval;
-}
+// static int
+// dataobject_mp_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
+// {
+//     int retval = Py_TYPE(op)->tp_setattro(op, item, val);
+//     if (retval < 0) {
+//         if (_PyIndex_Check(item)) {
+//             type_error("object %s do not support assignment by index", op);
+//         }
+//         return -1;
+//     }
+//     return retval;
+// }
 
 static int
 dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
@@ -829,18 +849,6 @@ static PyMappingMethods dataobject_as_mapping = {
     (lenfunc)dataobject_len,                  /* mp_len */
     (binaryfunc)dataobject_mp_subscript,         /* mp_subscr */
     (objobjargproc)dataobject_mp_ass_subscript,  /* mp_ass_subscr */
-};
-
-static PyMappingMethods dataobject_as_mapping_only = {
-    (lenfunc)dataobject_len,                  /* mp_len */
-    (binaryfunc)dataobject_mp_subscript_only,         /* mp_subscr */
-    (objobjargproc)dataobject_mp_ass_subscript_only,  /* mp_ass_subscr */
-};
-
-static PyMappingMethods dataobject_as_mapping_only_ro = {
-    (lenfunc)dataobject_len,                  /* mp_len */
-    (binaryfunc)dataobject_mp_subscript_only,         /* mp_subscr */
-    0,  /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping0 = {
@@ -1605,12 +1613,6 @@ dataobject_iter(PyObject *seq)
 
 ////////////////////////////////////////////////////////////////////////
 
-typedef struct {
-    PyObject_HEAD
-    Py_ssize_t index;
-    int readonly;
-} dataobjectproperty_object;
-
 static PyMethodDef dataobjectproperty_methods[] = {
 //   {"__set_name__", dataobjectproperty_setname, METH_VARARGS, dataobjectproperty_setname_doc},
   {0, 0, 0, 0}
@@ -1792,16 +1794,16 @@ static PyTypeObject PyDataObjectProperty_Type = {
 //////////////////// module level functions //////////////////////////////
 
 static PyObject*
-_collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObject *readonly, PyObject *mapping_only) {
+_collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObject *readonly) {
     PyTypeObject *tp;
     PyTypeObject *tp_base;
-    int sq, mp, ro, mo;
+    int sq, mp, ro;
 
     tp = (PyTypeObject*)cls;
     sq = PyObject_IsTrue(sequence);
     mp = PyObject_IsTrue(mapping);
     ro = PyObject_IsTrue(readonly);
-    mo = PyObject_IsTrue(mapping_only);
+    // mo = mp && !sq;
 
     tp_base = tp->tp_base;
 
@@ -1813,7 +1815,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
     copy_mapping_methods(tp->tp_as_mapping, tp_base->tp_as_mapping);
     copy_sequence_methods(tp->tp_as_sequence, tp_base->tp_as_sequence);
 
-    if (!mo && sq) {
+    if (!mp && sq) {
         if (ro) {
             copy_sequence_methods(tp->tp_as_sequence, &dataobject_as_sequence_ro);
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_sq_ro);
@@ -1826,7 +1828,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
 #endif
     }
 
-    if (!mo && mp) {
+    if (mp && !sq) {
         if (ro) {
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_ro);
         } else {
@@ -1837,7 +1839,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
 #endif
     }
 
-    if (!mo && mp && sq) {
+    if (mp && sq) {
         if (ro) {
             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping2_ro);
         } else {
@@ -1849,13 +1851,16 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
 #endif
     }
 
-    if (mo) {
-        if (ro) {
-            copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_only_ro);
-        } else {
-            copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_only);
-        }
-    }
+//     if (mo) {
+//         if (ro) {
+//             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping_ro);
+//         } else {
+//             copy_mapping_methods(tp->tp_as_mapping, &dataobject_as_mapping);
+//         }
+// #if PY_VERSION_HEX >= 0x030A0000
+//         tp->tp_flags &= ~Py_TPFLAGS_MAPPING;
+// #endif
+//     }
 
     Py_RETURN_NONE;
 }
@@ -2409,12 +2414,12 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     PyObject *iterable = PyMapping_GetItemString(kw, "iterable");
     PyObject *gc = PyMapping_GetItemString(kw, "gc");
     PyObject *set_dd = PyMapping_GetItemString(kw, "deep_dealloc");
-    PyObject *mapping_only = PyMapping_GetItemString(kw, "mapping_only");
+    // PyObject *mapping_only = PyMapping_GetItemString(kw, "mapping_only");
 
     _set_dictoffset(cls, use_dict);
     _set_weaklistoffset(cls, use_weakref);
 
-    _collection_protocol(cls, sequence, mapping, readonly, mapping_only);
+    _collection_protocol(cls, sequence, mapping, readonly);
     _set_iterable(cls, iterable);
 
 #ifndef PYPY_VERSION
@@ -2442,7 +2447,7 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     Py_XDECREF(iterable);
     Py_XDECREF(gc);
     Py_XDECREF(set_dd);
-    Py_XDECREF(mapping_only);
+    // Py_XDECREF(mapping_only);
 
     Py_RETURN_NONE;
 }

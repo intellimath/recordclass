@@ -116,9 +116,9 @@ def make_dictclass(typename, fields=None, defaults=None, bases=None, namespace=N
     cls = datatype(typename, bases, ns, 
                    gc=False, fast_new=fast_new,
                    readonly=readonly, iterable=iterable,
-                   mapping=False, sequence=False,
+                   mapping=True, sequence=False,
                    use_dict=False, use_weakref=False,
-                   hashable=False, mapping_only=True,
+                   hashable=False, 
                    )
 
     return cls

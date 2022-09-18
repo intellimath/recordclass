@@ -33,13 +33,13 @@ else:
 
 def clsconfig(*, sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 
-              hashable=False, gc=False, deep_dealloc=False, mapping_only=False):
+              hashable=False, gc=False, deep_dealloc=False):
     from ._dataobject import _clsconfig
     def func(cls, *, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                   use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                         use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, 
-                        deep_dealloc=deep_dealloc, mapping_only=mapping_only)
+                        deep_dealloc=deep_dealloc)
         return cls
     return func
 
@@ -237,22 +237,19 @@ class datatype(type):
                 ns['__new__'] = __new__
                 
         if has_fields:
-            if mapping_only:
-                ns['__fields_dict__'] = {fn:i for i,fn in enumerate(fields)}
-            else:
-                for i, name in enumerate(fields):
-                    fd = fields_dict[name]
-                    fd_readonly = fd.get('readonly', False)
+            for i, name in enumerate(fields):
+                fd = fields_dict[name]
+                fd_readonly = fd.get('readonly', False)
+                if fd_readonly:
+                    ds = _ds_ro_cache.get(i, None)
+                else:
+                    ds = _ds_cache.get(i, None)
+                if ds is None:
                     if fd_readonly:
-                        ds = _ds_ro_cache.get(i, None)
+                        ds = dataobjectproperty(i, True)
                     else:
-                        ds = _ds_cache.get(i, None)
-                    if ds is None:
-                        if fd_readonly:
-                            ds = dataobjectproperty(i, True)
-                        else:
-                            ds = dataobjectproperty(i)
-                    ns[name] = ds
+                        ds = dataobjectproperty(i, False)
+                ns[name] = ds
                     
         if '__repr__' not in ns:
             if mapping_only:

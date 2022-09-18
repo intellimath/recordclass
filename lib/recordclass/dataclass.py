@@ -31,7 +31,7 @@ __all__ = 'make_dataclass', 'join_dataclasses', 'DataclassStorage', 'DataClass'
 def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None, *,
                    use_dict=False, use_weakref=False, hashable=False,
                    sequence=False, mapping=False, iterable=False, readonly=False, invalid_names=(),
-                   module=None, fast_new=False, rename=False, gc=False, mapping_only=False):
+                   module=None, fast_new=False, rename=False, gc=False):
 
     """Returns a new class with named fields and small memory footprint.
 
@@ -91,7 +91,7 @@ def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=N
                    readonly=readonly, iterable=iterable,
                    mapping=mapping, sequence=sequence,
                    use_dict=use_dict, use_weakref=use_weakref,
-                   hashable=hashable, mapping_only=mapping_only,
+                   hashable=hashable,
                    )
 
     return cls

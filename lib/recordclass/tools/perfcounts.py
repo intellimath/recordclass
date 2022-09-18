@@ -75,7 +75,9 @@ results = {'id':[], 'size':[], 'new':[],
 
 results['id'].extend(
     ['litetuple', 'mutabletuple', 'tuple', 'namedtuple', 'class+slots', 'dataobject',  
-     'dataobject+fast_new', 'dataobject+gc', 'dataobject+fast_new+gc', 'dict', 'dataobject+fast_new+map'])
+     'dataobject+fast_new', 'dataobject+gc', 'dataobject+fast+gc', 'dict',
+     # 'dataobject+dictlike+fast', 
+     'dataobject+fast+map'])
 
 classes = (litetuple, mutabletuple, tuple, PointNT, PointSlots, 
            Point, FastPoint, PointGC, FastPointGC, 
@@ -288,7 +290,7 @@ def test_getmethod():
             
     for cls in classes:
         gc.collect()
-        if cls in (litetuple, mutabletuple, dict, tuple, PointNT):
+        if cls in (litetuple, mutabletuple, dict, tuple, PointNT,):
             res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
