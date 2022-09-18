@@ -6,6 +6,7 @@ include test_performance.py
 include lib/recordclass/__init__.py
 include lib/recordclass/recordclass.py
 include lib/recordclass/dataclass.py
+include lib/recordclass/dictclass.py
 include lib/recordclass/arrayclass.py
 include lib/recordclass/datatype.py
 include lib/recordclass/utils.py

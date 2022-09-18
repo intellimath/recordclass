@@ -83,7 +83,7 @@ classes = (litetuple, mutabletuple, tuple, PointNT, PointSlots,
            Point, FastPoint, PointGC, FastPointGC, 
            dict, PointMap)
 
-N = 1_000_000
+N = 300_000
 
 numbers = 10
 

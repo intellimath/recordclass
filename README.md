@@ -6,7 +6,7 @@ alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/
 It implements a factory function `recordclass` (a variant of `collection.namedtuple`) in order to create record-like classes with the same API as  `collection.namedtuple`.
 It was evolved further in order to provide more memory saving, fast and flexible types.
 
-**Recordclass** library provide record-like classes that by default do not participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanism for garbage collection.
+**Recordclass** library provide record-like classes that do not by default participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanism for garbage collection.
 The instances of such classes havn't `PyGC_Head` prefix in the memory, which decrease their size and have a little faster path for the instance allocation and deallocation.
 This may make sense in cases where it is necessary to limit the size of the objects as much as possible, provided that they will never be part of references cycles in the application.
 For example, when an object represents a record with fields with values of simple types by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
@@ -28,8 +28,7 @@ Another option is to use static code analyzers along with type annotations to mo
 The `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. 
    It control creation  of subclasses of `dataobject`, which  will not participate in CGC by default. 
    As the result the instance of such class need less memory. 
-   It's memory footprint is similar to memory footprint of instances of the classes with `__slots__`. 
-   The difference is equal to the size of `PyGC_Head`. 
+   It's memory footprint is similar to memory footprint of instances of the classes with `__slots__` but without `PyGC_Head`. So the difference in memory size is equal to the size of `PyGC_Head`. 
    It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. 
    All subclasses of `dataobject` created by `class statement` support `attrs`/`dataclasses`-like API.
    For example:
@@ -68,7 +67,8 @@ It also provide a factory function `make_dataclass` for creation of subclasses o
         >>> print(p.x, p.y)
         1 -1
 
-It also provide a factory function `make_arrayclass` in order to create subclass of `dataobject` wich can consider as array of simple values.
+It also provide a factory function `make_arrayclass` in order to create subclass of `dataobject` which can be 
+considered as array of simple values.
    For example:
 
         >>> Pair = make_arrayclass(2)
@@ -112,21 +112,21 @@ As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4
 
 ### Performance counters
 
-Here is the table with performance counters (python 3.9, debian linux, x86-64), which was measured using `tools/perfcounts.py` script:
+Here is the table with performance counters (python 3.10, debian/testing linux, x86-64), which was measured using `tools/perfcounts.py` script:
 
-| id                      |   size |   new | getattr   | setattr   | getitem   | setitem   | getkey   | setkey   | iterate   | copy   |
-|:------------------------|-------:|------:|:----------|:----------|:----------|:----------|:---------|:---------|:----------|:-------|
-| litetuple               |     48 |  0.8  |           |           | 0.69      |           |          |          | 1.14      | 0.60   |
-| mutabletuple            |     48 |  0.78 |           |           | 0.69      | 0.72      |          |          | 1.14      | 0.60   |
-| tuple                   |     64 |  0.51 |           |           | 0.63      |           |          |          | 1.09      | 0.53   |
-| namedtuple              |     64 |  2.4  | 0.69      |           | 0.62      |           |          |          | 1.09      | 0.67   |
-| class+slots             |     56 |  1.95 | 0.72      | 0.81      |           |           |          |          |           |        |
-| dataobject              |     40 |  1.84 | 0.68      | 0.79      | 0.65      | 0.67      |          |          | 1.09      | 0.64   |
-| dataobject+fast_new     |     40 |  0.81 | 0.68      | 0.79      | 0.65      | 0.66      |          |          | 1.09      | 0.64   |
-| dataobject+gc           |     56 |  1.92 | 0.68      | 0.79      | 0.65      | 0.66      |          |          | 1.09      | 0.71   |
-| dataobject+fast_new+gc  |     56 |  0.94 | 0.68      | 0.79      | 0.65      | 0.66      |          |          | 1.09      | 0.72   |
-| dict                    |    232 |  0.99 |           |           |           |           | 0.67     | 0.78     | 1.24      | 0.80   |
-| dataobject+fast_new+map |     40 |  0.81 |           |           |           |           | 0.95     | 0.98     | 1.09      | 0.66   |
+| id                  |   size |   new | getattr   | setattr   | getitem   | setitem   | getkey   | setkey   | iterate   | copy   |
+|:--------------------|-------:|------:|:----------|:----------|:----------|:----------|:---------|:---------|:----------|:-------|
+| litetuple           |     48 |  0.26 |           |           | 0.22      |           |          |          | 0.34      | 0.19   |
+| mutabletuple        |     48 |  0.25 |           |           | 0.22      | 0.24      |          |          | 0.34      | 0.19   |
+| tuple               |     64 |  0.16 |           |           | 0.2       |           |          |          | 0.38      | 0.18   |
+| namedtuple          |     64 |  0.74 | 0.3       |           | 0.2       |           |          |          | 0.34      | 0.22   |
+| class+slots         |     56 |  0.67 | 0.29      | 0.33      |           |           |          |          |           |        |
+| dataobject          |     40 |  0.55 | 0.28      | 0.31      | 0.23      | 0.24      |          |          | 0.33      | 0.2    |
+| dataobject+fast_new |     40 |  0.25 | 0.28      | 0.3       | 0.23      | 0.23      |          |          | 0.33      | 0.19   |
+| dataobject+gc       |     56 |  0.59 | 0.28      | 0.3       | 0.23      | 0.23      |          |          | 0.33      | 0.22   |
+| dataobject+fast+gc  |     56 |  0.27 | 0.28      | 0.3       | 0.23      | 0.23      |          |          | 0.33      | 0.22   |
+| dict                |    232 |  0.33 |           |           |           |           | 0.22     | 0.26     | 0.37      | 0.25   |
+| dataobject+fast+map |     40 |  0.25 | 0.28      | 0.31      |           |           | 0.28     | 0.31     | 0.32      | 0.19   |
 
 Main repository for `recordclass` is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
@@ -268,7 +268,7 @@ One can't remove field's value:
 The instances has a minimum memory footprint that is possible for CPython objects, which consist only of Python objects:
 
     >>> sys.getsizeof(p) # the output below for python 3.8+ (64bit)
-    32
+    40
     >>> p.__sizeof__() == sys.getsizeof(p) # no additional space for cyclic GC support
     True    
 
@@ -296,7 +296,8 @@ By default subclasses of dataobject are mutable. If one want make it immutable t
     . . . . . . . . . . . . . 
     TypeError: item is readonly
 
-By default subclasses of dataobject are not iterable by default. If one want make it iterable then there is the option `iterable=True`:
+By default subclasses of dataobject are not iterable by default.
+If one want make it iterable then there is the option `iterable=True`:
 
     class Point(dataobject, iterable=True):
         x: int
@@ -355,7 +356,23 @@ The followings timings explain (in jupyter notebook) boosting effect of `fast_ne
     10.4 ms ± 426 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
     
 The downside of `fast_new=True` option is less options for inspection of the instance.
-    
+
+### Using dataobject-based classes with mapping protocol
+
+    class FastMapingPoint(dataobject, mapping=True, fast_new=True):
+        x: int
+        y: int
+
+or
+
+    FastMapingPoint = make_dataclass("FastMapingPoint", [("x", int), ("y", int)], mapping=True, fast_new=True)
+
+    >>> p = FastMappingPoint(1,2)
+    >>> print(p['x'], p['y'])
+    1 2
+    >>> sys.getsizeof(p) # the output below for python 3.10 (64bit)
+    32
+
 ### Using dataobject-based classes for recursive data without reference cycles
 
 There is the option `deep_dealloc` (default value is `True`) for deallocation of recursive datastructures. 
