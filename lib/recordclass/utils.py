@@ -130,8 +130,6 @@ def number_of_dataitems(cls):
         return len(fields)
 
 def collect_info_from_bases(bases):
-    from recordclass import dataobject 
-
     fields = []
     fields_dict = {}
     use_dict = False

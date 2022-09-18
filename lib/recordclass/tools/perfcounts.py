@@ -162,7 +162,7 @@ def test_getattr():
             
     for cls in classes:
         gc.collect()
-        if cls in (litetuple,mutabletuple,tuple,dict,PointMap):
+        if cls in (litetuple,mutabletuple,tuple,dict):
             res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
@@ -232,7 +232,7 @@ def test_setattr():
 
     for cls in classes:
         gc.collect()
-        if cls in (litetuple, mutabletuple, tuple, PointNT, dict, PointMap):
+        if cls in (litetuple, mutabletuple, tuple, PointNT, dict):
             res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test, 'tuple':tuple, 'PointNT':PointNT})

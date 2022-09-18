@@ -639,8 +639,10 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 static PyObject*
 dataobject_mp_subscript(PyObject* op, PyObject* name)
 {
-    PyObject* tp_dict = Py_TYPE(op)->tp_dict;
-    PyObject* doproperty = Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
+    PyObject *tp_dict = Py_TYPE(op)->tp_dict;
+    dataobjectproperty_object *doproperty = 
+        (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
+
     if (!doproperty) {
         if (_PyIndex_Check(name)) {
             return type_error("object %s do not support access by index", op);
@@ -650,11 +652,11 @@ dataobject_mp_subscript(PyObject* op, PyObject* name)
         }
     }
     if (Py_TYPE(doproperty) != &PyDataObjectProperty_Type) {
-        return type_error("Invalid type", doproperty);
+        return type_error("Invalid type", (PyObject*)doproperty);
     }
 
-    PyObject *val = PyDataObject_GET_ITEM(op, ((dataobjectproperty_object *)doproperty)->index);
-    if (val == NULL) {
+    PyObject *val = PyDataObject_GET_ITEM(op, doproperty->index);
+    if (!val) {
         PyErr_SetString(PyExc_AttributeError, "the attribute has no value");
         return NULL;
     }
@@ -680,7 +682,7 @@ dataobject_mp_ass_subscript(PyObject* op, PyObject* name, PyObject *val)
     }
 
     if (Py_TYPE(doproperty) != &PyDataObjectProperty_Type) {
-        type_error("Invalid type", doproperty);
+        type_error("Invalid type", (PyObject*)doproperty);
         return -1;
     }
 
@@ -697,32 +699,6 @@ dataobject_mp_ass_subscript(PyObject* op, PyObject* name, PyObject *val)
 
     return 0;
 }
-
-// static PyObject*
-// dataobject_mp_subscript(PyObject* op, PyObject* item)
-// {
-//     PyObject *ret = Py_TYPE(op)->tp_getattro(op, item);
-//     if (ret == NULL) {
-//         if (_PyIndex_Check(item)) {
-//             type_error("object %s do not support access by index", op);
-//         }
-//         return NULL;
-//     }
-//     return ret;
-// }
-
-// static int
-// dataobject_mp_ass_subscript(PyObject* op, PyObject* item, PyObject *val)
-// {
-//     int retval = Py_TYPE(op)->tp_setattro(op, item, val);
-//     if (retval < 0) {
-//         if (_PyIndex_Check(item)) {
-//             type_error("object %s do not support assignment by index", op);
-//         }
-//         return -1;
-//     }
-//     return retval;
-// }
 
 static int
 dataobject_mp_ass_subscript2(PyObject* op, PyObject* item, PyObject *val)
@@ -1795,17 +1771,13 @@ static PyTypeObject PyDataObjectProperty_Type = {
 
 static PyObject*
 _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObject *readonly) {
-    PyTypeObject *tp;
-    PyTypeObject *tp_base;
-    int sq, mp, ro;
+    PyTypeObject *tp = (PyTypeObject*)cls;
 
-    tp = (PyTypeObject*)cls;
-    sq = PyObject_IsTrue(sequence);
-    mp = PyObject_IsTrue(mapping);
-    ro = PyObject_IsTrue(readonly);
-    // mo = mp && !sq;
+    int sq = PyObject_IsTrue(sequence);
+    int mp = PyObject_IsTrue(mapping);
+    int ro = PyObject_IsTrue(readonly);
 
-    tp_base = tp->tp_base;
+    PyTypeObject *tp_base = tp->tp_base;
 
     if ((tp_base != &PyDataObject_Type) && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
         PyErr_SetString(PyExc_TypeError, "the type should be dataobject or it's subtype");
