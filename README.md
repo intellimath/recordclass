@@ -419,6 +419,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 * Fix issue for argument with default value in __new__, which havn't __repr__
   that can be interpreted as valid python expression
   for creation of the default value.
+* Add support for typing.ClassVar.
 
 #### 0.17.5
 
