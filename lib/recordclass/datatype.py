@@ -30,14 +30,22 @@ if 'PyPy' in _sys.version:
 else:
     is_pypy = False
     
+import sys as _sys
+# _PY36 = _sys.version_info[:2] >= (3, 6)
+_PY37 = _sys.version_info[:2] >= (3, 7)
+    
+    
 import typing
-def _is_classvar(a_type):
-    # This test uses a typing internal class, but it's the best way to
-    # test if this is a ClassVar.
-    # P.S.: it moved here from dataclasses for now
-    return (a_type is typing.ClassVar
-            or (type(a_type) is typing._GenericAlias
-                and a_type.__origin__ is typing.ClassVar))
+if _PY37:
+    def _is_classvar(a_type):
+        # P.S.: it moved here from dataclasses for now
+        return (a_type is typing.ClassVar
+                or (type(a_type) is typing._GenericAlias
+                    and a_type.__origin__ is typing.ClassVar))
+else:
+    def _is_classvar(a_type):
+        # P.S.: it moved here from dataclasses for now
+        return a_type is typing._ClassVar #  or issubclass(a_type, typing.ClassVar)
 
 def clsconfig(*, sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 

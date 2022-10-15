@@ -10,6 +10,9 @@ from recordclass import make_dataclass, datatype, as_dataclass
 from recordclass import dataobject
 from recordclass import asdict
 
+# _PY36 = _sys.version_info[:2] >= (3, 6)
+_PY37 = sys.version_info[:2] >= (3, 7)
+
 if 'PyPy' in sys.version:
     is_pypy = True
 else:
@@ -763,18 +766,18 @@ class DataObjectTest3(unittest.TestCase):
         
         pt = Point(1,2)
         self.assertEqual(pt.color, Color.RED)
-        
-    def test_classvar(self):
-        from typing import ClassVar
-        class Point(dataobject):
-            color:ClassVar[int]
-            x: float
-            y: float
-            
-        self.assertEqual(Point.__fields__, ('x','y'))
-        self.assertEqual(Point.__annotations__, {'x':float,'y':float})
-        
-            
+    
+    if _PY37:
+        def test_classvar(self):
+            from typing import ClassVar
+            class Point(dataobject):
+                color:ClassVar[int]
+                x: float
+                y: float
+
+            print(ClassVar[int])
+            self.assertEqual(Point.__fields__, ('x','y'))
+            self.assertEqual(Point.__annotations__, {'x':float,'y':float})            
                 
 def main():
     suite = unittest.TestSuite()
