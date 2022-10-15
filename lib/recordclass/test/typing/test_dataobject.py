@@ -748,7 +748,23 @@ class DataObjectTest3(unittest.TestCase):
         with self.assertRaises(TypeError):        
             a.y = -2
 
-
+            
+    def test_default_arg_enum(self):
+        from enum import Enum, auto
+        
+        class Color(Enum):
+            RED = auto()
+            
+        class Point(dataobject):
+            x: float
+            y: float
+            color: Color = Color.RED
+        
+        
+        pt = Point(1,2)
+        self.assertEqual(pt.color, Color.RED)
+        
+            
                 
 def main():
     suite = unittest.TestSuite()

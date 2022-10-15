@@ -403,7 +403,7 @@ class dataobjectTest(unittest.TestCase):
         
     def test_missing_args(self):
         A = make_dataclass("A", ("a", "b", "c"), fast_new=True, sequence=True)
-        print(A.__options__)
+        # print(A.__options__)
         a=A(1)
         self.assertEqual(a[0], 1)
         self.assertEqual(a[1], None)
@@ -919,6 +919,7 @@ class dataobjectTest(unittest.TestCase):
             a['x'] = 100
         with self.assertRaises(TypeError):        
             a['y'] = 200
+        
             
 def main():
     suite = unittest.TestSuite()

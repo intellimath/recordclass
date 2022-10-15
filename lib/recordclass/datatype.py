@@ -335,7 +335,7 @@ def _make_new_function(typename, fields, defaults, annotations, use_dict):
 
     if fields and defaults:
         fields2 = [fn for fn in fields if fn not in defaults] + \
-                  ["%s=%r" % (fn,defaults[fn]) for fn in fields if fn in defaults]
+                  ["%s=%r" % (fn,None) for fn in fields if fn in defaults]
     else:
         fields2 = fields
 
@@ -365,6 +365,9 @@ def __new__(_cls_, {joined_fields2}):
 
     if annotations:
         __new__.__annotations__ = annotations
+        
+    if defaults:
+        __new__.__defaults__ = tuple(defaults.values())
 
     return __new__
 
