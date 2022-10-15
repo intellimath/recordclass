@@ -29,7 +29,15 @@ if 'PyPy' in _sys.version:
     is_pypy = True
 else:
     is_pypy = False
-
+    
+import typing
+def _is_classvar(a_type):
+    # This test uses a typing internal class, but it's the best way to
+    # test if this is a ClassVar.
+    # P.S.: it moved here from dataclasses for now
+    return (a_type is typing.ClassVar
+            or (type(a_type) is typing._GenericAlias
+                and a_type.__origin__ is typing.ClassVar))
 
 def clsconfig(*, sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 
@@ -111,13 +119,20 @@ class datatype(type):
 
         if '__fields__' in ns:
             fields = ns['__fields__']
+            if annotations:
+                for fn in fields:
+                    if _is_classvar(annotations.get(fn, None)):
+                        raise TypeError(f'__fields__ contain  {fn}:ClassVar')
             if not isinstance(fields, int_type):
-                field_dicts = {fn:{} for fn in fields}
+                fields_dict = {fn:{} for fn in fields}
             else:
-                field_dicts = {}
+                fields_dict = {}
+                
         else:
-            fields = tuple(annotations)
-            field_dicts = {fn:{'type':tp} for fn,tp in annotations.items()}
+            fields_dict = {fn:{'type':tp} \
+                           for fn,tp in annotations.items() \
+                           if not _is_classvar(tp)}
+            fields = tuple(fields_dict)
             
         has_fields = True
         if isinstance(fields, int_type):
@@ -154,7 +169,9 @@ class datatype(type):
 
         if has_fields:
             if annotations:
-                annotations = {fn:annotations[fn] for fn in fields if fn in annotations}
+                annotations = {fn:annotations[fn] \
+                               for fn in fields \
+                               if fn in annotations}
 
             if '__dict__' in fields:                
                 fields.remove('__dict__')
@@ -194,7 +211,8 @@ class datatype(type):
                         f['readonly'] = True
                 else:
                     for fn in readonly:
-                        fields_dict[fn]['readonly'] = True      
+                        fields_dict[fn]['readonly'] = True
+            fields = [f for f in fields if f in fields_dict]
                                         
             if bases and (len(bases) > 1 or bases[0] is not dataobject):
                 _fields, _fields_dict, _use_dict, _use_weakref = collect_info_from_bases(bases)

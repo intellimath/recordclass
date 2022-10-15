@@ -764,6 +764,16 @@ class DataObjectTest3(unittest.TestCase):
         pt = Point(1,2)
         self.assertEqual(pt.color, Color.RED)
         
+    def test_classvar(self):
+        from typing import ClassVar
+        class Point(dataobject):
+            color:ClassVar[int]
+            x: float
+            y: float
+            
+        self.assertEqual(Point.__fields__, ('x','y'))
+        self.assertEqual(Point.__annotations__, {'x':float,'y':float})
+        
             
                 
 def main():
