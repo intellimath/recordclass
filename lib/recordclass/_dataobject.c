@@ -276,28 +276,22 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
             }
         } else {
             PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
-            // Py_ssize_t n_fields = Py_SIZE(fields);
+            
+            if (Py_TYPE(fields) == &PyTuple_Type) {
+                i = n_args;
+                while(i<n_items) {
+                    PyObject *fname = PyTuple_GetItem(fields, i);
+                    PyObject *value = PyDict_GetItem(defaults, fname);
 
-            // if (n_fields != n_items) {
-            //     PyErr_SetString(PyExc_TypeError,
-            //                     "number of fields != number of data items");
-            //     py_decref(defaults);
-            //     return NULL;
-            // }
+                    if (!value)
+                        value = Py_None;
 
-            i = n_args;
-            while(i<n_items) {
-                PyObject *fname = PyTuple_GetItem(fields, i);
-                PyObject *value = PyDict_GetItem(defaults, fname);
-
-                if (!value)
-                    value = Py_None;
-
-                py_incref(value);
-                items[i++] = value;
+                    py_incref(value);
+                    items[i++] = value;
+                }
+                py_decref(fields);
+                py_decref(defaults);
             }
-            py_decref(fields);
-            py_decref(defaults);
         }
     }
 
@@ -308,31 +302,6 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
 
         if (retval < 0)
             return NULL;
-    }
-
-    return op;
-}
-
-static PyObject*
-dataobject_new_array_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_args)
-{
-    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
-
-    if (n_args != n_items) {
-        PyErr_SetString(PyExc_TypeError,
-                        "number of the arguments != number of the items");
-        return NULL;
-    }
-
-    PyObject *op = type->tp_alloc(type, 0);
-
-    const PyObject **items = (const PyObject**)PyDataObject_ITEMS(op);
-
-    Py_ssize_t i = 0;
-    while(i < n_args) {
-        PyObject *v = args[i];
-        py_incref(v);
-        items[i++] = v;
     }
 
     return op;
@@ -350,20 +319,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyTupleObject *tmp = (PyTupleObject*)args;
 
     return dataobject_new_vc(type, (PyObject * const*)tmp->ob_item, Py_SIZE(tmp), kwds);
-}
-
-static PyObject*
-dataarray_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type == &PyDataObject_Type) {
-        PyErr_SetString(PyExc_TypeError,
-                        "dataobject base class can't be instantiated");
-        return NULL;
-    }
-
-    PyTupleObject *tmp = (PyTupleObject*)args;
-
-    return dataobject_new_array_vc(type, (PyObject * const*)tmp->ob_item, Py_SIZE(tmp));
 }
 
 static int
@@ -2063,11 +2018,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     __new__ = PyMapping_HasKeyString(dict, "__new__");
 
-    if(!__new__  && has_fields)
+    if(!__new__  || !has_fields)
         tp->tp_new = dataobject_new;
-        
-    if (!__new__  && !has_fields)
-        tp->tp_new = dataarray_new;
 
     tp->tp_dealloc = dataobject_dealloc;
     tp->tp_free = PyObject_Del;
