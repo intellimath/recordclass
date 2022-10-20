@@ -415,11 +415,12 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 #### 0.18
 
 * Python 3.11 support.
-* Add Py_TPFLAGS_SEQUENCE and Py_TPFLAGS_MAPPING.
-* Fix issue for argument with default value in __new__, which havn't __repr__
+* Fix issue for argument with default value in `__new__`, which havn't `__repr__`
   that can be interpreted as valid python expression
   for creation of the default value.
 * Add support for typing.ClassVar.
+* Add `Py_TPFLAGS_SEQUENCE`  and `Py_TPFLAGS_MAPPING`.
+* Add `__match_args__`  to support match protocol for dataobject-based subclasses.
 
 #### 0.17.5
 

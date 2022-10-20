@@ -14,7 +14,7 @@ else:
     from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 
-TPickle1 = make_arrayclass("TPickle1", fields=3)
+TPickle1 = make_arrayclass("TPickle1", 3)
 
 class arrayobjectTest(unittest.TestCase):
 
@@ -87,7 +87,7 @@ class arrayobjectTest(unittest.TestCase):
 #         self.assertEqual(cnt1, cnt3)
         
     def test_fields0(self):
-        A = make_arrayclass("A")
+        A = make_arrayclass("A", 0)
         a = A()
         self.assertEqual(len(a), 0)
         self.assertEqual(repr(a), "A()")
@@ -121,7 +121,7 @@ class arrayobjectTest(unittest.TestCase):
             A(1,2)
 
     def test_gc_fields0(self):
-        A = make_arrayclass("A", gc=True)
+        A = make_arrayclass("A", 0, gc=True)
         a = A()
         self.assertEqual(repr(a), "A()")
         self.assertEqual(len(a), 0)
@@ -183,12 +183,12 @@ class arrayobjectTest(unittest.TestCase):
         self.assertEqual(tuple(a), (1, 2.0, "a"))
 
     def test_iter(self):
-        A = make_arrayclass("A", fields=3)
+        A = make_arrayclass("A", 3)
         a=A(1, 2.0, "a")
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
 
     def test_hash(self):
-        A = make_arrayclass("A", fields=3, hashable=True)
+        A = make_arrayclass("A", 3, hashable=True)
         a=A(1, 2.0, "a")
         hash(a)
         
@@ -200,7 +200,7 @@ class arrayobjectTest(unittest.TestCase):
             t = asdict(a)        
 
     def test_missing_args(self):
-        A = make_arrayclass("A", fields=3)
+        A = make_arrayclass("A", 3)
         a=A(1)
         self.assertEqual(a[0], 1)
         self.assertEqual(a[1], None)

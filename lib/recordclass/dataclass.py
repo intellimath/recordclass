@@ -28,7 +28,7 @@ from ._dataobject import dataobject
 
 __all__ = 'make_dataclass', 'join_dataclasses', 'DataclassStorage', 'DataClass'
 
-def make_dataclass(typename, fields=None, defaults=None, bases=None, namespace=None, *,
+def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=None,
                    use_dict=False, use_weakref=False, hashable=False,
                    sequence=False, mapping=False, iterable=False, readonly=False, invalid_names=(),
                    module=None, fast_new=False, rename=False, gc=False):

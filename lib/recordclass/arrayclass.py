@@ -30,14 +30,14 @@ _intern = _sys.intern
 
 int_type = type(1)
     
-def make_arrayclass(typename, fields=0, *, namespace=None, 
+def make_arrayclass(typename, n_fields, *, namespace=None, 
              use_weakref=False, hashable=False, readonly=False, gc=False,
              module=None):
 
     from ._dataobject import dataobject
     from .datatype import datatype
     
-    if not isinstance(fields, int_type):
+    if not isinstance(n_fields, int_type):
         raise TypeError("argument fields is not integer")
 
     bases = (dataobject,)
@@ -56,7 +56,7 @@ def make_arrayclass(typename, fields=0, *, namespace=None,
         ns = namespace
 
     ns['__options__'] = options
-    ns['__fields__'] = fields
+    ns['__fields__'] = n_fields
 
     def __repr__(_self):
         return typename + '(' + \
