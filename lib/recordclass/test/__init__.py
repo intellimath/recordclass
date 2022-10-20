@@ -15,7 +15,7 @@ if _PY36:
     from recordclass.test.typing.test_dataobject import *
     pass
 
-if _PY10:
+if _PY310:
     from recordclass.test.test_dataobject_match import *
 
 def test_all():
