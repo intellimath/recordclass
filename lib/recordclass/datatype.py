@@ -33,6 +33,7 @@ else:
 import sys as _sys
 # _PY36 = _sys.version_info[:2] >= (3, 6)
 _PY37 = _sys.version_info[:2] >= (3, 7)
+_PY310 = _sys.version_info[:2] >= (3, 10)
     
     
 import typing
@@ -328,6 +329,9 @@ class datatype(type):
             ns['__fields__'] = fields
             ns['__defaults__'] = defaults
             ns['__annotations__'] = annotations
+            
+            if _PY310:
+                ns['__match_args__'] = fields
             
             if '__doc__' not in ns:
                 ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults, use_dict)

@@ -201,7 +201,7 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_incref(type);
 #endif
-    
+
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
         *dictptr = NULL;
@@ -239,13 +239,14 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 }
 
 static PyObject*
-dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_args, PyObject *kwds)
+dataobject_new_vc(PyTypeObject *type, PyObject * const*args,
+                  const Py_ssize_t n_args, PyObject *kwds)
 {
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
-                        "number of the arguments greater than the number of the items");
+            "number of the arguments greater than the number of the items");
         return NULL;
     }
 
@@ -276,7 +277,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args, const Py_ssize_t n_
             }
         } else {
             PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
-            
+
             if (Py_TYPE(fields) == &PyTuple_Type) {
                 i = n_args;
                 while(i<n_items) {
@@ -318,7 +319,8 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     PyTupleObject *tmp = (PyTupleObject*)args;
 
-    return dataobject_new_vc(type, (PyObject * const*)tmp->ob_item, Py_SIZE(tmp), kwds);
+    return dataobject_new_vc(type, (PyObject * const*)tmp->ob_item,
+                             Py_SIZE(tmp), kwds);
 }
 
 static int
@@ -387,7 +389,7 @@ dataobject_dealloc(PyObject *op)
     }
 
     dataobject_xdecref(op);
-    
+
 #if PY_VERSION_HEX < 0x03080000
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         py_decref(type);
@@ -512,7 +514,8 @@ dataobject_getattr(PyObject *op, PyObject *name)
         }
     } else {
         if (is__dict__) {
-            PyErr_Format(PyExc_AttributeError, "do not get __dict__ for type %s\n", Py_TYPE(op)->tp_name);
+            PyErr_Format(PyExc_AttributeError,
+                 "do not get __dict__ for type %s\n", Py_TYPE(op)->tp_name);
             return NULL;
         }
     }
@@ -540,7 +543,8 @@ dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
         PyDict_SetItem(dict, name, val);
         return 1;
     }
-    PyErr_Format(PyExc_AttributeError, "do not set attribute for type %s\n", Py_TYPE(op)->tp_name);
+    PyErr_Format(PyExc_AttributeError,
+            "do not set attribute for type %s\n", Py_TYPE(op)->tp_name);
     return -1;
 }
 #endif
@@ -633,7 +637,7 @@ static PyObject*
 dataobject_mp_subscript(PyObject* op, PyObject* name)
 {
     PyObject *tp_dict = Py_TYPE(op)->tp_dict;
-    dataobjectproperty_object *doproperty = 
+    dataobjectproperty_object *doproperty =
         (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
 
     if (!doproperty) {
@@ -662,8 +666,8 @@ static int
 dataobject_mp_ass_subscript(PyObject* op, PyObject* name, PyObject *val)
 {
     PyObject* tp_dict = Py_TYPE(op)->tp_dict;
-    dataobjectproperty_object* doproperty = 
-            (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
+    dataobjectproperty_object* doproperty =
+        (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
 
     if (!doproperty) {
         if (_PyIndex_Check(name)) {
@@ -683,7 +687,7 @@ dataobject_mp_ass_subscript(PyObject* op, PyObject* name, PyObject *val)
         PyErr_SetString(PyExc_TypeError, "item is readonly");
         return -1;
     }
-    
+
     PyObject *v = PyDataObject_GET_ITEM(op, doproperty->index);
     py_xdecref(v);
 
@@ -917,8 +921,9 @@ dataobject_richcompare(PyObject *v, PyObject *w, int op)
     PyObject *ww;
     PyObject *ret;
 
-    if (!(Py_TYPE(v) == Py_TYPE(w)) || (!PyObject_IsSubclass((PyObject*)Py_TYPE(w), (PyObject*)Py_TYPE(v))))
-        Py_RETURN_NOTIMPLEMENTED;
+    if (!(Py_TYPE(v) == Py_TYPE(w)) ||
+        (!PyObject_IsSubclass((PyObject*)Py_TYPE(w), (PyObject*)Py_TYPE(v))))
+                  Py_RETURN_NOTIMPLEMENTED;
 
     if ((vlen != wlen) && (op == Py_EQ || op == Py_NE)) {
         PyObject *res;
@@ -1187,7 +1192,8 @@ dataobject_subscript(PyObject *ob, PyObject *key)
         return m->mp_subscript(ob, key);
     }
 
-    return type_error("instances of %s are not subsciptable", (PyObject*)Py_TYPE(ob));
+    return type_error("instances of %s are not subsciptable",
+                      (PyObject*)Py_TYPE(ob));
 }
 
 PyDoc_STRVAR(dataobject_ass_subscript_doc,
@@ -1216,7 +1222,8 @@ dataobject_ass_subscript(PyObject *ob, PyObject *args)
             Py_RETURN_NONE;
     }
 
-    type_error("instances of %s does not support item assignment", (PyObject*)Py_TYPE(ob));
+    type_error("instances of %s does not support item assignment",
+               (PyObject*)Py_TYPE(ob));
     return NULL;
 }
 

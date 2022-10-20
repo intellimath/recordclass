@@ -8,11 +8,15 @@ from recordclass.test.test_litetuple import *
 
 import sys
 _PY36 = sys.version_info[:2] >= (3, 6)
+_PY310 = sys.version_info[:2] >= (3, 10)
 
 if _PY36:
     from recordclass.test.typing.test_recordclass import *
     from recordclass.test.typing.test_dataobject import *
     pass
+
+if _PY36:
+    from recordclass.test.test_dataobject_match import *
 
 def test_all():
     import unittest
