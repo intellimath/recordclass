@@ -56,13 +56,6 @@ def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=Non
     from .datatype import datatype
     import sys as _sys
 
-    # if api == 'namedtuple':
-    #     invalid_names = ('_make', '_replace', '_asdict')
-    # elif api == 'dict':
-    #     invalid_names = ('keys', 'values', 'items', 'get')
-    # else: 
-    #     invalid_names = ()
-
     fields, annotations, defaults = process_fields(fields, defaults, rename, invalid_names)
     typename = check_name(typename)
     
