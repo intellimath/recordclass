@@ -296,7 +296,7 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args,
         }
     }
 
-    if (kwds != NULL) {
+    if (kwds) {
         int retval;
 
         retval = _dataobject_update(op, kwds);
@@ -492,8 +492,9 @@ dataobject_getattr(PyObject *op, PyObject *name)
         }
     }
     int is__dict__ = PyObject_RichCompareBool(name, __dict__name, Py_EQ);
-    if (Py_TYPE(op)->tp_dictoffset) {
-        PyObject **dictptr = (PyObject**)((char*)op + Py_TYPE(op)->tp_dictoffset);
+    PyTypeObject *type = Py_TYPE(op);
+    if (type->tp_dictoffset) {
+        PyObject **dictptr = PyDataObject_DICTPTR(type, op);
         if (*dictptr) {
             PyObject *dict = *dictptr;
             if (is__dict__) {
@@ -533,8 +534,9 @@ dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
             return ob_type->tp_descr_set(ob, op, val);
         }
     }
-    if (Py_TYPE(op)->tp_dictoffset) {
-        PyObject **dictptr = (PyObject**)((char*)op + Py_TYPE(op)->tp_dictoffset);
+    PyTypeObject *type = Py_TYPE(op);
+    if (type->tp_dictoffset) {
+        PyObject **dictptr = PyDataObject_DICTPTR(type, op);
         PyObject *dict;
         if (*dictptr)
             dict = *dictptr;
@@ -556,8 +558,9 @@ static Py_ssize_t
 dataobject_len(PyObject *op)
 {
     Py_ssize_t n = PyDataObject_LEN(op);
-    if (Py_TYPE(op)->tp_dictoffset) {
-        PyObject **dictptr = PyDataObject_GetDictPtr(op);
+    PyTypeObject *type = Py_TYPE(op);
+    if (type->tp_dictoffset) {
+        PyObject **dictptr = PyDataObject_DICTPTR(type, op);
         if (dictptr && *dictptr) {
             n += PyDict_Size(*dictptr);
         }
@@ -580,7 +583,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
     }
 
     if (type->tp_dictoffset) {
-        PyObject **dictptr = PyDataObject_GetDictPtr(op);
+        PyObject **dictptr = PyDataObject_DICTPTR(type, op);
         if (dictptr && *dictptr)
             Py_VISIT(*dictptr);
     }
