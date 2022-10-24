@@ -757,20 +757,6 @@ dataobject_mp_subscript_sq(PyObject* op, PyObject* item)
     }
 }
 
-static int
-dataobject_mp_ass_subscript0(PyObject* op, PyObject* item, PyObject *val)
-{
-    type_error("object %s does not support set item", op);
-    return -1;
-}
-
-static PyObject*
-dataobject_mp_subscript0(PyObject* op, PyObject* item)
-{
-    type_error("object %s does not support assignment", op);
-    return NULL;
-}
-
 static void copy_sequence_methods(PySequenceMethods *out, PySequenceMethods *in) {
     out->sq_length = in->sq_length;
     out->sq_concat = in->sq_concat;
@@ -830,14 +816,14 @@ static PyMappingMethods dataobject_as_mapping = {
 
 static PyMappingMethods dataobject_as_mapping0 = {
     (lenfunc)dataobject_len,                  /* mp_len */
-    (binaryfunc)dataobject_mp_subscript0,         /* mp_subscr */
-    (objobjargproc)dataobject_mp_ass_subscript0,  /* mp_ass_subscr */
+    0,                                        /* mp_subscr */
+    0,                                        /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping_ro = {
-    (lenfunc)dataobject_len,            /* mp_len */
+    (lenfunc)dataobject_len,              /* mp_len */
     (binaryfunc)dataobject_mp_subscript,   /* mp_subscr */
-    (objobjargproc)dataobject_mp_ass_subscript0,  /* mp_ass_subscr */
+    0,                                     /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping2 = {
@@ -847,9 +833,9 @@ static PyMappingMethods dataobject_as_mapping2 = {
 };
 
 static PyMappingMethods dataobject_as_mapping2_ro = {
-    (lenfunc)dataobject_len,            /* mp_len */
+    (lenfunc)dataobject_len,               /* mp_len */
     (binaryfunc)dataobject_mp_subscript2,  /* mp_subscr */
-    (objobjargproc)dataobject_mp_ass_subscript0,   /* mp_ass_subscr */
+    0,                                     /* mp_ass_subscr */
 };
 
 static PyMappingMethods dataobject_as_mapping_sq = {
@@ -859,9 +845,9 @@ static PyMappingMethods dataobject_as_mapping_sq = {
 };
 
 static PyMappingMethods dataobject_as_mapping_sq_ro = {
-    (lenfunc)dataobject_len,            /* mp_len */
+    (lenfunc)dataobject_len,                 /* mp_len */
     (binaryfunc)dataobject_mp_subscript_sq,  /* mp_subscr */
-    (objobjargproc)dataobject_mp_ass_subscript0,      /* mp_ass_subscr */
+    0,                                       /* mp_ass_subscr */
 };
 
 
