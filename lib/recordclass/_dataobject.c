@@ -75,10 +75,6 @@ PyObject *__defaults__name;
 
 PyObject *fields_dict_name;
 
-// Py_ssize_t fields_hash;
-// Py_ssize_t fields_dict_hash;
-// Py_ssize_t defaults_hash;
-
 typedef struct {
     PyObject_HEAD
     Py_ssize_t index;
@@ -107,13 +103,16 @@ static PyObject **
 PyDataObject_GetDictPtr(PyObject *ob) {
     Py_ssize_t dictoffset = Py_TYPE(ob)->tp_dictoffset;
 
-    if (dictoffset <= 0) {
+    if (dictoffset < 0) {
         PyErr_Format(PyExc_TypeError,
                 "Invalid tp_dictoffset=%i of the type %s",
                 dictoffset, Py_TYPE(ob)->tp_name);
         return NULL;
     }
-    return (PyObject**) ((char *)ob + dictoffset);
+    if (dictoffset)
+        return (PyObject**) ((char *)ob + dictoffset);
+    else
+        return NULL;
 }
 
 static PyObject *
@@ -280,8 +279,8 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args,
 
             if (Py_TYPE(fields) == &PyTuple_Type) {
                 i = n_args;
-                while(i<n_items) {
-                    PyObject *fname = PyTuple_GetItem(fields, i);
+                while(i < n_items) {
+                    PyObject *fname = PyTuple_GET_ITEM(fields, i);
                     PyObject *value = PyDict_GetItem(defaults, fname);
 
                     if (!value)
@@ -371,9 +370,11 @@ dataobject_xdecref(PyObject *op)
     Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
 
     while (n_items--) {
-        PyObject *ob = *(items++);
-        if (ob)
-            py_decref(ob);
+        py_xdecref(*items);
+        items++;
+        // PyObject *ob = *(items++);
+        // if (ob)
+        //     py_decref(ob);
     }
     return 0;
 }
