@@ -1584,7 +1584,8 @@ static PyMethodDef dataobjectproperty_methods[] = {
   {0, 0, 0, 0}
 };
 
-static PyObject* dataobjectproperty_new(PyTypeObject *t, PyObject *args, PyObject *k) {
+static PyObject* dataobjectproperty_new(PyTypeObject *t, PyObject *args, PyObject *k)
+{
     dataobjectproperty_object *ob = NULL;
     PyObject *item;
     Py_ssize_t len, index;
@@ -1602,10 +1603,10 @@ static PyObject* dataobjectproperty_new(PyTypeObject *t, PyObject *args, PyObjec
         return NULL;
     }
 
-    item = PyTuple_GET_ITEM(args, 1);
-    if (len == 2)
+    if (len == 2) {
+        item = PyTuple_GET_ITEM(args, 1);
         readonly = PyObject_IsTrue(item);
-    else
+    } else
         readonly = 0;
 
     ob = PyObject_New(dataobjectproperty_object, t);
@@ -1621,7 +1622,8 @@ static PyObject* dataobjectproperty_new(PyTypeObject *t, PyObject *args, PyObjec
     return (PyObject*)ob;
 }
 
-static void dataobjectproperty_dealloc(PyObject *o) {
+static void dataobjectproperty_dealloc(PyObject *o)
+{
     PyTypeObject *t = Py_TYPE(o);
 
     t->tp_free(o);
@@ -1632,8 +1634,8 @@ static void dataobjectproperty_dealloc(PyObject *o) {
 #endif
 }
 
-static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type) {
-
+static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type)
+{
     if (obj == NULL || obj == Py_None) {
         py_incref(self);
         return self;
@@ -1649,7 +1651,8 @@ static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject 
     return v;
 }
 
-static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value) {
+static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value)
+{
 
     if (value == NULL) {
         PyErr_SetString(PyExc_AttributeError, "The field and it's value can't be deleted");
