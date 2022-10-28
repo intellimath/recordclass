@@ -2014,6 +2014,10 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_dictoffset = tp_base->tp_dictoffset;
     tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
 
+#if PY_VERSION_HEX >= 0x030B0000
+        tp->tp_flags &= ~Py_TPFLAGS_MANAGED_DICT;
+#endif
+
     tp->tp_alloc = dataobject_alloc;
 
     __new__ = PyMapping_HasKeyString(dict, "__new__");
@@ -2032,6 +2036,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     if (tp->tp_flags & Py_TPFLAGS_HAVE_GC)
         tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
+        
 
 #ifndef PYPY_VERSION
     if (tp_base->tp_hash)
