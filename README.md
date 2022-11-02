@@ -105,17 +105,10 @@ The following table explain memory footprints of the  `dataobject`-based objects
   </thead>
   <tbody>
     <tr>
-      <td>litetuple</td>
       <td>g+b+s+n&times;p</td>
       <td>g+b+n&times;p</td>
       <td>b+n&times;p</td>
       <td>b+s+n&times;p</td>
-      <td>0.2</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>0.36</td>
-      <td>0.19</td>
     </tr>
   </tbody>
 </table>
