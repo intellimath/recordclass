@@ -489,7 +489,7 @@ dataobject_getattr(PyObject *op, PyObject *name)
     if (ob != NULL) {
         PyTypeObject *ob_type = Py_TYPE(ob);
         if (ob_type == &PyDataObjectProperty_Type) {
-            return ob_type->tp_descr_get(ob, op, NULL);
+            return ob_type->tp_descr_get(ob, op, Py_TYPE(op));
         }
     }
     int is__dict__ = PyObject_RichCompareBool(name, __dict__name, Py_EQ);
@@ -549,6 +549,33 @@ dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
     PyErr_Format(PyExc_AttributeError,
             "do not set attribute for type %s\n", Py_TYPE(op)->tp_name);
     return -1;
+}
+#else
+static PyObject*
+dataobject_getattr(PyObject *op, PyObject *name)
+{
+    PyObject *ob = _PyType_Lookup(Py_TYPE(op), name);
+    if (ob != NULL) {
+        PyTypeObject *ob_type = Py_TYPE(ob);
+        if (ob_type == &PyDataObjectProperty_Type) {
+            return ob_type->tp_descr_get(ob, op, (PyObject *)Py_TYPE(op));
+        }
+    }
+    return PyObject_GenericGetAttr(op, name);
+}
+
+static int
+dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
+{
+    PyObject *ob = _PyType_Lookup(Py_TYPE(op), name);
+
+    if (ob != NULL) {
+        PyTypeObject *ob_type = Py_TYPE(ob);
+        if (ob_type == &PyDataObjectProperty_Type) {
+            return ob_type->tp_descr_set(ob, op, val);
+        }
+    }
+    return PyObject_GenericSetAttr(op, name, val);
 }
 #endif
 
@@ -1365,8 +1392,8 @@ static PyTypeObject PyDataObject_Type = {
     dataobject_getattr,                                      /* tp_setattro */
     dataobject_setattr,                                      /* tp_setattro */
 #else
-    0,                                      /* tp_getattro */
-    0,                                      /* tp_setattro */
+    dataobject_getattr,                                      /* tp_getattro */
+    dataobject_setattr,                                      /* tp_setattro */
 #endif
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
@@ -1584,7 +1611,8 @@ static PyMethodDef dataobjectproperty_methods[] = {
   {0, 0, 0, 0}
 };
 
-static PyObject* dataobjectproperty_new(PyTypeObject *t, PyObject *args, PyObject *k)
+static PyObject* 
+dataobjectproperty_new(PyTypeObject *t, PyObject *args, PyObject *k)
 {
     dataobjectproperty_object *ob = NULL;
     PyObject *item;
@@ -1622,7 +1650,8 @@ static PyObject* dataobjectproperty_new(PyTypeObject *t, PyObject *args, PyObjec
     return (PyObject*)ob;
 }
 
-static void dataobjectproperty_dealloc(PyObject *o)
+static void 
+dataobjectproperty_dealloc(PyObject *o)
 {
     PyTypeObject *t = Py_TYPE(o);
 
@@ -1634,7 +1663,8 @@ static void dataobjectproperty_dealloc(PyObject *o)
 #endif
 }
 
-static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type)
+static PyObject* 
+dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type)
 {
     if (obj == NULL || obj == Py_None) {
         py_incref(self);
@@ -1651,7 +1681,8 @@ static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject 
     return v;
 }
 
-static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value)
+static int 
+dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value)
 {
 
     if (value == NULL) {
