@@ -114,19 +114,168 @@ As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4
 
 Here is the table with performance counters (python 3.10, debian/testing linux, x86-64), which was measured using `tools/perfcounts.py` script:
 
-| id                  |   size |   new | getattr   | setattr   | getitem   | setitem   | getkey   | setkey   | iterate   | copy   |
-|:--------------------|-------:|------:|:----------|:----------|:----------|:----------|:---------|:---------|:----------|:-------|
-| litetuple           |     48 |  0.26 |           |           | 0.22      |           |          |          | 0.34      | 0.19   |
-| mutabletuple        |     48 |  0.25 |           |           | 0.22      | 0.24      |          |          | 0.34      | 0.19   |
-| tuple               |     64 |  0.16 |           |           | 0.2       |           |          |          | 0.38      | 0.18   |
-| namedtuple          |     64 |  0.74 | 0.3       |           | 0.2       |           |          |          | 0.34      | 0.22   |
-| class+slots         |     56 |  0.67 | 0.29      | 0.33      |           |           |          |          |           |        |
-| dataobject          |     40 |  0.55 | 0.28      | 0.31      | 0.23      | 0.24      |          |          | 0.33      | 0.2    |
-| dataobject+fast_new |     40 |  0.25 | 0.28      | 0.3       | 0.23      | 0.23      |          |          | 0.33      | 0.19   |
-| dataobject+gc       |     56 |  0.59 | 0.28      | 0.3       | 0.23      | 0.23      |          |          | 0.33      | 0.22   |
-| dataobject+fast+gc  |     56 |  0.27 | 0.28      | 0.3       | 0.23      | 0.23      |          |          | 0.33      | 0.22   |
-| dict                |    232 |  0.33 |           |           |           |           | 0.22     | 0.26     | 0.37      | 0.25   |
-| dataobject+fast+map |     40 |  0.25 | 0.28      | 0.31      |           |           | 0.28     | 0.31     | 0.32      | 0.19   |
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>id</th>
+      <th>size</th>
+      <th>new</th>
+      <th>getattr</th>
+      <th>setattr</th>
+      <th>getitem</th>
+      <th>setitem</th>
+      <th>getkey</th>
+      <th>setkey</th>
+      <th>iterate</th>
+      <th>copy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>litetuple</td>
+      <td>48</td>
+      <td>0.26</td>
+      <td></td>
+      <td></td>
+      <td>0.2</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>0.36</td>
+      <td>0.19</td>
+    </tr>
+    <tr>
+      <td>mutabletuple</td>
+      <td>48</td>
+      <td>0.26</td>
+      <td></td>
+      <td></td>
+      <td>0.2</td>
+      <td>0.22</td>
+      <td></td>
+      <td></td>
+      <td>0.36</td>
+      <td>0.18</td>
+    </tr>
+    <tr>
+      <td>tuple</td>
+      <td>64</td>
+      <td>0.16</td>
+      <td></td>
+      <td></td>
+      <td>0.19</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>0.36</td>
+      <td>0.16</td>
+    </tr>
+    <tr>
+      <td>namedtuple</td>
+      <td>64</td>
+      <td>0.74</td>
+      <td>0.23</td>
+      <td></td>
+      <td>0.19</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>0.35</td>
+      <td>0.21</td>
+    </tr>
+    <tr>
+      <td>class+slots</td>
+      <td>56</td>
+      <td>0.69</td>
+      <td>0.3</td>
+      <td>0.34</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>dataobject</td>
+      <td>40</td>
+      <td>0.56</td>
+      <td>0.22</td>
+      <td>0.3</td>
+      <td>0.2</td>
+      <td>0.22</td>
+      <td></td>
+      <td></td>
+      <td>0.4</td>
+      <td>0.19</td>
+    </tr>
+    <tr>
+      <td>dataobject+fast_new</td>
+      <td>40</td>
+      <td>0.26</td>
+      <td>0.22</td>
+      <td>0.3</td>
+      <td>0.2</td>
+      <td>0.22</td>
+      <td></td>
+      <td></td>
+      <td>0.39</td>
+      <td>0.2</td>
+    </tr>
+    <tr>
+      <td>dataobject+gc</td>
+      <td>56</td>
+      <td>0.60</td>
+      <td>0.22</td>
+      <td>0.32</td>
+      <td>0.2</td>
+      <td>0.21</td>
+      <td></td>
+      <td></td>
+      <td>0.4</td>
+      <td>0.22</td>
+    </tr>
+    <tr>
+      <td>dataobject+fast+gc</td>
+      <td>56</td>
+      <td>0.28</td>
+      <td>0.22</td>
+      <td>0.29</td>
+      <td>0.2</td>
+      <td>0.22</td>
+      <td></td>
+      <td></td>
+      <td>0.4</td>
+      <td>0.21</td>
+    </tr>
+    <tr>
+      <td>dict</td>
+      <td>232</td>
+      <td>0.33</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>0.21</td>
+      <td>0.26</td>
+      <td>0.38</td>
+      <td>0.24</td>
+    </tr>
+    <tr>
+      <td>dataobject+fast+map</td>
+      <td>40</td>
+      <td>0.26</td>
+      <td>0.22</td>
+      <td>0.29</td>
+      <td></td>
+      <td></td>
+      <td>0.24</td>
+      <td>0.28</td>
+      <td>0.39</td>
+      <td>0.19</td>
+    </tr>
+  </tbody>
+</table>
 
 Main repository for `recordclass` is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
