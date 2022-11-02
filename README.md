@@ -94,9 +94,31 @@ It provide in addition the classes `lightlist` (immutable) and `litetuple`, whic
 
 The following table explain memory footprints of the  `dataobject`-based objects and litetuples:
 
-| tuple/namedtuple   |  class with \_\_slots\_\_  |  recordclass/dataobject |  litetuple/mutabletuple  |
-|:------------------:|:--------------------------:|:-----------------------:|:------------------------:|
-|     g+b+s+n\*p     |     g+b+n\*p              |         b+n\*p         |     b+s+n\*p            |
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>tuple/namedtuple</th>
+      <th>class with __slots__</th>
+      <th>recordclass/dataobject</th>
+      <th>litetuple/mutabletuple</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>litetuple</td>
+      <td>g+b+s+n&times;p</td>
+      <td>g+b+n&times;p</td>
+      <td>b+n&times;p</td>
+      <td>b+s+n&times;p</td>
+      <td>0.2</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>0.36</td>
+      <td>0.19</td>
+    </tr>
+  </tbody>
+</table>
 
 where:
 
