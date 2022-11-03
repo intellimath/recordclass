@@ -2571,12 +2571,11 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
     {"member_new", member_new, METH_VARARGS, member_new_doc},
-    {"is_readonly_member", is_readonly_member, METH_VARARGS, is_readonly_member_doc},
+    {"_is_readonly_member", is_readonly_member, METH_VARARGS, is_readonly_member_doc},
     {0, 0, 0, 0}
 };
 
 
-// #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef dataobjectmodule = {
     PyModuleDef_HEAD_INIT,
     "recordclass._dataobject",
@@ -2588,7 +2587,6 @@ static struct PyModuleDef dataobjectmodule = {
     NULL,
     NULL
 };
-// #endif
 
 PyMODINIT_FUNC
 PyInit__dataobject(void)

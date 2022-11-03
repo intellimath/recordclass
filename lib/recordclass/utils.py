@@ -130,7 +130,7 @@ def number_of_dataitems(cls):
         return len(fields)
 
 def collect_info_from_bases(bases):
-    from ._dataobject import is_readonly_member
+    from ._dataobject import _is_readonly_member
     fields = []
     fields_dict = {}
     use_dict = False
@@ -156,7 +156,7 @@ def collect_info_from_bases(bases):
                     raise TypeError('field %s is already defined in the %s' % (fn, base))
                 else:
                     fields_dict[fn] = f = {}
-                    if is_readonly_member(base.__dict__[fn]):
+                    if _is_readonly_member(base.__dict__[fn]):
                         f['readonly'] = True
                     if fn in base_defaults:
                         f['default'] = base_defaults[fn]
