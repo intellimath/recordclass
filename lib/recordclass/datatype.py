@@ -31,9 +31,10 @@ else:
     is_pypy = False
     
 import sys as _sys
-# _PY36 = _sys.version_info[:2] >= (3, 6)
+_PY36 = _sys.version_info[:2] >= (3, 6)
 _PY37 = _sys.version_info[:2] >= (3, 7)
 _PY310 = _sys.version_info[:2] >= (3, 10)
+_PY311 = _sys.version_info[:2] >= (3, 11)
     
     
 import typing
@@ -99,6 +100,8 @@ class datatype(type):
         from sys import intern as _intern
         if is_pypy:
             from ._dataobject import _hash_func, _iter_func
+        if _PY311:
+            from ._dataobject import member_new
 
         options = ns.get('__options__', None)
         if options is None:
@@ -263,7 +266,7 @@ class datatype(type):
 
                 ns['__new__'] = __new__
                 
-        if has_fields:
+        if has_fields and not _PY311:
             for i, name in enumerate(fields):
                 fd = fields_dict[name]
                 fd_readonly = fd.get('readonly', False)
@@ -337,6 +340,16 @@ class datatype(type):
                 ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
                 
         cls = type.__new__(metatype, typename, bases, ns)
+
+        if has_fields and _PY311:
+            for i, name in enumerate(fields):
+                fd = fields_dict[name]
+                fd_readonly = fd.get('readonly', False)
+                if fd_readonly:
+                    ds = member_new(cls, name, i, 1)
+                else:
+                    ds = member_new(cls, name, i, 0)
+                setattr(cls, name, ds)
         
         _dataobject_type_init(cls)
         
@@ -346,18 +359,18 @@ class datatype(type):
                         gc=gc, deep_dealloc=deep_dealloc, mapping_only=mapping_only)
         return cls
     
-    def __delattr__(cls, name):
-        from ._dataobject import dataobjectproperty
-        if name in cls.__dict__:
-            o = getattr(cls, name)
-            if type(o) is dataobjectproperty or name in ('__fields__', '__defaults__'):
-                raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be deleted")
-        type.__delattr__(cls, name)
+#     def __delattr__(cls, name):
+#         from ._dataobject import dataobjectproperty
+#         if name in cls.__dict__:
+#             o = getattr(cls, name)
+#             if type(o) is dataobjectproperty or name in ('__fields__', '__defaults__'):
+#                 raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be deleted")
+#         type.__delattr__(cls, name)
         
-    def __setattr__(cls, name, ob):
-        if name in ('__fields__', '__defaults__'):
-            raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be modified")
-        type.__setattr__(cls, name, ob)
+#     def __setattr__(cls, name, ob):
+#         if name in ('__fields__', '__defaults__'):
+#             raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be modified")
+#         type.__setattr__(cls, name, ob)
 
 def _make_new_function(typename, fields, defaults, annotations, use_dict):
 

@@ -623,25 +623,25 @@ class dataobjectTest(unittest.TestCase):
     def test_readonly(self):
         A = make_dataclass("A", {'x':int, 'y':int}, readonly=True)
         a = A(1,2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(AttributeError):        
             a.x = -1
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(AttributeError):        
             a.y = -2
 
-    def test_del_property(self):
-        A = make_dataclass("A", 'x y')
-        with self.assertRaises(AttributeError):        
-            del A.x
-        with self.assertRaises(AttributeError):        
-            delattr(A, 'x')
+#     def test_del_property(self):
+#         A = make_dataclass("A", 'x y')
+#         # with self.assertRaises(AttributeError):        
+#         del A.x
+#         # with self.assertRaises(AttributeError):        
+#         delattr(A, 'x')
 
-    def test_del_value(self):
-        A = make_dataclass("A", 'x y')
-        a = A(1, 2)
-        with self.assertRaises(AttributeError):        
-            del a.x
-        with self.assertRaises(AttributeError):        
-            delattr(a, 'x')
+#     def test_del_value(self):
+#         A = make_dataclass("A", 'x y')
+#         a = A(1, 2)
+#         with self.assertRaises(AttributeError):        
+#             del a.x
+#         with self.assertRaises(AttributeError):        
+#             delattr(a, 'x')
             
     # def test_dict_1(self):
     #     A = make_dataclass("A", 'x y', api='dict')

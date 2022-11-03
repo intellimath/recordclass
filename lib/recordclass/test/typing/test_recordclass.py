@@ -153,7 +153,7 @@ class XMethBad(RecordClass):
         class B(HR):
             pass
         b = B(1,2)
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             b.x = 1
         
     def test_pickle(self):

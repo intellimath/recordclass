@@ -24,6 +24,7 @@
 
 #include "Python.h"
 #include "_dataobject.h"
+#include "structmember.h"
 
 #define DEFERRED_ADDRESS(addr) 0
 
@@ -667,6 +668,8 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 static PyObject*
 dataobject_mp_subscript(PyObject* op, PyObject* name)
 {
+    return Py_TYPE(op)->tp_getattro(op, name);
+    
     PyObject *tp_dict = Py_TYPE(op)->tp_dict;
     dataobjectproperty_object *doproperty =
         (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
@@ -696,6 +699,8 @@ dataobject_mp_subscript(PyObject* op, PyObject* name)
 static int
 dataobject_mp_ass_subscript(PyObject* op, PyObject* name, PyObject *val)
 {
+    return Py_TYPE(op)->tp_setattro(op, name, val);
+
     PyObject* tp_dict = Py_TYPE(op)->tp_dict;
     dataobjectproperty_object* doproperty =
         (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
@@ -1392,8 +1397,10 @@ static PyTypeObject PyDataObject_Type = {
     dataobject_getattr,                                      /* tp_setattro */
     dataobject_setattr,                                      /* tp_setattro */
 #else
-    dataobject_getattr,                                      /* tp_getattro */
-    dataobject_setattr,                                      /* tp_setattro */
+    // dataobject_getattr,                                      /* tp_getattro */
+    // dataobject_setattr,                                      /* tp_setattro */
+    0,                                      /* tp_getattro */
+    0,                                      /* tp_setattro */
 #endif
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
@@ -1694,7 +1701,7 @@ dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value)
         return 0;
 
     if (((dataobjectproperty_object *)self)->readonly) {
-        PyErr_SetString(PyExc_TypeError, "item is readonly");
+        PyErr_SetString(PyExc_AttributeError, "item is readonly");
         return -1;
     }
 
@@ -2085,11 +2092,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_vectorcall_offset = 0
 #endif
 
-// #if PY_VERSION_HEX >= 0x03080000
-//     if (tp->tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
-//         tp->tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
-// #endif
-
     Py_RETURN_NONE;
 }
 
@@ -2467,6 +2469,89 @@ __fix_type(PyObject *tp, PyTypeObject *meta) {
     }
 }
 
+
+static PyObject *
+member_new(PyObject *module, PyObject *args)
+{
+    PyMemberDescrObject *descr;
+    PyMemberDef *mdef;
+    
+    if (Py_SIZE(args) != 4)
+        return NULL;
+    
+    PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(args, 0);
+    PyObject *name = PyTuple_GET_ITEM(args, 1);
+    Py_ssize_t i = PyLong_AsSsize_t(PyTuple_GET_ITEM(args, 2));
+    Py_ssize_t readonly = PyLong_AsSsize_t(PyTuple_GET_ITEM(args, 3));
+
+    if (name == NULL)
+        return NULL;
+    
+    descr = (PyMemberDescrObject *)PyType_GenericAlloc(&PyMemberDescr_Type, 0);
+    if (descr == NULL) 
+        return NULL;
+    
+    Py_INCREF(type);
+    descr->d_common.d_type = type;
+    PyUnicode_InternInPlace(&name);
+    descr->d_common.d_name = name;
+    Py_INCREF(name);
+    descr->d_common.d_qualname = NULL;
+
+    mdef = (PyMemberDef*)malloc(sizeof(PyMemberDef));
+    mdef->name = PyUnicode_AsUTF8(name);
+    if (mdef->name == NULL)
+        return NULL;
+    mdef->type = T_OBJECT_EX;
+    mdef->offset = sizeof(PyObject) + i * sizeof(PyObject*);
+    if (readonly != 0) 
+        mdef->flags = READONLY;
+    else
+        mdef->flags = 0;
+    mdef->doc = NULL;
+    // printf("%d %d %s %d\n", mdef->offset, readonly, PyUnicode_AsUTF8(name), (int)type);
+
+    descr->d_member = mdef;
+    Py_INCREF(descr);
+    return (PyObject*)descr;
+}
+
+PyDoc_STRVAR(member_new_doc,
+"Create dataobject descriptor");
+
+static PyObject *
+is_readonly_member(PyObject *module, PyObject *args)
+{
+    PyObject *obj = PyTuple_GET_ITEM(args, 0);
+    PyTypeObject *tp = Py_TYPE(obj);
+    
+    
+    if (tp == &PyMemberDescr_Type) {
+        PyMemberDescrObject *d = (PyMemberDescrObject *)obj;
+        if (d->d_member->flags == 1) {
+            Py_INCREF(Py_True);
+            return Py_True;
+        } else {
+            Py_INCREF(Py_False);
+            return Py_False;            
+        }
+    }
+    if (tp == &PyDataObjectProperty_Type) {
+        dataobjectproperty_object *d = (dataobjectproperty_object *)obj;
+        if (d->readonly) {
+            Py_INCREF(Py_True);
+            return Py_True;            
+        } else {
+            Py_INCREF(Py_False);
+            return Py_False;            
+        }   
+    }
+    return NULL;
+}
+
+PyDoc_STRVAR(is_readonly_member_doc,
+"Test property for readonly");
+
 //////////////////////////////////////////////////
 
 PyDoc_STRVAR(dataobjectmodule_doc,
@@ -2485,6 +2570,8 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"update", (PyCFunction)dataobject_update, METH_VARARGS | METH_KEYWORDS, dataobject_update_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
+    {"member_new", member_new, METH_VARARGS, member_new_doc},
+    {"is_readonly_member", is_readonly_member, METH_VARARGS, is_readonly_member_doc},
     {0, 0, 0, 0}
 };
 

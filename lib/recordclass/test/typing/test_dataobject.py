@@ -745,9 +745,9 @@ class DataObjectTest3(unittest.TestCase):
             y:int
             
         a = A(1,2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(AttributeError):        
             a.x = -1
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(AttributeError):        
             a.y = -2
 
             
