@@ -127,7 +127,9 @@ As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4
 
 ### Performance counters
 
-Here is the table with performance counters (python 3.10, debian/testing linux, x86-64), which was measured using `tools/perfcounts.py` script:
+Here is the table with performance counters, which was measured using `tools/perfcounts.py` script: 
+
+* python 3.10, debian/testing linux, x86-64):
 
 <table border="1" class="dataframe">
   <thead>
@@ -291,6 +293,172 @@ Here is the table with performance counters (python 3.10, debian/testing linux, 
     </tr>
   </tbody>
 </table>
+
+* python 3.11, debian/testing linux, x86-64):
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>id</th>
+      <th>size</th>
+      <th>new</th>
+      <th>getattr</th>
+      <th>setattr</th>
+      <th>getitem</th>
+      <th>setitem</th>
+      <th>getkey</th>
+      <th>setkey</th>
+      <th>iterate</th>
+      <th>copy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>litetuple</td>
+      <td>48</td>
+      <td>0.25</td>
+      <td></td>
+      <td></td>
+      <td>0.17</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>0.27</td>
+      <td>0.14</td>
+    </tr>
+    <tr>
+      <td>mutabletuple</td>
+      <td>48</td>
+      <td>0.24</td>
+      <td></td>
+      <td></td>
+      <td>0.18</td>
+      <td>0.19</td>
+      <td></td>
+      <td></td>
+      <td>0.27</td>
+      <td>0.14</td>
+    </tr>
+    <tr>
+      <td>tuple</td>
+      <td>64</td>
+      <td>0.13</td>
+      <td></td>
+      <td></td>
+      <td>0.13</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>0.25</td>
+      <td>0.15</td>
+    </tr>
+    <tr>
+      <td>namedtuple</td>
+      <td>64</td>
+      <td>0.75</td>
+      <td>0.21</td>
+      <td></td>
+      <td>0.16</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>0.25</td>
+      <td>0.19</td>
+    </tr>
+    <tr>
+      <td>class+slots</td>
+      <td>56</td>
+      <td>0.46</td>
+      <td>0.1</td>
+      <td>0.11</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>dataobject</td>
+      <td>40</td>
+      <td>0.57</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.17</td>
+      <td>0.2</td>
+      <td></td>
+      <td></td>
+      <td>0.26</td>
+      <td>0.18</td>
+    </tr>
+    <tr>
+      <td>dataobject+fast_new</td>
+      <td>40</td>
+      <td>0.24</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.17</td>
+      <td>0.19</td>
+      <td></td>
+      <td></td>
+      <td>0.26</td>
+      <td>0.17</td>
+    </tr>
+    <tr>
+      <td>dataobject+gc</td>
+      <td>56</td>
+      <td>0.56</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.17</td>
+      <td>0.19</td>
+      <td></td>
+      <td></td>
+      <td>0.26</td>
+      <td>0.19</td>
+    </tr>
+    <tr>
+      <td>dataobject+fast+gc</td>
+      <td>56</td>
+      <td>0.27</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.16</td>
+      <td>0.19</td>
+      <td></td>
+      <td></td>
+      <td>0.26</td>
+      <td>0.2</td>
+    </tr>
+    <tr>
+      <td>dict</td>
+      <td>184</td>
+      <td>0.27</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>0.19</td>
+      <td>0.22</td>
+      <td>0.28</td>
+      <td>0.19</td>
+    </tr>
+    <tr>
+      <td>dataobject+fast+map</td>
+      <td>40</td>
+      <td>0.24</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td></td>
+      <td></td>
+      <td>0.21</td>
+      <td>0.29</td>
+      <td>0.26</td>
+      <td>0.18</td>
+    </tr>
+  </tbody>
+</table>
+
 
 Main repository for `recordclass` is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
@@ -579,6 +747,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 #### 0.18
 
 * Python 3.11 support.
+* Adapt data object to take benefit from bytecode specialization in 3.11.
 * Fix issue for argument with default value in `__new__`, which havn't `__repr__`
   that can be interpreted as valid python expression
   for creation of the default value.

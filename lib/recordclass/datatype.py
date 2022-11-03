@@ -88,7 +88,6 @@ class datatype(type):
     """
     Metatype for creating classes based on dataobject.
     """
-
     def __new__(metatype, typename, bases, ns, *,
                 gc=False, fast_new=False, readonly=False, iterable=False,
                 deep_dealloc=False, sequence=False, mapping=False,
