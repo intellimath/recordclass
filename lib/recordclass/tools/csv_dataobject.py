@@ -77,8 +77,6 @@ class GeneralReader:
                 v = getattr(row, name)
                 if type(v) is str:
                     setattr(row, name, func(v))
-            
-
 
 class GeneralWriter:
     def __init__(self, f, fieldnames, dialect="excel", *args, **kwds):

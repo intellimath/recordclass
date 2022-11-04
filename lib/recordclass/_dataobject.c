@@ -311,12 +311,6 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args,
 static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    if (type == &PyDataObject_Type) {
-        PyErr_SetString(PyExc_TypeError,
-                        "dataobject base class can't be instantiated");
-        return NULL;
-    }
-
     PyTupleObject *tmp = (PyTupleObject*)args;
 
     return dataobject_new_vc(type, (PyObject * const*)tmp->ob_item,
@@ -552,32 +546,32 @@ dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
     return -1;
 }
 #else
-static PyObject*
-dataobject_getattr(PyObject *op, PyObject *name)
-{
-    PyObject *ob = _PyType_Lookup(Py_TYPE(op), name);
-    if (ob != NULL) {
-        PyTypeObject *ob_type = Py_TYPE(ob);
-        if (ob_type == &PyDataObjectProperty_Type) {
-            return ob_type->tp_descr_get(ob, op, (PyObject *)Py_TYPE(op));
-        }
-    }
-    return PyObject_GenericGetAttr(op, name);
-}
+// static PyObject*
+// dataobject_getattr(PyObject *op, PyObject *name)
+// {
+//     PyObject *ob = _PyType_Lookup(Py_TYPE(op), name);
+//     if (ob != NULL) {
+//         PyTypeObject *ob_type = Py_TYPE(ob);
+//         if (ob_type == &PyDataObjectProperty_Type) {
+//             return ob_type->tp_descr_get(ob, op, (PyObject *)Py_TYPE(op));
+//         }
+//     }
+//     return PyObject_GenericGetAttr(op, name);
+// }
 
-static int
-dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
-{
-    PyObject *ob = _PyType_Lookup(Py_TYPE(op), name);
+// static int
+// dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
+// {
+//     PyObject *ob = _PyType_Lookup(Py_TYPE(op), name);
 
-    if (ob != NULL) {
-        PyTypeObject *ob_type = Py_TYPE(ob);
-        if (ob_type == &PyDataObjectProperty_Type) {
-            return ob_type->tp_descr_set(ob, op, val);
-        }
-    }
-    return PyObject_GenericSetAttr(op, name, val);
-}
+//     if (ob != NULL) {
+//         PyTypeObject *ob_type = Py_TYPE(ob);
+//         if (ob_type == &PyDataObjectProperty_Type) {
+//             return ob_type->tp_descr_set(ob, op, val);
+//         }
+//     }
+//     return PyObject_GenericSetAttr(op, name, val);
+// }
 #endif
 
 PyDoc_STRVAR(dataobject_len_doc,
@@ -2328,8 +2322,30 @@ dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
         PyErr_SetString(PyExc_TypeError, "nargs < 1");
         return NULL;
     }
+    
+    PyTypeObject *type = (PyTypeObject *)tmp->ob_item[0];
 
-    PyObject *ret =  dataobject_new_vc((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], n-1, kw);
+    if (type == &PyDataObject_Type) {
+        PyErr_SetString(PyExc_TypeError,
+                        "dataobject base class can't be instantiated");
+        return NULL;
+    }
+
+    if (!PyObject_IsSubclass((PyObject*)type, (PyObject*)&PyDataObject_Type)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "the type is not subclass of dataobject");
+        return NULL;
+    }
+    
+    PyObject * const* args;
+    if (n >= 2) {
+        args = (PyObject * const*)&tmp->ob_item[1];
+    } else {
+        PyErr_SetString(PyExc_TypeError, "nargs != 2");
+        return NULL;        
+    }
+    
+    PyObject *ret =  dataobject_new_vc(type, args, n-1, kw);
 
     return ret;
 }
@@ -2475,22 +2491,28 @@ member_new(PyObject *module, PyObject *args)
 {
     PyMemberDescrObject *descr;
     PyMemberDef *mdef;
-    
-    if (Py_SIZE(args) != 4)
+
+    if (Py_SIZE(args) != 4) {
+        PyErr_SetString(PyExc_ValueError, "n_args != 4");
         return NULL;
-    
+    }
+
     PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(args, 0);
     PyObject *name = PyTuple_GET_ITEM(args, 1);
     Py_ssize_t i = PyLong_AsSsize_t(PyTuple_GET_ITEM(args, 2));
     Py_ssize_t readonly = PyLong_AsSsize_t(PyTuple_GET_ITEM(args, 3));
 
-    if (name == NULL)
+    if (name == NULL) {
+        PyErr_SetString(PyExc_ValueError, "Name is empty");
         return NULL;
-    
-    descr = (PyMemberDescrObject *)PyType_GenericAlloc(&PyMemberDescr_Type, 0);
-    if (descr == NULL) 
+    }
+
+    descr = (PyMemberDescrObject*)PyType_GenericAlloc(&PyMemberDescr_Type, 0);
+    if (descr == NULL) {
+        PyErr_SetString(PyExc_ValueError, "Memory error when allocate memory for PyMemberDescrObject");
         return NULL;
-    
+    }
+
     Py_INCREF(type);
     descr->d_common.d_type = type;
     PyUnicode_InternInPlace(&name);
@@ -2500,8 +2522,10 @@ member_new(PyObject *module, PyObject *args)
 
     mdef = (PyMemberDef*)malloc(sizeof(PyMemberDef));
     mdef->name = PyUnicode_AsUTF8(name);
-    if (mdef->name == NULL)
+    if (mdef->name == NULL) {
+        PyErr_SetString(PyExc_ValueError, "Can not convert unicode string to char*");
         return NULL;
+    }
     mdef->type = T_OBJECT_EX;
     mdef->offset = sizeof(PyObject) + i * sizeof(PyObject*);
     if (readonly != 0) 
@@ -2520,12 +2544,11 @@ PyDoc_STRVAR(member_new_doc,
 "Create dataobject descriptor");
 
 static PyObject *
-is_readonly_member(PyObject *module, PyObject *args)
+_is_readonly_member(PyObject *module, PyObject *args)
 {
     PyObject *obj = PyTuple_GET_ITEM(args, 0);
     PyTypeObject *tp = Py_TYPE(obj);
-    
-    
+
     if (tp == &PyMemberDescr_Type) {
         PyMemberDescrObject *d = (PyMemberDescrObject *)obj;
         if (d->d_member->flags == 1) {
@@ -2571,7 +2594,7 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
     {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
     {"member_new", member_new, METH_VARARGS, member_new_doc},
-    {"_is_readonly_member", is_readonly_member, METH_VARARGS, is_readonly_member_doc},
+    {"_is_readonly_member", _is_readonly_member, METH_VARARGS, is_readonly_member_doc},
     {0, 0, 0, 0}
 };
 
