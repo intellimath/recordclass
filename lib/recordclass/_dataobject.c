@@ -311,6 +311,12 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args,
 static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
+    if (type == &PyDataObject_Type) {
+        PyErr_SetString(PyExc_TypeError,
+                        "dataobject base class can't be instantiated");
+        return NULL;
+    }
+
     PyTupleObject *tmp = (PyTupleObject*)args;
 
     return dataobject_new_vc(type, (PyObject * const*)tmp->ob_item,
@@ -2322,30 +2328,8 @@ dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
         PyErr_SetString(PyExc_TypeError, "nargs < 1");
         return NULL;
     }
-    
-    PyTypeObject *type = (PyTypeObject *)tmp->ob_item[0];
 
-    if (type == &PyDataObject_Type) {
-        PyErr_SetString(PyExc_TypeError,
-                        "dataobject base class can't be instantiated");
-        return NULL;
-    }
-
-    if (!PyObject_IsSubclass((PyObject*)type, (PyObject*)&PyDataObject_Type)) {
-        PyErr_SetString(PyExc_TypeError,
-                        "the type is not subclass of dataobject");
-        return NULL;
-    }
-    
-    PyObject * const* args;
-    if (n >= 2) {
-        args = (PyObject * const*)&tmp->ob_item[1];
-    } else {
-        PyErr_SetString(PyExc_TypeError, "nargs != 2");
-        return NULL;        
-    }
-    
-    PyObject *ret =  dataobject_new_vc(type, args, n-1, kw);
+    PyObject *ret =  dataobject_new_vc((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], n-1, kw);
 
     return ret;
 }
