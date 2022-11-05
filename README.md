@@ -744,6 +744,10 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.18.0.1
+
+* Exclude test_dataobject_match.py (for testing `match` statement) for python < 3.10.
+
 #### 0.18
 
 * Python 3.11 support.
