@@ -2,7 +2,7 @@
 
 # The MIT License (MIT)
 # 
-# Copyright (c) <2015-2021> <Shibzukhov Zaur, szport at gmail dot com>
+# Copyright (c) <2015-2022> <Shibzukhov Zaur, szport at gmail dot com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,12 @@
 # THE SOFTWARE.
 #
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
+import sys
+
+_PY310 = sys.version_info[:2] >= (3, 10)
 
 # extra_compile_args = ["-O3", "-Wfatal-errors"]
 # extra_compile_args = ["-Wfatal-errors"]
@@ -85,7 +88,7 @@ packages = [ 'recordclass',
              'recordclass.test.typing',
              'recordclass.typing',
              'recordclass.tools',
-           ]
+           ] + (['recordclass.test.match'] if _PY310 else [])
 
 setup(
     name = 'recordclass',

@@ -16,7 +16,7 @@ if _PY36:
     pass
 
 if _PY310:
-    from recordclass.test.test_dataobject_match import *
+    from recordclass.test.match.test_dataobject_match import *
 
 def test_all():
     import unittest
