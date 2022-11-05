@@ -23,4 +23,5 @@ include lib/recordclass/tools/*.py
 include lib/recordclass/typing/*.py
 include lib/recordclass/test/*.py
 include lib/recordclass/test/typing/*.py
+include lib/recordclass/test/match/*.py
 include lib/recordclass/tools/*.py
