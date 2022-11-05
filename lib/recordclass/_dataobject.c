@@ -670,30 +670,30 @@ dataobject_mp_subscript(PyObject* op, PyObject* name)
 {
     return Py_TYPE(op)->tp_getattro(op, name);
     
-    PyObject *tp_dict = Py_TYPE(op)->tp_dict;
-    dataobjectproperty_object *doproperty =
-        (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
+//     PyObject *tp_dict = Py_TYPE(op)->tp_dict;
+//     dataobjectproperty_object *doproperty =
+//         (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
 
-    if (!doproperty) {
-        if (_PyIndex_Check(name)) {
-            return type_error("object %s do not support access by index", op);
-        } else {
-            PyErr_SetString(PyExc_KeyError, "the key does not exist");
-            return NULL;
-        }
-    }
-    if (Py_TYPE(doproperty) != &PyDataObjectProperty_Type) {
-        return type_error("Invalid type", (PyObject*)doproperty);
-    }
+//     if (!doproperty) {
+//         if (_PyIndex_Check(name)) {
+//             return type_error("object %s do not support access by index", op);
+//         } else {
+//             PyErr_SetString(PyExc_KeyError, "the key does not exist");
+//             return NULL;
+//         }
+//     }
+//     if (Py_TYPE(doproperty) != &PyDataObjectProperty_Type) {
+//         return type_error("Invalid type", (PyObject*)doproperty);
+//     }
 
-    PyObject *val = PyDataObject_GET_ITEM(op, doproperty->index);
-    if (!val) {
-        PyErr_SetString(PyExc_AttributeError, "the attribute has no value");
-        return NULL;
-    }
+//     PyObject *val = PyDataObject_GET_ITEM(op, doproperty->index);
+//     if (!val) {
+//         PyErr_SetString(PyExc_AttributeError, "the attribute has no value");
+//         return NULL;
+//     }
 
-    py_incref(val);
-    return val;
+//     py_incref(val);
+//     return val;
 }
 
 static int
@@ -701,36 +701,36 @@ dataobject_mp_ass_subscript(PyObject* op, PyObject* name, PyObject *val)
 {
     return Py_TYPE(op)->tp_setattro(op, name, val);
 
-    PyObject* tp_dict = Py_TYPE(op)->tp_dict;
-    dataobjectproperty_object* doproperty =
-        (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
+//     PyObject* tp_dict = Py_TYPE(op)->tp_dict;
+//     dataobjectproperty_object* doproperty =
+//         (dataobjectproperty_object*)Py_TYPE(tp_dict)->tp_as_mapping->mp_subscript(tp_dict, name);
 
-    if (!doproperty) {
-        if (_PyIndex_Check(name)) {
-            type_error("object %s do not support access by index", op);
-        } else {
-            PyErr_SetString(PyExc_KeyError, "the key does not exist");
-        }
-        return 1;
-    }
+//     if (!doproperty) {
+//         if (_PyIndex_Check(name)) {
+//             type_error("object %s do not support access by index", op);
+//         } else {
+//             PyErr_SetString(PyExc_KeyError, "the key does not exist");
+//         }
+//         return 1;
+//     }
 
-    if (Py_TYPE(doproperty) != &PyDataObjectProperty_Type) {
-        type_error("Invalid type", (PyObject*)doproperty);
-        return -1;
-    }
+//     if (Py_TYPE(doproperty) != &PyDataObjectProperty_Type) {
+//         type_error("Invalid type", (PyObject*)doproperty);
+//         return -1;
+//     }
 
-    if (doproperty->readonly) {
-        PyErr_SetString(PyExc_TypeError, "item is readonly");
-        return -1;
-    }
+//     if (doproperty->readonly) {
+//         PyErr_SetString(PyExc_TypeError, "item is readonly");
+//         return -1;
+//     }
 
-    PyObject *v = PyDataObject_GET_ITEM(op, doproperty->index);
-    py_xdecref(v);
+//     PyObject *v = PyDataObject_GET_ITEM(op, doproperty->index);
+//     py_xdecref(v);
 
-    py_incref(val);
-    PyDataObject_SET_ITEM(op, doproperty->index, val);
+//     py_incref(val);
+//     PyDataObject_SET_ITEM(op, doproperty->index, val);
 
-    return 0;
+//     return 0;
 }
 
 static int
@@ -802,36 +802,36 @@ static void copy_sequence_methods(PySequenceMethods *out, PySequenceMethods *in)
 
 
 static PySequenceMethods dataobject_as_sequence = {
-    (lenfunc)dataobject_len,                /* sq_length */
-    0,                                      /* sq_concat */
-    0,                                      /* sq_repeat */
-    (ssizeargfunc)dataobject_sq_item,          /* sq_item */
-    0,                                      /* sq_slice */
-    (ssizeobjargproc)dataobject_sq_ass_item,   /* sq_ass_item */
-    0,                                      /* sq_ass_slice */
-    0,                                      /* sq_contains */
+    (lenfunc)dataobject_len,                  /* sq_length */
+    0,                                        /* sq_concat */
+    0,                                        /* sq_repeat */
+    (ssizeargfunc)dataobject_sq_item,         /* sq_item */
+    0,                                        /* sq_slice */
+    (ssizeobjargproc)dataobject_sq_ass_item,  /* sq_ass_item */
+    0,                                        /* sq_ass_slice */
+    0,                                        /* sq_contains */
 };
 
 static PySequenceMethods dataobject_as_sequence0 = {
     (lenfunc)dataobject_len,                /* sq_length */
     0,                                      /* sq_concat */
     0,                                      /* sq_repeat */
-    0,          /* sq_item */
+    0,                                      /* sq_item */
     0,                                      /* sq_slice */
-    0,   /* sq_ass_item */
+    0,                                      /* sq_ass_item */
     0,                                      /* sq_ass_slice */
     0,                                      /* sq_contains */
 };
 
 static PySequenceMethods dataobject_as_sequence_ro = {
-    (lenfunc)dataobject_len,         /* sq_length */
-    0,                               /* sq_concat */
-    0,                               /* sq_repeat */
-    (ssizeargfunc)dataobject_sq_item,   /* sq_item */
-    0,                               /* sq_slice */
-    0,                               /* sq_ass_item */
-    0,                               /* sq_ass_slice */
-    0,                               /* sq_contains */
+    (lenfunc)dataobject_len,           /* sq_length */
+    0,                                 /* sq_concat */
+    0,                                 /* sq_repeat */
+    (ssizeargfunc)dataobject_sq_item,  /* sq_item */
+    0,                                 /* sq_slice */
+    0,                                 /* sq_ass_item */
+    0,                                 /* sq_ass_slice */
+    0,                                 /* sq_contains */
 };
 
 static void copy_mapping_methods(PyMappingMethods *out, PyMappingMethods *in) {
@@ -881,7 +881,6 @@ static PyMappingMethods dataobject_as_mapping_sq_ro = {
     (binaryfunc)dataobject_mp_subscript_sq,  /* mp_subscr */
     0,                                       /* mp_ass_subscr */
 };
-
 
 #ifndef _PyHASH_MULTIPLIER
 #define _PyHASH_MULTIPLIER 1000003UL
@@ -1232,7 +1231,6 @@ dataobject_ass_subscript(PyObject *ob, PyObject *args)
     // PyObject *key = PyTuple_GET_ITEM(args, 0);
     // PyObject *val = PyTuple_GET_ITEM(args, 1);
 
-
     PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
 
     if (m->mp_ass_subscript) {
@@ -1248,7 +1246,6 @@ dataobject_ass_subscript(PyObject *ob, PyObject *args)
                (PyObject*)Py_TYPE(ob));
     return NULL;
 }
-
 
 PyDoc_STRVAR(dataobject_reduce_doc,
 "T.__reduce__()");
@@ -1427,14 +1424,11 @@ static PyTypeObject PyDataObject_Type = {
     0                                       /* tp_is_gc */
 };
 
-
-
 //////////////////////////////////////////////////////////////////////////
 
 static PyObject* dataobject_iter(PyObject *seq);
 
 //////////////////////////////////////////////////////////////////////////
-
 
 /*********************** DataObject Iterator **************************/
 
@@ -1488,7 +1482,6 @@ dataobjectiter_next(dataobjectiterobject *it)
         it->it_index++;
         return item;
     }
-
 //     py_decref(it->it_seq);
 //     it->it_seq = NULL;
     return NULL;
@@ -2089,6 +2082,9 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_is_gc = NULL;
 
 #if PY_VERSION_HEX == 0x03080000
+    tp->tp_vectorcall_offset = 0
+#endif
+#if PY_VERSION_HEX == 0x03090000
     tp->tp_vectorcall_offset = 0
 #endif
 
