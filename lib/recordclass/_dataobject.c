@@ -2047,6 +2047,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
 #if PY_VERSION_HEX >= 0x030B0000
         tp->tp_flags &= ~Py_TPFLAGS_MANAGED_DICT;
+        // tp->tp_flags &= ~Py_TPFLAGS_MANAGED_WEAKREF;
+        // tp->tp_flags &= ~Py_TPFLAGS_PREHEADER;
 #endif
 
     tp->tp_alloc = dataobject_alloc;
