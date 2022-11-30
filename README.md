@@ -551,7 +551,7 @@ or
 
 ### Quick start with dataobject
 
-`Dataobject` is the base class for creation of data classes with fast instance creation and small memory footprint. They don't provide `namedtuple`-like API. The classes created by `recrdclass` factory are subclasses of the `dataobject` too, but in addition provide `nametuple`-like API.
+`Dataobject` is the base class for creation of data classes with fast instance creation and small memory footprint. They provide `dataclass`-like API. 
 
 First load inventory:
 
@@ -573,31 +573,19 @@ or
 or
 
     >>> Point = make_dataclass("Point", [("x",int), ("y",int)])
-
-One can't remove attributes from the class:
-
-    >>> del Point.x
-    . . . . . . . .
-    AttributeError: Attribute x of the class Point can't be deleted
     
 Annotations of the fields are defined as a dict in `__annotations__`:
 
     >>> print(Point.__annotations__)
     {'x': <class 'int'>, 'y': <class 'int'>}
 
-Default text representation:
+There is default text representation:
 
     >>> p = Point(1, 2)
     >>> print(p)
     Point(x=1, y=2)
 
-One can't remove field's value:
-
-    >>> del p.x
-    . . . . . . . . 
-    AttributeError: The value can't be deleted
-
-The instances has a minimum memory footprint that is possible for CPython objects, which consist only of Python objects:
+The instances has a minimum memory footprint that is possible for CPython object, which contain only Python objects:
 
     >>> sys.getsizeof(p) # the output below for python 3.8+ (64bit)
     40
@@ -606,11 +594,14 @@ The instances has a minimum memory footprint that is possible for CPython object
 
 The instance is mutable by default:
 
+    >>> p_id = id(p)
     >>> p.x, p.y = 10, 20
+    >>> id(p) == p_id
+    True
     >>> print(p)
     Point(x=10, y=20)
     
-Functions `asdict` and `astuple` for converting to `dict` and `tuple`:
+There are functions `asdict` and `astuple` for converting to `dict` and to `tuple`:
 
     >>> asdict(p)
     {'x':10, 'y':20}
@@ -639,16 +630,6 @@ If one want make it iterable then there is the option `iterable=True`:
     >>> for x in p: print(x)
     1
     2
-
-Another way to create subclasses of dataobject &ndash; factory function `make_dataclass`:
-
-    >>> from recordclass import make_dataclass
-
-    >>> Point = make_dataclass("Point", [("x",int), ("y",int)])
-    
-or even
-
-    >>> Point = make_dataclass("Point", {"x":int, "y":int})
 
 Default values are also supported::
 
@@ -687,7 +668,7 @@ The followings timings explain (in jupyter notebook) boosting effect of `fast_ne
     25.6 ms ± 2.4 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
     10.4 ms ± 426 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
     
-The downside of `fast_new=True` option is less options for inspection of the instance.
+The downside of `fast_new=True` option is less options for introspection of the instance.
 
 ### Using dataobject-based classes with mapping protocol
 
@@ -707,7 +688,7 @@ or
 
 ### Using dataobject-based classes for recursive data without reference cycles
 
-There is the option `deep_dealloc` (default value is `True`) for deallocation of recursive datastructures. 
+There is the option `deep_dealloc` (default value is `False`) for deallocation of recursive datastructures. 
 Let consider simple example:
 
     class LinkedItem(dataobject, fast_new=True):
