@@ -37,6 +37,20 @@
         if (--(((PyObject*)(o))->ob_refcnt) == 0) \
               Py_TYPE((PyObject*)(o))->tp_dealloc((PyObject*)(o))
 
+#define py_setref(dst, src) \
+    do { \
+        PyObject *tmp_op = (PyObject*)(dst)
+        (dst) = (src); \
+        py_decref(tmp_op); \
+    } while (0)
+
+#define py_xsetref(dst, src) \
+    do { \
+        PyObject *tmp_op = (PyObject*)(dst)
+        (dst) = (src); \
+        if (tmp_op != NULL) py_decref(tmp_op); \
+    } while (0)
+        
 #define py_xincref(op)                                \
     do {                                              \
         PyObject *_py_xincref_tmp = (PyObject *)(op); \
