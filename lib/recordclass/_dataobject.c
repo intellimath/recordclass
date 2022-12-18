@@ -39,14 +39,14 @@
 
 #define py_setref(dst, src) \
     do { \
-        PyObject *tmp_op = (PyObject*)(dst)
+        PyObject *tmp_op = (PyObject*)(dst) \
         (dst) = (src); \
         py_decref(tmp_op); \
     } while (0)
 
 #define py_xsetref(dst, src) \
     do { \
-        PyObject *tmp_op = (PyObject*)(dst)
+        PyObject *tmp_op = (PyObject*)(dst) \
         (dst) = (src); \
         if (tmp_op != NULL) py_decref(tmp_op); \
     } while (0)
@@ -386,6 +386,7 @@ dataobject_xdecref(PyObject *op)
 
     while (n_items--) {
         py_xdecref(*items);
+        *items = NULL;
         items++;
         // PyObject *ob = *(items++);
         // if (ob)
@@ -1465,6 +1466,7 @@ dataobjectiter_dealloc(dataobjectiterobject *it)
 #endif
 
     Py_XDECREF(it->it_seq);
+    it->it_seq = NULL;
     tp->tp_free((PyObject *)it);
 }
 
