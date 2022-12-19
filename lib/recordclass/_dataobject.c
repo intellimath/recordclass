@@ -315,8 +315,10 @@ dataobject_new_vc(PyTypeObject *type, PyObject * const*args,
 
         retval = _dataobject_update(op, kwds);
 
-        if (retval < 0)
+        if (retval < 0) {
+            py_decref(op);
             return NULL;
+        }
     }
 
     return op;
@@ -388,9 +390,6 @@ dataobject_xdecref(PyObject *op)
         py_xdecref(*items);
         *items = NULL;
         items++;
-        // PyObject *ob = *(items++);
-        // if (ob)
-        //     py_decref(ob);
     }
     return 0;
 }
