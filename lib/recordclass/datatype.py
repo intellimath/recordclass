@@ -258,7 +258,8 @@ class datatype(type):
             if fast_new:
                 options['fast_new'] = fast_new
             if has_fields and not fast_new and '__new__' not in ns:
-                __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
+                has_init = '__init__' in ns
+                __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict, has_init)
                 __new__.__qualname__ = typename + '.' + '__new__'
                 if not __new__.__doc__:
                     __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
@@ -371,9 +372,9 @@ class datatype(type):
 #             raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be modified")
 #         type.__setattr__(cls, name, ob)
 
-def _make_new_function(typename, fields, defaults, annotations, use_dict):
+def _make_new_function(typename, fields, defaults, annotations, use_dict, has_init):
 
-    from ._dataobject import dataobject, new
+    from ._dataobject import dataobject, new, new_defaults_only
 
     if fields and defaults:
         fields2 = [fn for fn in fields if fn not in defaults] + \
@@ -396,7 +397,16 @@ def __new__(_cls_, {joined_fields2}):
     "Create new instance: {typename}({joined_fields2})"
     return _method_new(_cls_, {joined_fields})
 """
-    _method_new = new
+
+    if has_init:
+        new_func_def = f"""
+def __new__(_cls_):
+    "Create new instance: {typename}"
+    return _method_new(_cls_)
+"""
+        _method_new = new_defaults_only
+    else:
+        _method_new = new
 
     namespace = dict(_method_new=_method_new)
 
