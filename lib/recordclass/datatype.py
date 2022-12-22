@@ -359,18 +359,18 @@ class datatype(type):
                         gc=gc, deep_dealloc=deep_dealloc, mapping_only=mapping_only)
         return cls
     
-#     def __delattr__(cls, name):
-#         from ._dataobject import dataobjectproperty
-#         if name in cls.__dict__:
-#             o = getattr(cls, name)
-#             if type(o) is dataobjectproperty or name in ('__fields__', '__defaults__'):
-#                 raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be deleted")
-#         type.__delattr__(cls, name)
+    def __delattr__(cls, name):
+        from ._dataobject import dataobjectproperty
+        if name in cls.__dict__:
+            o = getattr(cls, name)
+            if type(o) is dataobjectproperty or name in ('__fields__', '__defaults__'):
+                raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be deleted")
+        type.__delattr__(cls, name)
         
-#     def __setattr__(cls, name, ob):
-#         if name in ('__fields__', '__defaults__'):
-#             raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be modified")
-#         type.__setattr__(cls, name, ob)
+    def __setattr__(cls, name, ob):
+        if name in ('__fields__', '__defaults__'):
+            raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be modified")
+        type.__setattr__(cls, name, ob)
 
 def _make_new_function(typename, fields, defaults, annotations, use_dict, has_init):
 
@@ -398,15 +398,15 @@ def __new__(_cls_, {joined_fields2}):
     return _method_new(_cls_, {joined_fields})
 """
 
-    if has_init:
-        new_func_def = f"""
-def __new__(_cls_):
-    "Create new instance: {typename}"
-    return _method_new(_cls_)
-"""
-        _method_new = new_defaults_only
-    else:
-        _method_new = new
+#     if has_init:
+#         new_func_def = f"""
+# def __new__(_cls_):
+#     "Create new instance: {typename}"
+#     return _method_new(_cls_)
+# """
+#         _method_new = new_defaults_only
+#     else:
+    _method_new = new
 
     namespace = dict(_method_new=_method_new)
 

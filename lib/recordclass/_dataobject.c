@@ -338,9 +338,10 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return dataobject_new_vc(type, (PyObject * const*)tmp->ob_item,
                              Py_SIZE(tmp), kwds);
 }
-
+    
 static PyObject*
-dataobject_new_defaults_only(PyTypeObject *type, PyObject *args, PyObject *kwds)
+dataobject_new_vc_defaults_only(PyTypeObject *type, PyObject * const*args,
+                  const Py_ssize_t n_args, PyObject *kwds)
 {
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
     
@@ -378,6 +379,20 @@ dataobject_new_defaults_only(PyTypeObject *type, PyObject *args, PyObject *kwds)
     }
     
     return op;
+}
+
+static PyObject*
+dataobject_new_defaults_only(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+    if (type == &PyDataObject_Type) {
+        PyErr_SetString(PyExc_TypeError,
+                        "dataobject base class can't be instantiated");
+        return NULL;
+    }
+
+    PyTupleObject *tmp = (PyTupleObject*)args;
+
+    return dataobject_new_vc_defaults_only(type, (PyObject * const*)tmp->ob_item,
+                             Py_SIZE(tmp), kwds);
 }
 
 static int
@@ -2115,11 +2130,12 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     if (!__init__)
         tp->tp_init = tp_base->tp_init;
     
-    if(!__new__  || !has_fields)
+    if(!__new__  || !has_fields) {
         if(__init__)
             tp->tp_new = dataobject_new_defaults_only;
         else
             tp->tp_new = dataobject_new;
+    }
 
     tp->tp_dealloc = dataobject_dealloc;
     tp->tp_free = PyObject_Del;
@@ -2402,7 +2418,7 @@ dataobject_new_instance_defaults_only(PyObject *module, PyObject *type_args, PyO
         return NULL;
     }
 
-    PyObject *ret =  dataobject_new_defaults_only((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], n-1, kw);
+    PyObject *ret =  dataobject_new_vc_defaults_only((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], n-1, kw);
 
     return ret;
 }

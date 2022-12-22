@@ -792,8 +792,49 @@ class DataObjectTest3(unittest.TestCase):
             self.assertEqual(Point.__annotations__, {'x':float,'y':float})            
             pt = Point(1,2)
             self.assertEqual((pt.x, pt.y), (1, 2))
+     
+    def test_initialize_in_init(self):
+        class A(dataobject):
+            x:int
+            y:int
             
+            def __init__(self, x, y):
+                self.x = x
+                self.y = y
                 
+        a = A(1,2)
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+
+    def test_initialize_in_init2(self):
+        class A(dataobject):
+            x:int
+            y:int
+            
+            def __init__(self, *args, **kwds):
+                self.x = kwds['x']
+                self.y = kwds['y']
+                
+        a = A(x=1,y=2)
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+
+    def test_initialize_in_init3(self):
+        class A(dataobject):
+            x:int
+            y:int=0
+            
+            def __init__(self, x, y=0):
+                self.x = x
+                self.y = y
+                
+        a = A(1,y=2)
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+        b = A(1)
+        self.assertEqual(b.x, 1)
+        self.assertEqual(b.y, 0)
+        
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(DataObjectTest3))

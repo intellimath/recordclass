@@ -919,7 +919,6 @@ class dataobjectTest(unittest.TestCase):
             a['x'] = 100
         with self.assertRaises(TypeError):        
             a['y'] = 200
-        
             
 def main():
     suite = unittest.TestSuite()
