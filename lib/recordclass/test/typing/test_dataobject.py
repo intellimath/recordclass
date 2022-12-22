@@ -799,12 +799,12 @@ class DataObjectTest3(unittest.TestCase):
             y:int
             
             def __init__(self, x, y):
-                self.x = x
-                self.y = y
+                self.x = 2*x
+                self.y = 3*y
                 
         a = A(1,2)
-        self.assertEqual(a.x, 1)
-        self.assertEqual(a.y, 2)
+        self.assertEqual(a.x, 2)
+        self.assertEqual(a.y, 6)
 
     def test_initialize_in_init2(self):
         class A(dataobject):
@@ -812,12 +812,12 @@ class DataObjectTest3(unittest.TestCase):
             y:int
             
             def __init__(self, *args, **kwds):
-                self.x = kwds['x']
-                self.y = kwds['y']
+                self.x = 2*kwds['x']
+                self.y = 3*kwds['y']
                 
         a = A(x=1,y=2)
-        self.assertEqual(a.x, 1)
-        self.assertEqual(a.y, 2)
+        self.assertEqual(a.x, 2)
+        self.assertEqual(a.y, 6)
 
     def test_initialize_in_init3(self):
         class A(dataobject):
@@ -825,14 +825,14 @@ class DataObjectTest3(unittest.TestCase):
             y:int=0
             
             def __init__(self, x, y=0):
-                self.x = x
-                self.y = y
+                self.x = 2*x
+                self.y = 3*y
                 
         a = A(1,y=2)
-        self.assertEqual(a.x, 1)
-        self.assertEqual(a.y, 2)
+        self.assertEqual(a.x, 2)
+        self.assertEqual(a.y, 6)
         b = A(1)
-        self.assertEqual(b.x, 1)
+        self.assertEqual(b.x, 2)
         self.assertEqual(b.y, 0)
         
 def main():
