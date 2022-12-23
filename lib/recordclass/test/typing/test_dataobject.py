@@ -834,6 +834,19 @@ class DataObjectTest3(unittest.TestCase):
         b = A(1)
         self.assertEqual(b.x, 2)
         self.assertEqual(b.y, 0)
+
+    def test_initialize_in_init4(self):
+        class A(dataobject):
+            x:int
+            y:int=0
+            
+            def __init__(self, x):
+                self.x = 2*x
+                self.y = self.x
+                
+        b = A(1)
+        self.assertEqual(b.x, 2)
+        self.assertEqual(b.y, 2)
         
 def main():
     suite = unittest.TestSuite()
