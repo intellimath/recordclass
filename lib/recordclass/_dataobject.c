@@ -1470,6 +1470,8 @@ static PyObject *dataobject_iter(PyObject *seq);
 //     {NULL, NULL, NULL, NULL, NULL}
 // };
 
+
+
 PyDoc_STRVAR(dataobject_doc,
 "dataobject(...) --> dataobject\n\n\
 ");
@@ -2439,21 +2441,21 @@ dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
     return ret;
 }
 
-// static PyObject *
-// dataobject_new_instance_defaults_only(PyObject *module, PyObject *type_args, PyObject *kw)
-// {
-//     PyTupleObject *tmp = (PyTupleObject *)type_args;
+static PyObject *
+dataobject_new_instance_basic(PyObject *module, PyObject *type_args, PyObject *kw)
+{
+    PyTupleObject *tmp = (PyTupleObject *)type_args;
 
-//     const Py_ssize_t n = Py_SIZE(tmp);
-//     if (n < 1) {
-//         PyErr_SetString(PyExc_TypeError, "nargs < 1");
-//         return NULL;
-//     }
+    const Py_ssize_t n = Py_SIZE(tmp);
+    if (n < 1) {
+        PyErr_SetString(PyExc_TypeError, "nargs < 1");
+        return NULL;
+    }
 
-//     PyObject *ret =  dataobject_new_vc_defaults_only((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], n-1, kw);
+    PyObject *ret =  dataobject_new_vc_basic((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], n-1, kw);
 
-//     return ret;
-// }
+    return ret;
+}
 
 PyDoc_STRVAR(dataobject_clone_doc,
 "Clone dataobject-based object");
@@ -2689,7 +2691,7 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"asdict", asdict, METH_VARARGS, asdict_doc},
     {"astuple", astuple, METH_VARARGS, astuple_doc},
     {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
-    // {"new_basic", (PyCFunction)dataobject_new_instance_defaults_only, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
+    {"new_basic", (PyCFunction)dataobject_new_instance_basic, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
 #ifdef PYPY_VERSION
     {"_hash_func", (PyCFunction)_hash_func, METH_VARARGS, hash_func_doc},
