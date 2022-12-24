@@ -842,11 +842,11 @@ class DataObjectTest3(unittest.TestCase):
             
             def __init__(self, x):
                 self.x = 2*x
-                self.y = self.x
+                self.y = self.x + 2
                 
         b = A(1)
         self.assertEqual(b.x, 2)
-        self.assertEqual(b.y, 2)
+        self.assertEqual(b.y, 4)
         
 def main():
     suite = unittest.TestSuite()

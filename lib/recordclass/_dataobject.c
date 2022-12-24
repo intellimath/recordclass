@@ -339,8 +339,50 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                              Py_SIZE(tmp), kwds);
 }
     
+// static PyObject*
+// dataobject_new_vc_defaults_only(PyTypeObject *type, PyObject * const*args,
+//                   const Py_ssize_t n_args, PyObject *kwds)
+// {
+//     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
+    
+//     PyObject *op = type->tp_alloc(type, 0);
+//     PyObject **items = PyDataObject_ITEMS(op);
+
+//     PyObject *tp_dict = type->tp_dict;
+//     PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
+//     PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
+
+//     if (defaults == NULL) {
+//         Py_ssize_t i = 0;
+//         while(i < n_items) {
+//             py_incref(Py_None);
+//             items[i++] = Py_None;
+//         }
+//     } else {
+//         PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
+
+//         if (Py_TYPE(fields) == &PyTuple_Type) {
+//             Py_ssize_t i = 0;
+//             while(i < n_items) {
+//                 PyObject *fname = PyTuple_GET_ITEM(fields, i);
+//                 PyObject *value = PyDict_GetItem(defaults, fname);
+
+//                 if (!value)
+//                     value = Py_None;
+
+//                 py_incref(value);
+//                 items[i++] = value;
+//             }
+//             py_decref(fields);
+//             py_decref(defaults);
+//         }
+//     }
+    
+//     return op;
+// }
+
 static PyObject*
-dataobject_new_vc_defaults_only(PyTypeObject *type, PyObject * const*args,
+dataobject_new_vc_basic(PyTypeObject *type, PyObject * const*args,
                   const Py_ssize_t n_args, PyObject *kwds)
 {
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
@@ -348,41 +390,31 @@ dataobject_new_vc_defaults_only(PyTypeObject *type, PyObject * const*args,
     PyObject *op = type->tp_alloc(type, 0);
     PyObject **items = PyDataObject_ITEMS(op);
 
-    PyObject *tp_dict = type->tp_dict;
-    PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-    PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
-
-    if (defaults == NULL) {
-        Py_ssize_t i = 0;
-        while(i < n_items) {
-            py_incref(Py_None);
-            items[i++] = Py_None;
-        }
-    } else {
-        PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
-
-        if (Py_TYPE(fields) == &PyTuple_Type) {
-            Py_ssize_t i = 0;
-            while(i < n_items) {
-                PyObject *fname = PyTuple_GET_ITEM(fields, i);
-                PyObject *value = PyDict_GetItem(defaults, fname);
-
-                if (!value)
-                    value = Py_None;
-
-                py_incref(value);
-                items[i++] = value;
-            }
-            py_decref(fields);
-            py_decref(defaults);
-        }
+    Py_ssize_t i = 0;
+    while(i < n_items) {
+        py_incref(Py_None);
+        items[i++] = Py_None;
     }
     
     return op;
 }
 
+// static PyObject*
+// dataobject_new_defaults_only(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+//     if (type == &PyDataObject_Type) {
+//         PyErr_SetString(PyExc_TypeError,
+//                         "dataobject base class can't be instantiated");
+//         return NULL;
+//     }
+
+//     PyTupleObject *tmp = (PyTupleObject*)args;
+
+//     return dataobject_new_vc_defaults_only(type, (PyObject * const*)tmp->ob_item,
+//                              Py_SIZE(tmp), kwds);
+// }
+
 static PyObject*
-dataobject_new_defaults_only(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds) {
     if (type == &PyDataObject_Type) {
         PyErr_SetString(PyExc_TypeError,
                         "dataobject base class can't be instantiated");
@@ -391,7 +423,7 @@ dataobject_new_defaults_only(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     PyTupleObject *tmp = (PyTupleObject*)args;
 
-    return dataobject_new_vc_defaults_only(type, (PyObject * const*)tmp->ob_item,
+    return dataobject_new_vc_basic(type, (PyObject * const*)tmp->ob_item,
                              Py_SIZE(tmp), kwds);
 }
 
@@ -2132,7 +2164,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     
     if(!__new__  || !has_fields) {
         if(__init__)
-            tp->tp_new = dataobject_new_defaults_only;
+            tp->tp_new = dataobject_new_basic;
         else
             tp->tp_new = dataobject_new;
     }
@@ -2407,21 +2439,21 @@ dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
     return ret;
 }
 
-static PyObject *
-dataobject_new_instance_defaults_only(PyObject *module, PyObject *type_args, PyObject *kw)
-{
-    PyTupleObject *tmp = (PyTupleObject *)type_args;
+// static PyObject *
+// dataobject_new_instance_defaults_only(PyObject *module, PyObject *type_args, PyObject *kw)
+// {
+//     PyTupleObject *tmp = (PyTupleObject *)type_args;
 
-    const Py_ssize_t n = Py_SIZE(tmp);
-    if (n < 1) {
-        PyErr_SetString(PyExc_TypeError, "nargs < 1");
-        return NULL;
-    }
+//     const Py_ssize_t n = Py_SIZE(tmp);
+//     if (n < 1) {
+//         PyErr_SetString(PyExc_TypeError, "nargs < 1");
+//         return NULL;
+//     }
 
-    PyObject *ret =  dataobject_new_vc_defaults_only((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], n-1, kw);
+//     PyObject *ret =  dataobject_new_vc_defaults_only((PyTypeObject*)tmp->ob_item[0], (PyObject * const*)&tmp->ob_item[1], n-1, kw);
 
-    return ret;
-}
+//     return ret;
+// }
 
 PyDoc_STRVAR(dataobject_clone_doc,
 "Clone dataobject-based object");
@@ -2657,7 +2689,7 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"asdict", asdict, METH_VARARGS, asdict_doc},
     {"astuple", astuple, METH_VARARGS, astuple_doc},
     {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
-    {"new_defaults_only", (PyCFunction)dataobject_new_instance_defaults_only, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
+    // {"new_basic", (PyCFunction)dataobject_new_instance_defaults_only, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
 #ifdef PYPY_VERSION
     {"_hash_func", (PyCFunction)_hash_func, METH_VARARGS, hash_func_doc},

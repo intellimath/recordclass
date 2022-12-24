@@ -374,7 +374,7 @@ class datatype(type):
 
 def _make_new_function(typename, fields, defaults, annotations, use_dict, has_init):
 
-    from ._dataobject import dataobject, new, new_defaults_only
+    from ._dataobject import dataobject, new
 
     if fields and defaults:
         fields2 = [fn for fn in fields if fn not in defaults] + \
