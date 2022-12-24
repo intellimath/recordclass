@@ -727,8 +727,8 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 #### 0.18.1
 
-* Allow to initialize fields in the user defined `__init__`  method instead of `__new__`. 
-  If `__init__`  is defined then it's responsible for initialaization of all fields.
+* Allow to initialize fields in the user defined `__init__`  method instead of `__new__`  
+  (issue 29). If `__init__`  is defined then it's responsible for initialization of all fields.
   Note that this feature only work for mutable fields.
 
 
