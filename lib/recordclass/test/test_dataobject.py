@@ -584,7 +584,8 @@ class dataobjectTest(unittest.TestCase):
     def test_make0(self):
         A = make_dataclass("A", ())
         a = make(A, ())
-        # self.assertEqual(a, A(1, 2))
+        self.assertEqual(A.__fields__, ())
+        self.assertEqual(len(a), 0)
             
     def test_make1(self):
         A = make_dataclass("A", {'x':int, 'y':int})
