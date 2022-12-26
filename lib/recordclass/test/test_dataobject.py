@@ -580,6 +580,11 @@ class dataobjectTest(unittest.TestCase):
         C2 = make_dataclass('C2', 'b c')
         with self.assertRaises(AttributeError):
             C = join_dataclasses('C', [C1, C2])
+
+    def test_make0(self):
+        A = make_dataclass("A", ())
+        a = make(A, ())
+        # self.assertEqual(a, A(1, 2))
             
     def test_make1(self):
         A = make_dataclass("A", {'x':int, 'y':int})
