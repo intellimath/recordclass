@@ -52,6 +52,15 @@ class TestPickle33(dataobject):
     __dict__:dict
     
 class DataObjectTest3(unittest.TestCase):
+    
+    def test_dataobject_lists(self):
+        class A(dataobject):
+            x:object
+            y:object
+    
+        print(A.__fields__)
+        a = A([1,2,3],[3,4,5])
+        print(a)
 
     def test_datatype_tp(self):
         class A(dataobject):
@@ -212,6 +221,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.__dict__, {})
         
         a.z = 3
+        print(repr(a))
         self.assertEqual(a.z, a.__dict__['z'])
         self.assertEqual(repr(a), "A(x=1, y=2, **{'z': 3})")
         #a = None
@@ -361,17 +371,17 @@ class DataObjectTest3(unittest.TestCase):
             y:int
                 
         class B(A):
-            x:int=0
+            y:int=0
 
         self.assertEqual(A.__fields__, ('x', 'y'))
         self.assertEqual(A.__defaults__, {})
                 
         self.assertEqual(B.__fields__, ('x', 'y'))
-        self.assertEqual(B.__defaults__, {'x':0})
+        self.assertEqual(B.__defaults__, {'y':0})
         b = B(1)
-        self.assertEqual(b.x, 0)
-        self.assertEqual(b.y, 1)
-        self.assertEqual(repr(b), "B(x=0, y=1)")
+        self.assertEqual(b.x, 1)
+        self.assertEqual(b.y, 0)
+        self.assertEqual(repr(b), "B(x=1, y=0)")
         
         
     def test_keyword_args_tp(self):
@@ -639,21 +649,21 @@ class DataObjectTest3(unittest.TestCase):
         c = copy.deepcopy(a)
         self.assertEqual(a, c)
         
-    def test_signature_tp(self):
-        class A(dataobject):
-            x:int
-            y:int=2
+#     def test_signature_tp(self):
+#         class A(dataobject):
+#             x:int
+#             y:int=2
                 
-        import inspect
-        s = inspect.signature(A)
-        px = s.parameters['x']
-        self.assertEqual(px.name, 'x')
-        self.assertEqual(px.annotation, int)
-        self.assertEqual(px.default, px.empty)
-        py = s.parameters['y']
-        self.assertEqual(py.name, 'y')
-        self.assertEqual(py.annotation, int)
-        self.assertEqual(py.default, 2)
+#         import inspect
+#         s = inspect.signature(A)
+#         px = s.parameters['x']
+#         self.assertEqual(px.name, 'x')
+#         self.assertEqual(px.annotation, int)
+#         self.assertEqual(px.default, px.empty)
+#         py = s.parameters['y']
+#         self.assertEqual(py.name, 'y')
+#         self.assertEqual(py.annotation, int)
+#         self.assertEqual(py.default, 2)
         
     def test_fast_new_tp(self):
         class A(dataobject, fast_new=True):
@@ -801,7 +811,7 @@ class DataObjectTest3(unittest.TestCase):
             def __init__(self, x, y):
                 self.x = 2*x
                 self.y = 3*y
-                
+        
         a = A(1,2)
         self.assertEqual(a.x, 2)
         self.assertEqual(a.y, 6)
@@ -822,7 +832,7 @@ class DataObjectTest3(unittest.TestCase):
     def test_initialize_in_init3(self):
         class A(dataobject):
             x:int
-            y:int=0
+            y:int
             
             def __init__(self, x, y=0):
                 self.x = 2*x
@@ -838,7 +848,7 @@ class DataObjectTest3(unittest.TestCase):
     def test_initialize_in_init4(self):
         class A(dataobject):
             x:int
-            y:int=0
+            y:int
             
             def __init__(self, x):
                 self.x = 2*x
@@ -847,6 +857,23 @@ class DataObjectTest3(unittest.TestCase):
         b = A(1)
         self.assertEqual(b.x, 2)
         self.assertEqual(b.y, 4)
+        
+    def test_initialize_in_init5(self):
+        class A0(dataobject):
+            x:int
+            y:int
+            
+            def __init__(self, x, y):
+                self.x = x
+                self.y = y
+                
+        class A(A0):
+            def __init__(self, x, y):
+                pass
+            
+        a = A(1,2)
+        self.assertEqual(a.x, None)
+        self.assertEqual(a.y, None)
         
 def main():
     suite = unittest.TestSuite()

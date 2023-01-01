@@ -86,9 +86,10 @@ class datatype(type):
     Metatype for creating classes based on dataobject.
     """
     def __new__(metatype, typename, bases, ns, *,
-                gc=False, fast_new=False, readonly=False, iterable=False,
+                gc=False, fast_new=True, readonly=False, iterable=False,
                 deep_dealloc=False, sequence=False, mapping=False,
-                use_dict=False, use_weakref=False, hashable=False, mapping_only=False):
+                use_dict=False, use_weakref=False, hashable=False, 
+                mapping_only=False):
 
         from .utils import check_name, collect_info_from_bases
         from ._dataobject import dataobject
@@ -185,8 +186,7 @@ class datatype(type):
                 fields.remove('__dict__')
                 if '__dict__' in annotations:
                     del annotations['__dict__']
-                use_dict = True
-                options['use_dict'] = True
+                use_dict = options['use_dict'] = True
                 import warnings
                 warnings.warn("Use 'use_dict=True' instead")
 
@@ -194,8 +194,7 @@ class datatype(type):
                 fields.remove('__weakref__')
                 if '__weakref__' in annotations:
                     del annotations['__weakref__']
-                use_weakref = True
-                options['use_weakref'] = True
+                use_weakref = options['use_weakref'] = True
                 import warnings
                 warnings.warn("Use 'use_weakref=True' instead")
 
@@ -255,14 +254,14 @@ class datatype(type):
             if fast_new:
                 options['fast_new'] = fast_new
 
-            has_init = '__init__' in ns
-            if has_fields and not fast_new and '__new__' not in ns and not has_init:
-                __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
-                __new__.__qualname__ = typename + '.' + '__new__'
-                if not __new__.__doc__:
-                    __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults)
+#             has_init = '__init__' in ns
+#             if has_fields and not fast_new and '__new__' not in ns:
+#                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
+#                 __new__.__qualname__ = typename + '.' + '__new__'
+#                 if not __new__.__doc__:
+#                     __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults)
 
-                ns['__new__'] = __new__
+#                 ns['__new__'] = __new__
 
         if has_fields and not _PY311:
             for i, name in enumerate(fields):
@@ -279,31 +278,31 @@ class datatype(type):
                         ds = dataobjectproperty(i, False)
                 ns[name] = ds
 
-        if '__repr__' not in ns:
-            if mapping_only:
-                def __repr__(self):
-                    fields = type(self).__fields__
-                    args = ', '.join((name + '=' + repr(self[name])) for name in fields) 
-                    kw = getattr(self, '__dict__', None)
-                    if kw:
-                        return f'{typename}({args}, **{kw})'
-                    else:
-                        return f'{typename}({args})'
-            else:
-                def __repr__(self):
-                    fields = type(self).__fields__
-                    args = ', '.join((name + '=' + repr(getattr(self, name))) for name in fields) 
-                    kw = getattr(self, '__dict__', None)
-                    if kw:
-                        return f'{typename}({args}, **{kw})'
-                    else:
-                        return f'{typename}({args})'
-            __repr__.__qual_name__ =  f'{typename}.__repr__'
+#         if '__repr__' not in ns:
+#             if mapping_only:
+#                 def __repr__(self):
+#                     fields = type(self).__fields__
+#                     args = ', '.join((name + '=' + repr(self[name])) for name in fields) 
+#                     kw = getattr(self, '__dict__', None)
+#                     if kw:
+#                         return f'{typename}({repr(args)[1:-1]}, **{repr(kw)})'
+#                     else:
+#                         return f'{typename}({repr(args)[1:-1]})'
+#             else:
+#                 def __repr__(self):
+#                     fields = type(self).__fields__
+#                     args = ', '.join((name + '=' + repr(getattr(self, name))) for name in fields) 
+#                     kw = getattr(self, '__dict__', None)
+#                     if kw:
+#                         return f'{typename}({repr(args)[1:-1]}, **{repr(kw)})'
+#                     else:
+#                         return f'{typename}({repr(args)[1:-1]})'
+#             __repr__.__qual_name__ =  f'{typename}.__repr__'
 
-            ns['__repr__'] = __repr__
+#             ns['__repr__'] = __repr__
 
-            if '__str__' not in ns:
-                ns['__str__'] = __repr__
+#             if '__str__' not in ns:
+#                 ns['__str__'] = __repr__
 
         if is_pypy:
             if hashable and '__hash__' not in ns:

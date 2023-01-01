@@ -3,7 +3,7 @@ typedef struct {
     PyObject *ob_items[1];
 } PyDataStruct;
 
-#define PyDataObject_ITEMS(op) (((PyDataStruct*)op)->ob_items)
+#define PyDataObject_ITEMS(op) (PyObject**)(((PyDataStruct*)op)->ob_items)
 
 #define PyDataObject_NUMITEMS(tp) (tp->tp_itemsize)
 

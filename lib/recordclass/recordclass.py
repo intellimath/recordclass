@@ -68,7 +68,7 @@ def _add_namedtuple_api(typename, readonly):
 
 def recordclass(typename, fields, defaults=None, *,
                 rename=False, readonly=False, hashable=False, gc=False,
-                use_dict=False, use_weakref=False, fast_new=False, mapping=False, module=None):
+                use_dict=False, use_weakref=False, fast_new=True, mapping=False, module=None):
     """Returns a new class with named fields, small memory footprint and namedtuple-lie API.
 
     >>> Point = recordclass('Point', 'x y')

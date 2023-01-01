@@ -25,11 +25,11 @@ class dataobjectTest(unittest.TestCase):
     def test_bad_makeclass(self):
         with self.assertRaises(TypeError):        
             A = make_dataclass("A", 'x y', defaults=(0,0,0), fast_new=True)
-#         a = A(x=1, y=2, z=3)
+            # a = A(x=1, y=2, z=3)
 
     def test_bad_call(self):
         A = make_dataclass("A", 'x y', defaults=(0,), fast_new=True)
-        with self.assertRaises(AttributeError):        
+        with self.assertRaises(TypeError):        
             a = A(x=1, y=2, z=3)
 
     def test_bad_call2(self):
@@ -411,11 +411,10 @@ class dataobjectTest(unittest.TestCase):
 
     def test_missing_args2(self):
         A = make_dataclass("A", ('x', 'y', 'z'))
-        with self.assertRaises(TypeError):     
-            a=A(1)
-#         self.assertEqual(a[0], 1)
-#         self.assertEqual(a[1], None)
-#         self.assertEqual(a[2], None)
+        a=A(1)
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, None)
+        self.assertEqual(a.z, None)
         
     def test_missing_args3(self):
         A = make_dataclass("A", ('a','b','c'), fast_new=True)
@@ -507,9 +506,8 @@ class dataobjectTest(unittest.TestCase):
 
     def test_pickle4(self):
         p = TPickle3(10, 20, 30)
-#         p.a = 1
-#         p.b = 2
-#         print(tuple(iter(p)))
+        p.a = 1
+        p.b = 2
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')
@@ -530,7 +528,6 @@ class dataobjectTest(unittest.TestCase):
             iter(a)
             
     def test_iterable_base(self):
-        # @clsconfig(iterable=True)
         class iterable_do(dataobject, iterable=True):
             pass
         
@@ -634,30 +631,21 @@ class dataobjectTest(unittest.TestCase):
         with self.assertRaises(AttributeError):        
             a.y = -2
 
-#     def test_del_property(self):
-#         A = make_dataclass("A", 'x y')
-#         # with self.assertRaises(AttributeError):        
-#         del A.x
-#         # with self.assertRaises(AttributeError):        
-#         delattr(A, 'x')
+    # def test_del_property(self):
+    #     A = make_dataclass("A", 'x y')
+    #     with self.assertRaises(AttributeError):        
+    #         del A.x
+    #     with self.assertRaises(AttributeError):        
+    #         delattr(A, 'x')
 
-#     def test_del_value(self):
-#         A = make_dataclass("A", 'x y')
-#         a = A(1, 2)
-#         with self.assertRaises(AttributeError):        
-#             del a.x
-#         with self.assertRaises(AttributeError):        
-#             delattr(a, 'x')
+    # def test_del_value(self):
+    #     A = make_dataclass("A", 'x y')
+    #     a = A(1, 2)
+    #     with self.assertRaises(AttributeError):        
+    #         del a.x
+    #     with self.assertRaises(AttributeError):        
+    #         delattr(a, 'x')
             
-    # def test_dict_1(self):
-    #     A = make_dataclass("A", 'x y', api='dict')
-    #     a = A(x=1, y=2)
-    #     self.assertEqual(a['x'], 1)
-    #     self.assertEqual(a['y'], 2)
-    #     self.assertEqual(list(a.keys()), ['x', 'y'])
-    #     self.assertEqual(list(a.values()), [1, 2])
-    #     self.assertEqual(list(a.items()), [('x',1), ('y',2)])
-        
     def test_getitem(self):
         A = make_dataclass("A", 'x y')
         a = A(x=1, y=2)
