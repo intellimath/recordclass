@@ -254,14 +254,13 @@ class datatype(type):
             if fast_new:
                 options['fast_new'] = fast_new
 
-#             has_init = '__init__' in ns
-#             if has_fields and not fast_new and '__new__' not in ns:
-#                 __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
-#                 __new__.__qualname__ = typename + '.' + '__new__'
-#                 if not __new__.__doc__:
-#                     __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults)
+            if has_fields and not fast_new and '__new__' not in ns:
+                __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
+                __new__.__qualname__ = typename + '.' + '__new__'
+                if not __new__.__doc__:
+                    __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults)
 
-#                 ns['__new__'] = __new__
+                ns['__new__'] = __new__
 
         if has_fields and not _PY311:
             for i, name in enumerate(fields):
