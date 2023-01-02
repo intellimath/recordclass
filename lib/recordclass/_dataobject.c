@@ -897,12 +897,6 @@ dataobject_hash_ni(PyObject *op)
 //     return PyLong_FromSsize_t(dataobject_hash(op));
 // }
 
-// static PyObject*
-// dataobject_hash2_ni(PyObject *op)
-// {
-//     dataobject_hash_ni(op);
-//     return NULL;
-// }
 
 static PyObject *
 dataobject_richcompare(PyObject *v, PyObject *w, int op)
@@ -1491,8 +1485,6 @@ dataobjectiter_next(dataobjectiterobject *it)
         it->it_index++;
         return item;
     }
-//     py_decref(it->it_seq);
-//     it->it_seq = NULL;
     return NULL;
 }
 
@@ -1616,7 +1608,6 @@ dataobject_iter(PyObject *seq)
 ////////////////////////////////////////////////////////////////////////
 
 static PyMethodDef dataobjectproperty_methods[] = {
-//   {"__set_name__", dataobjectproperty_setname, METH_VARARGS, dataobjectproperty_setname_doc},
   {0, 0, 0, 0}
 };
 
@@ -1681,10 +1672,6 @@ dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type)
     }
 
     PyObject *v = PyDataObject_GET_ITEM(obj, ((dataobjectproperty_object *)self)->index);
-    // if (v == NULL) {
-    //     PyErr_SetString(PyExc_AttributeError, "the attribute has no value");
-    //     return NULL;
-    // }
 
     py_incref(v);
     return v;

@@ -24,9 +24,10 @@
 
 def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
                     sequence=False, mapping=False, iterable=False, readonly=False,
-                    module=None, fast_new=False, rename=False, gc=False, mapping_only=False):
+                    module=None, fast_new=True, rename=False, gc=False, mapping_only=False):
 
-    """Returns a new class with named fields and small memory footprint.
+    """Returns a new dataobject-based class with named fields, smaller memory footprint and 
+    faster instance creation.
     
         @as_dataclass()
         class Point:
@@ -43,6 +44,8 @@ def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
         ns = {}
         if '__fields__' not in cls.__dict__:
             ns['__fields__'] = tuple(cls.__dict__.get('__annotations__', ()))
+            
+        ns['__annotations__'] = cls.__dict__.get('__annotations__', {})
 
         if sequence or mapping:
             iterable = True
@@ -52,10 +55,10 @@ def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
 
         if readonly:
             hashable = True
-
-        ns.update(cls.__dict__)
-        ns.pop('__dict__')
-        ns.pop('__weakref__')
+        
+        for k,v in cls.__dict__.items():
+            if not k.startswith("___"):
+                ns[k] = v
         
         typename = cls.__name__
 
