@@ -154,25 +154,25 @@ Here is the table with performance counters, which was measured using `tools/per
       <td>0.26</td>
       <td></td>
       <td></td>
+      <td>0.21</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>0.34</td>
       <td>0.2</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>0.36</td>
-      <td>0.19</td>
     </tr>
     <tr>
       <td>mutabletuple</td>
       <td>48</td>
-      <td>0.26</td>
+      <td>0.25</td>
       <td></td>
       <td></td>
-      <td>0.2</td>
+      <td>0.21</td>
       <td>0.22</td>
       <td></td>
       <td></td>
-      <td>0.36</td>
-      <td>0.18</td>
+      <td>0.33</td>
+      <td>0.2</td>
     </tr>
     <tr>
       <td>tuple</td>
@@ -184,27 +184,27 @@ Here is the table with performance counters, which was measured using `tools/per
       <td></td>
       <td></td>
       <td></td>
-      <td>0.36</td>
-      <td>0.16</td>
+      <td>0.33</td>
+      <td>0.17</td>
     </tr>
     <tr>
       <td>namedtuple</td>
       <td>64</td>
-      <td>0.74</td>
-      <td>0.23</td>
+      <td>0.72</td>
+      <td>0.24</td>
       <td></td>
       <td>0.19</td>
       <td></td>
       <td></td>
       <td></td>
-      <td>0.35</td>
-      <td>0.21</td>
+      <td>0.32</td>
+      <td>0.22</td>
     </tr>
     <tr>
       <td>class+slots</td>
       <td>56</td>
-      <td>0.69</td>
-      <td>0.3</td>
+      <td>0.67</td>
+      <td>0.32</td>
       <td>0.34</td>
       <td></td>
       <td></td>
@@ -216,54 +216,54 @@ Here is the table with performance counters, which was measured using `tools/per
     <tr>
       <td>dataobject</td>
       <td>40</td>
-      <td>0.56</td>
+      <td>0.25</td>
       <td>0.22</td>
-      <td>0.3</td>
+      <td>0.32</td>
+      <td>0.21</td>
+      <td>0.22</td>
+      <td></td>
+      <td></td>
+      <td>0.32</td>
       <td>0.2</td>
-      <td>0.22</td>
-      <td></td>
-      <td></td>
-      <td>0.4</td>
-      <td>0.19</td>
     </tr>
     <tr>
       <td>dataobject+fast_new</td>
       <td>40</td>
-      <td>0.26</td>
-      <td>0.22</td>
-      <td>0.3</td>
-      <td>0.2</td>
-      <td>0.22</td>
-      <td></td>
-      <td></td>
-      <td>0.39</td>
-      <td>0.2</td>
-    </tr>
-    <tr>
-      <td>dataobject+gc</td>
-      <td>56</td>
-      <td>0.60</td>
+      <td>0.25</td>
       <td>0.22</td>
       <td>0.32</td>
       <td>0.2</td>
       <td>0.21</td>
       <td></td>
       <td></td>
-      <td>0.4</td>
+      <td>0.32</td>
+      <td>0.19</td>
+    </tr>
+    <tr>
+      <td>dataobject+gc</td>
+      <td>56</td>
+      <td>0.28</td>
+      <td>0.23</td>
+      <td>0.33</td>
+      <td>0.2</td>
+      <td>0.21</td>
+      <td></td>
+      <td></td>
+      <td>0.32</td>
       <td>0.22</td>
     </tr>
     <tr>
       <td>dataobject+fast+gc</td>
       <td>56</td>
-      <td>0.28</td>
-      <td>0.22</td>
-      <td>0.29</td>
-      <td>0.2</td>
-      <td>0.22</td>
-      <td></td>
-      <td></td>
-      <td>0.4</td>
+      <td>0.27</td>
+      <td>0.23</td>
+      <td>0.34</td>
       <td>0.21</td>
+      <td>0.21</td>
+      <td></td>
+      <td></td>
+      <td>0.31</td>
+      <td>0.23</td>
     </tr>
     <tr>
       <td>dict</td>
@@ -273,22 +273,22 @@ Here is the table with performance counters, which was measured using `tools/per
       <td></td>
       <td></td>
       <td></td>
-      <td>0.21</td>
-      <td>0.26</td>
-      <td>0.38</td>
+      <td>0.2</td>
       <td>0.24</td>
+      <td>0.37</td>
+      <td>0.25</td>
     </tr>
     <tr>
       <td>dataobject+fast+map</td>
       <td>40</td>
-      <td>0.26</td>
-      <td>0.22</td>
+      <td>0.25</td>
+      <td>0.23</td>
+      <td>0.32</td>
+      <td></td>
+      <td></td>
       <td>0.29</td>
-      <td></td>
-      <td></td>
-      <td>0.24</td>
-      <td>0.28</td>
-      <td>0.39</td>
+      <td>0.31</td>
+      <td>0.33</td>
       <td>0.19</td>
     </tr>
   </tbody>
@@ -319,7 +319,7 @@ Here is the table with performance counters, which was measured using `tools/per
       <td>0.25</td>
       <td></td>
       <td></td>
-      <td>0.17</td>
+      <td>0.18</td>
       <td></td>
       <td></td>
       <td></td>
@@ -333,10 +333,10 @@ Here is the table with performance counters, which was measured using `tools/per
       <td></td>
       <td></td>
       <td>0.18</td>
-      <td>0.19</td>
+      <td>0.2</td>
       <td></td>
       <td></td>
-      <td>0.27</td>
+      <td>0.28</td>
       <td>0.14</td>
     </tr>
     <tr>
@@ -345,24 +345,24 @@ Here is the table with performance counters, which was measured using `tools/per
       <td>0.13</td>
       <td></td>
       <td></td>
-      <td>0.13</td>
+      <td>0.14</td>
       <td></td>
       <td></td>
       <td></td>
-      <td>0.25</td>
+      <td>0.26</td>
       <td>0.15</td>
     </tr>
     <tr>
       <td>namedtuple</td>
       <td>64</td>
-      <td>0.75</td>
+      <td>0.72</td>
       <td>0.21</td>
       <td></td>
       <td>0.16</td>
       <td></td>
       <td></td>
       <td></td>
-      <td>0.25</td>
+      <td>0.26</td>
       <td>0.19</td>
     </tr>
     <tr>
@@ -381,84 +381,83 @@ Here is the table with performance counters, which was measured using `tools/per
     <tr>
       <td>dataobject</td>
       <td>40</td>
-      <td>0.57</td>
+      <td>0.25</td>
       <td>0.1</td>
       <td>0.1</td>
-      <td>0.17</td>
-      <td>0.2</td>
+      <td>0.18</td>
+      <td>0.19</td>
       <td></td>
       <td></td>
-      <td>0.26</td>
+      <td>0.25</td>
       <td>0.18</td>
     </tr>
     <tr>
       <td>dataobject+fast_new</td>
       <td>40</td>
-      <td>0.24</td>
+      <td>0.25</td>
       <td>0.1</td>
       <td>0.1</td>
-      <td>0.17</td>
+      <td>0.18</td>
       <td>0.19</td>
       <td></td>
       <td></td>
-      <td>0.26</td>
-      <td>0.17</td>
+      <td>0.24</td>
+      <td>0.18</td>
     </tr>
     <tr>
       <td>dataobject+gc</td>
       <td>56</td>
-      <td>0.56</td>
+      <td>0.28</td>
       <td>0.1</td>
       <td>0.1</td>
       <td>0.17</td>
       <td>0.19</td>
       <td></td>
       <td></td>
-      <td>0.26</td>
-      <td>0.19</td>
+      <td>0.24</td>
+      <td>0.22</td>
     </tr>
     <tr>
       <td>dataobject+fast+gc</td>
       <td>56</td>
-      <td>0.27</td>
+      <td>0.28</td>
       <td>0.1</td>
       <td>0.1</td>
-      <td>0.16</td>
+      <td>0.17</td>
       <td>0.19</td>
       <td></td>
       <td></td>
-      <td>0.26</td>
-      <td>0.2</td>
+      <td>0.25</td>
+      <td>0.22</td>
     </tr>
     <tr>
       <td>dict</td>
       <td>184</td>
-      <td>0.27</td>
+      <td>0.29</td>
       <td></td>
       <td></td>
       <td></td>
       <td></td>
       <td>0.19</td>
-      <td>0.22</td>
-      <td>0.28</td>
-      <td>0.19</td>
+      <td>0.23</td>
+      <td>0.29</td>
+      <td>0.21</td>
     </tr>
     <tr>
       <td>dataobject+fast+map</td>
       <td>40</td>
-      <td>0.24</td>
-      <td>0.1</td>
-      <td>0.1</td>
-      <td></td>
-      <td></td>
-      <td>0.21</td>
-      <td>0.29</td>
       <td>0.26</td>
+      <td>0.11</td>
+      <td>0.1</td>
+      <td></td>
+      <td></td>
+      <td>0.24</td>
+      <td>0.28</td>
+      <td>0.24</td>
       <td>0.18</td>
     </tr>
   </tbody>
 </table>
-
 
 Main repository for `recordclass` is on [bitbucket](https://bitbucket.org/intellimath/recordclass). 
 
@@ -727,9 +726,9 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 #### 0.18.1
 
-* Allow to initialize fields in the user defined `__init__`  method instead of `__new__`  (issue 29). If `__init__`  is defined then it's responsible for initialization of all fields. Note that this feature only work for mutable fields.
+* Allow to initialize fields in the user defined `__init__`  method instead of `__new__`  (issue 29). If `__init__`  is defined then it's responsible for initialization of all fields. Note that this feature only work for mutable fields. Instances of the class with `readonly=True` must be initialized only in the default `__new__`.
 
-
+ 
 #### 0.18.0.1
 
 * Exclude test_dataobject_match.py (for testing `match` statement) for python < 3.10.

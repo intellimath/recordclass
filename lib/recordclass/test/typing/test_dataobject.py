@@ -749,7 +749,6 @@ class DataObjectTest3(unittest.TestCase):
             del ll
         
     def test_readonly(self):
-#         @clsconfig(readonly=True)
         class A(dataobject, readonly=True):
             x:int
             y:int
@@ -760,7 +759,27 @@ class DataObjectTest3(unittest.TestCase):
         with self.assertRaises(AttributeError):        
             a.y = -2
 
+    def test_readonly_2(self):
+        class A(dataobject, readonly=True, use_dict=True):
+            x:int
+            y:int
             
+        a = A(1,2, z=3)
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+        self.assertEqual(a.z, 3)
+
+    def test_readonly_3(self):
+        class A(dataobject, readonly=True):
+            x:int
+            y:int
+            z:int
+            
+        a = A(1,2, z=3)
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+        self.assertEqual(a.z, 3)
+        
     def test_default_arg_enum(self):
         from enum import Enum, auto
         
@@ -809,6 +828,7 @@ class DataObjectTest3(unittest.TestCase):
             y:int
             
             def __init__(self, x, y):
+                print("__init__")
                 self.x = 2*x
                 self.y = 3*y
         
@@ -822,6 +842,7 @@ class DataObjectTest3(unittest.TestCase):
             y:int
             
             def __init__(self, *args, **kwds):
+                print("__init__")
                 self.x = 2*kwds['x']
                 self.y = 3*kwds['y']
                 
@@ -835,6 +856,7 @@ class DataObjectTest3(unittest.TestCase):
             y:int
             
             def __init__(self, x, y=0):
+                print("__init__")
                 self.x = 2*x
                 self.y = 3*y
                 
@@ -851,6 +873,7 @@ class DataObjectTest3(unittest.TestCase):
             y:int
             
             def __init__(self, x):
+                print("__init__")
                 self.x = 2*x
                 self.y = self.x + 2
                 
@@ -869,12 +892,13 @@ class DataObjectTest3(unittest.TestCase):
                 
         class A(A0):
             def __init__(self, x, y):
+                print("__init__")
                 pass
             
         a = A(1,2)
         self.assertEqual(a.x, None)
         self.assertEqual(a.y, None)
-        
+
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(DataObjectTest3))

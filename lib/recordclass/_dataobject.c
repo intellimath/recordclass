@@ -342,9 +342,8 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     while(i < n_items) {
         py_incref(Py_None);
         items[i++] = Py_None;
-    }    
-    
-    
+    }
+
     return op;
 }
 
@@ -1893,8 +1892,6 @@ _set_hashable(PyObject *cls, PyObject *hashable) {
     if (state) {
         tp->tp_hash = dataobject_hash;
     }
-    // else
-    //     tp->tp_hash = NULL;
 
     Py_RETURN_NONE;
 }
@@ -1924,9 +1921,6 @@ _set_iterable(PyObject *cls, PyObject *iterable) {
             }
         }
     }
-
-    // if (tp->tp_iter && !state)
-    //     tp->tp_iter = NULL;
 
     Py_RETURN_NONE;
 }
@@ -1980,14 +1974,6 @@ _set_weaklistoffset(PyObject *cls, PyObject* add_weakref) {
             tp->tp_basicsize += sizeof(PyObject*);
         }
     }
-//     if (tp->tp_weaklistoffset && !state) {
-// //         PyErr_SetString(PyExc_TypeError, "we can only enable __weakref__");
-// //         return NULL;
-//         tp->tp_weaklistoffset = 0;
-//         tp->tp_basicsize -= sizeof(PyObject*);
-//         if (tp->tp_dictoffset)
-//             tp->tp_dictoffset = tp->tp_basicsize;
-//     }
 
     Py_RETURN_NONE;
 }
@@ -2004,7 +1990,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     int __init__, __new__;
     PyObject *fields, *dict;
     Py_ssize_t n_fields;
-    // int has_fields;
 
     if (Py_SIZE(args) != 1) {
         PyErr_SetString(PyExc_TypeError, "number of arguments != 1");
@@ -2031,10 +2016,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     if (PyTuple_Check(fields)) {
         n_fields = PyTuple_GET_SIZE(fields);
-        // if (n_fields > 0)
-        //     has_fields = 1;
-        // else
-        //     has_fields = 0;
     } else {
         n_fields = PyNumber_AsSsize_t(fields, PyExc_IndexError);
         if (n_fields == -1 && PyErr_Occurred()) {
@@ -2045,7 +2026,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
             PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");
             return NULL;
         }
-        // has_fields = 0;
     }
 
     py_decref(fields);
@@ -2072,15 +2052,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         
     if (!__new__ && tp_base->tp_new)
         tp->tp_new = tp_base->tp_new;
-        
-    // if (tp->tp_init != dataobject_init)
-    //     printf("user innit\n");
-    
-//     if(!__new__  || !has_fields)
-//         tp->tp_new = dataobject_new;
-
-//     if (__init__)
-//         tp->tp_new = dataobject_new_basic;
 
     tp->tp_dealloc = dataobject_dealloc;
     tp->tp_free = PyObject_Del;
@@ -2327,9 +2298,6 @@ dataobject_make(PyObject *module, PyObject *type_args, PyObject *kw)
         return NULL;        
     }
     
-    // if (args == NULL)
-    //     args = PyTuple_New(0);
-
     PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
     py_incref(type);
 
@@ -2348,7 +2316,6 @@ static PyObject *
 dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
 {
     PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
-    // py_incref(type);
 
     PyObject *op = type->tp_alloc(type, 0);
 
@@ -2362,31 +2329,8 @@ dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
         items[i++] = Py_None;
     }    
 
-    // py_decref(type);
     return op;
 }
-
-// static PyObject *
-// dataobject_new_instance_basic(PyObject *module, PyObject *type_args, PyObject *kw)
-// {
-//     PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
-//     // py_incref(type);
-    
-//     PyObject *op = type->tp_alloc(type, 0);
-
-//     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
-
-//     PyObject **items = PyDataObject_ITEMS(op);
-
-//     Py_ssize_t i = 0;
-//     while(i < n_items) {
-//         py_incref(Py_None);
-//         items[i++] = Py_None;
-//     }    
-    
-//     // py_decref(type);
-//     return op;
-// }
 
 PyDoc_STRVAR(dataobject_clone_doc,
 "Clone dataobject-based object");
@@ -2449,9 +2393,10 @@ _dataobject_update(PyObject *op, PyObject *kwds)
         
         Py_ssize_t index = _tuple_index((PyTupleObject*)fields, key);
         if (index >= 0) {
+            // PyDataObject_SET_ITEM(op, index, val);
             dataobject_ass_item(op, index, val);
             py_decref(key);
-            py_decref(val);
+            // py_decref(val);
             continue;
         } else {
             if (!has___dict___) {
