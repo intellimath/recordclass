@@ -6,7 +6,7 @@ alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/
 It implements a factory function `recordclass` (a variant of `collection.namedtuple`) in order to create record-like classes with the same API as  `collection.namedtuple`.
 It was evolved further in order to provide more memory saving, fast and flexible types.
 
-**Recordclass** library provide record-like classes that do not by default participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* mechanism for garbage collection.
+**Recordclass** library provide record-like classes that do not by default participate in *cyclic garbage collection* (CGC) mechanism, but support only *reference counting* for garbage collection.
 The instances of such classes havn't `PyGC_Head` prefix in the memory, which decrease their size and have a little faster path for the instance allocation and deallocation.
 This may make sense in cases where it is necessary to limit the size of the objects as much as possible, provided that they will never be part of references cycles in the application.
 For example, when an object represents a record with fields with values of simple types by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
@@ -17,15 +17,14 @@ In order to illustrate this, consider a simple class with type hints:
         x: int
         y: int
 
-By tacit agreement instances of the class `Point` is supposed to have attributes `x` and `y` with values of `int` type.
-Assigning other types of values, which are not subclass of `int`, should be considered as a violation of the agreement.
+By tacit agreement instances of the class `Point` is supposed to have attributes `x` and `y` with values of `int` type. Assigning other types of values, which are not subclass of `int`, should be considered as a violation of the agreement.
 
 Other examples are non-recursive data structures in which all leaf elements represent a value of an atomic type.
 Of course, in python, nothing prevent you from “shooting yourself in the foot" by creating the reference cycle in the script or application code.
 But in many cases, this can still be avoided provided that the developer understands what he is doing and uses such classes in the codebase with care.
 Another option is to use static code analyzers along with type annotations to monitor compliance with typehints.
 
-The `recodeclass` library provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. 
+The `recodeclass` library also provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. 
    It control creation  of subclasses of `dataobject`, which  will not participate in CGC by default. 
    As the result the instance of such class need less memory. 
    It's memory footprint is similar to memory footprint of instances of the classes with `__slots__` but without `PyGC_Head`. So the difference in memory size is equal to the size of `PyGC_Head`. 
@@ -67,8 +66,8 @@ It also provide a factory function `make_dataclass` for creation of subclasses o
         >>> print(p.x, p.y)
         1 -1
 
-It also provide a factory function `make_arrayclass` in order to create subclass of `dataobject` which can be 
-considered as array of simple values.
+There is also a factory function `make_arrayclass` for creation of the subclass of `dataobject`, which can be 
+considered as a compact array of simple values.
    For example:
 
         >>> Pair = make_arrayclass(2)

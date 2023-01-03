@@ -262,7 +262,7 @@ dataobject_init_vc(PyObject *op, PyObject **args,
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
-            "number of the arguments greater than the number of the items");
+            "number of the arguments greater than the number of the data items");
         return -1;
     }
 
