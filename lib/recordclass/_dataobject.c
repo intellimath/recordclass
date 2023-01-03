@@ -279,30 +279,21 @@ dataobject_init_vc(PyObject *op, PyObject **args,
         PyObject *tp_dict = type->tp_dict;
         PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
         PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
-
+        
         if (defaults == NULL) {
-            if (PyErr_Occurred())
-                PyErr_Clear();
-
-            i = n_args;
-            while(i < n_items) {
-                py_incref(Py_None);
-                items[i++] = Py_None;
-            }
+            PyErr_Clear();
         } else {
             PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
 
             if (Py_TYPE(fields) == &PyTuple_Type) {
-                i = n_args;
-                while(i < n_items) {
+                for(i = n_args; i < n_items; i++) {
                     PyObject *fname = PyTuple_GET_ITEM(fields, i);
                     PyObject *value = PyDict_GetItem(defaults, fname);
 
-                    if (!value)
-                        value = Py_None;
-
-                    py_incref(value);
-                    items[i++] = value;
+                    if (value) {
+                        py_incref(value);
+                        items[i] = value;
+                    }
                 }
                 py_decref(fields);
                 py_decref(defaults);
