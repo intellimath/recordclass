@@ -150,15 +150,15 @@ Here is the table with performance counters, which was measured using `tools/per
     <tr>
       <td>litetuple</td>
       <td>48</td>
-      <td>0.26</td>
+      <td>0.25</td>
       <td></td>
       <td></td>
       <td>0.21</td>
       <td></td>
       <td></td>
       <td></td>
-      <td>0.34</td>
-      <td>0.2</td>
+      <td>0.33</td>
+      <td>0.19</td>
     </tr>
     <tr>
       <td>mutabletuple</td>
@@ -166,17 +166,17 @@ Here is the table with performance counters, which was measured using `tools/per
       <td>0.25</td>
       <td></td>
       <td></td>
-      <td>0.21</td>
+      <td>0.2</td>
       <td>0.22</td>
       <td></td>
       <td></td>
       <td>0.33</td>
-      <td>0.2</td>
+      <td>0.19</td>
     </tr>
     <tr>
       <td>tuple</td>
       <td>64</td>
-      <td>0.16</td>
+      <td>0.23</td>
       <td></td>
       <td></td>
       <td>0.19</td>
@@ -189,8 +189,8 @@ Here is the table with performance counters, which was measured using `tools/per
     <tr>
       <td>namedtuple</td>
       <td>64</td>
-      <td>0.72</td>
-      <td>0.24</td>
+      <td>0.73</td>
+      <td>0.25</td>
       <td></td>
       <td>0.19</td>
       <td></td>
@@ -202,9 +202,9 @@ Here is the table with performance counters, which was measured using `tools/per
     <tr>
       <td>class+slots</td>
       <td>56</td>
-      <td>0.67</td>
-      <td>0.32</td>
-      <td>0.34</td>
+      <td>0.66</td>
+      <td>0.33</td>
+      <td>0.33</td>
       <td></td>
       <td></td>
       <td></td>
@@ -216,23 +216,10 @@ Here is the table with performance counters, which was measured using `tools/per
       <td>dataobject</td>
       <td>40</td>
       <td>0.25</td>
-      <td>0.22</td>
-      <td>0.32</td>
+      <td>0.24</td>
+      <td>0.31</td>
       <td>0.21</td>
       <td>0.22</td>
-      <td></td>
-      <td></td>
-      <td>0.32</td>
-      <td>0.2</td>
-    </tr>
-    <tr>
-      <td>dataobject+fast_new</td>
-      <td>40</td>
-      <td>0.25</td>
-      <td>0.22</td>
-      <td>0.32</td>
-      <td>0.2</td>
-      <td>0.21</td>
       <td></td>
       <td></td>
       <td>0.32</td>
@@ -241,28 +228,15 @@ Here is the table with performance counters, which was measured using `tools/per
     <tr>
       <td>dataobject+gc</td>
       <td>56</td>
-      <td>0.28</td>
-      <td>0.23</td>
-      <td>0.33</td>
-      <td>0.2</td>
-      <td>0.21</td>
-      <td></td>
-      <td></td>
-      <td>0.32</td>
-      <td>0.22</td>
-    </tr>
-    <tr>
-      <td>dataobject+fast+gc</td>
-      <td>56</td>
       <td>0.27</td>
       <td>0.23</td>
-      <td>0.34</td>
-      <td>0.21</td>
-      <td>0.21</td>
+      <td>0.31</td>
+      <td>0.2</td>
+      <td>0.22</td>
       <td></td>
       <td></td>
       <td>0.31</td>
-      <td>0.23</td>
+      <td>0.22</td>
     </tr>
     <tr>
       <td>dict</td>
@@ -273,21 +247,21 @@ Here is the table with performance counters, which was measured using `tools/per
       <td></td>
       <td></td>
       <td>0.2</td>
-      <td>0.24</td>
-      <td>0.37</td>
       <td>0.25</td>
+      <td>0.38</td>
+      <td>0.24</td>
     </tr>
     <tr>
-      <td>dataobject+fast+map</td>
+      <td>dataobject+map</td>
       <td>40</td>
       <td>0.25</td>
-      <td>0.23</td>
-      <td>0.32</td>
-      <td></td>
-      <td></td>
-      <td>0.29</td>
+      <td>0.24</td>
       <td>0.31</td>
-      <td>0.33</td>
+      <td></td>
+      <td></td>
+      <td>0.28</td>
+      <td>0.32</td>
+      <td>0.31</td>
       <td>0.19</td>
     </tr>
   </tbody>
@@ -315,14 +289,14 @@ Here is the table with performance counters, which was measured using `tools/per
     <tr>
       <td>litetuple</td>
       <td>48</td>
-      <td>0.25</td>
+      <td>0.24</td>
       <td></td>
       <td></td>
       <td>0.18</td>
       <td></td>
       <td></td>
       <td></td>
-      <td>0.27</td>
+      <td>0.26</td>
       <td>0.14</td>
     </tr>
     <tr>
@@ -331,20 +305,20 @@ Here is the table with performance counters, which was measured using `tools/per
       <td>0.24</td>
       <td></td>
       <td></td>
-      <td>0.18</td>
+      <td>0.17</td>
       <td>0.2</td>
       <td></td>
       <td></td>
-      <td>0.28</td>
+      <td>0.27</td>
       <td>0.14</td>
     </tr>
     <tr>
       <td>tuple</td>
       <td>64</td>
-      <td>0.13</td>
+      <td>0.16</td>
       <td></td>
       <td></td>
-      <td>0.14</td>
+      <td>0.12</td>
       <td></td>
       <td></td>
       <td></td>
@@ -354,20 +328,20 @@ Here is the table with performance counters, which was measured using `tools/per
     <tr>
       <td>namedtuple</td>
       <td>64</td>
-      <td>0.72</td>
-      <td>0.21</td>
+      <td>0.70</td>
+      <td>0.2</td>
       <td></td>
       <td>0.16</td>
       <td></td>
       <td></td>
       <td></td>
       <td>0.26</td>
-      <td>0.19</td>
+      <td>0.2</td>
     </tr>
     <tr>
       <td>class+slots</td>
       <td>56</td>
-      <td>0.46</td>
+      <td>0.47</td>
       <td>0.1</td>
       <td>0.11</td>
       <td></td>
@@ -380,27 +354,14 @@ Here is the table with performance counters, which was measured using `tools/per
     <tr>
       <td>dataobject</td>
       <td>40</td>
-      <td>0.25</td>
-      <td>0.1</td>
-      <td>0.1</td>
-      <td>0.18</td>
-      <td>0.19</td>
-      <td></td>
-      <td></td>
-      <td>0.25</td>
-      <td>0.18</td>
-    </tr>
-    <tr>
-      <td>dataobject+fast_new</td>
-      <td>40</td>
-      <td>0.25</td>
-      <td>0.1</td>
-      <td>0.1</td>
-      <td>0.18</td>
-      <td>0.19</td>
-      <td></td>
-      <td></td>
       <td>0.24</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.18</td>
+      <td>0.2</td>
+      <td></td>
+      <td></td>
+      <td>0.26</td>
       <td>0.18</td>
     </tr>
     <tr>
@@ -409,30 +370,17 @@ Here is the table with performance counters, which was measured using `tools/per
       <td>0.28</td>
       <td>0.1</td>
       <td>0.1</td>
-      <td>0.17</td>
-      <td>0.19</td>
-      <td></td>
-      <td></td>
-      <td>0.24</td>
-      <td>0.22</td>
-    </tr>
-    <tr>
-      <td>dataobject+fast+gc</td>
-      <td>56</td>
-      <td>0.28</td>
-      <td>0.1</td>
-      <td>0.1</td>
-      <td>0.17</td>
-      <td>0.19</td>
+      <td>0.18</td>
+      <td>0.2</td>
       <td></td>
       <td></td>
       <td>0.25</td>
-      <td>0.22</td>
+      <td>0.21</td>
     </tr>
     <tr>
       <td>dict</td>
       <td>184</td>
-      <td>0.29</td>
+      <td>0.32</td>
       <td></td>
       <td></td>
       <td></td>
@@ -440,19 +388,19 @@ Here is the table with performance counters, which was measured using `tools/per
       <td>0.19</td>
       <td>0.23</td>
       <td>0.29</td>
-      <td>0.21</td>
+      <td>0.19</td>
     </tr>
     <tr>
-      <td>dataobject+fast+map</td>
+      <td>dataobject+map</td>
       <td>40</td>
-      <td>0.26</td>
-      <td>0.11</td>
+      <td>0.27</td>
+      <td>0.1</td>
       <td>0.1</td>
       <td></td>
       <td></td>
-      <td>0.24</td>
-      <td>0.28</td>
-      <td>0.24</td>
+      <td>0.21</td>
+      <td>0.27</td>
+      <td>0.25</td>
       <td>0.18</td>
     </tr>
   </tbody>

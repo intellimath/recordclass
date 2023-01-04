@@ -116,7 +116,8 @@ _PyIndex_Check(PyObject *obj)
 }
 
 static PyObject **
-PyDataObject_GetDictPtr(PyObject *ob) {
+PyDataObject_GetDictPtr(PyObject *ob)
+{
     Py_ssize_t dictoffset = Py_TYPE(ob)->tp_dictoffset;
 
     if (dictoffset < 0) {
@@ -172,8 +173,10 @@ _PyObject_GetObject(const char *modname_c, const char *attrname_c)
         py_decref(mod);
         return NULL;
     }
+
     py_decref(modname);
     py_decref(mod);
+
     return ob;
 }
 
@@ -290,7 +293,7 @@ dataobject_init_vc(PyObject *op, PyObject **args,
                     PyObject *fname = PyTuple_GET_ITEM(fields, i);
                     PyObject *value = PyDict_GetItem(defaults, fname);
 
-                    if (value) {
+                    if (value != NULL) {
                         py_incref(value);
                         items[i] = value;
                     }
@@ -317,11 +320,11 @@ dataobject_init_vc(PyObject *op, PyObject **args,
 static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    // if (type == &PyDataObject_Type) {
-    //     PyErr_SetString(PyExc_TypeError,
-    //                     "dataobject base class can't be instantiated");
-    //     return NULL;
-    // }
+    if (type == &PyDataObject_Type) {
+        PyErr_SetString(PyExc_TypeError,
+                        "dataobject base class can't be instantiated");
+        return NULL;
+    }
     
     PyObject *op = type->tp_alloc(type, 0); 
     
@@ -339,7 +342,8 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 static int
-dataobject_init(PyObject *op, PyObject *args, PyObject *kwds) {
+dataobject_init(PyObject *op, PyObject *args, PyObject *kwds)
+{
 
     PyTupleObject *tmp = (PyTupleObject*)args;
     
