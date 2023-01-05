@@ -42,9 +42,7 @@ class RecordClassTypingTest(unittest.TestCase):
             x:object
             y:object
     
-        print(A.__fields__)
         a = A([1,2,3],[3,4,5])
-        print(a)    
 
     def test_typing(self):
         class A(RecordClass):
@@ -52,11 +50,7 @@ class RecordClassTypingTest(unittest.TestCase):
             b: int
             c: object
         
-        print(type(A))
         tmp = A(a=1, b=2, c=[1,2,3])
-        print(tmp.__sizeof__(), _sys.getsizeof(tmp))
-        print(tmp.a, tmp.b, tmp.c)
-        print(tmp)
         # self.assertEqual(repr(tmp), "A(a=1, b=2', c=[1, 2, 3])")
         # self.assertEqual(tmp.__annotations__, {'a': int, 'b': int, 'c': object})
 

@@ -88,6 +88,7 @@ PyObject *__dict__name;
 PyObject *__weakref__name;
 PyObject *__defaults__name;
 PyObject *__init__name;
+PyObject *__post_init__name;
 
 PyObject *fields_dict_name;
 
@@ -344,12 +345,32 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static int
 dataobject_init(PyObject *op, PyObject *args, PyObject *kwds)
 {
-
     PyTupleObject *tmp = (PyTupleObject*)args;
     
     int ret = dataobject_init_vc(op, (PyObject**)(tmp->ob_item), Py_SIZE(tmp), kwds);
 
     return ret;
+}
+
+static int
+dataobject_init_post(PyObject *op, PyObject *args, PyObject *kwds)
+{
+    PyTupleObject *tmp = (PyTupleObject*)args;
+    
+    int ret = dataobject_init_vc(op, (PyObject**)(tmp->ob_item), Py_SIZE(tmp), kwds);
+    
+    if (ret < 0)
+        return ret;
+    
+    PyObject *method = PyObject_GetAttr(op, __post_init__name);
+    if (method == NULL)
+        return -1;
+    if (PyObject_CallObject(method, NULL) == NULL) {
+        py_decref(method);
+        return -1;
+    }
+    py_decref(method);
+    return 0;
 }
 
 static int
@@ -1969,7 +1990,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     PyTypeObject *tp;
     PyTypeObject *tp_base;
-    int __init__, __new__;
+    int __init__, __new__, __post_init__;
     PyObject *fields, *dict;
     Py_ssize_t n_fields;
 
@@ -2028,9 +2049,13 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     __new__ = PyMapping_HasKeyString(dict, "__new__");
     __init__ = PyMapping_HasKeyString(dict, "__init__");
+    __post_init__ = PyMapping_HasKeyString(dict, "__post_init__");
 
     if (!__init__ && tp_base->tp_init)
         tp->tp_init = tp_base->tp_init;
+        
+     if (__post_init__ && tp->tp_init == dataobject_init)
+        tp->tp_init = dataobject_init_post;
         
     if (!__new__ && tp_base->tp_new)
         tp->tp_new = tp_base->tp_new;
@@ -2685,6 +2710,10 @@ PyInit__dataobject(void)
 
     __init__name = PyUnicode_FromString("__init__");
     if (__init__name == NULL)
+        return NULL;
+
+    __post_init__name = PyUnicode_FromString("__post_init__");
+    if (__post_init__name == NULL)
         return NULL;
     
 //     dataobject_as_mapping.mp_subscript = PyDataObject_Type.tp_getattro;

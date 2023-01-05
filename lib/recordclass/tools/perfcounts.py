@@ -371,5 +371,5 @@ def test_all(relative=True):
     return df
 
 df = test_all(relative=False)
-# print(df.to_markdown(index=False))
-print(df.to_html(index=False))
+print(df.to_markdown(index=False))
+# print(df.to_html(index=False))

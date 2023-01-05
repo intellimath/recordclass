@@ -899,6 +899,32 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.x, None)
         self.assertEqual(a.y, None)
 
+    def test_post_init_1(self):
+        class A(dataobject):
+            x:int
+            y:int
+            
+            def __post_init__(self):
+                print("__post_init__")
+                self.x *= 2
+                self.y *= 3
+        
+        a = A(2,3)
+        self.assertEqual(a.x, 4)
+        self.assertEqual(a.y, 9)
+
+    def test_post_init_2(self):
+        class A(dataobject):
+            x:int
+            y:int
+            
+            def __post_init__(self):
+                print("__post_init__")
+                raise AttributeError("")
+        
+        with self.assertRaises(AttributeError):        
+            a = A(1,2)
+        
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(DataObjectTest3))
