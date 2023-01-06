@@ -325,6 +325,7 @@ class datatype(type):
             pass
 
         if has_fields:
+            defaults = tuple([defaults.get(fn, None) for fn in fields])
             ns['__fields__'] = fields
             ns['__defaults__'] = defaults
             ns['__annotations__'] = annotations
@@ -425,14 +426,15 @@ def _type2str(tp):
 def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
 
     fields2 = []
-    for fn in fields:
+    for i, fn in enumerate(fields):
         if fn in annotations:
             tp = annotations[fn]
             fn_txt = "%s:%s" % (fn, (tp if type(tp) is str else _type2str(tp)))            
         else:
             fn_txt = fn
-        if fn in defaults:
-            fn_txt += "=%r" % defaults[fn]
+        defval = defaults[i]
+        if defval is not None:
+            fn_txt += "=%r" % defval
         fields2.append(fn_txt)
     joined_fields2 = ', '.join(fields2)
 

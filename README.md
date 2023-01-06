@@ -671,6 +671,27 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.18.2
+
+* Call `__post_init__`  after default `__init__`  if it exists. For example:
+
+     class A(dataobject):
+         x:int
+         y:int
+         
+         def __post_init__(self):
+             self.x *= 2
+             self.y *= 3
+             
+     a = A(2,3)
+     assert a.x == 4
+     assert a.y == 9
+* Slightly improve performance in the default `__init__`  when fields have default values.
+
+#### 0.18.1.1
+
+* Repackage 0.18.1 with `use_cython=0`
+
 #### 0.18.1
 
 * Allow to initialize fields in the user defined `__init__`  method instead of `__new__`  (issue 29). If `__init__`  is defined by user then it's responsible for initialization of all fields. Note that this feature only work for mutable fields. Instances of the class with `readonly=True` must be initialized only in the default `__new__`.

@@ -80,7 +80,7 @@ class RecordClassTest(unittest.TestCase):
         self.assertEqual(Point(1, 2), Point(1, 2))
         self.assertEqual(Point(1), Point(1, 20))
 
-        Point = recordclass('Point', 'x y', defaults=())                     # 0 defaults
+        Point = recordclass('Point', 'x y', defaults={})                     # 0 defaults
         self.assertEqual(Point(1, 2), Point(1, 2))
         # with self.assertRaises(TypeError):
         #     Point(1)

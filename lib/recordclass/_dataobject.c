@@ -266,7 +266,7 @@ dataobject_init_vc(PyObject *op, PyObject **args,
 
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
-            "number of the arguments greater than the number of the data items");
+            "number of the arguments greater than the number of fields");
         return -1;
     }
 
@@ -279,7 +279,7 @@ dataobject_init_vc(PyObject *op, PyObject **args,
         items[i++] = v;
     }
 
-    if (n_items > n_args) {
+    if (n_args < n_items) {
         PyObject *tp_dict = type->tp_dict;
         PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
         PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
@@ -287,21 +287,15 @@ dataobject_init_vc(PyObject *op, PyObject **args,
         if (defaults == NULL) {
             PyErr_Clear();
         } else {
-            PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
+            for(i = n_args; i < n_items; i++) {
+                PyObject *value = PyTuple_GET_ITEM(defaults, i); //PyDict_GetItem(defaults, fname);
 
-            if (Py_TYPE(fields) == &PyTuple_Type) {
-                for(i = n_args; i < n_items; i++) {
-                    PyObject *fname = PyTuple_GET_ITEM(fields, i);
-                    PyObject *value = PyDict_GetItem(defaults, fname);
-
-                    if (value != NULL) {
-                        py_incref(value);
-                        items[i] = value;
-                    }
+                if (value != Py_None) {
+                    py_incref(value);
+                    items[i] = value;
                 }
-                py_decref(fields);
-                py_decref(defaults);
             }
+            py_decref(defaults);
         }
     }
 
