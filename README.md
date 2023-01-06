@@ -477,7 +477,7 @@ Example with class statement and typehints:
     >>> print(p)
     Point(1, 2)
 
-By default `recordclass`-based class instances doesn't participate in CGC and therefore they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`gc=False` by default):
+By default `recordclass`-based class instances doesn't participate in cyclic GC and therefore they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`gc=False` by default):
 
     >>> Node = recordclass('Node', 'root children', gc=True)
     
@@ -508,18 +508,18 @@ Define class one of three ways:
     class Point(dataobject):
         x: int
         y: int
-        
+
 or        
 
     @as_dataclass()
     class Point:
         x: int
         y: int
-        
+
 or
 
     >>> Point = make_dataclass("Point", [("x",int), ("y",int)])
-    
+
 Annotations of the fields are defined as a dict in `__annotations__`:
 
     >>> print(Point.__annotations__)
@@ -546,7 +546,7 @@ The instance is mutable by default:
     True
     >>> print(p)
     Point(x=10, y=20)
-    
+
 There are functions `asdict` and `astuple` for converting to `dict` and to `tuple`:
 
     >>> asdict(p)
@@ -591,7 +591,7 @@ or
     >>> p = CPoint(1,2)
     >>> print(p)
     Point(x=1, y=2, color='white')
-    
+
 But
 
     class PointInvalidDefaults(dataobject):
@@ -599,13 +599,13 @@ But
         y:int
 
 is not allowed. A fields without default value may not appear after a field with default value.
-    
+
 There is the options `fast_new=True`. It allows faster creation path of the instances. Here is an example:
 
     class FastPoint(dataobject, fast_new=True):
         x: int
         y: int
-    
+
 The followings timings explain (in jupyter notebook) boosting effect of `fast_new` option:
 
     %timeit l1 = [Point(i,i) for i in range(100000)]
@@ -613,7 +613,7 @@ The followings timings explain (in jupyter notebook) boosting effect of `fast_ne
     # output with python 3.9 64bit
     25.6 ms ± 2.4 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
     10.4 ms ± 426 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-    
+
 The downside of `fast_new=True` option is less options for introspection of the instance.
 
 ### Using dataobject-based classes with mapping protocol
@@ -686,6 +686,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
      a = A(2,3)
      assert a.x == 4
      assert a.y == 9
+
 * Slightly improve performance in the default `__init__`  when fields have default values.
 
 #### 0.18.1.1
