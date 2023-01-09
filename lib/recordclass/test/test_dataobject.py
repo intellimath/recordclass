@@ -20,7 +20,7 @@ TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
 
 ##########################################################################
         
-class dataobjectTest(unittest.TestCase):
+class DataobjectTest(unittest.TestCase):
 
     def test_bad_makeclass(self):
         with self.assertRaises(TypeError):        
@@ -916,5 +916,5 @@ class dataobjectTest(unittest.TestCase):
             
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(dataobjectTest))
+    suite.addTest(unittest.makeSuite(DataobjectTest))
     return suite

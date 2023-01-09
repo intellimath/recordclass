@@ -347,7 +347,7 @@ dataobject_init(PyObject *op, PyObject *args, PyObject *kwds)
 }
 
 static int
-dataobject_init_post(PyObject *op, PyObject *args, PyObject *kwds)
+dataobject_init_post_init(PyObject *op, PyObject *args, PyObject *kwds)
 {
     PyTupleObject *tmp = (PyTupleObject*)args;
     
@@ -366,6 +366,61 @@ dataobject_init_post(PyObject *op, PyObject *args, PyObject *kwds)
     py_decref(method);
     return 0;
 }
+
+// static PyObject *
+// dataobject_call(PyTypeObject *type, PyObject *args, PyObject *kwds)
+// {
+//     PyObject *obj;
+//     // PyThreadState *tstate = _PyThreadState_GET();
+
+
+//     obj = type->tp_new(type, args, kwds);
+//     // obj = _Py_CheckFunctionResult(tstate, (PyObject*)type, obj, NULL);
+//     if (obj == NULL)
+//         return NULL;
+
+//     /* If the returned object is not an instance of type,
+//        it won't be initialized. */
+//     // if (!PyType_IsSubtype(Py_TYPE(obj), type))
+//     //     return obj;
+
+//     type = Py_TYPE(obj);
+//     if (type->tp_init != NULL) {
+//         int res = type->tp_init(obj, args, kwds);
+//         if (res < 0) {
+//             // assert(_PyErr_Occurred(tstate));
+//             Py_DECREF(obj);
+//             obj = NULL;
+//         }
+//         else {
+//             // assert(!_PyErr_Occurred(tstate));
+//         }
+//     }
+//     return obj;
+// }
+
+// static PyObject *
+// dataobject_call_post_init(PyObject *type, PyObject *args, PyObject *kwds)
+// {
+//     printf("dataobject_call_post_init\n");
+//     PyObject *op = ((PyTypeObject*)type)->tp_call(type, args, kwds);;
+//     if (op == NULL)
+//         return NULL;
+    
+//     PyObject *method = PyObject_GetAttr(op, __post_init__name);
+//     if (method == NULL) {
+//         py_decref(method);
+//         return op;
+//     }
+
+//     if (PyObject_CallObject(method, NULL) == NULL) {
+//         py_decref(method);
+//         return NULL;
+//     }
+//     py_decref(method);
+
+//     return op;
+// }
 
 static int
 dataobject_clear(PyObject *op)
@@ -1401,12 +1456,12 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_as_number */
     &dataobject_as_sequence0,               /* tp_as_sequence */
     &dataobject_as_mapping0,                /* tp_as_mapping */
-    &dataobject_hash_ni,                                      /* tp_hash */
+    &dataobject_hash_ni,                    /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
 #ifdef PYPY_VERSION
-    dataobject_getattr,                                      /* tp_setattro */
-    dataobject_setattr,                                      /* tp_setattro */
+    dataobject_getattr,                     /* tp_setattro */
+    dataobject_setattr,                     /* tp_setattro */
 #else
     0,                                      /* tp_getattro */
     0,                                      /* tp_setattro */
@@ -1800,6 +1855,119 @@ static PyTypeObject PyDataObjectProperty_Type = {
 
 //////////////////// module level functions //////////////////////////////
 
+
+
+PyDoc_STRVAR(_dataobject_type_init_doc,
+"Initialize dataobject subclass");
+
+static PyObject*
+_dataobject_type_init(PyObject *module, PyObject *args) {
+    PyObject *cls;
+
+    PyTypeObject *tp;
+    PyTypeObject *tp_base;
+    int __init__, __new__, __post_init__;
+    PyObject *fields, *dict;
+    Py_ssize_t n_fields;
+
+    if (Py_SIZE(args) != 1) {
+        PyErr_SetString(PyExc_TypeError, "number of arguments != 1");
+        return NULL;
+    }
+
+    cls = PyTuple_GET_ITEM(args, 0);
+    tp = (PyTypeObject*)cls;
+    tp_base = tp->tp_base;
+
+    if (!PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "common base class should be subclass of dataobject");
+        return NULL;
+    }
+
+    dict = tp->tp_dict;
+
+    fields = PyMapping_GetItemString(dict, "__fields__");
+    if (!fields){
+        PyErr_SetString(PyExc_TypeError, "__fields__ is missing");
+        return NULL;
+    }
+
+    if (PyTuple_Check(fields)) {
+        n_fields = PyTuple_GET_SIZE(fields);
+    } else {
+        n_fields = PyNumber_AsSsize_t(fields, PyExc_IndexError);
+        if (n_fields == -1 && PyErr_Occurred()) {
+            py_decref(fields);
+            return NULL;
+        }
+        if (n_fields < 0) {
+            PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");
+            return NULL;
+        }
+    }
+
+    py_decref(fields);
+
+    tp->tp_basicsize = sizeof(PyObject) + n_fields * sizeof(PyObject*);
+    tp->tp_itemsize = n_fields;
+
+    tp->tp_dictoffset = tp_base->tp_dictoffset;
+    tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
+
+#if PY_VERSION_HEX >= 0x030B0000
+        tp->tp_flags &= ~Py_TPFLAGS_MANAGED_DICT;
+        // tp->tp_flags &= ~Py_TPFLAGS_MANAGED_WEAKREF;
+        // tp->tp_flags &= ~Py_TPFLAGS_PREHEADER;
+#endif
+
+    tp->tp_alloc = dataobject_alloc;
+
+    __new__ = PyMapping_HasKeyString(dict, "__new__");
+    __init__ = PyMapping_HasKeyString(dict, "__init__");
+    __post_init__ = PyMapping_HasKeyString(dict, "__post_init__");
+
+    if (!__init__ && tp_base->tp_init) 
+        tp->tp_init = tp_base->tp_init;
+        
+    if (__post_init__) {
+        tp->tp_init = dataobject_init_post_init;
+    }
+        
+    if (!__new__ && tp_base->tp_new)
+        tp->tp_new = tp_base->tp_new;
+
+    tp->tp_dealloc = dataobject_dealloc;
+    tp->tp_free = PyObject_Del;
+
+    tp->tp_flags |= Py_TPFLAGS_HEAPTYPE;
+
+    if (tp->tp_flags & Py_TPFLAGS_HAVE_GC)
+        tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
+        
+
+#ifndef PYPY_VERSION
+    if (tp_base->tp_hash)
+        tp->tp_hash = tp_base->tp_hash;
+#endif
+
+    if (tp_base->tp_iter)
+        tp->tp_iter = tp_base->tp_iter;
+
+    tp->tp_traverse = NULL;
+    tp->tp_clear = NULL;
+    tp->tp_is_gc = NULL;
+
+#if PY_VERSION_HEX == 0x03080000
+    tp->tp_vectorcall_offset = 0
+#endif
+#if PY_VERSION_HEX == 0x03090000
+    tp->tp_vectorcall_offset = 0
+#endif
+
+    Py_RETURN_NONE;
+}
+
 static PyObject*
 _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObject *readonly) {
     PyTypeObject *tp = (PyTypeObject*)cls;
@@ -1971,116 +2139,6 @@ _set_weaklistoffset(PyObject *cls, PyObject* add_weakref) {
             tp->tp_basicsize += sizeof(PyObject*);
         }
     }
-
-    Py_RETURN_NONE;
-}
-
-PyDoc_STRVAR(_dataobject_type_init_doc,
-"Initialize dataobject subclass");
-
-static PyObject*
-_dataobject_type_init(PyObject *module, PyObject *args) {
-    PyObject *cls;
-
-    PyTypeObject *tp;
-    PyTypeObject *tp_base;
-    int __init__, __new__, __post_init__;
-    PyObject *fields, *dict;
-    Py_ssize_t n_fields;
-
-    if (Py_SIZE(args) != 1) {
-        PyErr_SetString(PyExc_TypeError, "number of arguments != 1");
-        return NULL;
-    }
-
-    cls = PyTuple_GET_ITEM(args, 0);
-    tp = (PyTypeObject*)cls;
-    tp_base = tp->tp_base;
-
-    if (!PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
-        PyErr_SetString(PyExc_TypeError,
-                        "common base class should be subclass of dataobject");
-        return NULL;
-    }
-
-    dict = tp->tp_dict;
-
-    fields = PyMapping_GetItemString(dict, "__fields__");
-    if (!fields){
-        PyErr_SetString(PyExc_TypeError, "__fields__ is missing");
-        return NULL;
-    }
-
-    if (PyTuple_Check(fields)) {
-        n_fields = PyTuple_GET_SIZE(fields);
-    } else {
-        n_fields = PyNumber_AsSsize_t(fields, PyExc_IndexError);
-        if (n_fields == -1 && PyErr_Occurred()) {
-            py_decref(fields);
-            return NULL;
-        }
-        if (n_fields < 0) {
-            PyErr_SetString(PyExc_TypeError, "number of fields should not be negative");
-            return NULL;
-        }
-    }
-
-    py_decref(fields);
-
-    tp->tp_basicsize = sizeof(PyObject) + n_fields * sizeof(PyObject*);
-    tp->tp_itemsize = n_fields;
-
-    tp->tp_dictoffset = tp_base->tp_dictoffset;
-    tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
-
-#if PY_VERSION_HEX >= 0x030B0000
-        tp->tp_flags &= ~Py_TPFLAGS_MANAGED_DICT;
-        // tp->tp_flags &= ~Py_TPFLAGS_MANAGED_WEAKREF;
-        // tp->tp_flags &= ~Py_TPFLAGS_PREHEADER;
-#endif
-
-    tp->tp_alloc = dataobject_alloc;
-
-    __new__ = PyMapping_HasKeyString(dict, "__new__");
-    __init__ = PyMapping_HasKeyString(dict, "__init__");
-    __post_init__ = PyMapping_HasKeyString(dict, "__post_init__");
-
-    if (!__init__ && tp_base->tp_init)
-        tp->tp_init = tp_base->tp_init;
-        
-     if (__post_init__ && tp->tp_init == dataobject_init)
-        tp->tp_init = dataobject_init_post;
-        
-    if (!__new__ && tp_base->tp_new)
-        tp->tp_new = tp_base->tp_new;
-
-    tp->tp_dealloc = dataobject_dealloc;
-    tp->tp_free = PyObject_Del;
-
-    tp->tp_flags |= Py_TPFLAGS_HEAPTYPE;
-
-    if (tp->tp_flags & Py_TPFLAGS_HAVE_GC)
-        tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
-        
-
-#ifndef PYPY_VERSION
-    if (tp_base->tp_hash)
-        tp->tp_hash = tp_base->tp_hash;
-#endif
-
-    if (tp_base->tp_iter)
-        tp->tp_iter = tp_base->tp_iter;
-
-    tp->tp_traverse = NULL;
-    tp->tp_clear = NULL;
-    tp->tp_is_gc = NULL;
-
-#if PY_VERSION_HEX == 0x03080000
-    tp->tp_vectorcall_offset = 0
-#endif
-#if PY_VERSION_HEX == 0x03090000
-    tp->tp_vectorcall_offset = 0
-#endif
 
     Py_RETURN_NONE;
 }
