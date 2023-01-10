@@ -277,32 +277,6 @@ class datatype(type):
                         ds = dataobjectproperty(i, False)
                 ns[name] = ds
 
-#         if '__repr__' not in ns:
-#             if mapping_only:
-#                 def __repr__(self):
-#                     fields = type(self).__fields__
-#                     args = ', '.join((name + '=' + repr(self[name])) for name in fields) 
-#                     kw = getattr(self, '__dict__', None)
-#                     if kw:
-#                         return f'{typename}({repr(args)[1:-1]}, **{repr(kw)})'
-#                     else:
-#                         return f'{typename}({repr(args)[1:-1]})'
-#             else:
-#                 def __repr__(self):
-#                     fields = type(self).__fields__
-#                     args = ', '.join((name + '=' + repr(getattr(self, name))) for name in fields) 
-#                     kw = getattr(self, '__dict__', None)
-#                     if kw:
-#                         return f'{typename}({repr(args)[1:-1]}, **{repr(kw)})'
-#                     else:
-#                         return f'{typename}({repr(args)[1:-1]})'
-#             __repr__.__qual_name__ =  f'{typename}.__repr__'
-
-#             ns['__repr__'] = __repr__
-
-#             if '__str__' not in ns:
-#                 ns['__str__'] = __repr__
-
         if is_pypy:
             if hashable and '__hash__' not in ns:
                 def __hash_func__(self):
@@ -323,7 +297,37 @@ class datatype(type):
                 pass
         else:
             pass
-
+        
+        py_init = False
+        py_post_init = False
+        
+        if '__post_init__' in ns:
+            py_post_init = True
+        else:
+            for base in bases:
+                if '__post_init__' in base.__dict__:
+                    py_post_init = True
+                    break
+        
+        if '__init__' in ns:
+            py_init = True
+            if py_post_init:
+                ns['__py_init__'] = ns['__init__']
+        else:
+            for base in bases:
+                if '__init__' in base.__dict__:
+                    py_init = True
+                    if py_post_init:
+                        ns['__py_init__'] = base.__dict__['__init__']
+                    break
+                    
+        if py_init and py_post_init:
+            def __init__(self, *args, **kw):
+                self.__py_init__(*args, **kw)
+                self.__post_init__()
+            ns['__init__'] = __init__
+        
+                    
         if has_fields:
             defaults = tuple([defaults.get(fn, None) for fn in fields])
             ns['__fields__'] = fields
