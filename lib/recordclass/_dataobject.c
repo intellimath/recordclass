@@ -102,7 +102,6 @@ typedef struct {
 static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value);
 static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type);
 
-
 static inline PyObject *
 type_error(const char *msg, PyObject *obj)
 {
@@ -369,86 +368,6 @@ dataobject_init_post_init(PyObject *op, PyObject *args, PyObject *kwds)
     py_decref(method);
     return 0;
 }
-
-// static int
-// dataobject_init_post_init2(PyObject *op, PyObject *args, PyObject *kwds)
-// {
-//     PyObject *method0 = PyObject_GetAttr(op, __py_init__name);
-//     if (method0 == NULL)
-//         return -1;
-
-//     if (PyObject_Call(method0, args, kwds) == NULL) {
-//         py_decref(method0);
-//         return -1;
-//     }
-    
-//     PyObject *method = PyObject_GetAttr(op, __post_init__name);
-//     if (method == NULL)
-//         return -1;
-
-//     if (PyObject_CallObject(method, NULL) == NULL) {
-//         py_decref(method);
-//         return -1;
-//     }
-
-//     py_decref(method);
-//     return 0;
-// }
-
-// static PyObject *
-// dataobject_call(PyTypeObject *type, PyObject *args, PyObject *kwds)
-// {
-//     PyObject *obj;
-//     // PyThreadState *tstate = _PyThreadState_GET();
-
-
-//     obj = type->tp_new(type, args, kwds);
-//     // obj = _Py_CheckFunctionResult(tstate, (PyObject*)type, obj, NULL);
-//     if (obj == NULL)
-//         return NULL;
-
-//     /* If the returned object is not an instance of type,
-//        it won't be initialized. */
-//     // if (!PyType_IsSubtype(Py_TYPE(obj), type))
-//     //     return obj;
-
-//     type = Py_TYPE(obj);
-//     if (type->tp_init != NULL) {
-//         int res = type->tp_init(obj, args, kwds);
-//         if (res < 0) {
-//             // assert(_PyErr_Occurred(tstate));
-//             Py_DECREF(obj);
-//             obj = NULL;
-//         }
-//         else {
-//             // assert(!_PyErr_Occurred(tstate));
-//         }
-//     }
-//     return obj;
-// }
-
-// static PyObject *
-// dataobject_call_post_init(PyObject *type, PyObject *args, PyObject *kwds)
-// {
-//     printf("dataobject_call_post_init\n");
-//     PyObject *op = ((PyTypeObject*)type)->tp_call(type, args, kwds);;
-//     if (op == NULL)
-//         return NULL;
-    
-//     PyObject *method = PyObject_GetAttr(op, __post_init__name);
-//     if (method == NULL) {
-//         py_decref(method);
-//         return op;
-//     }
-
-//     if (PyObject_CallObject(method, NULL) == NULL) {
-//         py_decref(method);
-//         return NULL;
-//     }
-//     py_decref(method);
-
-//     return op;
-// }
 
 static int
 dataobject_clear(PyObject *op)
@@ -1295,51 +1214,51 @@ error:
     return NULL;
 }
 
-PyDoc_STRVAR(dataobject_subscript_doc,
-"T.__getitem__(ob, key)");
+// PyDoc_STRVAR(dataobject_subscript_doc,
+// "T.__getitem__(ob, key)");
 
-static PyObject *
-dataobject_subscript(PyObject *ob, PyObject *key)
-{
-    PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
+// static PyObject *
+// dataobject_subscript(PyObject *ob, PyObject *key)
+// {
+//     PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
 
-    if (m->mp_subscript) {
-        return m->mp_subscript(ob, key);
-    }
+//     if (m->mp_subscript) {
+//         return m->mp_subscript(ob, key);
+//     }
 
-    return type_error("instances of %s are not subsciptable",
-                      (PyObject*)Py_TYPE(ob));
-}
+//     return type_error("instances of %s are not subsciptable",
+//                       (PyObject*)Py_TYPE(ob));
+// }
 
-PyDoc_STRVAR(dataobject_ass_subscript_doc,
-"T.__setitem__(ob, key, val)");
+// PyDoc_STRVAR(dataobject_ass_subscript_doc,
+// "T.__setitem__(ob, key, val)");
 
-static PyObject*
-dataobject_ass_subscript(PyObject *ob, PyObject *args)
-{
-    if (Py_SIZE(args) != 2) {
-        type_error("__setitem__ need 2 args", ob);
-        return NULL;
-    }
+// static PyObject*
+// dataobject_ass_subscript(PyObject *ob, PyObject *args)
+// {
+//     if (Py_SIZE(args) != 2) {
+//         type_error("__setitem__ need 2 args", ob);
+//         return NULL;
+//     }
 
-    // PyObject *key = PyTuple_GET_ITEM(args, 0);
-    // PyObject *val = PyTuple_GET_ITEM(args, 1);
+//     // PyObject *key = PyTuple_GET_ITEM(args, 0);
+//     // PyObject *val = PyTuple_GET_ITEM(args, 1);
 
-    PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
+//     PyMappingMethods *m = Py_TYPE(ob)->tp_as_mapping;
 
-    if (m->mp_ass_subscript) {
-        if (m->mp_ass_subscript(ob,
-                                PyTuple_GET_ITEM(args, 0),
-                                PyTuple_GET_ITEM(args, 1)))
-            return NULL;
-        else
-            Py_RETURN_NONE;
-    }
+//     if (m->mp_ass_subscript) {
+//         if (m->mp_ass_subscript(ob,
+//                                 PyTuple_GET_ITEM(args, 0),
+//                                 PyTuple_GET_ITEM(args, 1)))
+//             return NULL;
+//         else
+//             Py_RETURN_NONE;
+//     }
 
-    type_error("instances of %s does not support item assignment",
-               (PyObject*)Py_TYPE(ob));
-    return NULL;
-}
+//     type_error("instances of %s does not support item assignment",
+//                (PyObject*)Py_TYPE(ob));
+//     return NULL;
+// }
 
 PyDoc_STRVAR(dataobject_reduce_doc,
 "T.__reduce__()");
@@ -1426,8 +1345,8 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
 }
 
 static PyMethodDef dataobject_methods[] = {
-    {"__getitem__",  (PyCFunction)(void(*)(void))dataobject_subscript, METH_O|METH_COEXIST, dataobject_subscript_doc},
-    {"__setitem__",  (PyCFunction)dataobject_ass_subscript, METH_VARARGS|METH_COEXIST, dataobject_ass_subscript_doc},
+    // {"__getitem__",  (PyCFunction)(void(*)(void))dataobject_subscript, METH_O|METH_COEXIST, dataobject_subscript_doc},
+    // {"__setitem__",  (PyCFunction)dataobject_ass_subscript, METH_VARARGS|METH_COEXIST, dataobject_ass_subscript_doc},
     {"__copy__",     (PyCFunction)dataobject_copy, METH_NOARGS, dataobject_copy_doc},
     {"__len__",      (PyCFunction)dataobject_len, METH_NOARGS, dataobject_len_doc},
     {"__repr__",      (PyCFunction)dataobject_repr, METH_NOARGS, dataobject_repr_doc},

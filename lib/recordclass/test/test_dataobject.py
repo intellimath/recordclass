@@ -646,157 +646,157 @@ class DataobjectTest(unittest.TestCase):
     #     with self.assertRaises(AttributeError):        
     #         delattr(a, 'x')
             
-    def test_getitem(self):
-        A = make_dataclass("A", 'x y')
-        a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
-            a.__getitem__('x')
-        with self.assertRaises(TypeError):        
-            a.__getitem__('y')
-        with self.assertRaises(TypeError):        
-            a.__getitem__(0)
-        with self.assertRaises(TypeError):        
-            a.__getitem__(1)
+    # def test_getitem(self):
+    #     A = make_dataclass("A", 'x y')
+    #     a = A(x=1, y=2)
+    #     with self.assertRaises(TypeError):        
+    #         a.__getitem__('x')
+    #     with self.assertRaises(TypeError):        
+    #         a.__getitem__('y')
+    #     with self.assertRaises(TypeError):        
+    #         a.__getitem__(0)
+    #     with self.assertRaises(TypeError):        
+    #         a.__getitem__(1)
 
-    def test_setitem(self):
-        A = make_dataclass("A", 'x y')
-        a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
-            a.__setitem__('x', 100)
-        with self.assertRaises(TypeError):        
-            a.__setitem__('y', 200)
-        with self.assertRaises(TypeError):        
-            a.__setitem__(0, 100)
-        with self.assertRaises(TypeError):        
-            a.__setitem__(1, 200)
+    # def test_setitem(self):
+    #     A = make_dataclass("A", 'x y')
+    #     a = A(x=1, y=2)
+    #     with self.assertRaises(TypeError):        
+    #         a.__setitem__('x', 100)
+    #     with self.assertRaises(TypeError):        
+    #         a.__setitem__('y', 200)
+    #     with self.assertRaises(TypeError):        
+    #         a.__setitem__(0, 100)
+    #     with self.assertRaises(TypeError):        
+    #         a.__setitem__(1, 200)
             
-    def test_getitem_sq(self):
-        A = make_dataclass("A", 'x y', sequence=True)
-        a = A(x=1, y=2)
-        self.assertEqual(a.__getitem__(0), 1)
-        self.assertEqual(a.__getitem__(1), 2)
-        with self.assertRaises(TypeError):        
-            a.__getitem__('x')
-        with self.assertRaises(TypeError):        
-            a.__getitem__('y')
+#     def test_getitem_sq(self):
+#         A = make_dataclass("A", 'x y', sequence=True)
+#         a = A(x=1, y=2)
+#         self.assertEqual(a.__getitem__(0), 1)
+#         self.assertEqual(a.__getitem__(1), 2)
+#         with self.assertRaises(TypeError):        
+#             a.__getitem__('x')
+#         with self.assertRaises(TypeError):        
+#             a.__getitem__('y')
 
-    def test_setitem_sq(self):
-        A = make_dataclass("A", 'x y', sequence=True)
-        a = A(x=1, y=2)
-        a.__setitem__(0, 100)
-        a.__setitem__(1, 200)
-        self.assertEqual(a.__getitem__(0), 100)
-        self.assertEqual(a.__getitem__(1), 200)
-        with self.assertRaises(TypeError):        
-            a.__setitem__('x', 100)
-        with self.assertRaises(TypeError):        
-            a.__setitem__('y', 200)
+#     def test_setitem_sq(self):
+#         A = make_dataclass("A", 'x y', sequence=True)
+#         a = A(x=1, y=2)
+#         a.__setitem__(0, 100)
+#         a.__setitem__(1, 200)
+#         self.assertEqual(a.__getitem__(0), 100)
+#         self.assertEqual(a.__getitem__(1), 200)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__('x', 100)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__('y', 200)
             
-    def test_getitem_sq_ro(self):
-        A = make_dataclass("A", 'x y', sequence=True, readonly=True)
-        a = A(x=1, y=2)
-        self.assertEqual(a.__getitem__(0), 1)
-        self.assertEqual(a.__getitem__(1), 2)
-        with self.assertRaises(TypeError):        
-            a.__getitem__('x')
-        with self.assertRaises(TypeError):        
-            a.__getitem__('y')
+#     def test_getitem_sq_ro(self):
+#         A = make_dataclass("A", 'x y', sequence=True, readonly=True)
+#         a = A(x=1, y=2)
+#         self.assertEqual(a.__getitem__(0), 1)
+#         self.assertEqual(a.__getitem__(1), 2)
+#         with self.assertRaises(TypeError):        
+#             a.__getitem__('x')
+#         with self.assertRaises(TypeError):        
+#             a.__getitem__('y')
 
-    def test_setitem_sq_ro(self):
-        A = make_dataclass("A", 'x y', sequence=True, readonly=True)
-        a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
-            a.__setitem__(0, 100)
-        with self.assertRaises(TypeError):        
-            a.__setitem__(1, 200)
-        with self.assertRaises(TypeError):        
-            a.__setitem__('x', 100)
-        with self.assertRaises(TypeError):        
-            a.__setitem__('y', 200)
+#     def test_setitem_sq_ro(self):
+#         A = make_dataclass("A", 'x y', sequence=True, readonly=True)
+#         a = A(x=1, y=2)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__(0, 100)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__(1, 200)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__('x', 100)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__('y', 200)
             
-    def test_getitem_mp(self):
-        A = make_dataclass("A", 'x y', mapping=True)
-        a = A(x=1, y=2)
-        self.assertEqual(a.__getitem__('x'), 1)
-        self.assertEqual(a.__getitem__('y'), 2)
-        with self.assertRaises(TypeError):        
-            a.__getitem__(0)
-        with self.assertRaises(TypeError):        
-            a.__getitem__(1)
+#     def test_getitem_mp(self):
+#         A = make_dataclass("A", 'x y', mapping=True)
+#         a = A(x=1, y=2)
+#         self.assertEqual(a.__getitem__('x'), 1)
+#         self.assertEqual(a.__getitem__('y'), 2)
+#         with self.assertRaises(TypeError):        
+#             a.__getitem__(0)
+#         with self.assertRaises(TypeError):        
+#             a.__getitem__(1)
 
-    def test_setitem_mp(self):
-        A = make_dataclass("A", 'x y', mapping=True)
-        a = A(x=1, y=2)
-        a.__setitem__('x', 100)
-        a.__setitem__('y', 200)
-        self.assertEqual(a.__getitem__('x'), 100)
-        self.assertEqual(a.__getitem__('y'), 200)
-        with self.assertRaises(TypeError):        
-            a.__setitem__(0, 100)
-        with self.assertRaises(TypeError):        
-            a.__setitem__(1, 200)
+#     def test_setitem_mp(self):
+#         A = make_dataclass("A", 'x y', mapping=True)
+#         a = A(x=1, y=2)
+#         a.__setitem__('x', 100)
+#         a.__setitem__('y', 200)
+#         self.assertEqual(a.__getitem__('x'), 100)
+#         self.assertEqual(a.__getitem__('y'), 200)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__(0, 100)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__(1, 200)
             
-    def test_getitem_mp_ro(self):
-        A = make_dataclass("A", 'x y', mapping=True, readonly=True)
-        a = A(x=1, y=2)
-        self.assertEqual(a.__getitem__('x'), 1)
-        self.assertEqual(a.__getitem__('y'), 2)
-        with self.assertRaises(TypeError):        
-            a.__getitem__(0)
-        with self.assertRaises(TypeError):        
-            a.__getitem__(1)
+#     def test_getitem_mp_ro(self):
+#         A = make_dataclass("A", 'x y', mapping=True, readonly=True)
+#         a = A(x=1, y=2)
+#         self.assertEqual(a.__getitem__('x'), 1)
+#         self.assertEqual(a.__getitem__('y'), 2)
+#         with self.assertRaises(TypeError):        
+#             a.__getitem__(0)
+#         with self.assertRaises(TypeError):        
+#             a.__getitem__(1)
 
-    def test_setitem_mp_ro(self):
-        A = make_dataclass("A", 'x y', mapping=True, readonly=True)
-        a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
-            a.__setitem__(0, 100)
-        with self.assertRaises(TypeError):        
-            a.__setitem__(1, 200)
-        with self.assertRaises(TypeError):        
-            a.__setitem__('x', 100)
-        with self.assertRaises(TypeError):        
-            a.__setitem__('y', 200)
+#     def test_setitem_mp_ro(self):
+#         A = make_dataclass("A", 'x y', mapping=True, readonly=True)
+#         a = A(x=1, y=2)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__(0, 100)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__(1, 200)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__('x', 100)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__('y', 200)
 
-    def test_getitem_mp_sq(self):
-        A = make_dataclass("A", 'x y', mapping=True, sequence=True)
-        a = A(x=1, y=2)
-        self.assertEqual(a.__getitem__('x'), 1)
-        self.assertEqual(a.__getitem__('y'), 2)
-        self.assertEqual(a.__getitem__(0), 1)
-        self.assertEqual(a.__getitem__(1), 2)
+#     def test_getitem_mp_sq(self):
+#         A = make_dataclass("A", 'x y', mapping=True, sequence=True)
+#         a = A(x=1, y=2)
+#         self.assertEqual(a.__getitem__('x'), 1)
+#         self.assertEqual(a.__getitem__('y'), 2)
+#         self.assertEqual(a.__getitem__(0), 1)
+#         self.assertEqual(a.__getitem__(1), 2)
 
-    def test_setitem_mp_sq(self):
-        A = make_dataclass("A", 'x y', mapping=True, sequence=True)
-        a = A(x=1, y=2)
-        a.__setitem__('x', 100)
-        a.__setitem__('y', 200)
-        self.assertEqual(a.__getitem__('x'), 100)
-        self.assertEqual(a.__getitem__('y'), 200)
-        self.assertEqual(a.__getitem__(0), 100)
-        self.assertEqual(a.__getitem__(1), 200)
-        a.__setitem__(0, -100)
-        a.__setitem__(1, -200)
-        self.assertEqual(a.__getitem__('x'), -100)
-        self.assertEqual(a.__getitem__('y'), -200)
-        self.assertEqual(a.__getitem__(0), -100)
-        self.assertEqual(a.__getitem__(1), -200)
+#     def test_setitem_mp_sq(self):
+#         A = make_dataclass("A", 'x y', mapping=True, sequence=True)
+#         a = A(x=1, y=2)
+#         a.__setitem__('x', 100)
+#         a.__setitem__('y', 200)
+#         self.assertEqual(a.__getitem__('x'), 100)
+#         self.assertEqual(a.__getitem__('y'), 200)
+#         self.assertEqual(a.__getitem__(0), 100)
+#         self.assertEqual(a.__getitem__(1), 200)
+#         a.__setitem__(0, -100)
+#         a.__setitem__(1, -200)
+#         self.assertEqual(a.__getitem__('x'), -100)
+#         self.assertEqual(a.__getitem__('y'), -200)
+#         self.assertEqual(a.__getitem__(0), -100)
+#         self.assertEqual(a.__getitem__(1), -200)
 
-    def test_setitem_mp_sq_ro(self):
-        A = make_dataclass("A", 'x y', mapping=True, sequence=True, readonly=True)
-        a = A(x=1, y=2)
-        self.assertEqual(a.__getitem__('x'), 1)
-        self.assertEqual(a.__getitem__('y'), 2)
-        self.assertEqual(a.__getitem__(0), 1)
-        self.assertEqual(a.__getitem__(1), 2)
-        with self.assertRaises(TypeError):        
-            a.__setitem__(0, 100)
-        with self.assertRaises(TypeError):        
-            a.__setitem__(1, 200)
-        with self.assertRaises(TypeError):        
-            a.__setitem__('x', 100)
-        with self.assertRaises(TypeError):        
-            a.__setitem__('y', 200)
+#     def test_setitem_mp_sq_ro(self):
+#         A = make_dataclass("A", 'x y', mapping=True, sequence=True, readonly=True)
+#         a = A(x=1, y=2)
+#         self.assertEqual(a.__getitem__('x'), 1)
+#         self.assertEqual(a.__getitem__('y'), 2)
+#         self.assertEqual(a.__getitem__(0), 1)
+#         self.assertEqual(a.__getitem__(1), 2)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__(0, 100)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__(1, 200)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__('x', 100)
+#         with self.assertRaises(TypeError):        
+#             a.__setitem__('y', 200)
         
     def test_getkey(self):
         A = make_dataclass("A", 'x y')
