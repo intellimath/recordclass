@@ -130,7 +130,7 @@ As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4
 
 Here is the table with performance counters, which was measured using `tools/perfcounts.py` script: 
 
-* python 3.10, debian/testing linux, x86-64):
+* python 3.10, debian/testing linux, x86-64:
 
 <table border="1" class="dataframe">
   <thead>
@@ -269,7 +269,7 @@ Here is the table with performance counters, which was measured using `tools/per
   </tbody>
 </table>
 
-* python 3.11, debian/testing linux, x86-64):
+* python 3.11, debian/testing linux, x86-64:
 
 <table border="1" class="dataframe">
   <thead>

@@ -63,20 +63,20 @@ ext_modules = [
     ),
 ]
 
-if use_cython:
-    ext_modules.append(Extension(
-        "recordclass._linkedlist",
-        ["lib/recordclass/_linkedlist.pyx"],
-        # extra_compile_args = extra_compile_args,
-        # extra_link_args = extra_link_args,
-    ))
-else:
-    ext_modules.append(Extension(
-        "recordclass._linkedlist",
-        ["lib/recordclass/_linkedlist.c"],
-        # extra_compile_args = extra_compile_args,
-        # extra_link_args = extra_link_args,
-    ))
+# if use_cython:
+#     ext_modules.append(Extension(
+#         "recordclass._linkedlist",
+#         ["lib/recordclass/_linkedlist.pyx"],
+#         # extra_compile_args = extra_compile_args,
+#         # extra_link_args = extra_link_args,
+#     ))
+# else:
+#     ext_modules.append(Extension(
+#         "recordclass._linkedlist",
+#         ["lib/recordclass/_linkedlist.c"],
+#         # extra_compile_args = extra_compile_args,
+#         # extra_link_args = extra_link_args,
+#     ))
 
 description = """Mutable variant of namedtuple -- recordclass, which support assignments, and other memory saving variants."""
 
