@@ -24,11 +24,16 @@ class DataobjectTest(unittest.TestCase):
 
     def test_bad_makeclass(self):
         with self.assertRaises(TypeError):        
-            A = make_dataclass("A", 'x y', defaults=(0,0,0), fast_new=True)
+            A = make_dataclass("A", 'x y', defaults=(0,0,0))
+            # a = A(x=1, y=2, z=3)
+    
+    def test_bad_makeclass2(self):
+        with self.assertRaises(TypeError):        
+            A = make_dataclass("A", 'x y', defaults=(0,0,0), fast_new=False)
             # a = A(x=1, y=2, z=3)
 
     def test_bad_call(self):
-        A = make_dataclass("A", 'x y', defaults=(0,), fast_new=True)
+        A = make_dataclass("A", 'x y', defaults=(0,), fast_new=False)
         with self.assertRaises(TypeError):        
             a = A(x=1, y=2, z=3)
 

@@ -1347,13 +1347,13 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
 static PyMethodDef dataobject_methods[] = {
     // {"__getitem__",  (PyCFunction)(void(*)(void))dataobject_subscript, METH_O|METH_COEXIST, dataobject_subscript_doc},
     // {"__setitem__",  (PyCFunction)dataobject_ass_subscript, METH_VARARGS|METH_COEXIST, dataobject_ass_subscript_doc},
-    {"__copy__",     (PyCFunction)dataobject_copy, METH_NOARGS, dataobject_copy_doc},
-    {"__len__",      (PyCFunction)dataobject_len, METH_NOARGS, dataobject_len_doc},
+    {"__copy__",      (PyCFunction)dataobject_copy, METH_NOARGS, dataobject_copy_doc},
+    {"__len__",       (PyCFunction)dataobject_len, METH_NOARGS, dataobject_len_doc},
     {"__repr__",      (PyCFunction)dataobject_repr, METH_NOARGS, dataobject_repr_doc},
-    {"__sizeof__",   (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
-    {"__reduce__",   (PyCFunction)dataobject_reduce, METH_NOARGS, dataobject_reduce_doc},
-    {"__getstate__", (PyCFunction)dataobject_getstate, METH_NOARGS, dataobject_getstate_doc},
-    {"__setstate__", (PyCFunction)dataobject_setstate, METH_O, dataobject_setstate_doc},
+    {"__sizeof__",    (PyCFunction)dataobject_sizeof, METH_NOARGS, dataobject_sizeof_doc},
+    {"__reduce__",    (PyCFunction)dataobject_reduce, METH_NOARGS, dataobject_reduce_doc},
+    {"__getstate__",  (PyCFunction)dataobject_getstate, METH_NOARGS, dataobject_getstate_doc},
+    {"__setstate__",  (PyCFunction)dataobject_setstate, METH_O, dataobject_setstate_doc},
     // {"__hash__",     (PyCFunction)dataobject_hash2_ni, METH_O, dataobject_hash_doc},
     {NULL}
 };

@@ -199,18 +199,18 @@ class datatype(type):
                 warnings.warn("Use 'use_weakref=True' instead")
 
             if '__defaults__' in ns:
-                defaults = ns['__defaults__']
+                defaults_dict = ns['__defaults__']
             else:
-                defaults = {f:ns[f] for f in fields if f in ns}
-            _matching_annotations_and_defaults(annotations, defaults)
+                defaults_dict = {f:ns[f] for f in fields if f in ns}
+            _matching_annotations_and_defaults(annotations, defaults_dict)
 
             fields_dict = {}
             for fn in fields:
                 fields_dict[fn] = f = {}
                 if fn in annotations:
                     f['type'] = annotations[fn]
-                if fn in defaults:
-                    f['default'] = defaults[fn]
+                if fn in defaults_dict:
+                    f['default'] = defaults_dict[fn]
 
             if readonly:
                 if type(readonly) is type(True):
@@ -225,7 +225,7 @@ class datatype(type):
                 _fields, _fields_dict, _use_dict, _use_weakref = collect_info_from_bases(bases)
                 use_dict = _use_dict or use_dict
                 use_weakref = _use_weakref or use_weakref
-                _defaults = {fn:fd['default'] for fn,fd in _fields_dict.items() if 'default' in fd} 
+                _defaults_dict = {fn:fd['default'] for fn,fd in _fields_dict.items() if 'default' in fd} 
                 _annotations = {fn:fd['type'] for fn,fd in _fields_dict.items() if 'type' in fd} 
 
                 if fields:
@@ -236,8 +236,8 @@ class datatype(type):
                 _fields_dict.update(fields_dict)
                 fields_dict = _fields_dict
 
-                _defaults.update(defaults)
-                defaults = _defaults
+                _defaults_dict.update(defaults_dict)
+                defaults_dict = _defaults_dict
 
                 _annotations.update(annotations)
                 annotations = _annotations
@@ -255,7 +255,7 @@ class datatype(type):
                 options['fast_new'] = fast_new
 
             if has_fields and not fast_new and '__new__' not in ns:
-                __new__ = _make_new_function(typename, fields, defaults, annotations, use_dict)
+                __new__ = _make_new_function(typename, fields, defaults_dict, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
                 if not __new__.__doc__:
                     __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults)
@@ -325,11 +325,10 @@ class datatype(type):
             def __init__(self, *args, **kw):
                 self.__py_init__(*args, **kw)
                 self.__post_init__()
-            ns['__init__'] = __init__
-        
+            ns['__init__'] = __init__        
                     
         if has_fields:
-            defaults = tuple([defaults.get(fn, None) for fn in fields])
+            defaults = tuple([defaults_dict.get(fn, None) for fn in fields])
             ns['__fields__'] = fields
             ns['__defaults__'] = defaults
             ns['__annotations__'] = annotations
@@ -364,22 +363,22 @@ class datatype(type):
         from ._dataobject import dataobjectproperty
         if name in cls.__dict__:
             o = getattr(cls, name)
-            if type(o) is dataobjectproperty or name in ('__fields__', '__defaults__'):
+            if type(o) is dataobjectproperty or name in {'__fields__', '__defaults__', '__annotations__'}:
                 raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be deleted")
         type.__delattr__(cls, name)
 
     def __setattr__(cls, name, ob):
-        if name in ('__fields__', '__defaults__'):
+        if name in {'__fields__', '__defaults__', '__annotations__'}:
             raise AttributeError(f"Attribute {name} of the class {cls.__name__} can't be modified")
         type.__setattr__(cls, name, ob)
 
-def _make_new_function(typename, fields, defaults, annotations, use_dict):
+def _make_new_function(typename, fields, defaults_dict, annotations, use_dict):
 
     from ._dataobject import dataobject, new
 
-    if fields and defaults:
-        fields2 = [fn for fn in fields if fn not in defaults] + \
-                  ["%s=%r" % (fn,None) for fn in fields if fn in defaults]
+    if fields and defaults_dict:
+        fields2 = [fn for fn in fields if fn not in defaults_dict] + \
+                  ["%s=%r" % (fn,None) for fn in fields if fn in defaults_dict]
     else:
         fields2 = fields
 
@@ -416,8 +415,8 @@ def __new__(_cls_, {joined_fields2}, **kw):
     if annotations:
         __new__.__annotations__ = annotations
 
-    if defaults:
-        __new__.__defaults__ = tuple(defaults.values())
+    if defaults_dict:
+        __new__.__defaults__ = tuple(defaults_dict.values())
 
     return __new__
 
