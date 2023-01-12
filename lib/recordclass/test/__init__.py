@@ -18,6 +18,8 @@ if _PY36:
 if _PY310:
     from recordclass.test.match.test_dataobject_match import *
 
+from recordclass.test.test_sqlite import *
+    
 def test_all():
     import unittest
     unittest.main(verbosity=3)
