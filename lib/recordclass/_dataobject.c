@@ -32,48 +32,50 @@
 
 #define pyobject_size(tp) ( (tp)->tp_basicsize )
 
-#define py_incref(o) ((PyObject*)(o))->ob_refcnt++
+#define pyobject_cast(o) ((PyObject*)(o))
+
+#define py_incref(o) pyobject_cast(o)->ob_refcnt++
 #define py_decref(o) \
-        if (--(((PyObject*)(o))->ob_refcnt) == 0) \
-              Py_TYPE((PyObject*)(o))->tp_dealloc((PyObject*)(o))
+        if (--(pyobject_cast(o)->ob_refcnt) == 0) \
+              Py_TYPE(pyobject_cast(o))->tp_dealloc(pyobject_cast(o))
 
 #define py_setref(dst, src) \
     do { \
-        PyObject *tmp_op = (PyObject*)(dst) \
+        PyObject *tmp_op = pyobject_cast(dst); \
         (dst) = (src); \
         py_decref(tmp_op); \
     } while (0)
 
 #define py_xsetref(dst, src) \
     do { \
-        PyObject *tmp_op = (PyObject*)(dst) \
+        PyObject *tmp_op = pyobject_cast(dst); \
         (dst) = (src); \
         if (tmp_op != NULL) py_decref(tmp_op); \
     } while (0)
         
 #define py_xincref(op)                                \
     do {                                              \
-        PyObject *_py_xincref_tmp = (PyObject *)(op); \
+        PyObject *_py_xincref_tmp = pyobject_cast(op); \
         if (_py_xincref_tmp != NULL)                  \
             py_incref(_py_xincref_tmp);               \
     } while (0)
 
 #define py_xdecref(op)                                \
     do {                                              \
-        PyObject *_py_xdecref_tmp = (PyObject *)(op); \
+        PyObject *_py_xdecref_tmp = pyobject_cast(op); \
         if (_py_xdecref_tmp != NULL)                  \
             py_decref(_py_xdecref_tmp);               \
     } while (0)
 
 #if !defined(Py_SET_TYPE)
-#define Py_SET_TYPE(ob, type) (((PyObject*)(ob))->ob_type) = (type)
+#define Py_SET_TYPE(op, type) (pyobject_cast(op)->ob_type) = (type)
 #endif
 
 #if !defined(Py_TYPE)
-#define Py_TYPE(ob) ((PyObject*)(ob))->ob_type
+#define Py_TYPE(op) pyobject_cast(op)->ob_type
 #endif
 
-#define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
+#define py_refcnt(op) (pyobject_cast(op)->ob_refcnt)
 
 #if !defined(Py_SET_SIZE)
 #define Py_SET_SIZE(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
@@ -662,7 +664,7 @@ dataobject_traverse(PyObject *op, visitproc visit, void *arg)
 static PyObject *
 dataobject_sq_item(PyObject *op, Py_ssize_t i)
 {
-    Py_ssize_t n = PyDataObject_LEN(op);
+    const Py_ssize_t n = PyDataObject_LEN(op);
 
     if (i < 0)
         i += n;
@@ -672,10 +674,10 @@ dataobject_sq_item(PyObject *op, Py_ssize_t i)
     }
 
     PyObject *v = PyDataObject_GET_ITEM(op, i);
-    if (v == NULL) {
-        PyErr_SetString(PyExc_IndexError, "item has no value");
-        return NULL;
-    }
+    // if (v == NULL) {
+    //     PyErr_SetString(PyExc_IndexError, "item has no value");
+    //     return NULL;
+    // }
 
     py_incref(v);
     return v;
@@ -684,7 +686,7 @@ dataobject_sq_item(PyObject *op, Py_ssize_t i)
 static int
 dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 {
-    Py_ssize_t n = PyDataObject_LEN(op);
+    const Py_ssize_t n = PyDataObject_LEN(op);
 
     if (i < 0)
         i += n;
@@ -693,13 +695,11 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
         return -1;
     }
 
-    PyObject **items = PyDataObject_ITEMS(op) + i;
+    PyObject **item = PyDataObject_ITEMS(op) + i;
 
-    py_xdecref(*items);
-
-    if (val)
-        py_incref(val);
-    *items = val;
+    py_decref(*item);
+    py_incref(val);
+    *item = val;
 
     return 0;
 }
