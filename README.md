@@ -24,8 +24,8 @@ Of course, in python, nothing prevent you from “shooting yourself in the foot"
 But in many cases, this can still be avoided provided that the developer understands what he is doing and uses such classes in the codebase with care.
 Another option is to use static code analyzers along with type annotations to monitor compliance with typehints.
 
-The `recodeclass` library also provide the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. 
-   It control creation  of subclasses of `dataobject`, which  will not participate in cyclic GC by default. 
+The library is built on top of the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`. 
+   It control creation  of subclasses, which  will not participate in cyclic GC and do not contain `__dict__`  and `__weakref__`  by default. 
    As the result the instance of such class need less memory. 
    It's memory footprint is similar to memory footprint of instances of the classes with `__slots__` but without `PyGC_Head`. So the difference in memory size is equal to the size of `PyGC_Head`. 
    It also tunes `basicsize` of the instances, creates descriptors for the fields and etc. 
@@ -43,7 +43,7 @@ The `recodeclass` library also provide the base class `dataobject`. The type of 
         >>> asdict(p)
         {'x':1, 'y':2}
 
-The `recordclass` factory create dataobject-based subclass with specified fields and support `namedtuple`-like API. 
+The `recordclass` factory create dataobject-based subclass with specified fields and the support of `namedtuple`-like API. 
    By default it will not participate in cyclic GC too.  
 
         >>> from recordclass import recordclass
@@ -620,13 +620,13 @@ The downside of `fast_new=True` option is less options for introspection of the 
 
 ### Using dataobject-based classes with mapping protocol
 
-    class FastMapingPoint(dataobject, mapping=True, fast_new=True):
+    class FastMapingPoint(dataobject, mapping=True):
         x: int
         y: int
 
 or
 
-    FastMapingPoint = make_dataclass("FastMapingPoint", [("x", int), ("y", int)], mapping=True, fast_new=True)
+    FastMapingPoint = make_dataclass("FastMapingPoint", [("x", int), ("y", int)], mapping=True)
 
     >>> p = FastMappingPoint(1,2)
     >>> print(p['x'], p['y'])
@@ -639,7 +639,7 @@ or
 There is the option `deep_dealloc` (default value is `False`) for deallocation of recursive datastructures. 
 Let consider simple example:
 
-    class LinkedItem(dataobject, fast_new=True):
+    class LinkedItem(dataobject):
         val: object
         next: 'LinkedItem'
 
@@ -727,6 +727,18 @@ For example:
                   self.y = y
 
 * `fast_new=True` by default.
+* Add `make_row_factory` for `sqlite3` :
+
+        class Planet(dataobject):
+            name:str
+            radius:int
+
+        >>> con = sql.connect(":memory:")
+        >>> cur = con.execute("SELECT 'Earth' AS name, 6378 AS radius")
+        >>> cur.row_factory = make_row_factory(Planet)
+        >>> row = cur.fetchone()
+        >>> print(row)
+        Planet(name='Earth', radius=6378)
 
 #### 0.18.0.1
 
