@@ -1878,9 +1878,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         tp->tp_init = dataobject_init_post_init;
     }
 
-    // if (!__init__) 
-    //     tp->tp_init = dataobject_init_post_init;
-        
     if (!__new__ && tp_base->tp_new)
         tp->tp_new = tp_base->tp_new;
 
@@ -1905,10 +1902,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_clear = NULL;
     tp->tp_is_gc = NULL;
 
-#if PY_VERSION_HEX == 0x03080000
-    tp->tp_vectorcall_offset = 0
-#endif
-#if PY_VERSION_HEX == 0x03090000
+#if PY_VERSION_HEX >= 0x03080000
     tp->tp_vectorcall_offset = 0
 #endif
 
