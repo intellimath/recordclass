@@ -707,7 +707,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
      assert a.x == 4
      assert a.y == 9
 
-* Slightly improve performance in the default `__init__`  when fields have default values.
+* Slightly improve performance in the default `__init__`  when fields have default values or kwargs.
 
 #### 0.18.1.1
 

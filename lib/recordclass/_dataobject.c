@@ -2364,13 +2364,10 @@ _tuple_index(PyTupleObject *self, PyObject *value)
 
     for (i = 0; i < n; i++) {
         PyObject *cmp = PyUnicode_RichCompare(self->ob_item[i], value, Py_EQ);
-        // int cmp = PyObject_RichCompareBool(self->ob_item[i], value, Py_EQ);
         if (cmp == Py_True)
             return i;
         else if (cmp == NULL)
             return -1;
-        // else if (cmp < 0)
-        //     return -1;
     }
     return -1;
 }
