@@ -18,7 +18,13 @@ if _PY36:
 if _PY310:
     from recordclass.test.match.test_dataobject_match import *
 
-from recordclass.test.test_sqlite import *
+try:
+    import sqlite3 as sql
+except:
+    sql = None
+    
+if sql is not None:
+    from recordclass.test.test_sqlite import *
     
 def test_all():
     import unittest

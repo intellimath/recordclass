@@ -1,5 +1,4 @@
 import unittest
-
 import sqlite3 as sql
 from recordclass import dataobject, make_dataclass
 from recordclass.tools.sqlite import make_row_factory

@@ -2363,11 +2363,14 @@ _tuple_index(PyTupleObject *self, PyObject *value)
     Py_ssize_t i, n = Py_SIZE(self);
 
     for (i = 0; i < n; i++) {
-        int cmp = PyObject_RichCompareBool(self->ob_item[i], value, Py_EQ);
-        if (cmp > 0)
+        PyObject *cmp = PyUnicode_RichCompare(self->ob_item[i], value, Py_EQ);
+        // int cmp = PyObject_RichCompareBool(self->ob_item[i], value, Py_EQ);
+        if (cmp == Py_True)
             return i;
-        else if (cmp < 0)
+        else if (cmp == NULL)
             return -1;
+        // else if (cmp < 0)
+        //     return -1;
     }
     return -1;
 }
@@ -2399,10 +2402,8 @@ _dataobject_update(PyObject *op, PyObject *kwds)
         
         Py_ssize_t index = _tuple_index((PyTupleObject*)fields, key);
         if (index >= 0) {
-            // PyDataObject_SET_ITEM(op, index, val);
             dataobject_ass_item(op, index, val);
             py_decref(key);
-            // py_decref(val);
             continue;
         } else {
             if (!has___dict___) {
