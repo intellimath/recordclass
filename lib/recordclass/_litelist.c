@@ -227,7 +227,11 @@ litelist_dealloc(PyLiteListObject *op)
     Py_ssize_t i = Py_SIZE(op);
 
     while (--i >= 0) {
-        py_xdecref(op->ob_item[i]);
+        PyObject *item = op->ob_item[i];
+        if (item != NULL) {
+            py_decref(item);
+            op->ob_item[i] = NULL;
+        }
     }
     
     PyMem_Free(op->ob_item);
