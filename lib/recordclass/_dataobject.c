@@ -2179,7 +2179,7 @@ _asdict(PyObject *op)
     }
 
     for (i=0; i<n; i++) {
-        fn = PyTuple_GetItem(fields, i);
+        fn = PyTuple_GET_ITEM(fields, i);
         py_incref(fn);
         v = PyDataObject_GET_ITEM(op, i);
         py_incref(v);
