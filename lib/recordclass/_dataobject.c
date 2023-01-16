@@ -276,12 +276,11 @@ dataobject_init_vc(PyObject *op, PyObject **args,
     PyObject **p = items;
 
     Py_ssize_t i;
-    for (i = 0; i < n_args; i++) {
+    for (i = 0; i < n_args; i++, p++) {
         PyObject *v = args[i];
         py_incref(v);
         py_decref(*p);
         *p = v;
-        p++;
     }
 
     if (n_args < n_items) {
@@ -292,13 +291,13 @@ dataobject_init_vc(PyObject *op, PyObject **args,
         if (defaults == NULL) {
             PyErr_Clear();
         } else {
-            for(i = n_args; i < n_items; i++) {
+            for(i = n_args; i < n_items; i++, p++) {
                 PyObject *value = PyTuple_GET_ITEM(defaults, i);
 
                 if (value != Py_None) {
                     py_incref(value);
-                    py_decref(items[i]);
-                    items[i] = value;
+                    py_decref(*p);
+                    *p = value;
                 }
             }
             py_decref(defaults);
