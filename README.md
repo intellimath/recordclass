@@ -708,6 +708,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
      assert a.y == 9
 
 * Slightly improve performance in the default `__init__`  when fields have default values or kwargs.
+* Remove experimental pypy support: slow and unpredictable memory footprint.
 
 #### 0.18.1.1
 

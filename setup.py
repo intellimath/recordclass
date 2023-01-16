@@ -35,12 +35,12 @@ _PY310 = sys.version_info[:2] >= (3, 10)
 extra_compile_args = []
 extra_link_args = []
 
-use_cython = 0
+# use_cython = 0
 
-if use_cython:
-    from Cython.Distutils import Extension, build_ext
-    from Cython.Compiler import Options
-    Options.fast_fail = True
+# if use_cython:
+#     from Cython.Distutils import Extension, build_ext
+#     from Cython.Compiler import Options
+#     Options.fast_fail = True
 
 ext_modules = [
     Extension(
