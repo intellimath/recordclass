@@ -2312,28 +2312,28 @@ dataobject_make(PyObject *module, PyObject *type_args, PyObject *kw)
     return ret;
 }
 
-PyDoc_STRVAR(dataobject_new_doc,
-"Create a new dataobject-based object");
+// PyDoc_STRVAR(dataobject_new_doc,
+// "Create a new dataobject-based object");
 
-static PyObject *
-dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
-{
-    PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
+// static PyObject *
+// dataobject_new_instance(PyObject *module, PyObject *type_args, PyObject *kw)
+// {
+//     PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
 
-    PyObject *op = type->tp_alloc(type, 0);
+//     PyObject *op = type->tp_alloc(type, 0);
 
-    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
+//     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
 
-    PyObject **items = PyDataObject_ITEMS(op);
+//     PyObject **items = PyDataObject_ITEMS(op);
 
-    Py_ssize_t i = 0;
-    while(i < n_items) {
-        py_incref(Py_None);
-        items[i++] = Py_None;
-    }    
+//     Py_ssize_t i = 0;
+//     while(i < n_items) {
+//         py_incref(Py_None);
+//         items[i++] = Py_None;
+//     }    
 
-    return op;
-}
+//     return op;
+// }
 
 PyDoc_STRVAR(dataobject_clone_doc,
 "Clone dataobject-based object");
@@ -2609,8 +2609,7 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 static PyMethodDef dataobjectmodule_methods[] = {
     {"asdict", asdict, METH_VARARGS, asdict_doc},
     {"astuple", astuple, METH_VARARGS, astuple_doc},
-    {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
-    // {"new_basic", (PyCFunction)dataobject_new_instance_basic, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
+    // {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
 #ifdef PYPY_VERSION
     {"_hash_func", (PyCFunction)_hash_func, METH_VARARGS, hash_func_doc},
