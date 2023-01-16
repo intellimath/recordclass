@@ -519,77 +519,77 @@ dataobject_finalize(PyObject *ob) {
     }
 }
 
-#ifdef PYPY_VERSION
-static PyObject*
-dataobject_getattr(PyObject *op, PyObject *name)
-{
-    PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
+// #ifdef PYPY_VERSION
+// static PyObject*
+// dataobject_getattr(PyObject *op, PyObject *name)
+// {
+//     PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
 
-    if (ob != NULL) {
-        PyTypeObject *ob_type = Py_TYPE(ob);
-        if (ob_type == &PyDataObjectProperty_Type) {
-            return ob_type->tp_descr_get(ob, op, Py_TYPE(op));
-        }
-    }
-    int is__dict__ = PyObject_RichCompareBool(name, __dict__name, Py_EQ);
-    PyTypeObject *type = Py_TYPE(op);
-    if (type->tp_dictoffset) {
-        PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-        if (*dictptr) {
-            PyObject *dict = *dictptr;
-            if (is__dict__) {
-                py_incref(dict);
-                return dict;
-            }
-            if (PyMapping_HasKey(dict, name)) {
-                PyObject *res = PyDict_GetItem(dict, name);
-                if (res) {
-                    py_incref(res);
-                    return res;
-                }
-            }
-        } else {
-            *dictptr = PyDict_New();
-            py_incref(*dictptr);
-            return *dictptr;
-        }
-    } else {
-        if (is__dict__) {
-            PyErr_Format(PyExc_AttributeError,
-                 "do not get __dict__ for type %s\n", Py_TYPE(op)->tp_name);
-            return NULL;
-        }
-    }
-    return PyObject_GenericGetAttr(op, name);
-}
+//     if (ob != NULL) {
+//         PyTypeObject *ob_type = Py_TYPE(ob);
+//         if (ob_type == &PyDataObjectProperty_Type) {
+//             return ob_type->tp_descr_get(ob, op, Py_TYPE(op));
+//         }
+//     }
+//     int is__dict__ = PyObject_RichCompareBool(name, __dict__name, Py_EQ);
+//     PyTypeObject *type = Py_TYPE(op);
+//     if (type->tp_dictoffset) {
+//         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
+//         if (*dictptr) {
+//             PyObject *dict = *dictptr;
+//             if (is__dict__) {
+//                 py_incref(dict);
+//                 return dict;
+//             }
+//             if (PyMapping_HasKey(dict, name)) {
+//                 PyObject *res = PyDict_GetItem(dict, name);
+//                 if (res) {
+//                     py_incref(res);
+//                     return res;
+//                 }
+//             }
+//         } else {
+//             *dictptr = PyDict_New();
+//             py_incref(*dictptr);
+//             return *dictptr;
+//         }
+//     } else {
+//         if (is__dict__) {
+//             PyErr_Format(PyExc_AttributeError,
+//                  "do not get __dict__ for type %s\n", Py_TYPE(op)->tp_name);
+//             return NULL;
+//         }
+//     }
+//     return PyObject_GenericGetAttr(op, name);
+// }
 
-static int
-dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
-{
-    PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
+// static int
+// dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
+// {
+//     PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
 
-    if (ob != NULL) {
-        PyTypeObject *ob_type = Py_TYPE(ob);
-        if (ob_type == &PyDataObjectProperty_Type) {
-            return ob_type->tp_descr_set(ob, op, val);
-        }
-    }
-    PyTypeObject *type = Py_TYPE(op);
-    if (type->tp_dictoffset) {
-        PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-        PyObject *dict;
-        if (*dictptr)
-            dict = *dictptr;
-        else
-            dict = *dictptr = PyDict_New();
-        PyDict_SetItem(dict, name, val);
-        return 1;
-    }
-    PyErr_Format(PyExc_AttributeError,
-            "do not set attribute for type %s\n", Py_TYPE(op)->tp_name);
-    return -1;
-}
-#else
+//     if (ob != NULL) {
+//         PyTypeObject *ob_type = Py_TYPE(ob);
+//         if (ob_type == &PyDataObjectProperty_Type) {
+//             return ob_type->tp_descr_set(ob, op, val);
+//         }
+//     }
+//     PyTypeObject *type = Py_TYPE(op);
+//     if (type->tp_dictoffset) {
+//         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
+//         PyObject *dict;
+//         if (*dictptr)
+//             dict = *dictptr;
+//         else
+//             dict = *dictptr = PyDict_New();
+//         PyDict_SetItem(dict, name, val);
+//         return 1;
+//     }
+//     PyErr_Format(PyExc_AttributeError,
+//             "do not set attribute for type %s\n", Py_TYPE(op)->tp_name);
+//     return -1;
+// }
+// #else
 // static PyObject*
 // dataobject_getattr(PyObject *op, PyObject *name)
 // {
@@ -616,7 +616,7 @@ dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
 //     }
 //     return PyObject_GenericSetAttr(op, name, val);
 // }
-#endif
+// #endif
 
 PyDoc_STRVAR(dataobject_len_doc,
 "T.__len__() -- len of T");
@@ -1403,13 +1403,13 @@ static PyTypeObject PyDataObject_Type = {
     &dataobject_hash_ni,                    /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
-#ifdef PYPY_VERSION
-    dataobject_getattr,                     /* tp_setattro */
-    dataobject_setattr,                     /* tp_setattro */
-#else
+// #ifdef PYPY_VERSION
+//     dataobject_getattr,                     /* tp_setattro */
+//     dataobject_setattr,                     /* tp_setattro */
+// #else
     0,                                      /* tp_getattro */
     0,                                      /* tp_setattro */
-#endif
+// #endif
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
                                             /* tp_flags */
@@ -1886,10 +1886,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
         
 
-#ifndef PYPY_VERSION
     if (tp_base->tp_hash)
         tp->tp_hash = tp_base->tp_hash;
-#endif
 
     if (tp_base->tp_iter)
         tp->tp_iter = tp_base->tp_iter;
@@ -1973,7 +1971,6 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
     Py_RETURN_NONE;
 }
 
-#ifndef PYPY_VERSION
 static PyObject*
 _set_hashable(PyObject *cls, PyObject *hashable) {
     PyTypeObject *tp = (PyTypeObject*)cls;
@@ -1997,7 +1994,6 @@ _set_hashable(PyObject *cls, PyObject *hashable) {
 
     Py_RETURN_NONE;
 }
-#endif
 
 static PyObject*
 _set_iterable(PyObject *cls, PyObject *iterable) {
@@ -2201,49 +2197,49 @@ asdict(PyObject *module, PyObject *args)
     return _asdict(op);
 }
 
-#ifdef PYPY_VERSION
-PyDoc_STRVAR(hash_func_doc,
-"Get hash value of the dataobject");
+// #ifdef PYPY_VERSION
+// PyDoc_STRVAR(hash_func_doc,
+// "Get hash value of the dataobject");
 
-static PyObject *
-_hash_func(PyObject *module, PyObject *args)
-{
-    PyObject *op;
-    PyTypeObject *type;
+// static PyObject *
+// _hash_func(PyObject *module, PyObject *args)
+// {
+//     PyObject *op;
+//     PyTypeObject *type;
 
-    op = PyTuple_GetItem(args, 0);
-    type = Py_TYPE(op);
+//     op = PyTuple_GetItem(args, 0);
+//     type = Py_TYPE(op);
 
-    if (type != &PyDataObject_Type &&
-        !PyType_IsSubtype(type, &PyDataObject_Type)) {
-            PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
-            return NULL;
-    }
+//     if (type != &PyDataObject_Type &&
+//         !PyType_IsSubtype(type, &PyDataObject_Type)) {
+//             PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
+//             return NULL;
+//     }
 
-    return PyLong_FromSsize_t(dataobject_hash(op));
-}
+//     return PyLong_FromSsize_t(dataobject_hash(op));
+// }
 
-PyDoc_STRVAR(iter_func_doc,
-"Get hash value of the dataobject");
+// PyDoc_STRVAR(iter_func_doc,
+// "Get hash value of the dataobject");
 
-static PyObject *
-_iter_func(PyObject *module, PyObject *args)
-{
-    PyObject *op;
-    PyTypeObject *type;
+// static PyObject *
+// _iter_func(PyObject *module, PyObject *args)
+// {
+//     PyObject *op;
+//     PyTypeObject *type;
 
-    op = PyTuple_GetItem(args, 0);
-    type = Py_TYPE(op);
+//     op = PyTuple_GetItem(args, 0);
+//     type = Py_TYPE(op);
 
-    if (type != &PyDataObject_Type &&
-        !PyType_IsSubtype(type, &PyDataObject_Type)) {
-            PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
-            return NULL;
-    }
+//     if (type != &PyDataObject_Type &&
+//         !PyType_IsSubtype(type, &PyDataObject_Type)) {
+//             PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
+//             return NULL;
+//     }
 
-    return dataobject_iter(op);
-}
-#endif
+//     return dataobject_iter(op);
+// }
+// #endif
 
 PyDoc_STRVAR(astuple_doc,
 "Convert object to a tuple");
@@ -2460,11 +2456,9 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     _collection_protocol(cls, sequence, mapping, readonly);
     _set_iterable(cls, iterable);
 
-#ifndef PYPY_VERSION
     PyObject *hashable = PyMapping_GetItemString(kw, "hashable");
     _set_hashable(cls, hashable);
     Py_XDECREF(hashable);
-#endif
 
     if (PyObject_IsTrue(gc))
         _enable_gc(cls);
@@ -2635,13 +2629,11 @@ PyInit__dataobject(void)
 {
     PyObject *m;
 
-#ifndef PYPY_VERSION
     m = PyState_FindModule(&dataobjectmodule);
     if (m) {
         py_incref(m);
         return m;
     }
-#endif
 
     m = PyModule_Create(&dataobjectmodule);
     if (m == NULL)

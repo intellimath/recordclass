@@ -25,12 +25,6 @@
 __all__ = 'clsconfig', 'datatype'
 
 import sys as _sys
-if 'PyPy' in _sys.version:
-    is_pypy = True
-else:
-    is_pypy = False
-
-import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
 _PY37 = _sys.version_info[:2] >= (3, 7)
 _PY310 = _sys.version_info[:2] >= (3, 10)
@@ -95,8 +89,6 @@ class datatype(type):
         from ._dataobject import dataobject
         from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
         from sys import intern as _intern
-        if is_pypy:
-            from ._dataobject import _hash_func, _iter_func
         if _PY311:
             from ._dataobject import member_new
 
@@ -277,17 +269,6 @@ class datatype(type):
                         ds = dataobjectproperty(i, False)
                 ns[name] = ds
 
-        if is_pypy:
-            if hashable and '__hash__' not in ns:
-                def __hash_func__(self):
-                    return _hash_func(self)
-                ns['__hash__'] = __hash_func__
-
-            if iterable and '__iter__' not in ns:
-                def __iter_func__(self):
-                    return _iter_func(self)
-                ns['__iter__'] = __iter_func__
-
         module = ns.get('__module__', None)
         if module is None:
             try:
@@ -388,13 +369,13 @@ def _make_new_function(typename, fields, defaults_dict, annotations, use_dict):
     new_func_def = f"""\
 def __new__(_cls_, {joined_fields2}):
     "Create new instance: {typename}({joined_fields2})"
-    return _method_new(_cls_, ({joined_fields}))
+    return _method_new(_cls_, {joined_fields})
 """
     
     new_func_def_use_dict = f"""\
 def __new__(_cls_, {joined_fields2}, **kw):
     "Create new instance: {typename}({joined_fields2}, **kw)"
-    return _method_new(_cls_, ({joined_fields}), **kw)
+    return _method_new(_cls_, {joined_fields}, **kw)
 """
     
     if use_dict:
