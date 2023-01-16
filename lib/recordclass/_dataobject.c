@@ -273,12 +273,15 @@ dataobject_init_vc(PyObject *op, PyObject **args,
     }
 
     PyObject **items = PyDataObject_ITEMS(op);
+    PyObject **p = items;
 
-    Py_ssize_t i = 0;
-    while(i < n_args) {
+    Py_ssize_t i;
+    for (i = 0; i < n_args; i++) {
         PyObject *v = args[i];
         py_incref(v);
-        items[i++] = v;
+        py_decref(*p);
+        *p = v;
+        p++;
     }
 
     if (n_args < n_items) {
@@ -290,10 +293,11 @@ dataobject_init_vc(PyObject *op, PyObject **args,
             PyErr_Clear();
         } else {
             for(i = n_args; i < n_items; i++) {
-                PyObject *value = PyTuple_GET_ITEM(defaults, i); //PyDict_GetItem(defaults, fname);
+                PyObject *value = PyTuple_GET_ITEM(defaults, i);
 
                 if (value != Py_None) {
                     py_incref(value);
+                    py_decref(items[i]);
                     items[i] = value;
                 }
             }
@@ -1903,7 +1907,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_is_gc = NULL;
 
 #if PY_VERSION_HEX >= 0x03080000
-    tp->tp_vectorcall_offset = 0
+    tp->tp_vectorcall_offset = 0;
 #endif
 
     Py_RETURN_NONE;
