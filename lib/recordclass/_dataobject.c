@@ -263,55 +263,20 @@ static int
 dataobject_init_vc(PyObject *op, PyObject **args,
                   const Py_ssize_t n_args, PyObject *kwds)
 {
-    PyTypeObject *type = Py_TYPE(op);
-    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
-
-    if (n_args > n_items) {
-        PyErr_SetString(PyExc_TypeError,
-            "number of the arguments greater than the number of fields");
-        return -1;
-    }
-
     PyObject **items = PyDataObject_ITEMS(op);
-    PyObject **p = items;
-
     Py_ssize_t i;
-    for (i = 0; i < n_args; i++, p++) {
+
+    for (i = 0; i < n_args; i++, items++) {
         PyObject *v = args[i];
         py_incref(v);
-        py_decref(*p);
-        *p = v;
-    }
-
-    if (n_args < n_items) {
-        PyObject *tp_dict = type->tp_dict;
-        PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-        PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
-        
-        if (defaults == NULL) {
-            PyErr_Clear();
-        } else {
-            for(i = n_args; i < n_items; i++, p++) {
-                PyObject *value = PyTuple_GET_ITEM(defaults, i);
-
-                if (value != Py_None) {
-                    py_incref(value);
-                    py_decref(*p);
-                    *p = value;
-                }
-            }
-            py_decref(defaults);
-        }
+        py_decref(*items);
+        *items = v;
     }
 
     if (kwds) {
-        int retval;
-
-        retval = _dataobject_update(op, kwds);
-
-        if (retval < 0) {
+        int retval = _dataobject_update(op, kwds);
+        if (retval < 0)
             return retval;
-        }
     }
 
     return 0;
@@ -329,13 +294,42 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyObject *op = type->tp_alloc(type, 0); 
     
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
-
+    const Py_ssize_t n_args = Py_SIZE(args);
     PyObject **items = PyDataObject_ITEMS(op);
+    
+    if (n_args > n_items) {
+        PyErr_SetString(PyExc_TypeError,
+            "number of the arguments greater than the number of fields");
+        return NULL;
+    }    
 
-    Py_ssize_t i = 0;
-    while(i < n_items) {
+    Py_ssize_t i;
+    
+    for(i = 0; i < n_args; i++) {
         py_incref(Py_None);
-        items[i++] = Py_None;
+        items[i] = Py_None;
+    }
+
+    if (n_args < n_items) {
+        PyObject *tp_dict = type->tp_dict;
+        PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
+        PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
+        
+        if (defaults == NULL) {
+            PyErr_Clear();
+            for(i = n_args; i < n_items; i++) {
+                py_incref(Py_None);
+                items[i] = Py_None;
+            }
+        } else {
+            for(i = n_args; i < n_items; i++) {
+                PyObject *value = PyTuple_GET_ITEM(defaults, i);
+
+                py_incref(value);
+                items[i] = value;
+            }
+            py_decref(defaults);
+        }
     }
 
     return op;
@@ -1877,9 +1871,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     __init__ = PyMapping_HasKeyString(dict, "__init__");
     __post_init__ = PyMapping_HasKeyString(dict, "__post_init__");
 
-    if (!__init__ && __post_init__) {
+    if (!__init__ && __post_init__)
         tp->tp_init = dataobject_init_post_init;
-    }
 
     if (!__new__ && tp_base->tp_new)
         tp->tp_new = tp_base->tp_new;

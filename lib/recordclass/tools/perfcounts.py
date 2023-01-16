@@ -36,22 +36,22 @@ class PointGC(dataobject, sequence=True, gc=True):
         return self.x*self.x + self.y*self.y + self.z*self.z
 
 
-class FastPoint(dataobject, sequence=True, fast_new=True):
-    x:int
-    y:int
-    z:int
+# class FastPoint(dataobject, sequence=True, fast_new=True):
+#     x:int
+#     y:int
+#     z:int
 
-    def norm2(self):
-        return self.x*self.x + self.y*self.y + self.z*self.z
+#     def norm2(self):
+#         return self.x*self.x + self.y*self.y + self.z*self.z
 
     
-class FastPointGC(dataobject, sequence=True, fast_new=True, gc=True):
-    x:int
-    y:int
-    z:int
+# class FastPointGC(dataobject, sequence=True, fast_new=True, gc=True):
+#     x:int
+#     y:int
+#     z:int
 
-    def norm2(self):
-        return self.x*self.x + self.y*self.y + self.z*self.z
+#     def norm2(self):
+#         return self.x*self.x + self.y*self.y + self.z*self.z
 
 
 class PointMap(dataobject, mapping=True, fast_new=True):

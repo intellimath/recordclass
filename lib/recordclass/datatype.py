@@ -374,7 +374,7 @@ class datatype(type):
 
 def _make_new_function(typename, fields, defaults_dict, annotations, use_dict):
 
-    from ._dataobject import dataobject, make
+    from ._dataobject import dataobject
 
     if fields and defaults_dict:
         fields2 = [fn for fn in fields if fn not in defaults_dict] + \
@@ -403,7 +403,7 @@ def __new__(_cls_, {joined_fields2}, **kw):
     # if has_init:
     #     _method_new = new_basic
     # else:
-    _method_new = make
+    _method_new = dataobject.__new__
 
     namespace = dict(_method_new=_method_new)
 
