@@ -675,38 +675,6 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 #### 0.18.2
 
-* Call `__post_init__`  after default or user defined `__init__`  if it exists. For example:
-
-     class A(dataobject):
-         x:int
-         y:int
-
-         def __post_init__(self):
-             self.x *= 2
-             self.y *= 3
-
-     a = A(2,3)
-     assert a.x == 4
-     assert a.y == 9
-
-   or
-
-     class A(dataobject):
-         x:int
-         y:int
-
-         def __init__(self, x, y):
-             self.x = x
-             self.y = y
-
-         def __post_init__(self):
-             self.x *= 2
-             self.y *= 3
-
-     a = A(2,3)
-     assert a.x == 4
-     assert a.y == 9
-
 * Slightly improve performance in the default `__init__`  when fields have default values or kwargs.
 * Remove experimental pypy support: slow and unpredictable memory footprint.
 

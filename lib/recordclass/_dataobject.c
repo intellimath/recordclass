@@ -90,8 +90,6 @@ PyObject *__dict__name;
 PyObject *__weakref__name;
 PyObject *__defaults__name;
 PyObject *__init__name;
-PyObject *__post_init__name;
-PyObject *__py_init__name;
 
 PyObject *fields_dict_name;
 
@@ -283,6 +281,69 @@ dataobject_init_vc(PyObject *op, PyObject **args,
 }
 
 static PyObject*
+dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    if (type == &PyDataObject_Type) {
+        PyErr_SetString(PyExc_TypeError,
+                        "dataobject base class can't be instantiated");
+        return NULL;
+    }
+    
+    PyObject *op = type->tp_alloc(type, 0); 
+    
+    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
+    const Py_ssize_t n_args = Py_SIZE(args);
+    PyObject **items = PyDataObject_ITEMS(op);
+    
+    if (n_args > n_items) {
+        PyErr_SetString(PyExc_TypeError,
+            "number of the arguments greater than the number of fields");
+        return NULL;
+    }    
+
+    Py_ssize_t i;
+    
+    PyTupleObject *tpl = (PyTupleObject*)args; 
+    PyObject **tmp = (PyObject**)(tpl->ob_item);
+    for (i = 0; i < n_args; i++) {
+        PyObject *v = tmp[i];
+        py_incref(v);
+        items[i] = v;
+    }
+
+    if (n_args < n_items) {
+        PyObject *tp_dict = type->tp_dict;
+        PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
+        PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
+        
+        if (defaults == NULL) {
+            PyErr_Clear();
+            for(i = n_args; i < n_items; i++) {
+                py_incref(Py_None);
+                items[i] = Py_None;
+            }
+        } else {
+            for(i = n_args; i < n_items; i++) {
+                PyObject *value = PyTuple_GET_ITEM(defaults, i);
+
+                py_incref(value);
+                items[i] = value;
+            }
+            py_decref(defaults);
+        }
+    }
+
+    if (kwds) {
+        int retval = _dataobject_update(op, kwds);
+        if (retval < 0)
+            return NULL;
+    }
+    
+    return op;
+}
+
+
+static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     if (type == &PyDataObject_Type) {
@@ -336,6 +397,12 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 static int
+dataobject_init_basic(PyObject *op, PyObject *args, PyObject *kwds)
+{
+    return 0;
+}
+
+static int
 dataobject_init(PyObject *op, PyObject *args, PyObject *kwds)
 {
     PyTupleObject *tmp = (PyTupleObject*)args;
@@ -345,28 +412,28 @@ dataobject_init(PyObject *op, PyObject *args, PyObject *kwds)
     return ret;
 }
 
-static int
-dataobject_init_post_init(PyObject *op, PyObject *args, PyObject *kwds)
-{
-    PyTupleObject *tmp = (PyTupleObject*)args;
+// static int
+// dataobject_init_post_init(PyObject *op, PyObject *args, PyObject *kwds)
+// {
+//     PyTupleObject *tmp = (PyTupleObject*)args;
     
-    int ret = dataobject_init_vc(op, (PyObject**)(tmp->ob_item), Py_SIZE(tmp), kwds);
+//     int ret = dataobject_init_vc(op, (PyObject**)(tmp->ob_item), Py_SIZE(tmp), kwds);
     
-    if (ret < 0)
-        return ret;
+//     if (ret < 0)
+//         return ret;
     
-    PyObject *method = PyObject_GetAttr(op, __post_init__name);
-    if (method == NULL)
-        return -1;
+//     PyObject *method = PyObject_GetAttr(op, __post_init__name);
+//     if (method == NULL)
+//         return -1;
 
-    if (PyObject_CallObject(method, NULL) == NULL) {
-        py_decref(method);
-        return -1;
-    }
+//     if (PyObject_CallObject(method, NULL) == NULL) {
+//         py_decref(method);
+//         return -1;
+//     }
 
-    py_decref(method);
-    return 0;
-}
+//     py_decref(method);
+//     return 0;
+// }
 
 static int
 dataobject_clear(PyObject *op)
@@ -1380,6 +1447,14 @@ static PyObject *dataobject_iter(PyObject *seq);
 // };
 
 
+// static PyGetSetDef subtype_getsets_full[] = {
+//     {"__dict__", subtype_dict, subtype_setdict,
+//      PyDoc_STR("dictionary for instance variables (if defined)")},
+//     {"__weakref__", subtype_getweakref, NULL,
+//      PyDoc_STR("list of weak references to the object (if defined)")},
+//     {0}
+// };
+
 
 PyDoc_STRVAR(dataobject_doc,
 "dataobject(...) --> dataobject\n\n\
@@ -1810,7 +1885,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     PyTypeObject *tp;
     PyTypeObject *tp_base;
-    int __init__, __new__, __post_init__;
+    int __init__, __new__;
     PyObject *fields, *dict;
     Py_ssize_t n_fields;
 
@@ -1869,13 +1944,17 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     __new__ = PyMapping_HasKeyString(dict, "__new__");
     __init__ = PyMapping_HasKeyString(dict, "__init__");
-    __post_init__ = PyMapping_HasKeyString(dict, "__post_init__");
-
-    if (!__init__ && __post_init__)
-        tp->tp_init = dataobject_init_post_init;
 
     if (!__new__ && tp_base->tp_new)
         tp->tp_new = tp_base->tp_new;
+    if (!__init__ && tp_base->tp_init)
+        tp->tp_init = tp_base->tp_init;
+
+
+    if (!__init__ && !__new__) {
+        tp->tp_new = dataobject_new_basic;
+        tp->tp_init = dataobject_init_basic;
+    }
 
     tp->tp_dealloc = dataobject_dealloc;
     tp->tp_free = PyObject_Del;
@@ -2688,14 +2767,6 @@ PyInit__dataobject(void)
 
     __init__name = PyUnicode_FromString("__init__");
     if (__init__name == NULL)
-        return NULL;
-
-    __post_init__name = PyUnicode_FromString("__post_init__");
-    if (__post_init__name == NULL)
-        return NULL;
-
-    __py_init__name = PyUnicode_FromString("__py_init__");
-    if (__py_init__name == NULL)
         return NULL;
     
 //     dataobject_as_mapping.mp_subscript = PyDataObject_Type.tp_getattro;

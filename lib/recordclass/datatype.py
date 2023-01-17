@@ -74,6 +74,36 @@ def get_option(options, name, default=False):
                 
 _ds_cache = {}
 _ds_ro_cache = {}
+
+def make_init(ns, init=0, post_init=0):
+    if init == 2:
+        if post_init == 2:
+            def __init__(self, *args, **kw):
+                print('2/2')
+                self.__py_init__(*args, **kw)
+                self.__post_init__()
+            return __init__
+        elif post_init == 1:
+            def __init__(self, *args, **kw):
+                print('2/1')
+                self.__py_init__(*args, **kw)
+                self.__post_init__()
+            return __init__
+    elif init == 1:
+        init = ns['__init__']
+        if post_init == 2:
+            def __init__(self, *args, **kw):
+                print('1/2')
+                self.__py_init__(*args, **kw)
+                self.__post_init__()
+            return __init__
+        elif post_init == 1:
+            def __init__(self, *args, **kw):
+                print('1/1')
+                init(self, *args, **kw)
+                self.__post_init__()
+            return __init__
+            
                 
 class datatype(type):
     """
@@ -279,34 +309,30 @@ class datatype(type):
         else:
             pass
         
-        py_init = False
-        py_post_init = False
+        has_init = False
+#         py_post_init = 0
         
-        if '__post_init__' in ns:
-            py_post_init = True
-        else:
-            for base in bases:
-                if '__post_init__' in base.__dict__:
-                    py_post_init = True
-                    break
+#         if '__post_init__' in ns:
+#             py_post_init = 1
+#         else:
+#             for base in bases:
+#                 if '__post_init__' in base.__dict__:
+#                     py_post_init = 2
+#                     break
         
         if '__init__' in ns:
-            py_init = True
-            if py_post_init:
-                ns['__py_init__'] = ns['__init__']
+            has_init = True
         else:
             for base in bases:
-                if '__init__' in base.__dict__:
-                    py_init = True
-                    if py_post_init:
-                        ns['__py_init__'] = base.__dict__['__init__']
+                if base != dataobject and '__init__' in base.__dict__:
+                    has_init = True
+                    ns['__init__'] = base.__dict__['__init__']
                     break
                     
-        if py_init and py_post_init:
-            def __init__(self, *args, **kw):
-                self.__py_init__(*args, **kw)
-                self.__post_init__()
-            ns['__init__'] = __init__        
+#         if py_init > 0 and py_post_init > 0:
+#             init = make_init(ns, py_init, py_post_init)
+#             if init is not None:
+#                 ns['__init__'] = init
                     
         if has_fields:
             defaults = tuple([defaults_dict.get(fn, None) for fn in fields])
