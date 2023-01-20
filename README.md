@@ -661,7 +661,7 @@ But it can be resolved with `__del__` method for clearing the linked list:
             curr.next = None
             curr = next
 
-There is builtin more fast deallocation method using finalization mechanizm when `deep_dealloc=True`. In such case one don't need `__del__`  method for clearing the list.
+There is builtin more fast deallocation method using finalization mechanizm when `deep_dealloc=True`. In such case one don't need `__del__`  method for clearing the linked list.
 
 > Note that for classes with `gc=True` (cyclic GC is used) this method is disabled: the python's cyclic GC is used in these cases.
 
@@ -673,7 +673,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 * Slightly improve performance in the default `__init__`  when fields have default values or kwargs.
 * Remove experimental pypy support: slow and difficult to predict memory footprint.
-* Exclude expreimental cython modules.
+* Exclude experimental cython modules.
 
 #### 0.18.1.1
 
@@ -681,7 +681,11 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 #### 0.18.1
 
-* Allow to initialize fields in the user defined `__init__`  method instead of `__new__`  (issue 29). If `__init__`  is defined by user then it's responsible for initialization of all fields. Note that this feature only work for mutable fields. Instances of the class with `readonly=True` must be initialized only in the default `__new__`. For example:
+* Allow to initialize fields in the user defined `__init__`  method instead of `__new__`  (issue 29). 
+  If `__init__`  is defined by user then it's responsible for initialization of all fields. 
+  Note that this feature only work for mutable fields.
+  Instances of the class with `readonly=True` must be initialized only in the default `__new__`.
+  For example:
 
         class A(dataobject):
               x:int

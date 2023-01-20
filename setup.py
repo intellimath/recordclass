@@ -31,7 +31,7 @@ import sys
 _PY310 = sys.version_info[:2] >= (3, 10)
 
 # extra_compile_args = ["-O3", "-Wfatal-errors"]
-# extra_compile_args = ["-Wfatal-errors"]
+extra_compile_args = ["-Wfatal-errors"]
 extra_compile_args = []
 extra_link_args = []
 
@@ -46,19 +46,19 @@ ext_modules = [
     Extension(
         "recordclass._dataobject",
         ["lib/recordclass/_dataobject.c"],
-        # extra_compile_args = extra_compile_args,
+        extra_compile_args = extra_compile_args,
         # extra_link_args = extra_link_args,
     ),
     Extension(
         "recordclass._litetuple",
         ["lib/recordclass/_litetuple.c"],
-        # extra_compile_args = extra_compile_args,
+        extra_compile_args = extra_compile_args,
         # extra_link_args = extra_link_args,
     ),
     Extension(
         "recordclass._litelist",
         ["lib/recordclass/_litelist.c"],
-        # extra_compile_args = extra_compile_args,
+        extra_compile_args = extra_compile_args,
         # extra_link_args = extra_link_args,
     ),
 ]
