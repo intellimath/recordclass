@@ -35,13 +35,6 @@ extra_compile_args = ["-Wfatal-errors"]
 extra_compile_args = []
 extra_link_args = []
 
-# use_cython = 0
-
-# if use_cython:
-#     from Cython.Distutils import Extension, build_ext
-#     from Cython.Compiler import Options
-#     Options.fast_fail = True
-
 ext_modules = [
     Extension(
         "recordclass._dataobject",
@@ -62,21 +55,6 @@ ext_modules = [
         # extra_link_args = extra_link_args,
     ),
 ]
-
-# if use_cython:
-#     ext_modules.append(Extension(
-#         "recordclass._linkedlist",
-#         ["lib/recordclass/_linkedlist.pyx"],
-#         # extra_compile_args = extra_compile_args,
-#         # extra_link_args = extra_link_args,
-#     ))
-# else:
-#     ext_modules.append(Extension(
-#         "recordclass._linkedlist",
-#         ["lib/recordclass/_linkedlist.c"],
-#         # extra_compile_args = extra_compile_args,
-#         # extra_link_args = extra_link_args,
-#     ))
 
 description = """Mutable variant of namedtuple -- recordclass, which support assignments, and other memory saving variants."""
 
