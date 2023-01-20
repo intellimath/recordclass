@@ -99,22 +99,22 @@ pyobject_get_builtin(const char *attrname_c)
 }
 
 static PyObject *
-PyLiteTuple_New(PyTypeObject *tp, Py_ssize_t nitems)
+litetuple_alloc(PyTypeObject *tp, Py_ssize_t nitems)
 {
-    Py_ssize_t size = _PyObject_VAR_SIZE(tp, nitems);
-    PyObject *op = (PyObject*)PyObject_Malloc(size);
+    // Py_ssize_t size = _PyObject_VAR_SIZE(tp, nitems);
+    PyObject *op = (PyObject*)_PyObject_NewVar(tp, nitems);
 
-    if (!op)
-        return PyErr_NoMemory();
+//     if (!op)
+//         return PyErr_NoMemory();
 
-    memset(op, '\0', size);
+//     // memset(op, '\0', size);
 
-    Py_SET_TYPE(op, tp);
-    if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        py_incref(tp);
+//     Py_SET_TYPE(op, tp);
+//     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
+//         py_incref(tp);
 
-    Py_SET_SIZE(op, nitems);
-    _Py_NewReference(op);
+//     Py_SET_SIZE(op, nitems);
+//     _Py_NewReference(op);
 
     return op;
 }
@@ -124,7 +124,7 @@ litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     const Py_ssize_t n = Py_SIZE(args);
 
-    PyObject *newobj = PyLiteTuple_New(type, n);
+    PyObject *newobj = (PyObject*)_PyObject_NewVar(type, n);
 
     PyTupleObject *tmp = (PyTupleObject*)args; 
     PyObject **dest = ((PyLiteTupleObject*)newobj)->ob_item;
@@ -167,17 +167,6 @@ litetuple_getnewargs(PyLiteTupleObject *ob)
     return (PyObject*)res;
 }
 
-// static int
-// litetuple_clear(PyLiteTupleObject *op)
-// {
-//     Py_ssize_t i;
-
-//     for (i = Py_SIZE(op); --i >= 0; ) {
-//         Py_CLEAR(op->ob_item[i]);
-//     }
-//     return 0;
-// }
-
 static void
 litetuple_dealloc(PyLiteTupleObject *op)
 {
@@ -189,21 +178,6 @@ litetuple_dealloc(PyLiteTupleObject *op)
 
     Py_TYPE(op)->tp_free((PyObject *)op);
 }
-
-// static void litetuple_free(void *o) {
-//         PyObject_Del((PyObject*)o);
-// }
-
-// static int
-// litetuple_traverse(PyLiteTupleObject *o, visitproc visit, void *arg)
-// {
-//     Py_ssize_t i;
-
-//     for (i = Py_SIZE(o); --i >= 0; ) {
-//         Py_VISIT(o->ob_item[i]);
-//     }
-//     return 0;
-// }
 
 static PyObject *
 litetuple_repr(PyObject *dd)
@@ -256,7 +230,7 @@ litetuple_concat(PyLiteTupleObject *a, PyObject *bb)
     if (size < 0)
         return PyErr_NoMemory();
 
-    np = (PyLiteTupleObject *) PyLiteTuple_New(Py_TYPE(a), size);
+    np = (PyLiteTupleObject *) litetuple_alloc(Py_TYPE(a), size);
     if (np == NULL) {
         return NULL;
     }
@@ -303,7 +277,7 @@ litetuple_slice(PyLiteTupleObject *a, Py_ssize_t ilow, Py_ssize_t ihigh)
 
     len = ihigh - ilow;
 
-    np = (PyLiteTupleObject*)PyLiteTuple_New(Py_TYPE(a), len);
+    np = (PyLiteTupleObject*)litetuple_alloc(Py_TYPE(a), len);
     if (np == NULL)
         return NULL;
         
@@ -414,9 +388,10 @@ litetuple_item(PyLiteTupleObject *a, Py_ssize_t i)
         PyErr_SetString(PyExc_IndexError, "index out of range");
         return NULL;
     }
-//     PyObject *v = a->ob_item[i];
-    py_incref(a->ob_item[i]);
-    return a->ob_item[i];
+
+    PyObject *v = a->ob_item[i];
+    py_incref(v);
+    return v;
 }
 
 static inline int
@@ -484,12 +459,12 @@ litetuple_repeat(PyLiteTupleObject *a, Py_ssize_t n)
     if (n < 0)
         n = 0;
     if (Py_SIZE(a) == 0) {
-        return PyLiteTuple_New(Py_TYPE(a), 0);
+        return litetuple_alloc(Py_TYPE(a), 0);
     }
     if (n > PY_SSIZE_T_MAX / Py_SIZE(a))
         return PyErr_NoMemory();
     size = Py_SIZE(a);
-    np = (PyLiteTupleObject *) PyLiteTuple_New(Py_TYPE(a), Py_SIZE(a) * n);
+    np = (PyLiteTupleObject *) litetuple_alloc(Py_TYPE(a), Py_SIZE(a) * n);
     if (np == NULL)
         return NULL;
     
@@ -642,7 +617,7 @@ litetuple_copy(PyLiteTupleObject *ob)
 {
     const Py_ssize_t len = Py_SIZE(ob);
 
-    PyLiteTupleObject *np = (PyLiteTupleObject*)PyLiteTuple_New(Py_TYPE(ob), len);
+    PyLiteTupleObject *np = (PyLiteTupleObject*)litetuple_alloc(Py_TYPE(ob), len);
     if (np == NULL)
         return NULL;
         
@@ -780,31 +755,31 @@ static PyTypeObject PyMLiteTuple_Type = {
     sizeof(PyLiteTupleObject) - sizeof(PyObject*),      /* tp_basicsize */
     sizeof(PyObject*),                              /* tp_itemsize */
     /* methods */
-    (destructor)litetuple_dealloc,        /* tp_dealloc */
+    (destructor)litetuple_dealloc,          /* tp_dealloc */
     0,                                      /* tp_print */
     0,                                      /* tp_getattr */
     0,                                      /* tp_setattr */
     0,                                      /* tp_reserved */
-    (reprfunc)litetuple_repr,             /* tp_repr */
+    (reprfunc)litetuple_repr,               /* tp_repr */
     0,                                      /* tp_as_number */
-    &litetuple_as_sequence,               /* tp_as_sequence */
-    &litetuple_as_mapping,                /* tp_as_mapping */
-    PyObject_HashNotImplemented,           /* tp_hash */
+    &litetuple_as_sequence,                 /* tp_as_sequence */
+    &litetuple_as_mapping,                  /* tp_as_mapping */
+    PyObject_HashNotImplemented,            /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
-    0,                /* tp_getattro */
-    0,                /* tp_setattro */
+    0,                                      /* tp_getattro */
+    0,                                      /* tp_setattro */
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
                                             /* tp_flags */
-    litetuple_doc,                        /* tp_doc */
-    0, /*(traverseproc)litetuple_traverse,*/     /* tp_traverse */
-    0, /*(inquiry)litetuple_clear,*/             /* tp_clear */
-    litetuple_richcompare,                /* tp_richcompare */
+    litetuple_doc,                          /* tp_doc */
+    0,                                      /* tp_traverse */
+    0,                                      /* tp_clear */
+    litetuple_richcompare,                  /* tp_richcompare */
     0,                                      /* tp_weaklistoffset*/
-    litetuple_iter,                       /* tp_iter */
+    litetuple_iter,                         /* tp_iter */
     0,                                      /* tp_iternext */
-    litetuple_methods,                    /* tp_methods */
+    litetuple_methods,                      /* tp_methods */
     0,                                      /* tp_members */
     0,                                      /* tp_getset */
     0,                                      /* tp_base */
@@ -812,10 +787,10 @@ static PyTypeObject PyMLiteTuple_Type = {
     0,                                      /* tp_descr_get */
     0,                                      /* tp_descr_set */
     0,                                      /* tp_litetupleoffset */
-    litetuple_init,                                      /* tp_init */
+    litetuple_init,                         /* tp_init */
     0,                                      /* tp_alloc */
-    litetuple_new,                        /* tp_new */
-    PyObject_Del,                        /* tp_free */
+    litetuple_new,                          /* tp_new */
+    PyObject_Del,                           /* tp_free */
     0                                       /* tp_is_gc */
 };
 
