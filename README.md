@@ -3,11 +3,10 @@
 **Recordclass** is [MIT Licensed](http://opensource.org/licenses/MIT) python library.
 It was started as a "proof of concept" for the problem of fast "mutable"
 alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on [stackoverflow](https://stackoverflow.com)).
-It implements a factory function `recordclass` (a variant of `collection.namedtuple`) in order to create record-like classes with the same API as  `collection.namedtuple`.
 It was evolved further in order to provide more memory saving, fast and flexible types.
 
-**Recordclass** library provide record-like classes that do not by default participate in cyclic *garbage collection* (GC) mechanism, but support only *reference counting* for garbage collection.
-The instances of such classes havn't `PyGC_Head` prefix in the memory, which decrease their size and have a little faster path for the instance allocation and deallocation.
+**Recordclass** library provide record/data-like classes that do not by default participate in cyclic *garbage collection* (GC) mechanism, but support only *reference counting* for garbage collection.
+The instances of such classes havn't `PyGC_Head` prefix in the memory, which decrease their size and have a little faster path for the instance creation and deallocation.
 This may make sense in cases where it is necessary to limit the size of the objects as much as possible, provided that they will never be part of references cycles in the application.
 For example, when an object represents a record with fields with values of simple types by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).
 
@@ -66,8 +65,7 @@ It also provide a factory function `make_dataclass` for creation of subclasses o
         >>> print(p.x, p.y)
         1 -1
 
-There is also a factory function `make_arrayclass` for creation of the subclass of `dataobject`, which can be 
-considered as a compact array of simple values.
+There is also a factory function `make_arrayclass` for creation of the subclass of `dataobject`, which can be considered as a compact array of simple objects.
    For example:
 
         >>> Pair = make_arrayclass(2)
@@ -76,9 +74,7 @@ considered as a compact array of simple values.
         >>> print(p)
         Pair(2, -1)
 
-It provide in addition the classes `lightlist` (immutable) and `litetuple`, which considers as list-like and
-tuple-like *light* containers in order to save memory. They do not supposed to participate in cyclic GC too.
-Mutable variant of litetuple is called by `mutabletuple`. 
+It provide in addition the classes `lightlist` (immutable) and `litetuple`, which considers as list-like and tuple-like *light* containers in order to save memory. They do not supposed to participate in cyclic GC too. Mutable variant of litetuple is called by `mutabletuple`. 
     For example: 
 
         >>> lt = litetuple(1, 2, 3)
@@ -438,65 +434,6 @@ Run tests:
 
     >>> python3 -c "from recordclass.test import *; test_all()"
 
-### Quick start with recordclass
-
-The `recordclass` factory function is designed to create classes that support `namedtuple`'s API, can be mutable and immutable, provide fast creation of the instances and have a minimum memory footprint.
-
-First load inventory:
-
-    >>> from recordclass import recordclass
-
-Example with `recordclass`:
-
-    >>> Point = recordclass('Point', 'x y')
-    >>> p = Point(1,2)
-    >>> print(p)
-    Point(1, 2)
-    >>> print(p.x, p.y)
-    1 2             
-    >>> p.x, p.y = 1, 2
-    >>> print(p)
-    Point(1, 2)
-    >>> sys.getsizeof(p) # the output below is for 64bit cpython3.8+
-    32
-
-Example with class statement and typehints:
-
-    >>> from recordclass import RecordClass
-
-    class Point(RecordClass):
-       x: int
-       y: int
-
-    >>> print(Point.__annotations__)
-    {'x': <class 'int'>, 'y': <class 'int'>}
-    >>> p = Point(1, 2)
-    >>> print(p)
-    Point(1, 2)
-    >>> print(p.x, p.y)
-    1 2
-    >>> p.x, p.y = 1, 2
-    >>> print(p)
-    Point(1, 2)
-
-By default `recordclass`-based class instances doesn't participate in cyclic GC and therefore they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`gc=False` by default):
-
-    >>> Node = recordclass('Node', 'root children', gc=True)
-    
-or
-
-    class Node(RecordClass, gc=True):
-         root: 'Node'
-         chilren: list
-
-The `recordclass` factory can also specify type of the fields:
-
-    >>> Point = recordclass('Point', [('x',int), ('y',int)])
-    
-or
-
-    >>> Point = recordclass('Point', {'x':int, 'y':int})
-
 ### Quick start with dataobject
 
 `Dataobject` is the base class for creation of data classes with fast instance creation and small memory footprint. They provide `dataclass`-like API. 
@@ -618,6 +555,65 @@ The followings timings explain (in jupyter notebook) boosting effect of `fast_ne
 
 The downside of `fast_new=True` option is less options for introspection of the instance.
 
+### Quick start with recordclass
+
+The `recordclass` factory function is designed to create classes that support `namedtuple`'s API, can be mutable and immutable, provide fast creation of the instances and have a minimum memory footprint.
+
+First load inventory:
+
+    >>> from recordclass import recordclass
+
+Example with `recordclass`:
+
+    >>> Point = recordclass('Point', 'x y')
+    >>> p = Point(1,2)
+    >>> print(p)
+    Point(1, 2)
+    >>> print(p.x, p.y)
+    1 2             
+    >>> p.x, p.y = 1, 2
+    >>> print(p)
+    Point(1, 2)
+    >>> sys.getsizeof(p) # the output below is for 64bit cpython3.8+
+    32
+
+Example with class statement and typehints:
+
+    >>> from recordclass import RecordClass
+
+    class Point(RecordClass):
+       x: int
+       y: int
+
+    >>> print(Point.__annotations__)
+    {'x': <class 'int'>, 'y': <class 'int'>}
+    >>> p = Point(1, 2)
+    >>> print(p)
+    Point(1, 2)
+    >>> print(p.x, p.y)
+    1 2
+    >>> p.x, p.y = 1, 2
+    >>> print(p)
+    Point(1, 2)
+
+By default `recordclass`-based class instances doesn't participate in cyclic GC and therefore they are smaller than `namedtuple`-based ones. If one want to use it in scenarios with reference cycles then one have to use option `gc=True` (`gc=False` by default):
+
+    >>> Node = recordclass('Node', 'root children', gc=True)
+    
+or
+
+    class Node(RecordClass, gc=True):
+         root: 'Node'
+         chilren: list
+
+The `recordclass` factory can also specify type of the fields:
+
+    >>> Point = recordclass('Point', [('x',int), ('y',int)])
+    
+or
+
+    >>> Point = recordclass('Point', {'x':int, 'y':int})
+
 ### Using dataobject-based classes with mapping protocol
 
     class FastMapingPoint(dataobject, mapping=True):
@@ -676,7 +672,8 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 #### 0.18.2
 
 * Slightly improve performance in the default `__init__`  when fields have default values or kwargs.
-* Remove experimental pypy support: slow and unpredictable memory footprint.
+* Remove experimental pypy support: slow and difficult to predict memory footprint.
+* Exclude expreimental cython modules.
 
 #### 0.18.1.1
 
@@ -684,8 +681,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 #### 0.18.1
 
-* Allow to initialize fields in the user defined `__init__`  method instead of `__new__`  (issue 29). If `__init__`  is defined by user then it's responsible for initialization of all fields. Note that this feature only work for mutable fields. Instances of the class with `readonly=True` must be initialized only in the default `__new__`.
-For example:
+* Allow to initialize fields in the user defined `__init__`  method instead of `__new__`  (issue 29). If `__init__`  is defined by user then it's responsible for initialization of all fields. Note that this feature only work for mutable fields. Instances of the class with `readonly=True` must be initialized only in the default `__new__`. For example:
 
         class A(dataobject):
               x:int

@@ -1950,7 +1950,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     if (!__init__ && tp_base->tp_init)
         tp->tp_init = tp_base->tp_init;
 
-
     if (!__init__ && !__new__) {
         tp->tp_new = dataobject_new_basic;
         tp->tp_init = dataobject_init_basic;
