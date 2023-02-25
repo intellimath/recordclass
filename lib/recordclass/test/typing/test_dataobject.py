@@ -44,6 +44,15 @@ class TestPickle33(dataobject):
     y:int
     z:int
     __dict__:dict
+    
+class extended_dataobject(dataobject):
+    def __init__(self, *args, **kwargs): 
+        super().__init__(*args, **kwargs)
+
+class Param(extended_dataobject):
+    x:float = 1
+    y:float = 2                
+    
 
 class DataObjectTest3(unittest.TestCase):
 
@@ -592,6 +601,17 @@ class DataObjectTest3(unittest.TestCase):
         p = TestPickle33(10, 20, 30)
         p.a = 1
         p.b = 2
+        for module in (pickle,):
+            loads = getattr(module, 'loads')
+            dumps = getattr(module, 'dumps')
+            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+                tmp = dumps(p, protocol)
+                q = loads(tmp)
+                self.assertEqual(p, q)
+
+    def test_pickle44_tp(self):
+
+        p = Param(10, 20)
         for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')

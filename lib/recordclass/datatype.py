@@ -74,36 +74,6 @@ def get_option(options, name, default=False):
                 
 _ds_cache = {}
 _ds_ro_cache = {}
-
-def make_init(ns, init=0, post_init=0):
-    if init == 2:
-        if post_init == 2:
-            def __init__(self, *args, **kw):
-                print('2/2')
-                self.__py_init__(*args, **kw)
-                self.__post_init__()
-            return __init__
-        elif post_init == 1:
-            def __init__(self, *args, **kw):
-                print('2/1')
-                self.__py_init__(*args, **kw)
-                self.__post_init__()
-            return __init__
-    elif init == 1:
-        init = ns['__init__']
-        if post_init == 2:
-            def __init__(self, *args, **kw):
-                print('1/2')
-                self.__py_init__(*args, **kw)
-                self.__post_init__()
-            return __init__
-        elif post_init == 1:
-            def __init__(self, *args, **kw):
-                print('1/1')
-                init(self, *args, **kw)
-                self.__post_init__()
-            return __init__
-            
                 
 class datatype(type):
     """
