@@ -84,7 +84,7 @@ def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=Non
                    readonly=readonly, iterable=iterable,
                    mapping=mapping, sequence=sequence,
                    use_dict=use_dict, use_weakref=use_weakref,
-                   hashable=hashable,
+                   hashable=hashable
                    )
 
     return cls

@@ -414,7 +414,7 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
             fn_txt = fn
         defval = defaults[i]
         if defval is not None:
-            fn_txt += "=%r" % defval
+            fn_txt += "=%s" % repr(defval)
         fields2.append(fn_txt)
     joined_fields2 = ', '.join(fields2)
 
