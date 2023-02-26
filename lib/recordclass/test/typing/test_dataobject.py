@@ -50,8 +50,8 @@ class extended_dataobject(dataobject):
         super().__init__(*args, **kwargs)
 
 class Param(extended_dataobject):
-    x:float = 1
-    y:float = 2                
+    x:dict = {'a':1, 'b':2}
+    y:tuple = (1,2)                
     
 
 class DataObjectTest3(unittest.TestCase):
