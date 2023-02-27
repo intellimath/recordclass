@@ -669,6 +669,10 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.18.3
+
+* Fix bug with a tuple as default value of the field.
+
 #### 0.18.2
 
 * Slightly improve performance in the default `__init__`  when fields have default values or kwargs.
