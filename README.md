@@ -672,6 +672,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 #### 0.18.3
 
 * Fix bug with a tuple as default value of the field.
+* Fix defaults propagtion to subclasses.
 
 #### 0.18.2
 

@@ -52,7 +52,6 @@ class extended_dataobject(dataobject):
 class Param(extended_dataobject):
     x:dict = {'a':1, 'b':2}
     y:tuple = (1,2)                
-    
 
 class DataObjectTest3(unittest.TestCase):
 
@@ -385,6 +384,30 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(b.y, 0)
         self.assertEqual(repr(b), "B(x=1, y=0)")        
 
+    def test_subclass_defaults_2_tp(self):
+        class A(dataobject):
+            x:int=0
+            y:int=1
+
+        class B(A):
+            z:int=2
+
+        self.assertEqual(A.__fields__, ('x', 'y'))
+        self.assertEqual(A.__defaults__, (0,1))
+
+        self.assertEqual(B.__fields__, ('x', 'y', 'z'))
+        self.assertEqual(B.__defaults__, (0, 1, 2))
+        b = B()
+        self.assertEqual(b.x, 0)
+        self.assertEqual(b.y, 1)
+        self.assertEqual(b.z, 2)
+        self.assertEqual(repr(b), "B(x=0, y=1, z=2)")        
+        b = B(1)
+        self.assertEqual(b.x, 1)
+        self.assertEqual(b.y, 1)
+        self.assertEqual(b.z, 2)
+        self.assertEqual(repr(b), "B(x=1, y=1, z=2)")        
+        
     def test_keyword_args_tp(self):
         class A(dataobject):
             x:int

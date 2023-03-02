@@ -151,15 +151,15 @@ def collect_info_from_bases(bases):
         base_annotations = getattr(base, '__annotations__', {})
         n = number_of_dataitems(base)
         if type(fs) is tuple and len(fs) == n:
-            for fn in fs:
+            for i, fn in enumerate(fs):
                 if fn in fields:
                     raise TypeError('field %s is already defined in the %s' % (fn, base))
                 else:
                     fields_dict[fn] = f = {}
                     if _is_readonly_member(base.__dict__[fn]):
                         f['readonly'] = True
-                    if fn in base_defaults:
-                        f['default'] = base_defaults[fn]
+                    # if fn in base_defaults:
+                    f['default'] = base_defaults[i]
                     if fn in base_annotations:
                         f['type'] = base_annotations[fn]
                     fields.append(fn)
