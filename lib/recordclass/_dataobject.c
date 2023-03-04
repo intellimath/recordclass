@@ -155,6 +155,24 @@ PyDataObject_GetDict(PyObject *obj)
     return dict;
 }
 
+static PyObject*
+_PyObject_GetModule(const char *modname_c)
+{
+    PyObject *modname;
+    PyObject *mod;
+
+    modname = PyUnicode_FromString(modname_c);
+    if (modname == NULL)
+        return NULL;
+    mod = PyImport_Import(modname);
+    if (mod == NULL) {
+        py_decref(modname);
+        return NULL;
+    }
+
+    return mod;
+}
+
 static PyObject *
 _PyObject_GetObject(const char *modname_c, const char *attrname_c)
 {
@@ -1351,6 +1369,8 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
         result = PyTuple_Pack(3, tp, args, kw);
     else
         result = PyTuple_Pack(2, tp, args);
+        
+    printf("reduce: %s\n", tp->tp_name);
 
     py_decref(args);
     Py_XDECREF(kw);
@@ -2721,7 +2741,7 @@ PyInit__dataobject(void)
     datatype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
     __fix_type((PyObject*)&PyDataObject_Type, datatype);
     py_decref(datatype);
-
+    
     // PyDataObject_Type.tp_base = &PyBaseObject_Type;
     // py_incref(&PyBaseObject_Type);
 // #if PY_VERSION_HEX == 0x03080000
@@ -2769,5 +2789,11 @@ PyInit__dataobject(void)
     if (__init__name == NULL)
         return NULL;
 
+    // PyObject *mod = _PyObject_GetModule("recordclass.datatype");
+    // if (mod == NULL)
+    //     return NULL;
+    // PyObject_SetAttrString(mod, (const char*)"dataobject", (PyObject*)&PyDataObject_Type)
+    // py_incref(&PyDataObject_Type);
+    
     return m;
 }

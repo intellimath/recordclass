@@ -238,13 +238,13 @@ class datatype(type):
             fields = tuple(fields)
             n_fields = len(fields)
 
-            if use_dict:
-                options['use_dict'] = use_dict
-            if use_weakref:
-                options['use_weakref'] = use_weakref
+#             if use_dict:
+#                 options['use_dict'] = use_dict
+#             if use_weakref:
+#                 options['use_weakref'] = use_weakref
 
-            if fast_new:
-                options['fast_new'] = fast_new
+#             if fast_new:
+#                 options['fast_new'] = fast_new
 
             if has_fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults_dict, annotations, use_dict)
@@ -315,6 +315,14 @@ class datatype(type):
 
             if '__doc__' not in ns:
                 ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
+
+        options.update(dict(
+                gc=gc, fast_new=fast_new, readonly=readonly, iterable=iterable,
+                deep_dealloc=deep_dealloc, sequence=sequence, mapping=mapping,
+                use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
+                mapping_only=mapping_only))
+        
+        ns['__options__'] = options
 
         cls = type.__new__(metatype, typename, bases, ns)
 
