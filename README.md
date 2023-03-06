@@ -673,6 +673,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 * Fix bug with a tuple as default value of the field.
 * Fix defaults propagtion to subclasses.
+* Fix some issues with pickling in the context of dill.
 
 #### 0.18.2
 
