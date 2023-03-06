@@ -1370,7 +1370,7 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
     else
         result = PyTuple_Pack(2, tp, args);
         
-    printf("reduce: %s\n", tp->tp_name);
+    // printf("reduce: %s\n", tp->tp_name);
 
     py_decref(args);
     Py_XDECREF(kw);

@@ -7,7 +7,7 @@ import gc
 import weakref
 
 from recordclass import make_dataclass, datatype, as_dataclass
-from recordclass import dataobject
+from recordclass import dataobject, datatype
 from recordclass import asdict
 
 # _PY36 = _sys.version_info[:2] >= (3, 6)
@@ -642,6 +642,27 @@ class DataObjectTest3(unittest.TestCase):
                 tmp = dumps(p, protocol)
                 q = loads(tmp)
                 self.assertEqual(p, q)
+
+    def test_dill(self):
+        print('*** DILL ***')
+        try:
+            import dill
+        except:
+            return
+
+        import warnings
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            p = Param(10, 20)
+            s = dill.dumps(p)
+            print(s)
+            p1 = dill.loads(s)
+            if w:
+                print(w)
+            self.assertEqual(p.x, p1.x)
+            self.assertEqual(p.y, p1.y)
 
     def test_invalid_defaults_tp(self):
         import copy
