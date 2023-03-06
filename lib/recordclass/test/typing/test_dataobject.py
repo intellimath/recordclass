@@ -685,21 +685,21 @@ class DataObjectTest3(unittest.TestCase):
         c = copy.deepcopy(a)
         self.assertEqual(a, c)
 
-#     def test_signature_tp(self):
-#         class A(dataobject):
-#             x:int
-#             y:int=2
+    def test_signature_tp(self):
+        class A(dataobject, fast_new=False):
+            x:int
+            y:int=2
 
-#         import inspect
-#         s = inspect.signature(A)
-#         px = s.parameters['x']
-#         self.assertEqual(px.name, 'x')
-#         self.assertEqual(px.annotation, int)
-#         self.assertEqual(px.default, px.empty)
-#         py = s.parameters['y']
-#         self.assertEqual(py.name, 'y')
-#         self.assertEqual(py.annotation, int)
-#         self.assertEqual(py.default, 2)
+        import inspect
+        s = inspect.signature(A)
+        px = s.parameters['x']
+        self.assertEqual(px.name, 'x')
+        self.assertEqual(px.annotation, int)
+        self.assertEqual(px.default, px.empty)
+        py = s.parameters['y']
+        self.assertEqual(py.name, 'y')
+        self.assertEqual(py.annotation, int)
+        self.assertEqual(py.default, 2)
 
     def test_fast_new_tp(self):
         class A(dataobject, fast_new=True):
