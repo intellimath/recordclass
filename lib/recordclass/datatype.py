@@ -238,14 +238,6 @@ class datatype(type):
             fields = tuple(fields)
             n_fields = len(fields)
 
-#             if use_dict:
-#                 options['use_dict'] = use_dict
-#             if use_weakref:
-#                 options['use_weakref'] = use_weakref
-
-#             if fast_new:
-#                 options['fast_new'] = fast_new
-
             if has_fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults_dict, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
@@ -279,17 +271,7 @@ class datatype(type):
         else:
             pass
         
-        has_init = False
-#         py_post_init = 0
-        
-#         if '__post_init__' in ns:
-#             py_post_init = 1
-#         else:
-#             for base in bases:
-#                 if '__post_init__' in base.__dict__:
-#                     py_post_init = 2
-#                     break
-        
+        has_init = False        
         if '__init__' in ns:
             has_init = True
         else:
@@ -298,11 +280,6 @@ class datatype(type):
                     has_init = True
                     ns['__init__'] = base.__dict__['__init__']
                     break
-                    
-#         if py_init > 0 and py_post_init > 0:
-#             init = make_init(ns, py_init, py_post_init)
-#             if init is not None:
-#                 ns['__init__'] = init
                     
         if has_fields:
             defaults = tuple([defaults_dict.get(fn, None) for fn in fields])
