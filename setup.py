@@ -31,7 +31,7 @@ import sys
 _PY310 = sys.version_info[:2] >= (3, 10)
 
 # extra_compile_args = ["-O3", "-Wfatal-errors"]
-extra_compile_args = ["-Wfatal-errors"]
+# extra_compile_args = ["-Wfatal-errors"]
 extra_compile_args = []
 extra_link_args = []
 

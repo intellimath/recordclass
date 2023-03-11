@@ -2485,6 +2485,7 @@ _dataobject_update(PyObject *op, PyObject *kwds)
         Py_ssize_t index = _tuple_index((PyTupleObject*)fields, key);
         if (index >= 0) {
             dataobject_ass_item(op, index, val);
+            py_decref(val);
             py_decref(key);
             continue;
         } else {

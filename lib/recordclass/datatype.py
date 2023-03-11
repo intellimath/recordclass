@@ -53,10 +53,10 @@ def clsconfig(*, sequence=False, mapping=False, readonly=False,
     return func
 
 def _matching_annotations_and_defaults(annotations, defaults):
-    first_default = 0
+    first_default = False
     for name in annotations:
         if name in defaults:
-            first_default = 1
+            first_default = True
         else:
             if first_default:
                 raise TypeError('A field without default value appears after a field with default value')
