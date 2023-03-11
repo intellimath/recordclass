@@ -66,6 +66,10 @@ It also provide a factory function `make_dataclass` for creation of subclasses o
         1 -1
 
 There is also a factory function `make_arrayclass` for creation of the subclass of `dataobject`, which can be considered as a compact array of simple objects.
+   If one want to use some sequence for initialization then:
+   
+        >>> p = Point(*sequence)
+
    For example:
 
         >>> Pair = make_arrayclass(2)
