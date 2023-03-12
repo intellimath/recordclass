@@ -27,10 +27,10 @@ from .utils import check_name, collect_info_from_bases
 
 __all__ = 'make_dictclass', 'DictclassStorage'
 
-def make_dictclass(typename, fields, defaults=None, *, bases=None, namespace=None,
+def make_dictclass(typename, keys, defaults=None, *, bases=None, namespace=None,
                    readonly=False, module=None, fast_new=True):
 
-    """Returns a new class with named fields and small memory footprint.
+    """Returns a new dict-like class with keys and small memory footprint.
 
     >>> from recordclass import make_dataclass, asdict
     >>> Point = make_dictclass('Point', 'x y')
@@ -42,7 +42,7 @@ def make_dictclass(typename, fields, defaults=None, *, bases=None, namespace=Non
     from .datatype import datatype
     import sys as _sys
 
-    fields, annotations, defaults = process_fields(fields, defaults, False, ())
+    keys, annotations, defaults = process_fields(keys, defaults, False, ())
     typename = check_name(typename)
     
     if namespace is None:
@@ -50,24 +50,20 @@ def make_dictclass(typename, fields, defaults=None, *, bases=None, namespace=Non
     else:
         ns = namespace.copy()
         
-    n_fields = len(fields)
+    n_keys = len(keys)
     n_defaults = len(defaults) if defaults else 0
 
-#     if use_dict and '__dict__' not in fields:
-#         fields.append('__dict__')
-#     if use_weakref and '__weakref__' not in fields:
-#         fields.append('__weakref__')
+#     if use_dict and '__dict__' not in keys:
+#         keys.append('__dict__')
+#     if use_weakref and '__weakref__' not in keys:
+#         keys.append('__weakref__')
 
-    ns['__fields__'] = fields
+    ns['__fields__'] = keys
     ns['__annotations__'] = annotations
     ns['__defaults__'] = defaults
     
     if readonly:
         raise TypeError('Immutable type can not support dict-like interface')
-
-    iterable = True
-#     if not mapping_only:
-#         mapping = True
 
     def keys(self):
         return iter(self.__fields__)
@@ -83,9 +79,9 @@ def make_dictclass(typename, fields, defaults=None, *, bases=None, namespace=Non
         return update(self, d)
 
     def get(self, key, default=None):
-        if key in self.__fields__:
+        try:
             return self[key]
-        else:
+        except KeyError:
             return default
 
     def __contains__(self, key):
@@ -95,7 +91,8 @@ def make_dictclass(typename, fields, defaults=None, *, bases=None, namespace=Non
         'keys': keys, 
         'items': items, 
         'values': values, 
-        'get': get
+        'get': get,
+        'update': update,
     })
 
     if bases:
@@ -115,7 +112,7 @@ def make_dictclass(typename, fields, defaults=None, *, bases=None, namespace=Non
 
     cls = datatype(typename, bases, ns, 
                    gc=False, fast_new=fast_new,
-                   readonly=readonly, iterable=iterable,
+                   readonly=readonly, iterable=True,
                    mapping=True, sequence=False,
                    use_dict=False, use_weakref=False,
                    hashable=False, 
@@ -131,15 +128,15 @@ class DictclassStorage:
     def clear_storage(self):
         self._storage.clear()
     #
-    def make_dictclass(self, name, fields, defaults=None, **kw):
-        if type(fields) is str:
-            fields = fields.replace(',', ' ').split()
-            fields = ' '.join(fn.strip() for fn in fields)
+    def make_dictclass(self, name, keys, defaults=None, **kw):
+        if type(keys) is str:
+            keys = keys.replace(',', ' ').split()
+            keys = ' '.join(fn.strip() for fn in keys)
         else:
-            fields = ' '.join(fields)
-        key = (name, fields)
+            keys = ' '.join(keys)
+        key = (name, keys)
         cls = self._storage.get(key, None)
         if cls is None:
-            cls = make_datadict(name, fields, defaults, **kw)
+            cls = make_datadict(name, keys, defaults, **kw)
             self._storage[key] = cls
         return cls
