@@ -863,12 +863,13 @@ class DataObjectTest3(unittest.TestCase):
                 x: float=1.0
                 y: float=2.0
 
-            class Example_Derived_State(Example_State):
-                x:ClassVar[int] = 10
+            with self.assertRaises(TypeError):                        
+                class Example_Derived_State(Example_State):
+                    x:ClassVar[int] = 10
                 
-            a = Example_Derived_State()
-            print(a)
-            print(Example_Derived_State.x)
+            # a = Example_Derived_State()
+            # print(a)
+            # print(Example_Derived_State.x)
 
     def test_initialize_in_init(self):
         class A(dataobject):
