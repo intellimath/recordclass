@@ -129,10 +129,14 @@ class datatype(type):
             else:
                 fields_dict = {}
                 
+            classvars = set()
         else:
             fields_dict = {fn:{'type':tp} \
                            for fn,tp in annotations.items() \
                            if not _is_classvar(tp)}
+            classvars = {fn \
+                           for fn,tp in annotations.items() \
+                           if _is_classvar(tp)}
             fields = tuple(fields_dict)
             
         has_fields = True
@@ -215,6 +219,9 @@ class datatype(type):
 
             if bases and (len(bases) > 1 or bases[0] is not dataobject):
                 _fields, _fields_dict, _use_dict, _use_weakref = collect_info_from_bases(bases)
+                for fn in classvars:
+                    if fn in _fields:
+                        raise TypeError(f"field '{fn}' is a class variable and an instance field at the same time")
                 use_dict = _use_dict or use_dict
                 use_weakref = _use_weakref or use_weakref
                 _defaults_dict = {fn:fd['default'] for fn,fd in _fields_dict.items() if 'default' in fd} 

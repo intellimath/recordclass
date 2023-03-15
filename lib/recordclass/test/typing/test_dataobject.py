@@ -856,6 +856,19 @@ class DataObjectTest3(unittest.TestCase):
             self.assertEqual(Point.__annotations__, {'x':float,'y':float})            
             pt = Point(1,2)
             self.assertEqual((pt.x, pt.y), (1, 2))
+            
+        def test_classvar_3(self):
+            from typing import ClassVar
+            class Example_State(dataobject):
+                x: float=1.0
+                y: float=2.0
+
+            class Example_Derived_State(Example_State):
+                x:ClassVar[int] = 10
+                
+            a = Example_Derived_State()
+            print(a)
+            print(Example_Derived_State.x)
 
     def test_initialize_in_init(self):
         class A(dataobject):
