@@ -1959,6 +1959,10 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         // tp->tp_flags &= ~Py_TPFLAGS_PREHEADER;
 #endif
 
+// #if PY_VERSION_HEX >= 0x030B0000
+//         tp->tp_flags &= ~Py_TPFLAGS_IMMUTABLETYPE;
+// #endif
+
     tp->tp_alloc = dataobject_alloc;
 
     // __new__ = PyMapping_HasKeyString(dict, "__new__");

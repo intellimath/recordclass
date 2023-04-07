@@ -167,6 +167,12 @@ class litelistTest(unittest.TestCase):
         self.assertEqual(len(a), 5)
         self.assertEqual(repr(a), "litelist([1, 2, 3, 4, 5])")
         
+    def test_incremental_add(self):
+        ll = litelist([])
+        for i in range(10000):
+            ll.append(i)
+        
+        
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(litelistTest))

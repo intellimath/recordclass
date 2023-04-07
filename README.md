@@ -673,6 +673,11 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.18.4
+
+* Fix bug with duplicating the field name during inheritance.
+* Allow use of ClassVar to define class level attributes.
+
 #### 0.18.3
 
 * Fix bug with a tuple as default value of the field.

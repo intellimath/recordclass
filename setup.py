@@ -39,24 +39,24 @@ ext_modules = [
     Extension(
         "recordclass._dataobject",
         ["lib/recordclass/_dataobject.c"],
-        extra_compile_args = extra_compile_args,
+        # extra_compile_args = extra_compile_args,
         # extra_link_args = extra_link_args,
     ),
     Extension(
         "recordclass._litetuple",
         ["lib/recordclass/_litetuple.c"],
-        extra_compile_args = extra_compile_args,
+        # extra_compile_args = extra_compile_args,
         # extra_link_args = extra_link_args,
     ),
     Extension(
         "recordclass._litelist",
         ["lib/recordclass/_litelist.c"],
-        extra_compile_args = extra_compile_args,
+        # extra_compile_args = extra_compile_args,
         # extra_link_args = extra_link_args,
     ),
 ]
 
-description = """Mutable variant of namedtuple -- recordclass, which support assignments, and other memory saving variants."""
+description = """Mutable variant of namedtuple -- recordclass, which support assignments, compact dataclasses and other memory saving variants."""
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()

@@ -26,8 +26,6 @@
 
 #include "Python.h"
 
-static PyTypeObject PyLiteList_Type;
-
 #define PyLiteList_ITEMS(op) ((PyLiteListObject *)(op))->ob_item
 #define PyLiteList_GET_ITEM(op, i) (((PyLiteListObject *)(op))->ob_item[i])
 #define PyLiteList_SET_ITEM(op, i, v) (((PyLiteListObject *)(op))->ob_item[i] = v)
