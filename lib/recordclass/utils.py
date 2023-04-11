@@ -167,3 +167,25 @@ def collect_info_from_bases(bases):
             raise TypeError("invalid fields in base class %r" % base)
         
     return fields, fields_dict, use_dict, use_weakref
+
+def has_py_new(cls):
+    if '__new__' in cls.__dict__:
+        return True
+    for base in cls.__bases__:
+        if base is object or base is type:
+            continue
+        if has_py_new(base):
+            return True
+        
+    return False
+
+def has_py_init(cls):
+    if '__init__' in cls.__dict__:
+        return True
+    for base in cls.__bases__:
+        if base is object or base is type:
+            continue
+        if has_py_init(base):
+            return True
+        
+    return False

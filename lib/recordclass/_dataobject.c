@@ -282,11 +282,11 @@ dataobject_init_vc(PyObject *op, PyObject **args,
     PyObject **items = PyDataObject_ITEMS(op);
     Py_ssize_t i;
 
-    for (i = 0; i < n_args; i++, items++) {
-        PyObject *v = args[i];
+    for (i = 0; i < n_args; i++) {
+        PyObject *v = *(args++);
         py_incref(v);
         py_decref(*items);
-        *items = v;
+        *(items++) = v;
     }
 
     if (kwds) {
