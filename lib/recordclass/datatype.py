@@ -85,7 +85,7 @@ class datatype(type):
                 use_dict=False, use_weakref=False, hashable=False, 
                 mapping_only=False):
 
-        from .utils import check_name, collect_info_from_bases
+        from .utils import check_name, collect_info_from_bases, has_py_new, has_py_init
         from ._dataobject import dataobject
         from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
         from sys import intern as _intern
@@ -277,16 +277,6 @@ class datatype(type):
                 pass
         else:
             pass
-        
-        has_init = False        
-        if '__init__' in ns:
-            has_init = True
-        else:
-            for base in bases:
-                if base != dataobject and '__init__' in base.__dict__:
-                    has_init = True
-                    ns['__init__'] = base.__dict__['__init__']
-                    break
                     
         if has_fields:
             defaults = tuple([defaults_dict.get(fn, None) for fn in fields])

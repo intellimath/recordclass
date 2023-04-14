@@ -675,8 +675,8 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 #### 0.18.4
 
-* Fix bug with duplicating the field name during inheritance.
-* Allow use of ClassVar to define class level attributes.
+* Fix a bug #35 with duplicating the field name during inheritance and mixing it with class level attributes.
+* Allow use of ClassVar to define class level field.
 
 #### 0.18.3
 

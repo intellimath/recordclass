@@ -2227,7 +2227,6 @@ _set_deep_dealloc(PyObject *cls, PyObject *state)
     Py_RETURN_NONE;
 }
 
-
 static PyObject *
 _astuple(PyObject *op)
 {
@@ -2460,7 +2459,6 @@ _tuple_index(PyTupleObject *self, PyObject *value)
     }
     return -1;
 }
-
 
 static int
 _dataobject_update(PyObject *op, PyObject *kwds)
