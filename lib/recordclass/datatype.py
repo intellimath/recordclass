@@ -42,13 +42,13 @@ else:
 
 def clsconfig(*, sequence=False, mapping=False, readonly=False,
               use_dict=False, use_weakref=False, iterable=False, 
-              hashable=False, gc=False, deep_dealloc=False):
+              hashable=False, gc=False, deep_dealloc=False,
+              is_pyinit=False, is_pynew=False):
     from ._dataobject import _clsconfig
-    def func(cls, *, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                  use_weakref=use_weakref, iterable=iterable, hashable=hashable, _clsconfig=_clsconfig):
+    def func(cls, *, _clsconfig=_clsconfig):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
                         use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, 
-                        deep_dealloc=deep_dealloc)
+                        deep_dealloc=deep_dealloc, is_pyinit=is_pyinit, is_pynew=is_pynew)
         return cls
     return func
 
@@ -85,7 +85,7 @@ class datatype(type):
                 use_dict=False, use_weakref=False, hashable=False, 
                 mapping_only=False):
 
-        from .utils import check_name, collect_info_from_bases, has_py_new, has_py_init
+        from .utils import check_name, collect_info_from_bases, _have_pyinit, _have_pynew
         from ._dataobject import dataobject
         from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
         from sys import intern as _intern
@@ -172,6 +172,9 @@ class datatype(type):
         if hashable:
             options['hashable'] = hashable
 
+        is_pyinit = '__init__' in ns
+        is_pynew = '__new__' in ns
+
         if has_fields:
             if annotations:
                 annotations = {fn:annotations[fn] \
@@ -241,6 +244,8 @@ class datatype(type):
                 _annotations.update(annotations)
                 annotations = _annotations
                 del _fields, _fields_dict, _use_dict
+                
+                is_pyinit = _have_pyinit(bases)
 
             fields = tuple(fields)
             n_fields = len(fields)
@@ -315,7 +320,9 @@ class datatype(type):
         _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly,
                         use_dict=use_dict, use_weakref=use_weakref, 
                         iterable=iterable, hashable=hashable,
-                        gc=gc, deep_dealloc=deep_dealloc, mapping_only=mapping_only)
+                        gc=gc, deep_dealloc=deep_dealloc, mapping_only=mapping_only,
+                        is_pyinit=is_pyinit, is_pynew=is_pynew,
+                  )
         return cls
 
     def __delattr__(cls, name):

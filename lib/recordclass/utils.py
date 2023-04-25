@@ -168,24 +168,26 @@ def collect_info_from_bases(bases):
         
     return fields, fields_dict, use_dict, use_weakref
 
-def has_py_new(cls):
-    if '__new__' in cls.__dict__:
-        return True
-    for base in cls.__bases__:
-        if base is object or base is type:
+def _have_pyinit(bases):
+    for base in bases:
+        if base is object or base is dataobject:
             continue
-        if has_py_new(base):
+        d = base.__dict__
+        if '__init__' in d:
+            return True
+        elif _have_pyinit(base.__bases__):
             return True
         
     return False
 
-def has_py_init(cls):
-    if '__init__' in cls.__dict__:
-        return True
-    for base in cls.__bases__:
-        if base is object or base is type:
+def _have_pynew(bases):
+    for base in bases:
+        if base is object or base is dataobject:
             continue
-        if has_py_init(base):
+        d = base.__dict__
+        if '__new__' in d:
+            return True
+        elif _have_pynew(base.__bases__):
             return True
         
     return False

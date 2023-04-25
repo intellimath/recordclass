@@ -5,7 +5,7 @@ It was started as a "proof of concept" for the problem of fast "mutable"
 alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on [stackoverflow](https://stackoverflow.com)).
 It was evolved further in order to provide more memory saving, fast and flexible types.
 
-**Recordclass** library provide record/data-like classes that do not by default participate in cyclic *garbage collection* (GC) mechanism, but support only *reference counting* for garbage collection.
+**Recordclass** library provide record/data-like classes that do not participate in cyclic *garbage collection* (GC) mechanism by default, but support only *reference counting* for garbage collection.
 The instances of such classes havn't `PyGC_Head` prefix in the memory, which decrease their size and have a little faster path for the instance creation and deallocation.
 This may make sense in cases where it is necessary to limit the size of the objects as much as possible, provided that they will never be part of references cycles in the application.
 For example, when an object represents a record with fields with values of simple types by convention (`int`, `float`, `str`, `date`/`time`/`datetime`, `timedelta`, etc.).

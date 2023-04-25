@@ -140,6 +140,27 @@ litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return newobj;
 }
 
+static PyObject *
+litetuple_vectorcall(PyObject *type, PyObject * const*args,
+                 size_t nargsf, PyObject *kwnames)
+{
+    // const Py_ssize_t n = Py_SIZE(args);
+    const Py_ssize_t n = PyVectorcall_NARGS(nargsf);
+
+    PyObject *newobj = (PyObject*)_PyObject_NewVar((PyTypeObject*)type, n);
+
+    PyObject **dest = ((PyLiteTupleObject*)newobj)->ob_item;
+
+    Py_ssize_t i;
+    for (i = 0; i < n; i++) {
+        PyObject *val = *(args++);
+        py_incref(val);
+        *(dest++) = val;
+    }
+
+    return newobj;
+}
+
 static int
 litetuple_init(PyObject *ob, PyObject *args, PyObject *kwds) {
     return 0;
@@ -746,7 +767,11 @@ static PyTypeObject PyLiteTuple_Type = {
     0,                                      /* tp_alloc */
     litetuple_new,                        /* tp_new */
     PyObject_Del,                        /* tp_free */
-    0                                       /* tp_is_gc */
+    0,                                       /* tp_is_gc */
+#if PY_VERSION_HEX >= 0x030A0000
+    .tp_vectorcall = litetuple_vectorcall,                                      /* tp_vectorcall */
+#endif
+        
 };
 
 static PyTypeObject PyMLiteTuple_Type = {
