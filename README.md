@@ -543,21 +543,33 @@ But
 
 is not allowed. A fields without default value may not appear after a field with default value.
 
-There is the options `fast_new=True`. It allows faster creation path of the instances. Here is an example:
+There is the options `fast_new`. By default it is `True`. If one like to have options for 
+introspection then one need specify `fast_new=False`.
 
-    class FastPoint(dataobject, fast_new=True):
+    class SlowerPoint(dataobject, fast_new=False):
         x: int
         y: int
 
 The followings timings explain (in jupyter notebook) boosting effect of `fast_new` option:
 
-    %timeit l1 = [Point(i,i) for i in range(100000)]
-    %timeit l2 = [FastPoint(i,i) for i in range(100000)]
+    %timeit l1 = [SlowerPoint(i,i) for i in range(100000)]
+    %timeit l2 = [Point(i,i) for i in range(100000)]
     # output with python 3.9 64bit
     25.6 ms ± 2.4 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
     10.4 ms ± 426 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
 The downside of `fast_new=True` option is less options for introspection of the instance.
+
+If one like to exclude some attributes from the `__fields__` the there is `ClassVar` trick:
+
+    class Point(dataobject):
+        x:int
+        y:int
+        color:ClassVar[int]
+
+    >>> print(Point.__fields__)
+    ('x', 'y')
+
 
 ### Quick start with recordclass
 
