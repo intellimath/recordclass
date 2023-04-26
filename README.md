@@ -685,6 +685,10 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.19
+
+* Add vectorcall protocal to `litetuple`.
+
 #### 0.18.4
 
 * Fix a bug #35 with duplicating the field name during inheritance and mixing it with class level attributes.

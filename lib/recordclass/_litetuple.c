@@ -816,7 +816,10 @@ static PyTypeObject PyMLiteTuple_Type = {
     0,                                      /* tp_alloc */
     litetuple_new,                          /* tp_new */
     PyObject_Del,                           /* tp_free */
-    0                                       /* tp_is_gc */
+    0,                                       /* tp_is_gc */
+#if PY_VERSION_HEX >= 0x030A0000
+    .tp_vectorcall = litetuple_vectorcall,                                      /* tp_vectorcall */
+#endif
 };
 
 /*********************** MLiteTuple Iterator **************************/
