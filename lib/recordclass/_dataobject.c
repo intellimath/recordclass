@@ -275,7 +275,7 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
     return op;
 }
 
-#if PY_VERSION_HEX >= 0x030A0000
+#if PY_VERSION_HEX >= 0x030B0000
 static PyObject*
 dataobject_vectorcall(PyObject *type0, PyObject * const*args,
                  size_t nargsf, PyObject *kwnames)
@@ -1573,7 +1573,7 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_itemsize */
     /* methods */
     (destructor)dataobject_dealloc,         /* tp_dealloc */
-#if PY_VERSION_HEX >= 0x030A0000
+#if PY_VERSION_HEX >= 0x030B0000
     offsetof(PyTypeObject, tp_vectorcall),      
 #else
     0,                                      /* tp_print */
@@ -1591,7 +1591,7 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_getattro */
     0,                                      /* tp_setattro */
     0,                                      /* tp_as_buffer */
-#if PY_VERSION_HEX >= 0x030A0000
+#if PY_VERSION_HEX >= 0x030B0000
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|
     Py_TPFLAGS_HAVE_VECTORCALL|Py_TPFLAGS_IMMUTABLETYPE,
 #else        
@@ -1618,7 +1618,7 @@ static PyTypeObject PyDataObject_Type = {
     dataobject_new_basic,                                      /* tp_new */
     PyObject_Del,                        /* tp_free */
     0,                                       /* tp_is_gc */
-#if PY_VERSION_HEX >= 0x030A0000
+#if PY_VERSION_HEX >= 0x030B0000
     .tp_vectorcall = dataobject_vectorcall,                                      /* tp_vectorcall */
 #endif
 };
@@ -2078,7 +2078,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_clear = NULL;
     tp->tp_is_gc = NULL;
 
-#if PY_VERSION_HEX >= 0x030A0000
+#if PY_VERSION_HEX >= 0x030B0000
     tp->tp_flags |= Py_TPFLAGS_HAVE_VECTORCALL|Py_TPFLAGS_IMMUTABLETYPE;
     tp->tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall);
     tp->tp_vectorcall = dataobject_vectorcall;
@@ -2607,7 +2607,7 @@ _vector_call_set(PyObject *cls, PyObject* state)
     if (PyObject_IsTrue(state)) {
         tp->tp_new = dataobject_new;
         // tp->tp_init = dataobject_init;
-#if PY_VERSION_HEX >= 0x030A0000
+#if PY_VERSION_HEX >= 0x030B0000
         tp->tp_vectorcall = 0;
         tp->tp_vectorcall_offset = 0; 
         tp->tp_flags |= ~Py_TPFLAGS_HAVE_VECTORCALL;
