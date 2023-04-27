@@ -290,10 +290,17 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     PyObject *op = type->tp_alloc(type, 0); 
     
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
-    const Py_ssize_t n_args = PyVectorcall_NARGS(nargsf);
+    Py_ssize_t n_args = PyVectorcall_NARGS(nargsf);
     PyObject **items = PyDataObject_ITEMS(op);
+    
+    Py_ssize_t n_kwnames = 0;
+    
+    if (kwnames) {
+        n_kwnames = Py_SIZE(kwnames);
+        n_args = n_args - n_kwnames;
+    }
 
-    // printf("new_vc\n");
+    printf("new_vc\n");
     
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
@@ -333,11 +340,18 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
         }
     }
 
-    // if (kwdnames) {
-    //     int retval = _dataobject_vc_update(op, args, n_args, kwdnames);
-    //     if (retval < 0)
-    //         return NULL;
-    // }
+    if (kwnames && n_kwnames > 0) {
+        for(i=0; i<n_kwnames; i++) {
+            PyObject *name = PyTuple_GET_ITEM(kwnames, i);
+            PyObject *val = args[n_args + i];
+            
+            py_incref(val);
+            PyObject_SetAttr(op, name, val);
+        }
+        // int retval = _dataobject_vc_update(op, args, n_args, kwdnames);
+        // if (retval < 0)
+        //     return NULL;
+    }
     
     return op;
 }
@@ -2072,9 +2086,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 
     PyType_Modified(tp);
 
-    if(PyType_Ready(tp) < 0)
-        printf("Ready failed\n");
-
+    // if(PyType_Ready(tp) < 0)
+    //     printf("Ready failed\n");
 
     Py_RETURN_NONE;
 }
@@ -2599,6 +2612,7 @@ _vector_call_set(PyObject *cls, PyObject* state)
         tp->tp_vectorcall_offset = 0; 
         tp->tp_flags |= ~Py_TPFLAGS_HAVE_VECTORCALL;
         tp->tp_flags |= ~Py_TPFLAGS_IMMUTABLETYPE;
+        // printf("vc\n");
 #endif        
     } else {
     }
@@ -2643,6 +2657,7 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
 
     PyTypeObject *tp = (PyTypeObject*)cls;
     PyType_Modified(tp);
+
     tp->tp_flags &= ~Py_TPFLAGS_READYING;
     if(PyType_Ready(tp) < 0)
         printf("Ready failed\n");

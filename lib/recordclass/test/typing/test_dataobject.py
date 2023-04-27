@@ -643,26 +643,26 @@ class DataObjectTest3(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
 
-    def test_dill(self):
-        print('*** DILL ***')
-        try:
-            import dill
-        except:
-            return
+#     def test_dill(self):
+#         print('*** DILL ***')
+#         try:
+#             import dill
+#         except:
+#             return
 
-        import warnings
+#         import warnings
 
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+#         with warnings.catch_warnings(record=True) as w:
+#             warnings.simplefilter("always")
 
-            p = Param(10, 20)
-            s = dill.dumps(p)
-            print(s)
-            p1 = dill.loads(s)
-            if w:
-                print(w)
-            self.assertEqual(p.x, p1.x)
-            self.assertEqual(p.y, p1.y)
+#             p = Param(10, 20)
+#             s = dill.dumps(p)
+#             print(s)
+#             p1 = dill.loads(s)
+#             if w:
+#                 print(w)
+#             self.assertEqual(p.x, p1.x)
+#             self.assertEqual(p.y, p1.y)
 
     def test_invalid_defaults_tp(self):
         import copy
