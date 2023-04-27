@@ -640,7 +640,9 @@ class DataObjectTest3(unittest.TestCase):
             dumps = getattr(module, 'dumps')
             for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
                 tmp = dumps(p, protocol)
+                print('*1*')
                 q = loads(tmp)
+                print('*2*')
                 self.assertEqual(p, q)
 
 #     def test_dill(self):
