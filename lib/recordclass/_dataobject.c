@@ -297,10 +297,9 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     
     if (kwnames) {
         n_kwnames = Py_SIZE(kwnames);
-        n_args = n_args - n_kwnames;
     }
 
-    printf("new_vc\n");
+    // printf("n_args %d n_kwnames %d\n", n_args, n_kwnames);
     
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
@@ -310,8 +309,6 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
 
     Py_ssize_t i;
     
-    // PyTupleObject *tpl = (PyTupleObject*)args; 
-    // PyObject **tmp = (PyObject**)(tpl->ob_item);
     for (i = 0; i < n_args; i++) {
         PyObject *v = args[i];
         py_incref(v);
@@ -348,9 +345,6 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
             py_incref(val);
             PyObject_SetAttr(op, name, val);
         }
-        // int retval = _dataobject_vc_update(op, args, n_args, kwdnames);
-        // if (retval < 0)
-        //     return NULL;
     }
     
     return op;

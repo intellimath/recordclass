@@ -640,9 +640,7 @@ class DataObjectTest3(unittest.TestCase):
             dumps = getattr(module, 'dumps')
             for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
                 tmp = dumps(p, protocol)
-                print('*1*')
                 q = loads(tmp)
-                print('*2*')
                 self.assertEqual(p, q)
 
 #     def test_dill(self):
@@ -686,6 +684,36 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a, b)
         c = copy.deepcopy(a)
         self.assertEqual(a, c)
+        
+    def test_vcall_1(self):
+        class A(dataobject):
+            x:int
+            y:int
+            
+        for i in range(1000):
+            a = A(1,2)
+            self.assertEqual(a.x, 1)
+            self.assertEqual(a.y, 2)
+
+    def test_vcall_2(self):
+        class A(dataobject):
+            x:int
+            y:int
+            
+        for i in range(1000):
+            a = A(1,y=2)
+            self.assertEqual(a.x, 1)
+            self.assertEqual(a.y, 2)
+            
+    def test_vcall_3(self):
+        class A(dataobject):
+            x:int
+            y:int
+            
+        for i in range(1000):
+            a = A(x=1,y=2)
+            self.assertEqual(a.x, 1)
+            self.assertEqual(a.y, 2)
 
     def test_signature_tp(self):
         class A(dataobject, fast_new=False):
