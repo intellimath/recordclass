@@ -1487,13 +1487,13 @@ static const char __pyx_k_dlinkedlist[] = "dlinkedlist";
 static const char __pyx_k_pyx_checksum[] = "__pyx_checksum";
 static const char __pyx_k_stringsource[] = "stringsource";
 static const char __pyx_k_StopIteration[] = "StopIteration";
-static const char __pyx_k_list_is_empty[] = "list is empty";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
 static const char __pyx_k_iterlinkedlist[] = "iterlinkedlist";
 static const char __pyx_k_iterdlinkedlist[] = "iterdlinkedlist";
 static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
+static const char __pyx_k_linkedlist_is_empty[] = "linkedlist is empty";
 static const char __pyx_k_pyx_unpickle_linkeditem[] = "__pyx_unpickle_linkeditem";
 static const char __pyx_k_pyx_unpickle_linkedlist[] = "__pyx_unpickle_linkedlist";
 static const char __pyx_k_recordclass__linkedlist[] = "recordclass._linkedlist";
@@ -1522,7 +1522,7 @@ static PyObject *__pyx_n_s_iterdlinkedlist;
 static PyObject *__pyx_n_s_iterlinkedlist;
 static PyObject *__pyx_n_s_linkeditem;
 static PyObject *__pyx_n_s_linkedlist;
-static PyObject *__pyx_kp_u_list_is_empty;
+static PyObject *__pyx_kp_u_linkedlist_is_empty;
 static PyObject *__pyx_n_s_ll;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_name;
@@ -2397,7 +2397,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
  * 
  *         start = self.start             # <<<<<<<<<<<<<<
  *         if start is None:
- *             raise TypeError("list is empty")
+ *             raise TypeError("linkedlist is empty")
  */
   __pyx_t_1 = ((PyObject *)__pyx_v_self->start);
   __Pyx_INCREF(__pyx_t_1);
@@ -2408,7 +2408,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
  * 
  *         start = self.start
  *         if start is None:             # <<<<<<<<<<<<<<
- *             raise TypeError("list is empty")
+ *             raise TypeError("linkedlist is empty")
  * 
  */
   __pyx_t_2 = (((PyObject *)__pyx_v_start) == Py_None);
@@ -2418,7 +2418,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
     /* "recordclass/_linkedlist.pyx":75
  *         start = self.start
  *         if start is None:
- *             raise TypeError("list is empty")             # <<<<<<<<<<<<<<
+ *             raise TypeError("linkedlist is empty")             # <<<<<<<<<<<<<<
  * 
  *         self.start = start.next
  */
@@ -2432,13 +2432,13 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
  * 
  *         start = self.start
  *         if start is None:             # <<<<<<<<<<<<<<
- *             raise TypeError("list is empty")
+ *             raise TypeError("linkedlist is empty")
  * 
  */
   }
 
   /* "recordclass/_linkedlist.pyx":77
- *             raise TypeError("list is empty")
+ *             raise TypeError("linkedlist is empty")
  * 
  *         self.start = start.next             # <<<<<<<<<<<<<<
  *         if start is self.end:
@@ -8867,7 +8867,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_iterlinkedlist, __pyx_k_iterlinkedlist, sizeof(__pyx_k_iterlinkedlist), 0, 0, 1, 1},
   {&__pyx_n_s_linkeditem, __pyx_k_linkeditem, sizeof(__pyx_k_linkeditem), 0, 0, 1, 1},
   {&__pyx_n_s_linkedlist, __pyx_k_linkedlist, sizeof(__pyx_k_linkedlist), 0, 0, 1, 1},
-  {&__pyx_kp_u_list_is_empty, __pyx_k_list_is_empty, sizeof(__pyx_k_list_is_empty), 0, 1, 0, 0},
+  {&__pyx_kp_u_linkedlist_is_empty, __pyx_k_linkedlist_is_empty, sizeof(__pyx_k_linkedlist_is_empty), 0, 1, 0, 0},
   {&__pyx_n_s_ll, __pyx_k_ll, sizeof(__pyx_k_ll), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
@@ -8912,11 +8912,11 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   /* "recordclass/_linkedlist.pyx":75
  *         start = self.start
  *         if start is None:
- *             raise TypeError("list is empty")             # <<<<<<<<<<<<<<
+ *             raise TypeError("linkedlist is empty")             # <<<<<<<<<<<<<<
  * 
  *         self.start = start.next
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_u_list_is_empty); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 75, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_u_linkedlist_is_empty); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 

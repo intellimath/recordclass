@@ -72,7 +72,7 @@ cdef public class linkedlist[object LinkedList, type LinkedListType]:
 
         start = self.start
         if start is None:
-            raise TypeError("list is empty")
+            raise TypeError("linkedlist is empty")
 
         self.start = start.next
         if start is self.end:
