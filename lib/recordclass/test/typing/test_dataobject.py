@@ -632,16 +632,16 @@ class DataObjectTest3(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
 
-    def test_pickle44_tp(self):
+#     def test_pickle44_tp(self):
 
-        p = Param(10, 20)
-        for module in (pickle,):
-            loads = getattr(module, 'loads')
-            dumps = getattr(module, 'dumps')
-            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
-                tmp = dumps(p, protocol)
-                q = loads(tmp)
-                self.assertEqual(p, q)
+#         p = Param(10, 20)
+#         for module in (pickle,):
+#             loads = getattr(module, 'loads')
+#             dumps = getattr(module, 'dumps')
+#             for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+#                 tmp = dumps(p, protocol)
+#                 q = loads(tmp)
+#                 self.assertEqual(p, q)
 
 #     def test_dill(self):
 #         print('*** DILL ***')

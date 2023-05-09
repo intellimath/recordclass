@@ -135,12 +135,18 @@ def collect_info_from_bases(bases):
     fields_dict = {}
     use_dict = False
     use_weakref = False
+    # readonly = True
+    # hashable = None
     for base in bases:
         if base is dataobject:
             continue
         elif issubclass(base, dataobject):
             use_dict = base.__options__.get('use_dict', False) or use_dict
             use_weakref = base.__options__.get('use_weakref', False) or use_weakref
+            # readonly = base.__options__.get('readonly', False) and readonly
+            # _hashable = base.__options__.get('hashable', None)
+            # if _hashable is not None:
+            #     hashable = _hashable
             # if base.__dictoffset__ > 0:
             #     use_dict = True
         else:
@@ -165,8 +171,13 @@ def collect_info_from_bases(bases):
                     fields.append(fn)
         else:
             raise TypeError("invalid fields in base class %r" % base)
+
+    for f in fields_dict.values():
+        if not f.get('readonly', False):
+            readonly = False
+            break
         
-    return fields, fields_dict, use_dict, use_weakref
+    return fields, fields_dict, use_dict, use_weakref #, readonly, hashable
 
 def _have_pyinit(bases):
     for base in bases:

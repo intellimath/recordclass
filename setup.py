@@ -54,6 +54,12 @@ ext_modules = [
         # extra_compile_args = extra_compile_args,
         # extra_link_args = extra_link_args,
     ),
+    Extension(
+        "recordclass._linkedlist",
+        ["lib/recordclass/_linkedlist.c"],
+        # extra_compile_args = extra_compile_args,
+        # extra_link_args = extra_link_args,
+    ),
 ]
 
 description = """Mutable variant of namedtuple -- recordclass, which support assignments, compact dataclasses and other memory saving variants."""

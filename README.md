@@ -689,6 +689,8 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 * Add vectorcall protocal to `litetuple` and `mutabletuple`.
 * Add vectorcall protocal to `dataobject`.
+* Now dataobject's `op.__hash__` return `id(op)` by default.
+  The option `hashable=True` make dataobject hashably by value.
 
 #### 0.18.4
 

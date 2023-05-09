@@ -275,7 +275,7 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
     return op;
 }
 
-#if PY_VERSION_HEX >= 0x030B0000
+#if PY_VERSION_HEX >= 0x030A0000
 static PyObject*
 dataobject_vectorcall(PyObject *type0, PyObject * const*args,
                  size_t nargsf, PyObject *kwnames)
@@ -1056,11 +1056,17 @@ dataobject_hash(PyObject *op)
 }
 
 static Py_hash_t
-dataobject_hash_ni(PyObject *op)
+dataobject_hash_byref(PyObject *op)
 {
-        type_error("__hash__ is not implemented for %s", op);
-        return -1;
+    return (Py_hash_t)op;
 }
+
+// static Py_hash_t
+// dataobject_hash_ni(PyObject *op)
+// {
+//         type_error("__hash__ is not implemented for %s", op);
+//         return -1;
+// }
 
 // PyDoc_STRVAR(dataobject_hash_doc,
 // "T.__hash__() -- __hash__ for T");
@@ -1579,13 +1585,13 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_as_number */
     &dataobject_as_sequence0,               /* tp_as_sequence */
     &dataobject_as_mapping0,                /* tp_as_mapping */
-    dataobject_hash_ni,                    /* tp_hash */
+    dataobject_hash_byref,                  /* tp_hash */
     0,                                      /* tp_call */
     0,                                      /* tp_str */
     0,                                      /* tp_getattro */
     0,                                      /* tp_setattro */
     0,                                      /* tp_as_buffer */
-#if PY_VERSION_HEX >= 0x030B0000
+#if PY_VERSION_HEX >= 0x030A0000
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|
     Py_TPFLAGS_HAVE_VECTORCALL|Py_TPFLAGS_IMMUTABLETYPE,
 #else        
@@ -1612,7 +1618,7 @@ static PyTypeObject PyDataObject_Type = {
     dataobject_new_basic,                                      /* tp_new */
     PyObject_Del,                        /* tp_free */
     0,                                       /* tp_is_gc */
-#if PY_VERSION_HEX >= 0x030B0000
+#if PY_VERSION_HEX >= 0x030A0000
     .tp_vectorcall = dataobject_vectorcall,                                      /* tp_vectorcall */
 #endif
 };
@@ -2072,7 +2078,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_clear = NULL;
     tp->tp_is_gc = NULL;
 
-#if PY_VERSION_HEX >= 0x030B0000
+#if PY_VERSION_HEX >= 0x030A0000
     tp->tp_flags |= Py_TPFLAGS_HAVE_VECTORCALL|Py_TPFLAGS_IMMUTABLETYPE;
     tp->tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall);
     tp->tp_vectorcall = dataobject_vectorcall;
@@ -2157,23 +2163,28 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
 static PyObject*
 _set_hashable(PyObject *cls, PyObject *hashable) {
     PyTypeObject *tp = (PyTypeObject*)cls;
-    int state = PyObject_IsTrue(hashable);
-
+    int state = 0;
+    
     PyObject *bases = tp->tp_bases;
     Py_ssize_t i, n_bases = Py_SIZE(bases);
     for (i=0; i<n_bases; i++) {
         PyTypeObject *base = (PyTypeObject*)PyTuple_GetItem(bases, i);
         if (base->tp_hash) {
-            if (base->tp_hash == dataobject_hash) {
                 tp->tp_hash = base->tp_hash;
                 break;
-            }
         }
     }
+    
+    // if (hashable == Py_None)
+    //     Py_RETURN_NONE;
+    
+    state = PyObject_IsTrue(hashable);
+    
+    // if (!state)
+    //     tp->tp_hash = dataobject_hash_ni;
 
-    if (state) {
+    if (state)
         tp->tp_hash = dataobject_hash;
-    }
 
     Py_RETURN_NONE;
 }
@@ -2601,7 +2612,7 @@ _vector_call_set(PyObject *cls, PyObject* state)
     if (PyObject_IsTrue(state)) {
         tp->tp_new = dataobject_new;
         // tp->tp_init = dataobject_init;
-#if PY_VERSION_HEX >= 0x030B0000
+#if PY_VERSION_HEX >= 0x030A0000
         tp->tp_vectorcall = 0;
         tp->tp_vectorcall_offset = 0; 
         tp->tp_flags |= ~Py_TPFLAGS_HAVE_VECTORCALL;
@@ -2784,10 +2795,10 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"astuple", astuple, METH_VARARGS, astuple_doc},
     // {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
-#ifdef PYPY_VERSION
-    {"_hash_func", (PyCFunction)_hash_func, METH_VARARGS, hash_func_doc},
-    {"_iter_func", (PyCFunction)_iter_func, METH_VARARGS, iter_func_doc},
-#endif
+// #ifdef PYPY_VERSION
+//     {"_hash_func", (PyCFunction)_hash_func, METH_VARARGS, hash_func_doc},
+//     {"_iter_func", (PyCFunction)_iter_func, METH_VARARGS, iter_func_doc},
+// #endif
     {"clone", (PyCFunction)dataobject_clone, METH_VARARGS | METH_KEYWORDS, dataobject_clone_doc},
     {"update", (PyCFunction)dataobject_update, METH_VARARGS | METH_KEYWORDS, dataobject_update_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},

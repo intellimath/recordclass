@@ -287,16 +287,17 @@ class RecordClassTest(unittest.TestCase):
         
     def test_hash(self):
         A = recordclass('A', 'x y', readonly=True)
+        print(A.__options__)
         a = A(1, 2)
-        self.assertNotEqual(hash(a), None)
-        hash_a = hash(a)
-        #self.assertEqual(hash(a), hash(tuple(a)))
+        self.assertNotEqual(hash(a), id(a))
         B = recordclass('B', 'x y', hashable=True)
+        print(B.__options__)
         b = B(1, 2)
         hash_b = hash(b)
         #self.assertEqual(hash_b, hash(tuple(b)))
         b.x = -1
         self.assertNotEqual(hash(b), hash_b)
+        self.assertNotEqual(hash(b), id(b))
 
     def test_hash2(self):
         A = recordclass('A', 'x y', hashable=True)

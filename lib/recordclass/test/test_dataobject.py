@@ -466,9 +466,7 @@ class DataobjectTest(unittest.TestCase):
     def test_no_hash(self):
         A = make_dataclass("A", ("a", "b", "c"))
         a = A(1, 2.0, "a")
-#         print(hash(a))
-        with self.assertRaises(TypeError):
-            hash(a)
+        self.assertEqual(hash(a), id(a))
 
     def test_no_hash2(self):
         A = make_dataclass("A", ("a", "b", "c"), hashable=True)
@@ -477,8 +475,8 @@ class DataobjectTest(unittest.TestCase):
         b = B(1, 2.0, "a")
         hash(b)
 #         print(hash(a))
-#         with self.assertRaises(TypeError):
-#             hash(b)
+        # with self.assertRaises(TypeError):
+        #     hash(b)
             
     def test_reduce(self):
         A = make_dataclass("A", ("x","y","z"))
