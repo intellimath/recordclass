@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__all__ = 'clsconfig', 'datatype'
+__all__ = 'datatype',
 
 import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
@@ -39,18 +39,6 @@ if _PY37:
 else:
     def _is_classvar(a_type):
         return a_type is typing._ClassVar #  or issubclass(a_type, typing.ClassVar)
-
-def clsconfig(*, sequence=False, mapping=False, readonly=False,
-              use_dict=False, use_weakref=False, iterable=False, 
-              hashable=False, gc=False, deep_dealloc=False,
-              is_pyinit=False, is_pynew=False):
-    from ._dataobject import _clsconfig
-    def func(cls, *, _clsconfig=_clsconfig):
-        _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly, use_dict=use_dict,
-                        use_weakref=use_weakref, iterable=iterable, hashable=hashable, gc=gc, 
-                        deep_dealloc=deep_dealloc, is_pyinit=is_pyinit, is_pynew=is_pynew)
-        return cls
-    return func
 
 def _matching_annotations_and_defaults(annotations, defaults):
     first_default = False
@@ -231,7 +219,10 @@ class datatype(type):
                 _annotations = {fn:fd['type'] for fn,fd in _fields_dict.items() if 'type' in fd} 
 
                 if fields:
-                    fields = [fn for fn in fields if fn not in _fields]
+                    for fn in fields:
+                        if fn in _fields:
+                            raise TypeError(f"field '{fn}' duplicate the field in the base class")
+                    # fields = [fn for fn in fields if fn not in _fields]
 
                 fields = _fields + fields
 
@@ -257,21 +248,6 @@ class datatype(type):
                     __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults)
 
                 ns['__new__'] = __new__
-
-        if has_fields and not _PY311:
-            for i, name in enumerate(fields):
-                fd = fields_dict[name]
-                fd_readonly = fd.get('readonly', False)
-                if fd_readonly:
-                    ds = _ds_ro_cache.get(i, None)
-                else:
-                    ds = _ds_cache.get(i, None)
-                if ds is None:
-                    if fd_readonly:
-                        ds = dataobjectproperty(i, True)
-                    else:
-                        ds = dataobjectproperty(i, False)
-                ns[name] = ds
 
         module = ns.get('__module__', None)
         if module is None:
@@ -304,6 +280,21 @@ class datatype(type):
         ns['__options__'] = options
 
         cls = type.__new__(metatype, typename, bases, ns)
+
+        if has_fields and not _PY311:
+            for i, name in enumerate(fields):
+                fd = fields_dict[name]
+                fd_readonly = fd.get('readonly', False)
+                if fd_readonly:
+                    ds = _ds_ro_cache.get(i, None)
+                else:
+                    ds = _ds_cache.get(i, None)
+                if ds is None:
+                    if fd_readonly:
+                        ds = dataobjectproperty(i, True)
+                    else:
+                        ds = dataobjectproperty(i, False)
+                ns[name] = d
 
         if has_fields and _PY311:
             for i, name in enumerate(fields):

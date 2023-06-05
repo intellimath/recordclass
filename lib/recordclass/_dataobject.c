@@ -2053,7 +2053,7 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         // tp->tp_flags &= ~Py_TPFLAGS_PREHEADER;
 #endif
 
-// #if PY_VERSION_HEX >= 0x030B0000
+// #if PY_VERSION_HEX >= 0x030A0000
 //         tp->tp_flags &= ~Py_TPFLAGS_IMMUTABLETYPE;
 // #endif
 
@@ -2085,9 +2085,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
 #endif
 
     PyType_Modified(tp);
-
-    // if(PyType_Ready(tp) < 0)
-    //     printf("Ready failed\n");
 
     Py_RETURN_NONE;
 }
@@ -2163,7 +2160,7 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
 static PyObject*
 _set_hashable(PyObject *cls, PyObject *hashable) {
     PyTypeObject *tp = (PyTypeObject*)cls;
-    int state = 0;
+    int state;
     
     PyObject *bases = tp->tp_bases;
     Py_ssize_t i, n_bases = Py_SIZE(bases);
@@ -2175,14 +2172,7 @@ _set_hashable(PyObject *cls, PyObject *hashable) {
         }
     }
     
-    // if (hashable == Py_None)
-    //     Py_RETURN_NONE;
-    
     state = PyObject_IsTrue(hashable);
-    
-    // if (!state)
-    //     tp->tp_hash = dataobject_hash_ni;
-
     if (state)
         tp->tp_hash = dataobject_hash;
 

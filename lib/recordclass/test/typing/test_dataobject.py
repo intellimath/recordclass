@@ -366,23 +366,23 @@ class DataObjectTest3(unittest.TestCase):
         # self.assertEqual(a3.y, 2)
         # self.assertEqual(a3.z, 300)
 
-    def test_subclass_defaults_tp(self):
-        class A(dataobject):
-            x:int
-            y:int
+    # def test_subclass_defaults_tp(self):
+    #     class A(dataobject):
+    #         x:int
+    #         y:int
 
-        class B(A):
-            y:int=0
+    #     class B(A):
+    #         y:int=0
 
-        self.assertEqual(A.__fields__, ('x', 'y'))
-        self.assertEqual(A.__defaults__, (None,None))
+    #     self.assertEqual(A.__fields__, ('x', 'y'))
+    #     self.assertEqual(A.__defaults__, (None,None))
 
-        self.assertEqual(B.__fields__, ('x', 'y'))
-        self.assertEqual(B.__defaults__, (None, 0))
-        b = B(1)
-        self.assertEqual(b.x, 1)
-        self.assertEqual(b.y, 0)
-        self.assertEqual(repr(b), "B(x=1, y=0)")        
+    #     self.assertEqual(B.__fields__, ('x', 'y'))
+    #     self.assertEqual(B.__defaults__, (None, 0))
+    #     b = B(1)
+    #     self.assertEqual(b.x, 1)
+    #     self.assertEqual(b.y, 0)
+    #     self.assertEqual(repr(b), "B(x=1, y=0)")        
 
     def test_subclass_defaults_2_tp(self):
         class A(dataobject):
