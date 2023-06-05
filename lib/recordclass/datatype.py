@@ -249,6 +249,21 @@ class datatype(type):
 
                 ns['__new__'] = __new__
 
+        if has_fields and not _PY311:
+            for i, name in enumerate(fields):
+                fd = fields_dict[name]
+                fd_readonly = fd.get('readonly', False)
+                if fd_readonly:
+                    ds = _ds_ro_cache.get(i, None)
+                else:
+                    ds = _ds_cache.get(i, None)
+                if ds is None:
+                    if fd_readonly:
+                        ds = dataobjectproperty(i, True)
+                    else:
+                        ds = dataobjectproperty(i, False)
+                ns[name] = ds
+
         module = ns.get('__module__', None)
         if module is None:
             try:
@@ -280,21 +295,6 @@ class datatype(type):
         ns['__options__'] = options
 
         cls = type.__new__(metatype, typename, bases, ns)
-
-        if has_fields and not _PY311:
-            for i, name in enumerate(fields):
-                fd = fields_dict[name]
-                fd_readonly = fd.get('readonly', False)
-                if fd_readonly:
-                    ds = _ds_ro_cache.get(i, None)
-                else:
-                    ds = _ds_cache.get(i, None)
-                if ds is None:
-                    if fd_readonly:
-                        ds = dataobjectproperty(i, True)
-                    else:
-                        ds = dataobjectproperty(i, False)
-                ns[name] = d
 
         if has_fields and _PY311:
             for i, name in enumerate(fields):
