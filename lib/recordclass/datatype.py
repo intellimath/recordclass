@@ -2,7 +2,7 @@
 
 # The MIT License (MIT)
 
-# Copyright (c) «2017-2022» «Shibzukhov Zaur, szport at gmail dot com»
+# Copyright (c) «2017-2023» «Shibzukhov Zaur, szport at gmail dot com»
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software - recordclass library - and associated documentation files
@@ -80,9 +80,7 @@ class datatype(type):
         if _PY311:
             from ._dataobject import member_new
 
-        options = ns.get('__options__', None)
-        if options is None:
-            options = ns['__options__'] = {}
+        ns['__options__'] = options = ns.get('__options__', {})
 
         gc = get_option(options, 'gc', gc)
         fast_new = get_option(options, 'fast_new', fast_new)
