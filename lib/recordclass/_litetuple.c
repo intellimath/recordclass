@@ -25,6 +25,7 @@
 #endif
 
 #include "Python.h"
+#include <stddef.h>
 
 static PyTypeObject PyLiteTuple_Type;
 static PyTypeObject PyMLiteTuple_Type;
@@ -727,7 +728,12 @@ static PyTypeObject PyLiteTuple_Type = {
     0,                                      /* tp_getattro */
     0,                                     /* tp_setattro */
     0,                                      /* tp_as_buffer */
+#if PY_VERSION_HEX >= 0x030A0000
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | 
+    Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_SEQUENCE,
+#else
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+#endif
                                             /* tp_flags */
     litetuple_doc,                        /* tp_doc */
     0,     /* tp_traverse */
@@ -751,6 +757,7 @@ static PyTypeObject PyLiteTuple_Type = {
     0,                                       /* tp_is_gc */
 #if PY_VERSION_HEX >= 0x030A0000
     .tp_vectorcall = litetuple_vectorcall,                                      /* tp_vectorcall */
+    .tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall),
 #endif
         
 };
@@ -776,7 +783,12 @@ static PyTypeObject PyMLiteTuple_Type = {
     0,                                      /* tp_getattro */
     0,                                      /* tp_setattro */
     0,                                      /* tp_as_buffer */
+#if PY_VERSION_HEX >= 0x030A0000
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | 
+    Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_SEQUENCE,
+#else
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+#endif
                                             /* tp_flags */
     litetuple_doc,                          /* tp_doc */
     0,                                      /* tp_traverse */
@@ -800,6 +812,7 @@ static PyTypeObject PyMLiteTuple_Type = {
     0,                                       /* tp_is_gc */
 #if PY_VERSION_HEX >= 0x030A0000
     .tp_vectorcall = litetuple_vectorcall,                                      /* tp_vectorcall */
+    .tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall),
 #endif
 };
 
