@@ -40,23 +40,6 @@
 
 #define pyobject_size(tp) ( (tp)->tp_basicsize )
 
-#define py_incref(o) ((PyObject*)(o))->ob_refcnt++
-#define py_decref(o) if (--(((PyObject*)(o))->ob_refcnt) == 0) Py_TYPE((PyObject*)(o))->tp_dealloc((PyObject*)(o))
-
-#define py_xincref(op)                                \
-    do {                                              \
-        PyObject *_py_xincref_tmp = (PyObject *)(op); \
-        if (_py_xincref_tmp != NULL)                  \
-            py_incref(_py_xincref_tmp);               \
-    } while (0)
-
-#define py_xdecref(op)                                \
-    do {                                              \
-        PyObject *_py_xdecref_tmp = (PyObject *)(op); \
-        if (_py_xdecref_tmp != NULL)                  \
-            py_decref(_py_xdecref_tmp);               \
-    } while (0)
-
 #if !defined(Py_SET_TYPE)
 #define Py_SET_TYPE(ob, type) (((PyObject*)(ob))->ob_type) = (type)
 #endif
@@ -99,16 +82,16 @@ pyobject_get_builtin(const char *attrname_c)
         return NULL;
     mod = PyImport_Import(modname);
     if (mod == NULL) {
-        py_decref(modname);    
+        Py_DECREF(modname);    
         return NULL;
     }
     ob = PyObject_GetAttrString(mod, attrname_c);
     if (ob == NULL) {
-        py_decref(mod);
+        Py_DECREF(mod);
         return NULL;
     }
-    py_decref(modname);    
-    py_decref(mod);
+    Py_DECREF(modname);    
+    Py_DECREF(mod);
     return ob;
 }
 
@@ -127,7 +110,7 @@ litelist_alloc(PyTypeObject *tp, Py_ssize_t n_items)
 
     Py_SET_TYPE(op, tp);
     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        py_incref(tp);
+        Py_INCREF(tp);
 
     PyLiteList_SET_ALLOCATED(op, n_items);
     Py_SET_SIZE(op, n_items);
@@ -171,12 +154,12 @@ litelist_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     Py_ssize_t i;
     for (i = 0; i < n; i++) {
         PyObject *val = *(src++);
-        py_incref(val);
+        Py_INCREF(val);
         *(dest++) = val;
     }
 
     if (is_tpl)
-        py_decref(tpl);
+        Py_DECREF(tpl);
     return op;
 }
 
@@ -201,7 +184,7 @@ litelist_init(PyObject *ob, PyObject *args, PyObject *kwds) {
 //     for (i = 0; i<n; i++) {
 //         v = PyLiteList_GET_ITEM(ob, i);
 //         PyTuple_SET_ITEM(res, i, v);
-//         py_incref(v);
+//         Py_INCREF(v);
 //     }
 
 //     return (PyObject*)res;
@@ -227,7 +210,7 @@ litelist_dealloc(PyLiteListObject *op)
     while (--i >= 0) {
         PyObject *item = op->ob_item[i];
         if (item != NULL) {
-            py_decref(item);
+            Py_DECREF(item);
             op->ob_item[i] = NULL;
         }
     }
@@ -269,7 +252,7 @@ litelist_repr(PyObject *dd)
         return NULL;
 
     result = PyUnicode_FromFormat("litelist(%U)", baserepr);
-    py_decref(baserepr);
+    Py_DECREF(baserepr);
     return result;
 }
 
@@ -308,7 +291,7 @@ litelist_concat(PyLiteListObject *a, PyObject *bb)
     if (n > 0) {
         for (i = 0; i < n; i++) {
             PyObject *v = src[i];
-            py_incref(v);
+            Py_INCREF(v);
             dest[i] = v;
         }
     }
@@ -318,7 +301,7 @@ litelist_concat(PyLiteListObject *a, PyObject *bb)
     n = Py_SIZE(b);
     for (i = 0; i < n; i++) {
         PyObject *v = src[i];
-        py_incref(v);
+        Py_INCREF(v);
         dest[i] = v;
     }
 #undef b
@@ -352,7 +335,7 @@ litelist_slice(PyLiteListObject *a, Py_ssize_t ilow, Py_ssize_t ihigh)
     if (len > 0) {
         for (i = 0; i < len; i++) {
             PyObject *v = src[i];
-            py_incref(v);
+            Py_INCREF(v);
             dest[i] = v;
         }
     }
@@ -378,7 +361,7 @@ litelist_ass_slice(PyLiteListObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObj
                 return result;
                 
             result = litelist_ass_slice(a, ilow, ihigh, v);
-            py_decref(v);
+            Py_DECREF(v);
             return result;
         }
         v_as_SF = PySequence_Fast(v, "can only assign an iterable");
@@ -400,7 +383,7 @@ litelist_ass_slice(PyLiteListObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObj
         ihigh = Py_SIZE(a);
 
     if (n != ihigh - ilow) {
-        py_xdecref(v_as_SF);    
+        Py_XDECREF(v_as_SF);    
         return -1;
     }
     
@@ -409,12 +392,12 @@ litelist_ass_slice(PyLiteListObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObj
         for (k = 0; k < n; k++, ilow++) {
             PyObject *w = vitem[k];
             PyObject *u = item[ilow];
-            py_xdecref(u);
+            Py_XDECREF(u);
             item[ilow] = w;
-            py_xincref(w);
+            Py_XINCREF(w);
         }
     }
-    py_xdecref(v_as_SF);    
+    Py_XDECREF(v_as_SF);    
     return 0;
 }
 
@@ -435,7 +418,7 @@ litelist_ass_item(PyLiteListObject *a, Py_ssize_t i, PyObject *v)
         PyObject **dst = a->ob_item + i;
         PyObject **src = dst + 1;
         
-        py_decref(*dst);
+        Py_DECREF(*dst);
         i++;
         while (i < n) {
             *(dst++) = *(src++);
@@ -448,9 +431,9 @@ litelist_ass_item(PyLiteListObject *a, Py_ssize_t i, PyObject *v)
     
     PyObject **ptr = a->ob_item + i;
 
-    py_decref(*ptr);
+    Py_DECREF(*ptr);
     *ptr = v;
-    py_incref(v);
+    Py_INCREF(v);
 
     return 0;
 }
@@ -467,7 +450,7 @@ litelist_item(PyLiteListObject *a, Py_ssize_t i)
         return NULL;
     }
     PyObject *v = a->ob_item[i];
-    py_incref(v);
+    Py_INCREF(v);
     return a->ob_item[i];
 }
 
@@ -553,7 +536,7 @@ litelist_repeat(PyLiteListObject *a, Py_ssize_t n)
     for (i = 0; i < n; i++) {
         for (j = 0; j < size; j++) {
             *p = items[j];
-            py_incref(*p);
+            Py_INCREF(*p);
             p++;
         }
     }
@@ -603,7 +586,7 @@ litelist_richcompare(PyObject *v, PyObject *w, int op)
             res = Py_False;
         else
             res = Py_True;
-        py_incref(res);
+        Py_INCREF(res);
         return res;
     }    
     
@@ -633,17 +616,17 @@ litelist_richcompare(PyObject *v, PyObject *w, int op)
             res = Py_True;
         else
             res = Py_False;
-        py_incref(res);
+        Py_INCREF(res);
         return res;
     }
 
     /* We have an item that differs -- shortcuts for EQ/NE */
     if (op == Py_EQ) {
-        py_incref(Py_False);
+        Py_INCREF(Py_False);
         return Py_False;
     }
     if (op == Py_NE) {
-        py_incref(Py_True);
+        Py_INCREF(Py_True);
         return Py_True;
     }
 
@@ -686,7 +669,7 @@ litelist_copy(PyLiteListObject *ob)
         Py_ssize_t i;
         for (i = 0; i < len; i++) {
             PyObject *v = src[i];
-            py_incref(v);
+            Py_INCREF(v);
             dest[i] = v;
         }
     }
@@ -705,12 +688,12 @@ litelist_reduce(PyObject *ob)
 
     tmp = PySequence_Tuple(ob);
     args = PyTuple_Pack(1, tmp);
-    py_decref(tmp);
+    Py_DECREF(tmp);
     if (args == NULL)
         return NULL;
 
     result = PyTuple_Pack(2, Py_TYPE(ob), args);
-    py_decref(args);
+    Py_DECREF(args);
     return result;
 }
 
@@ -760,7 +743,7 @@ litelist_append(PyObject *op, PyObject *o) {
     if (size == PyLiteList_ALLOCATED(op))
         litelist_resize(op, size+1);
     
-    py_incref(o);
+    Py_INCREF(o);
     PyLiteList_SET_ITEM(op, size, o);
     Py_SET_SIZE(op, size + 1);
     
@@ -784,12 +767,12 @@ litelist_extend(PyObject *op, PyObject *o) {
     Py_ssize_t i;
     for (i=0; i<size_o; i++) {
         PyObject *v = ptr[i];
-        py_incref(v);
+        Py_INCREF(v);
         PyLiteList_SET_ITEM(op, size+i, v);
     }
     Py_SET_SIZE(op, size + size_o);
     
-    py_decref(seq);
+    Py_DECREF(seq);
     
     Py_RETURN_NONE;    
 }
@@ -924,12 +907,12 @@ litelistiter_next(litelistiterobject *it)
 
     if (it->it_index < PyLiteList_GET_SIZE(seq)) {
         item = PyLiteList_GET_ITEM(seq, it->it_index);
-        py_incref(item);
+        Py_INCREF(item);
         ++it->it_index;
         return item;
     }
 
-    py_decref(seq);
+    Py_DECREF(seq);
     it->it_seq = NULL;
     return NULL;
 }
@@ -1029,7 +1012,7 @@ litelist_iter(PyObject *seq)
         return NULL;
     it->it_index = 0;
     it->it_seq = (PyLiteListObject *)seq;
-    py_incref(seq);
+    Py_INCREF(seq);
     PyObject_GC_Track(it);
     return (PyObject *)it;
 }
@@ -1051,7 +1034,7 @@ litelist_fromargs(PyObject *module, PyObject *args)
     Py_ssize_t i;
     for (i = 0; i < n_args; i++) {
         PyObject *val = *(src++);
-        py_incref(val);
+        Py_INCREF(val);
         *(dest++) = val;
     }
 
@@ -1089,7 +1072,7 @@ PyInit__litelist(void)
 #ifndef PYPY_VERSION
     m = PyState_FindModule(&litelistmodule);
     if (m) {
-        py_incref(m);
+        Py_INCREF(m);
         return m;
     }    
 #endif
@@ -1104,10 +1087,10 @@ PyInit__litelist(void)
     if (PyType_Ready(&PyLiteListIter_Type) < 0)
         Py_FatalError("Can't initialize litelist iter type");
     
-    py_incref(&PyLiteList_Type);
+    Py_INCREF(&PyLiteList_Type);
     PyModule_AddObject(m, "litelist", (PyObject *)&PyLiteList_Type);
 
-    py_incref(&PyLiteListIter_Type);    
+    Py_INCREF(&PyLiteListIter_Type);    
     PyModule_AddObject(m, "litelistiter", (PyObject *)&PyLiteListIter_Type);
     
 
