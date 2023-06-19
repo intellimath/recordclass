@@ -42,12 +42,6 @@ def make_arrayclass(typename, n_fields, *, namespace=None,
 
     bases = (dataobject,)
 
-    options = {
-        'use_dict':False, 'use_weakref':use_weakref, 'hashable':hashable, 
-        'sequence':True, 'mapping':False, 'iterable':True, 'readonly':readonly, 'gc':gc,
-        'fast_new':True,
-    }
-
     typename = _intern(typename)
 
     if namespace is None:
@@ -55,7 +49,6 @@ def make_arrayclass(typename, n_fields, *, namespace=None,
     else:
         ns = namespace
 
-    ns['__options__'] = options
     ns['__fields__'] = n_fields
 
     def __repr__(_self):
@@ -73,6 +66,9 @@ def make_arrayclass(typename, n_fields, *, namespace=None,
 
     ns['__module__'] = module
 
-    cls = datatype(typename, bases, ns)
+    cls = datatype(typename, bases, ns,
+                   use_dict=False, use_weakref=use_weakref, hashable=hashable, 
+                   sequence=True, mapping=False, iterable=True, readonly=readonly, 
+                   gc=gc, fast_new=True)
 
     return cls

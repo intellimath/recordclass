@@ -83,7 +83,8 @@ class datatype(type):
         if _PY311:
             from ._dataobject import member_new
 
-        ns['__options__'] = options = ns.get('__options__', {})
+        # ns['__options__'] = options = ns.get('__options__', {})
+        options = {}
 
         gc = get_option(options, 'gc', gc)
         fast_new = get_option(options, 'fast_new', fast_new)
