@@ -313,7 +313,7 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
             PyObject_SetAttr(op, name, val);
         }
     }
-    
+
     return op;
 }
 #endif
@@ -582,24 +582,12 @@ dataobject_dealloc_gc(PyObject *op)
 
     PyObject_GC_UnTrack(op);
 
-// #if PY_VERSION_HEX < 0x03080000
-//     Py_TRASHCAN_SAFE_BEGIN(op)
-// #else
-//     Py_TRASHCAN_BEGIN(op, dataobject_dealloc)
-// #endif
-
     dataobject_xdecref(op);
 
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_DECREF(type);
 
     type->tp_free((PyObject *)op);
-
-// #if PY_VERSION_HEX < 0x03080000
-//     Py_TRASHCAN_SAFE_END(op)
-// #else
-//     Py_TRASHCAN_END
-// #endif
 }
 
 static void
@@ -2562,22 +2550,19 @@ dataobject_update(PyObject *module, PyObject *args, PyObject *kw)
 }
 
 static PyObject *
-_vector_call_set(PyObject *cls, PyObject* state)
+_vector_call_set(PyObject *cls)
 {
     PyTypeObject *tp = (PyTypeObject *)cls;
     
-    if (PyObject_IsTrue(state)) {
-        tp->tp_new = dataobject_new;
-        // tp->tp_init = dataobject_init;
+    tp->tp_new = dataobject_new;
+    // tp->tp_init = dataobject_init;
 #if PY_VERSION_HEX >= 0x030A0000
-        tp->tp_vectorcall = 0;
-        tp->tp_vectorcall_offset = 0; 
-        tp->tp_flags |= ~Py_TPFLAGS_HAVE_VECTORCALL;
-        tp->tp_flags |= ~Py_TPFLAGS_IMMUTABLETYPE;
-        // printf("vc\n");
+    tp->tp_vectorcall = 0;
+    tp->tp_vectorcall_offset = 0; 
+    tp->tp_flags |= ~Py_TPFLAGS_HAVE_VECTORCALL;
+    tp->tp_flags |= ~Py_TPFLAGS_IMMUTABLETYPE;
+    // printf("vc\n");
 #endif        
-    } else {
-    }
 
     Py_RETURN_NONE;
 }
@@ -2599,6 +2584,7 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     PyObject *set_dd = PyMapping_GetItemString(kw, "deep_dealloc");
     // PyObject *mapping_only = PyMapping_GetItemString(kw, "mapping_only");
     PyObject *is_pyinit = PyMapping_GetItemString(kw, "is_pyinit");
+    PyObject *is_pynew = PyMapping_GetItemString(kw, "is_pynew");
 
     _set_dictoffset(cls, use_dict);
     _set_weaklistoffset(cls, use_weakref);
@@ -2614,8 +2600,9 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
         _enable_gc(cls);
 
     _set_deep_dealloc(cls, set_dd);
-    
-    _vector_call_set(cls, is_pyinit);
+
+    if (!is_pyinit && !is_pynew)
+        _vector_call_set(cls);
 
     PyTypeObject *tp = (PyTypeObject*)cls;
     PyType_Modified(tp);

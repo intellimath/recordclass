@@ -981,6 +981,7 @@ class DataObjectTest3(unittest.TestCase):
                 pass
 
         a = A(1,2)
+        print(a)
         self.assertEqual(a.x, None)
         self.assertEqual(a.y, None)
 

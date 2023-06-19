@@ -27,6 +27,7 @@ _PY36 = _sys.version_info[:2] >= (3, 6)
 
 from keyword import iskeyword
 from recordclass import dataobject
+from .datatype import Field
 
 _intern = _sys.intern
 if _PY36:
@@ -161,7 +162,7 @@ def collect_info_from_bases(bases):
                 if fn in fields:
                     raise TypeError('field %s is already defined in the %s' % (fn, base))
                 else:
-                    fields_dict[fn] = f = {}
+                    fields_dict[fn] = f = Field()
                     if _is_readonly_member(base.__dict__[fn]):
                         f['readonly'] = True
                     # if fn in base_defaults:

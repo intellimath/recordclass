@@ -62,6 +62,9 @@ def get_option(options, name, default=False):
                 
 _ds_cache = {}
 _ds_ro_cache = {}
+
+class Field(dict):
+    pass
                 
 class datatype(type):
     """
@@ -111,13 +114,13 @@ class datatype(type):
                     if _is_classvar(annotations.get(fn, None)):
                         raise TypeError(f'__fields__ contain  {fn}:ClassVar')
             if not isinstance(fields, int_type):
-                fields_dict = {fn:{} for fn in fields}
+                fields_dict = {fn:Field() for fn in fields}
             else:
                 fields_dict = {}
                 
             classvars = set()
         else:
-            fields_dict = {fn:{'type':tp} \
+            fields_dict = {fn:Field(type=tp) \
                            for fn,tp in annotations.items() \
                            if not _is_classvar(tp)}
             classvars = {fn \
@@ -191,7 +194,7 @@ class datatype(type):
 
             fields_dict = {}
             for fn in fields:
-                fields_dict[fn] = f = {}
+                fields_dict[fn] = f = Field()
                 if fn in annotations:
                     f['type'] = annotations[fn]
                 if fn in defaults_dict:
@@ -233,8 +236,11 @@ class datatype(type):
                 _annotations.update(annotations)
                 annotations = _annotations
                 del _fields, _fields_dict, _use_dict
-                
-                is_pyinit = _have_pyinit(bases)
+
+                if not is_pyinit:
+                    is_pyinit = _have_pyinit(bases)
+                if not is_pynew:
+                    is_pynew = _have_pynew(bases)
 
             fields = tuple(fields)
             n_fields = len(fields)
