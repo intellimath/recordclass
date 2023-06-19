@@ -980,6 +980,10 @@ class DataObjectTest3(unittest.TestCase):
                 print("__init__")
                 pass
 
+        print("A0", A0.__dict__)
+        print("A", A.__dict__)
+        a0 = A0(1,2)
+        print(a0)
         a = A(1,2)
         print(a)
         self.assertEqual(a.x, None)

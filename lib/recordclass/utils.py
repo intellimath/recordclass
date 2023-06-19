@@ -184,8 +184,7 @@ def _have_pyinit(bases):
     for base in bases:
         if base is object or base is dataobject:
             continue
-        d = base.__dict__
-        if '__init__' in d:
+        if '__init__' in base.__dict__:
             return True
         elif _have_pyinit(base.__bases__):
             return True
@@ -196,8 +195,7 @@ def _have_pynew(bases):
     for base in bases:
         if base is object or base is dataobject:
             continue
-        d = base.__dict__
-        if '__new__' in d:
+        if '__new__' in base.__dict__:
             return True
         elif _have_pynew(base.__bases__):
             return True

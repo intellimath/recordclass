@@ -1568,9 +1568,9 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_descr_get */
     0,                                      /* tp_descr_set */
     0,                                      /* tp_dictoffset */
-    dataobject_init_basic,                                      /* tp_init */
+    dataobject_init,                                      /* tp_init */
     dataobject_alloc,                       /* tp_alloc */
-    dataobject_new_basic,                                      /* tp_new */
+    dataobject_new,                                      /* tp_new */
     PyObject_Del,                        /* tp_free */
     0,                                       /* tp_is_gc */
 #if PY_VERSION_HEX >= 0x030A0000
@@ -2033,11 +2033,11 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_clear = NULL;
     tp->tp_is_gc = NULL;
 
-#if PY_VERSION_HEX >= 0x030A0000
-    tp->tp_flags |= Py_TPFLAGS_HAVE_VECTORCALL|Py_TPFLAGS_IMMUTABLETYPE;
-    tp->tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall);
-    tp->tp_vectorcall = dataobject_vectorcall;
-#endif
+// #if PY_VERSION_HEX >= 0x030A0000
+//     tp->tp_flags |= Py_TPFLAGS_HAVE_VECTORCALL|Py_TPFLAGS_IMMUTABLETYPE;
+//     tp->tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall);
+//     tp->tp_vectorcall = dataobject_vectorcall;
+// #endif
 
     PyType_Modified(tp);
 
@@ -2553,14 +2553,15 @@ static PyObject *
 _vector_call_set(PyObject *cls)
 {
     PyTypeObject *tp = (PyTypeObject *)cls;
-    
-    tp->tp_new = dataobject_new;
-    // tp->tp_init = dataobject_init;
+
+    tp->tp_new = dataobject_new_basic;
+    tp->tp_init = dataobject_init_basic;
+
 #if PY_VERSION_HEX >= 0x030A0000
-    tp->tp_vectorcall = 0;
-    tp->tp_vectorcall_offset = 0; 
-    tp->tp_flags |= ~Py_TPFLAGS_HAVE_VECTORCALL;
-    tp->tp_flags |= ~Py_TPFLAGS_IMMUTABLETYPE;
+    tp->tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall);
+    tp->tp_vectorcall = dataobject_vectorcall;
+    tp->tp_flags |= Py_TPFLAGS_HAVE_VECTORCALL;
+    tp->tp_flags |= Py_TPFLAGS_IMMUTABLETYPE;
     // printf("vc\n");
 #endif        
 
@@ -2601,13 +2602,18 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
 
     _set_deep_dealloc(cls, set_dd);
 
-    if (!is_pyinit && !is_pynew)
+    if (!PyObject_IsTrue(is_pyinit) & !PyObject_IsTrue(is_pynew))
         _vector_call_set(cls);
+    else {
+        
+    }
 
     PyTypeObject *tp = (PyTypeObject*)cls;
-    PyType_Modified(tp);
 
     tp->tp_flags &= ~Py_TPFLAGS_READYING;
+
+    PyType_Modified(tp);
+    
     if(PyType_Ready(tp) < 0)
         printf("Ready failed\n");
 
@@ -2621,6 +2627,7 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     Py_XDECREF(set_dd);
     // Py_XDECREF(mapping_only);
     Py_XDECREF(is_pyinit);
+    Py_XDECREF(is_pynew);
 
     Py_RETURN_NONE;
 }
