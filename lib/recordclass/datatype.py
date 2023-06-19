@@ -85,17 +85,26 @@ class datatype(type):
 
         # ns['__options__'] = options = ns.get('__options__', {})
         options = {}
-
-        gc = get_option(options, 'gc', gc)
-        fast_new = get_option(options, 'fast_new', fast_new)
-        readonly = get_option(options, 'readonly', readonly)
-        iterable = get_option(options, 'iterable', iterable)
-        deep_dealloc = get_option(options, 'deep_dealloc', deep_dealloc)
-        sequence = get_option(options, 'sequence', sequence)
-        mapping = get_option(options, 'mapping', mapping)
-        use_dict = get_option(options, 'use_dict', use_dict)
-        use_weakref = get_option(options, 'use_weakref', use_weakref)
-        hashable = get_option(options, 'hashable', hashable)
+        if gc:
+            options['gc'] = gc
+        if fast_new:
+            options['fast_new'] = fast_new
+        if readonly:
+            options['readonly'] = readonly
+        if iterable:
+            options['iterable'] = iterable
+        if deep_dealloc:
+            options['deep_dealloc'] = deep_dealloc
+        if sequence:
+            options['sequence'] = sequence
+        if mapping:
+            options['mapping'] = mapping
+        if hashable:
+            options['hashable'] = hashable
+        if use_dict:
+            options['use_dict'] = use_dict
+        if use_weakref:
+            options['use_weakref'] = use_weakref
         
         if bases:
             base0 = bases[0]
