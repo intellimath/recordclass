@@ -49,16 +49,16 @@ def _matching_annotations_and_defaults(annotations, defaults):
             if first_default:
                 raise TypeError('A field without default value appears after a field with default value')
 
-def get_option(options, name, default=False):
-    if name in options:
-        val = options[name]
-        if not val:
-            del options[name]
-    else:
-        val = default
-        if val:
-            options[name] = val
-    return val
+# def get_option(options, name, default=False):
+#     if name in options:
+#         val = options[name]
+#         if not val:
+#             del options[name]
+#     else:
+#         val = default
+#         if val:
+#             options[name] = val
+#     return val
                 
 _ds_cache = {}
 _ds_ro_cache = {}
@@ -83,7 +83,6 @@ class datatype(type):
         if _PY311:
             from ._dataobject import member_new
 
-        # ns['__options__'] = options = ns.get('__options__', {})
         options = {}
         if gc:
             options['gc'] = gc
@@ -233,7 +232,6 @@ class datatype(type):
                     for fn in fields:
                         if fn in _fields:
                             raise TypeError(f"field '{fn}' duplicate the field in the base class")
-                    # fields = [fn for fn in fields if fn not in _fields]
 
                 fields = _fields + fields
 
@@ -319,7 +317,6 @@ class datatype(type):
                     else:
                         ds = dataobjectproperty(i, False)
                 setattr(cls, name, ds)
-                # ns[name] = ds
 
         _dataobject_type_init(cls)
 
