@@ -471,29 +471,6 @@ dataobject_init(PyObject *op, PyObject *args, PyObject *kwds)
     return ret;
 }
 
-// static int
-// dataobject_init_post_init(PyObject *op, PyObject *args, PyObject *kwds)
-// {
-//     PyTupleObject *tmp = (PyTupleObject*)args;
-    
-//     int ret = dataobject_init_vc(op, (PyObject**)(tmp->ob_item), Py_SIZE(tmp), kwds);
-    
-//     if (ret < 0)
-//         return ret;
-    
-//     PyObject *method = PyObject_GetAttr(op, __post_init__name);
-//     if (method == NULL)
-//         return -1;
-
-//     if (PyObject_CallObject(method, NULL) == NULL) {
-//         Py_DECREF(method);
-//         return -1;
-//     }
-
-//     Py_DECREF(method);
-//     return 0;
-// }
-
 static int
 dataobject_clear(PyObject *op)
 {
@@ -632,105 +609,6 @@ dataobject_finalize(PyObject *ob) {
         }
     }
 }
-
-// #ifdef PYPY_VERSION
-// static PyObject*
-// dataobject_getattr(PyObject *op, PyObject *name)
-// {
-//     PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
-
-//     if (ob != NULL) {
-//         PyTypeObject *ob_type = Py_TYPE(ob);
-//         if (ob_type == &PyDataObjectProperty_Type) {
-//             return ob_type->tp_descr_get(ob, op, Py_TYPE(op));
-//         }
-//     }
-//     int is__dict__ = PyObject_RichCompareBool(name, __dict__name, Py_EQ);
-//     PyTypeObject *type = Py_TYPE(op);
-//     if (type->tp_dictoffset) {
-//         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-//         if (*dictptr) {
-//             PyObject *dict = *dictptr;
-//             if (is__dict__) {
-//                 Py_INCREF(dict);
-//                 return dict;
-//             }
-//             if (PyMapping_HasKey(dict, name)) {
-//                 PyObject *res = PyDict_GetItem(dict, name);
-//                 if (res) {
-//                     Py_INCREF(res);
-//                     return res;
-//                 }
-//             }
-//         } else {
-//             *dictptr = PyDict_New();
-//             Py_INCREF(*dictptr);
-//             return *dictptr;
-//         }
-//     } else {
-//         if (is__dict__) {
-//             PyErr_Format(PyExc_AttributeError,
-//                  "do not get __dict__ for type %s\n", Py_TYPE(op)->tp_name);
-//             return NULL;
-//         }
-//     }
-//     return PyObject_GenericGetAttr(op, name);
-// }
-
-// static int
-// dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
-// {
-//     PyObject *ob = PyDict_GetItem(Py_TYPE(op)->tp_dict, name);
-
-//     if (ob != NULL) {
-//         PyTypeObject *ob_type = Py_TYPE(ob);
-//         if (ob_type == &PyDataObjectProperty_Type) {
-//             return ob_type->tp_descr_set(ob, op, val);
-//         }
-//     }
-//     PyTypeObject *type = Py_TYPE(op);
-//     if (type->tp_dictoffset) {
-//         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
-//         PyObject *dict;
-//         if (*dictptr)
-//             dict = *dictptr;
-//         else
-//             dict = *dictptr = PyDict_New();
-//         PyDict_SetItem(dict, name, val);
-//         return 1;
-//     }
-//     PyErr_Format(PyExc_AttributeError,
-//             "do not set attribute for type %s\n", Py_TYPE(op)->tp_name);
-//     return -1;
-// }
-// #else
-// static PyObject*
-// dataobject_getattr(PyObject *op, PyObject *name)
-// {
-//     PyObject *ob = _PyType_Lookup(Py_TYPE(op), name);
-//     if (ob != NULL) {
-//         PyTypeObject *ob_type = Py_TYPE(ob);
-//         if (ob_type == &PyDataObjectProperty_Type) {
-//             return ob_type->tp_descr_get(ob, op, (PyObject *)Py_TYPE(op));
-//         }
-//     }
-//     return PyObject_GenericGetAttr(op, name);
-// }
-
-// static int
-// dataobject_setattr(PyObject *op, PyObject *name, PyObject* val)
-// {
-//     PyObject *ob = _PyType_Lookup(Py_TYPE(op), name);
-
-//     if (ob != NULL) {
-//         PyTypeObject *ob_type = Py_TYPE(ob);
-//         if (ob_type == &PyDataObjectProperty_Type) {
-//             return ob_type->tp_descr_set(ob, op, val);
-//         }
-//     }
-//     return PyObject_GenericSetAttr(op, name, val);
-// }
-// #endif
 
 PyDoc_STRVAR(dataobject_len_doc,
 "T.__len__() -- len of T");
@@ -2328,50 +2206,6 @@ asdict(PyObject *module, PyObject *args)
     return _asdict(op);
 }
 
-// #ifdef PYPY_VERSION
-// PyDoc_STRVAR(hash_func_doc,
-// "Get hash value of the dataobject");
-
-// static PyObject *
-// _hash_func(PyObject *module, PyObject *args)
-// {
-//     PyObject *op;
-//     PyTypeObject *type;
-
-//     op = PyTuple_GetItem(args, 0);
-//     type = Py_TYPE(op);
-
-//     if (type != &PyDataObject_Type &&
-//         !PyType_IsSubtype(type, &PyDataObject_Type)) {
-//             PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
-//             return NULL;
-//     }
-
-//     return PyLong_FromSsize_t(dataobject_hash(op));
-// }
-
-// PyDoc_STRVAR(iter_func_doc,
-// "Get hash value of the dataobject");
-
-// static PyObject *
-// _iter_func(PyObject *module, PyObject *args)
-// {
-//     PyObject *op;
-//     PyTypeObject *type;
-
-//     op = PyTuple_GetItem(args, 0);
-//     type = Py_TYPE(op);
-
-//     if (type != &PyDataObject_Type &&
-//         !PyType_IsSubtype(type, &PyDataObject_Type)) {
-//             PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
-//             return NULL;
-//     }
-
-//     return dataobject_iter(op);
-// }
-// #endif
-
 PyDoc_STRVAR(astuple_doc,
 "Convert object to a tuple");
 
@@ -2687,7 +2521,6 @@ member_new(PyObject *module, PyObject *args)
     else
         mdef->flags = 0;
     mdef->doc = NULL;
-    // printf("%d %d %s %d\n", mdef->offset, readonly, PyUnicode_AsUTF8(name), (int)type);
 
     descr->d_member = mdef;
     Py_INCREF(descr);
@@ -2739,10 +2572,6 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"astuple", astuple, METH_VARARGS, astuple_doc},
     // {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
-// #ifdef PYPY_VERSION
-//     {"_hash_func", (PyCFunction)_hash_func, METH_VARARGS, hash_func_doc},
-//     {"_iter_func", (PyCFunction)_iter_func, METH_VARARGS, iter_func_doc},
-// #endif
     {"clone", (PyCFunction)dataobject_clone, METH_VARARGS | METH_KEYWORDS, dataobject_clone_doc},
     {"update", (PyCFunction)dataobject_update, METH_VARARGS | METH_KEYWORDS, dataobject_update_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
