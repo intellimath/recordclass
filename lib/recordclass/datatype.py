@@ -210,7 +210,7 @@ class datatype(type):
                     f['default'] = defaults_dict[fn]
 
             if readonly:
-                if type(readonly) is type(True):
+                if type(readonly) is bool:
                     for f in fields_dict.values():
                         f['readonly'] = True
                 else:

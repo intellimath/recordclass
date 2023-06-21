@@ -759,7 +759,6 @@ static PyTypeObject PyLiteTuple_Type = {
     .tp_vectorcall = litetuple_vectorcall,                                      /* tp_vectorcall */
     .tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall),
 #endif
-        
 };
 
 static PyTypeObject PyMLiteTuple_Type = {

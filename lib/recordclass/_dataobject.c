@@ -1832,8 +1832,7 @@ dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type)
 static int 
 dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value)
 {
-
-    if (value == NULL) {
+    if (!value) {
         PyErr_SetString(PyExc_AttributeError, "The field and it's value can't be deleted");
         return -1;
     }
@@ -2791,11 +2790,6 @@ PyInit__dataobject(void)
     __fix_type((PyObject*)&PyDataObject_Type, datatype);
     Py_DECREF(datatype);
     
-    // PyDataObject_Type.tp_base = &PyBaseObject_Type;
-    // Py_INCREF(&PyBaseObject_Type);
-// #if PY_VERSION_HEX == 0x03080000
-//     PyDataObject_Type.tp_vectorcall_offset = 0
-// #endif
     if (PyType_Ready(&PyDataObject_Type) < 0)
         Py_FatalError("Can't initialize dataobject type");
 
