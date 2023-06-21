@@ -218,7 +218,7 @@ class datatype(type):
                         fields_dict[fn]['readonly'] = True
             fields = [f for f in fields if f in fields_dict]
 
-            if bases and (len(bases) > 1 or bases[0] is not dataobject):
+            if (bases and (len(bases) > 1) or bases[0] is not dataobject):
                 _fields, _fields_dict, _use_dict, _use_weakref = collect_info_from_bases(bases)
                 for fn in classvars:
                     if fn in _fields:
@@ -231,7 +231,7 @@ class datatype(type):
                 if fields:
                     for fn in fields:
                         if fn in _fields:
-                            raise TypeError(f"field '{fn}' duplicate the field in the base class")
+                            raise TypeError(f"the field name '{fn}' duplicate the same field name in the base class")
 
                 fields = _fields + fields
 
