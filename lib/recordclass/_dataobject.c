@@ -261,21 +261,16 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     PyObject **items = PyDataObject_ITEMS(op);
     
     Py_ssize_t n_kwnames = 0;
-    
-    if (kwnames) {
+    if (kwnames)
         n_kwnames = Py_SIZE(kwnames);
-    }
 
-    // printf("n_args %d n_kwnames %d\n", n_args, n_kwnames);
-    
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
             "the number of the arguments greater than the number of fields");
         return NULL;
     }    
 
-    Py_ssize_t i;
-    
+    Py_ssize_t i;    
     for (i = 0; i < n_args; i++) {
         PyObject *v = args[i];
         Py_INCREF(v);
@@ -427,8 +422,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         return NULL;
     }    
 
-    Py_ssize_t i;
-    
+    Py_ssize_t i;    
     for(i = 0; i < n_args; i++) {
         Py_INCREF(Py_None);
         items[i] = Py_None;
