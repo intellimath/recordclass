@@ -80,12 +80,11 @@ def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=Non
     ns['__module__'] = module
 
     cls = datatype(typename, bases, ns, 
-                   gc=gc, fast_new=fast_new,
                    readonly=readonly, iterable=iterable,
                    mapping=mapping, sequence=sequence,
                    use_dict=use_dict, use_weakref=use_weakref,
-                   hashable=hashable
-                   )
+                   gc=gc, fast_new=fast_new,
+                   hashable=hashable)
 
     return cls
 

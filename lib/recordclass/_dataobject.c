@@ -252,12 +252,14 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     //                     "dataobject base class can't be instantiated");
     //     return NULL;
     // }
+
+    // printf("new_vc\n");
     
     PyTypeObject *type = (PyTypeObject*)type0;
     PyObject *op = type->tp_alloc(type, 0); 
     
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
-    Py_ssize_t n_args = PyVectorcall_NARGS(nargsf);
+    const Py_ssize_t n_args = PyVectorcall_NARGS(nargsf);
     PyObject **items = PyDataObject_ITEMS(op);
     
     Py_ssize_t n_kwnames = 0;
@@ -402,11 +404,11 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    if (type == &PyDataObject_Type) {
-        PyErr_SetString(PyExc_TypeError,
-                        "dataobject base class can't be instantiated");
-        return NULL;
-    }
+    // if (type == &PyDataObject_Type) {
+    //     PyErr_SetString(PyExc_TypeError,
+    //                     "dataobject base class can't be instantiated");
+    //     return NULL;
+    // }
     
     // printf("new\n");
     
@@ -456,6 +458,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static int
 dataobject_init_basic(PyObject *op, PyObject *args, PyObject *kwds)
 {
+    // printf("init_basic\n");
     return 0;
 }
 
