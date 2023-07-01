@@ -679,7 +679,7 @@ But it can be resolved with `__del__` method for clearing the linked list:
 
 There is builtin more fast deallocation method using finalization mechanizm when `deep_dealloc=True`. In such case one don't need `__del__`  method for clearing the linked list.
 
-> Note that for classes with `gc=True` (cyclic GC is used) this method is disabled: the python's cyclic GC is used in these cases.
+> Note that for classes with `gc=True` this method is disabled: the python's cyclic GC is used in these cases.
 
 For more details see notebook [example_datatypes](examples/example_datatypes.ipynb).
 
@@ -691,6 +691,9 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 * Add vectorcall protocal to `dataobject`.
 * Now dataobject's `op.__hash__` return `id(op)` by default.
   The option `hashable=True` make dataobject hashably by value.
+* Now `dataobject`-based classes, `litetuple` and `mutabletuple` are supported
+  some byte specializations since Python 3.11.
+  In that cases instance creation and attribute access are faster.
 
 #### 0.18.4
 
