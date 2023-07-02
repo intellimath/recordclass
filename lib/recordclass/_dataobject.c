@@ -459,6 +459,24 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return op;
 }
 
+static PyObject*
+dataobject_new_empty(PyTypeObject *type)
+{
+    
+    PyObject *op = type->tp_alloc(type, 0); 
+    
+    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
+    PyObject **items = PyDataObject_ITEMS(op);
+    
+    Py_ssize_t i;    
+    for(i = 0; i < n_items; i++) {
+        Py_INCREF(Py_None);
+        items[i] = Py_None;
+    }
+
+    return op;
+}
+
 static int
 dataobject_init_basic(PyObject *op, PyObject *args, PyObject *kwds)
 {
@@ -2265,9 +2283,7 @@ dataobject_make(PyObject *module, PyObject *type_args, PyObject *kw)
     PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
     Py_INCREF(type);
 
-    // PyObject *ret =  PyObject_Call((PyObject*)type, args, kw);
-
-    PyObject *ret =  dataobject_new(type, args, NULL);
+    PyObject *ret =  dataobject_new_empty(type);
     dataobject_init(ret, args, kw);
 
     Py_XDECREF(args);

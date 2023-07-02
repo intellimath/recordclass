@@ -694,6 +694,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 * Now `dataobject`-based classes, `litetuple` and `mutabletuple` are supported
   some byte specializations since Python 3.11.
   In that cases instance creation and attribute access are faster.
+* Fix `make` function for cases, when subclass has nontrivial `__init__`.
 
 #### 0.18.4
 
