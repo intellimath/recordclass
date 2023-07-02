@@ -302,9 +302,12 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     }
 
     if (kwnames && n_kwnames > 0) {
+        PyObject *val;
+        PyObject *name;
+
         for(i=0; i<n_kwnames; i++) {
-            PyObject *name = PyTuple_GET_ITEM(kwnames, i);
-            PyObject *val = args[n_args + i];
+            name = PyTuple_GET_ITEM(kwnames, i);
+            val = args[n_args + i];
             
             Py_INCREF(val);
             PyObject_SetAttr(op, name, val);
@@ -363,6 +366,7 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyObject **items = PyDataObject_ITEMS(op);    
     const PyTupleObject *tpl = (const PyTupleObject*)args; 
     PyObject *const*tmp = (PyObject*const*)(tpl->ob_item);
+    
     Py_ssize_t i;
     for (i = 0; i < n_args; i++) {
         PyObject *v = tmp[i];
@@ -2261,7 +2265,10 @@ dataobject_make(PyObject *module, PyObject *type_args, PyObject *kw)
     PyTypeObject *type = (PyTypeObject*)PyTuple_GET_ITEM(type_args, 0);
     Py_INCREF(type);
 
-    PyObject *ret =  PyObject_Call((PyObject*)type, args, kw);
+    // PyObject *ret =  PyObject_Call((PyObject*)type, args, kw);
+
+    PyObject *ret =  dataobject_new(type, args, NULL);
+    dataobject_init(ret, args, kw);
 
     Py_XDECREF(args);
     Py_DECREF(type);

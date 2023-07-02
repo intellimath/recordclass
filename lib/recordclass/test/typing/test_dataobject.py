@@ -8,7 +8,7 @@ import weakref
 
 from recordclass import make_dataclass, datatype, as_dataclass
 from recordclass import dataobject, datatype
-from recordclass import asdict
+from recordclass import asdict, make
 
 # _PY36 = _sys.version_info[:2] >= (3, 6)
 _PY37 = sys.version_info[:2] >= (3, 7)
@@ -52,6 +52,20 @@ class extended_dataobject(dataobject):
 class Param(extended_dataobject):
     x:dict = {'a':1, 'b':2}
     y:tuple = (1,2)                
+
+class TestPickle44(dataobject):
+    x:int
+    y:int
+
+    def __init__(self, x, y):
+        # print("__init__")
+        self.x = 2*x
+        self.y = 3*y
+    #
+    def __reduce__(self):
+        tp, args = dataobject.__reduce__(self)
+        return make, (tp, args)
+
 
 class DataObjectTest3(unittest.TestCase):
 
@@ -632,17 +646,26 @@ class DataObjectTest3(unittest.TestCase):
                 q = loads(tmp)
                 self.assertEqual(p, q)
 
-#     def test_pickle44_tp(self):
+    def test_pickle_Param_tp(self):
+        p = Param(10, 20)
+        for module in (pickle,):
+            loads = getattr(module, 'loads')
+            dumps = getattr(module, 'dumps')
+            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+                tmp = dumps(p, protocol)
+                q = loads(tmp)
+                self.assertEqual(p, q)
 
-#         p = Param(10, 20)
-#         for module in (pickle,):
-#             loads = getattr(module, 'loads')
-#             dumps = getattr(module, 'dumps')
-#             for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
-#                 tmp = dumps(p, protocol)
-#                 q = loads(tmp)
-#                 self.assertEqual(p, q)
-
+    def test_pickle44_tp(self):
+        p = TestPickle44(10, 20)
+        for module in (pickle,):
+            loads = getattr(module, 'loads')
+            dumps = getattr(module, 'dumps')
+            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
+                tmp = dumps(p, protocol)
+                q = loads(tmp)
+                self.assertEqual(p, q)
+                
 #     def test_dill(self):
 #         print('*** DILL ***')
 #         try:
