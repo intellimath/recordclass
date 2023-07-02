@@ -246,15 +246,7 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 static PyObject*
 dataobject_vectorcall(PyObject *type0, PyObject * const*args,
                  size_t nargsf, PyObject *kwnames)
-{
-    // if (type == &PyDataObject_Type) {
-    //     PyErr_SetString(PyExc_TypeError,
-    //                     "dataobject base class can't be instantiated");
-    //     return NULL;
-    // }
-
-    // printf("new_vc\n");
-    
+{    
     PyTypeObject *type = (PyTypeObject*)type0;
     PyObject *op = type->tp_alloc(type, 0); 
     
@@ -262,6 +254,7 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     const Py_ssize_t n_args = PyVectorcall_NARGS(nargsf);
     PyObject **items = PyDataObject_ITEMS(op);
     
+    // printf("new_vc\n");
     Py_ssize_t n_kwnames = 0;
     if (kwnames)
         n_kwnames = Py_SIZE(kwnames);
@@ -344,14 +337,7 @@ dataobject_init_vc(PyObject *op, PyObject **args,
 static PyObject*
 dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    // if (type == &PyDataObject_Type) {
-    //     PyErr_SetString(PyExc_TypeError,
-    //                     "dataobject base class can't be instantiated");
-    //     return NULL;
-    // }
-    
-    // printf("new_basic\n");
-    
+    // printf("new_basic\n");    
     PyObject *op = type->tp_alloc(type, 0); 
     
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
@@ -408,12 +394,6 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    // if (type == &PyDataObject_Type) {
-    //     PyErr_SetString(PyExc_TypeError,
-    //                     "dataobject base class can't be instantiated");
-    //     return NULL;
-    // }
-    
     // printf("new\n");
     
     PyObject *op = type->tp_alloc(type, 0); 
