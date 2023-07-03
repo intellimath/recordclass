@@ -76,7 +76,7 @@ packages = [ 'recordclass',
 
 setup(
     name = 'recordclass',
-    version = '0.18.4',
+    version = '0.19',
     description = description,
     author = 'Zaur Shibzukhov',
     author_email = 'szport@gmail.com',

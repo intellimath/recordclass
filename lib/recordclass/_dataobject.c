@@ -52,6 +52,8 @@ static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataObjectProperty_Type;
 
+static PyObject *pydataobject_make;
+
 PyObject *__fields__name;
 PyObject *__dict__name;
 PyObject *__weakref__name;
@@ -1276,6 +1278,8 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
     if (args == NULL)
         return NULL;
 
+    // tp_args = PyTuple_Pack(2, tp, args);
+
     if (tp->tp_dictoffset) {
         dictptr = PyObject_GetDictPtr(ob);
         if (dictptr) {
@@ -1284,10 +1288,13 @@ dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
                 kw = PyDict_Copy(d);
         }
     }
+
     if (kw)
         result = PyTuple_Pack(3, tp, args, kw);
     else
         result = PyTuple_Pack(2, tp, args);
+
+    // Py_INCREF(pydataobject_make);
         
     // printf("reduce: %s\n", tp->tp_name);
 
@@ -2438,7 +2445,6 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     if (!PyObject_IsTrue(is_pyinit) & !PyObject_IsTrue(is_pynew))
         _vector_call_set(cls);
     else {
-        
     }
 
     PyTypeObject *tp = (PyTypeObject*)cls;
@@ -2637,6 +2643,9 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataObjectProperty_Type);
     PyModule_AddObject(m, "dataobjectproperty", (PyObject *)&PyDataObjectProperty_Type);
 
+    pydataobject_make = PyObject_GetAttrString(m, "make");
+    Py_INCREF(pydataobject_make);
+    
     fields_dict_name = PyUnicode_FromString("__fields_dict__");
     if (fields_dict_name == NULL)
         return NULL;
@@ -2660,12 +2669,6 @@ PyInit__dataobject(void)
     __init__name = PyUnicode_FromString("__init__");
     if (__init__name == NULL)
         return NULL;
-
-    // PyObject *mod = _PyObject_GetModule("recordclass.datatype");
-    // if (mod == NULL)
-    //     return NULL;
-    // PyObject_SetAttrString(mod, (const char*)"dataobject", (PyObject*)&PyDataObject_Type)
-    // Py_INCREF(&PyDataObject_Type);
     
     return m;
 }

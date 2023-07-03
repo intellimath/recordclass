@@ -691,10 +691,17 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 * Add vectorcall protocal to `dataobject`.
 * Now dataobject's `op.__hash__` return `id(op)` by default.
   The option `hashable=True` make dataobject hashably by value.
-* Now `dataobject`-based classes, `litetuple` and `mutabletuple` are supported
-  some byte specializations since Python 3.11.
-  In that cases instance creation and attribute access are faster.
-* Fix `make` function for cases, when subclass has nontrivial `__init__`.
+* Now `dataobject`-based classes, `litetuple` and `mutabletuple` are support
+  bytecode specializations since Python 3.11 for instance creation and for getattr/setattr.
+* Fix `make` function for cases, when subclass have nontrivial `__init__`.
+* Note for `dataobject`-based subclasses with non-trivial `__init__` one may want define also `__reduce__`.
+  For example:
+
+      def __reduce__(self):
+        from recordclass import dataobject, make
+        tp, args = dataobject.__reduce__(self)
+        return make, (tp, args)
+          
 
 #### 0.18.4
 
