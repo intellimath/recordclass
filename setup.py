@@ -35,32 +35,62 @@ _PY310 = sys.version_info[:2] >= (3, 10)
 extra_compile_args = []
 extra_link_args = []
 
-ext_modules = [
-    Extension(
-        "recordclass._dataobject",
-        ["lib/recordclass/_dataobject.c"],
-        # extra_compile_args = extra_compile_args,
-        # extra_link_args = extra_link_args,
-    ),
-    Extension(
-        "recordclass._litetuple",
-        ["lib/recordclass/_litetuple.c"],
-        # extra_compile_args = extra_compile_args,
-        # extra_link_args = extra_link_args,
-    ),
-    Extension(
-        "recordclass._litelist",
-        ["lib/recordclass/_litelist.c"],
-        # extra_compile_args = extra_compile_args,
-        # extra_link_args = extra_link_args,
-    ),
-    Extension(
-        "recordclass._linkedlist",
-        ["lib/recordclass/_linkedlist.c"],
-        # extra_compile_args = extra_compile_args,
-        # extra_link_args = extra_link_args,
-    ),
-]
+use_cython = 0
+
+if use_cython:
+    ext_modules = [
+        Extension(
+            "recordclass._dataobject",
+            ["lib/recordclass/_dataobject.c"],
+            # extra_compile_args = extra_compile_args,
+            # extra_link_args = extra_link_args,
+        ),
+        Extension(
+            "recordclass._litetuple",
+            ["lib/recordclass/_litetuple.c"],
+            # extra_compile_args = extra_compile_args,
+            # extra_link_args = extra_link_args,
+        ),
+        Extension(
+            "recordclass._litelist",
+            ["lib/recordclass/_litelist.c"],
+            # extra_compile_args = extra_compile_args,
+            # extra_link_args = extra_link_args,
+        ),
+        Extension(
+            "recordclass._linkedlist",
+            ["lib/recordclass/_linkedlist.pyx"],
+            # extra_compile_args = extra_compile_args,
+            # extra_link_args = extra_link_args,
+        ),
+    ]
+else:
+    ext_modules = [
+        Extension(
+            "recordclass._dataobject",
+            ["lib/recordclass/_dataobject.c"],
+            # extra_compile_args = extra_compile_args,
+            # extra_link_args = extra_link_args,
+        ),
+        Extension(
+            "recordclass._litetuple",
+            ["lib/recordclass/_litetuple.c"],
+            # extra_compile_args = extra_compile_args,
+            # extra_link_args = extra_link_args,
+        ),
+        Extension(
+            "recordclass._litelist",
+            ["lib/recordclass/_litelist.c"],
+            # extra_compile_args = extra_compile_args,
+            # extra_link_args = extra_link_args,
+        ),
+        Extension(
+            "recordclass._linkedlist",
+            ["lib/recordclass/_linkedlist.c"],
+            # extra_compile_args = extra_compile_args,
+            # extra_link_args = extra_link_args,
+        ),
+    ]
 
 description = """Mutable variant of namedtuple -- recordclass, which support assignments, compact dataclasses and other memory saving variants."""
 

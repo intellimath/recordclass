@@ -15,6 +15,8 @@ include lib/recordclass/_dataobject.c
 include lib/recordclass/_dataobject.h
 include lib/recordclass/_litelist.h
 include lib/recordclass/_litelist.c
+include lib/recordclass/_linkedlist.h
+include lib/recordclass/_linkedlist.c
 include lib/recordclass/_litetuple.c
 include lib/recordclass/tools/*.py
 include lib/recordclass/typing/*.py
