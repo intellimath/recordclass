@@ -1432,7 +1432,7 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_as_buffer */
 #if PY_VERSION_HEX >= 0x030A0000
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|
-    Py_TPFLAGS_HAVE_VECTORCALL|Py_TPFLAGS_IMMUTABLETYPE,
+    Py_TPFLAGS_HAVE_VECTORCALL, // |Py_TPFLAGS_IMMUTABLETYPE,
 #else        
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
 #endif
@@ -2401,7 +2401,7 @@ _vector_call_set(PyObject *cls)
     tp->tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall);
     tp->tp_vectorcall = dataobject_vectorcall;
     tp->tp_flags |= Py_TPFLAGS_HAVE_VECTORCALL;
-    tp->tp_flags |= Py_TPFLAGS_IMMUTABLETYPE;
+    // tp->tp_flags |= Py_TPFLAGS_IMMUTABLETYPE;
     // printf("vc\n");
 #endif        
 
