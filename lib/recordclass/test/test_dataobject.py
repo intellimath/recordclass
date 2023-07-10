@@ -98,6 +98,10 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a[1], -200)
         a = None
 
+    def test_dataobject_type(self):
+        A = make_dataclass("A", 'x y')
+        A.color = 'red'
+    
     def test_dataobject_local_dict(self):
         A = make_dataclass("A", ('x', 'y'), use_dict=True)
         a = A(1,2)
