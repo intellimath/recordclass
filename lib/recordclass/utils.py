@@ -59,6 +59,17 @@ del _sys
 
 #############
 
+# def get_option(options, name, default=False):
+#     if name in options:
+#         val = options[name]
+#         if not val:
+#             del options[name]
+#     else:
+#         val = default
+#         if val:
+#             options[name] = val
+#     return val
+
 def process_fields(fields, defaults, rename, invalid_names):
     annotations = {}
     msg = "in iterable (f0, t0), (f1, t1), ... each t must be a type"

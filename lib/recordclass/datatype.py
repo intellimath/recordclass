@@ -48,17 +48,6 @@ def _matching_annotations_and_defaults(annotations, defaults):
         else:
             if first_default:
                 raise TypeError('A field without default value appears after a field with default value')
-
-# def get_option(options, name, default=False):
-#     if name in options:
-#         val = options[name]
-#         if not val:
-#             del options[name]
-#     else:
-#         val = default
-#         if val:
-#             options[name] = val
-#     return val
                 
 _ds_cache = {}
 _ds_ro_cache = {}
@@ -74,7 +63,7 @@ class datatype(type):
                 gc=False, fast_new=True, readonly=False, iterable=False,
                 deep_dealloc=False, sequence=False, mapping=False,
                 use_dict=False, use_weakref=False, hashable=False, 
-                mapping_only=False):
+                mapping_only=False, immutable_type=False):
 
         from .utils import check_name, collect_info_from_bases, _have_pyinit, _have_pynew
         from ._dataobject import dataobject
@@ -104,6 +93,8 @@ class datatype(type):
             options['use_dict'] = use_dict
         if use_weakref:
             options['use_weakref'] = use_weakref
+        if immutable_type:
+            options['immutable_type'] = immutable_type
         
         if bases:
             base0 = bases[0]
@@ -283,11 +274,11 @@ class datatype(type):
             if '__doc__' not in ns:
                 ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
 
-        options.update(dict(
-                gc=gc, fast_new=fast_new, readonly=readonly, iterable=iterable,
-                deep_dealloc=deep_dealloc, sequence=sequence, mapping=mapping,
-                use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
-                mapping_only=mapping_only))
+        # options.update(dict(
+        #         gc=gc, fast_new=fast_new, readonly=readonly, iterable=iterable,
+        #         deep_dealloc=deep_dealloc, sequence=sequence, mapping=mapping,
+        #         use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
+        #         mapping_only=mapping_only))
         
         ns['__options__'] = options
 
@@ -324,7 +315,7 @@ class datatype(type):
                         use_dict=use_dict, use_weakref=use_weakref, 
                         iterable=iterable, hashable=hashable,
                         gc=gc, deep_dealloc=deep_dealloc, mapping_only=mapping_only,
-                        is_pyinit=is_pyinit, is_pynew=is_pynew,
+                        is_pyinit=is_pyinit, is_pynew=is_pynew, immutable_type=immutable_type,
                   )
         return cls
 
