@@ -2401,6 +2401,7 @@ _vector_call_set(PyObject *cls)
     tp->tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall);
     tp->tp_vectorcall = dataobject_vectorcall;
     tp->tp_flags |= Py_TPFLAGS_HAVE_VECTORCALL;
+    // tp->tp_flags |= Py_TPFLAGS_IMMUTABLETYPE;
     // printf("vc\n");
 #endif        
 
@@ -2425,7 +2426,6 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     // PyObject *mapping_only = PyMapping_GetItemString(kw, "mapping_only");
     PyObject *is_pyinit = PyMapping_GetItemString(kw, "is_pyinit");
     PyObject *is_pynew = PyMapping_GetItemString(kw, "is_pynew");
-    PyObject *immutable_type = PyMapping_GetItemString(kw, "immutable_type");
 
     _set_dictoffset(cls, use_dict);
     _set_weaklistoffset(cls, use_weakref);
@@ -2449,9 +2449,6 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
 
     PyTypeObject *tp = (PyTypeObject*)cls;
 
-    if (PyObject_IsTrue(immutable_type))
-        tp->tp_flags |= Py_TPFLAGS_IMMUTABLETYPE;
-    
     tp->tp_flags &= ~Py_TPFLAGS_READYING;
 
     PyType_Modified(tp);

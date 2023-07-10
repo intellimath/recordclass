@@ -63,7 +63,7 @@ class datatype(type):
                 gc=False, fast_new=True, readonly=False, iterable=False,
                 deep_dealloc=False, sequence=False, mapping=False,
                 use_dict=False, use_weakref=False, hashable=False, 
-                mapping_only=False, immutable_type=False):
+                mapping_only=False):
 
         from .utils import check_name, collect_info_from_bases, _have_pyinit, _have_pynew
         from ._dataobject import dataobject
@@ -93,8 +93,6 @@ class datatype(type):
             options['use_dict'] = use_dict
         if use_weakref:
             options['use_weakref'] = use_weakref
-        if immutable_type:
-            options['immutable_type'] = immutable_type
         
         if bases:
             base0 = bases[0]
@@ -315,7 +313,7 @@ class datatype(type):
                         use_dict=use_dict, use_weakref=use_weakref, 
                         iterable=iterable, hashable=hashable,
                         gc=gc, deep_dealloc=deep_dealloc, mapping_only=mapping_only,
-                        is_pyinit=is_pyinit, is_pynew=is_pynew, immutable_type=immutable_type,
+                        is_pyinit=is_pyinit, is_pynew=is_pynew,
                   )
         return cls
 

@@ -101,6 +101,11 @@ class DataobjectTest(unittest.TestCase):
     def test_dataobject_type(self):
         A = make_dataclass("A", 'x y')
         A.color = 'red'
+
+    # def test_dataobject_immutable_type(self):
+    #     A = make_dataclass("A", 'x y', immutable_type=True)
+    #     # with self.assertRaises(TypeError):     
+    #     A.color = 'red'
     
     def test_dataobject_local_dict(self):
         A = make_dataclass("A", ('x', 'y'), use_dict=True)
