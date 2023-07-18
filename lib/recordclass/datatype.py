@@ -65,7 +65,7 @@ class datatype(type):
                 use_dict=False, use_weakref=False, hashable=False, 
                 mapping_only=False):
 
-        from .utils import check_name, collect_info_from_bases, _have_pyinit, _have_pynew
+        from .utils import check_name, collect_info_from_bases
         from ._dataobject import dataobject
         from ._dataobject import dataobjectproperty
         from sys import intern as _intern
@@ -159,8 +159,8 @@ class datatype(type):
         if hashable:
             options['hashable'] = hashable
 
-        is_pyinit = '__init__' in ns
-        is_pynew = '__new__' in ns
+        # is_pyinit = '__init__' in ns
+        # is_pynew = '__new__' in ns
 
         if has_fields:
             if annotations:
@@ -234,10 +234,10 @@ class datatype(type):
                 annotations = _annotations
                 del _fields, _fields_dict, _use_dict
 
-                if not is_pyinit:
-                    is_pyinit = _have_pyinit(bases)
-                if not is_pynew:
-                    is_pynew = _have_pynew(bases)
+                # if not is_pyinit:
+                #     is_pyinit = _have_pyinit(bases)
+                # if not is_pynew:
+                #     is_pynew = _have_pynew(bases)
 
             fields = tuple(fields)
             n_fields = len(fields)
@@ -271,12 +271,6 @@ class datatype(type):
 
             if '__doc__' not in ns:
                 ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
-
-        # options.update(dict(
-        #         gc=gc, fast_new=fast_new, readonly=readonly, iterable=iterable,
-        #         deep_dealloc=deep_dealloc, sequence=sequence, mapping=mapping,
-        #         use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
-        #         mapping_only=mapping_only))
         
         ns['__options__'] = options
 
@@ -309,26 +303,29 @@ class datatype(type):
 
         cls.__configure__(sequence=sequence, mapping=mapping, readonly=readonly,
                           hashable=hashable, iterable=iterable, use_dict=use_dict, use_weakref=use_weakref,
-                          is_pynew=is_pynew, is_pyinit=is_pyinit, gc=gc, deep_dealloc=deep_dealloc,
+                          gc=gc, deep_dealloc=deep_dealloc,
                          )
 
-        # _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly,
-        #                 use_dict=use_dict, use_weakref=use_weakref, 
-        #                 iterable=iterable, hashable=hashable,
-        #                 gc=gc, deep_dealloc=deep_dealloc, mapping_only=mapping_only,
-        #                 is_pyinit=is_pyinit, is_pynew=is_pynew,
-        #           )
         return cls
 
     def __configure__(cls,  gc=False, fast_new=True, readonly=False, iterable=False,
                             deep_dealloc=False, sequence=False, mapping=False,
                             use_dict=False, use_weakref=False, hashable=False, 
-                            mapping_only=False, is_pynew=False, is_pyinit=False):
+                            mapping_only=False):
 
         from ._dataobject import _datatype_collection_mapping, _datatype_hashable, _datatype_iterable,\
                                  _datatype_use_weakref, _datatype_use_dict, _datatype_enable_gc, \
                                  _datatype_deep_dealloc, _datatype_vectorcall, _pytype_modified, \
                                  _dataobject_type_init
+        from .utils import _have_pyinit, _have_pynew
+
+
+        is_pyinit = '__init__' in cls.__dict__
+        is_pynew = '__new__' in cls.__dict__
+        if not is_pyinit:
+            is_pyinit = _have_pyinit(cls.__bases__)
+        if not is_pynew:
+            is_pynew = _have_pynew(cls.__bases__)
         
         _dataobject_type_init(cls)
 
