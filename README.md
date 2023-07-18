@@ -685,6 +685,10 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.19.2
+
+* Exception message for Cls(**kwargs) with invalid argument is more precise.
+
 #### 0.19.1
 
 * Fix regression with `C.attr=value` (with immutable class by default).
