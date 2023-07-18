@@ -159,9 +159,6 @@ class datatype(type):
         if hashable:
             options['hashable'] = hashable
 
-        # is_pyinit = '__init__' in ns
-        # is_pynew = '__new__' in ns
-
         if has_fields:
             if annotations:
                 annotations = {fn:annotations[fn] \
@@ -233,11 +230,6 @@ class datatype(type):
                 _annotations.update(annotations)
                 annotations = _annotations
                 del _fields, _fields_dict, _use_dict
-
-                # if not is_pyinit:
-                #     is_pyinit = _have_pyinit(bases)
-                # if not is_pynew:
-                #     is_pynew = _have_pynew(bases)
 
             fields = tuple(fields)
             n_fields = len(fields)
@@ -313,10 +305,10 @@ class datatype(type):
                             use_dict=False, use_weakref=False, hashable=False, 
                             mapping_only=False):
 
-        from ._dataobject import _datatype_collection_mapping, _datatype_hashable, _datatype_iterable,\
-                                 _datatype_use_weakref, _datatype_use_dict, _datatype_enable_gc, \
-                                 _datatype_deep_dealloc, _datatype_vectorcall, _pytype_modified, \
-                                 _dataobject_type_init
+        from ._dataobject import (_datatype_collection_mapping, _datatype_hashable, _datatype_iterable,
+                                  _datatype_use_weakref, _datatype_use_dict, _datatype_enable_gc, 
+                                  _datatype_deep_dealloc, _datatype_vectorcall, _pytype_modified, 
+                                  _dataobject_type_init)
         from .utils import _have_pyinit, _have_pynew
 
 
