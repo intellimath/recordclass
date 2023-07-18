@@ -1995,6 +1995,22 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(_datatype_collection_mapping_doc,
+"");
+
+static PyObject *
+_datatype_collection_mapping(PyObject *module, PyObject *args) //, PyObject *kw)
+{
+    PyObject *cls, *sequence, *mapping, *readonly;
+
+    cls = PyTuple_GET_ITEM(args, 0);
+    sequence = PyTuple_GET_ITEM(args, 1);
+    mapping = PyTuple_GET_ITEM(args, 2);
+    readonly = PyTuple_GET_ITEM(args, 3);
+
+    return _collection_protocol(cls, sequence, mapping, readonly);
+}
+
 static PyObject*
 _set_hashable(PyObject *cls, PyObject *hashable) {
     PyTypeObject *tp = (PyTypeObject*)cls;
@@ -2016,6 +2032,21 @@ _set_hashable(PyObject *cls, PyObject *hashable) {
 
     Py_RETURN_NONE;
 }
+
+PyDoc_STRVAR(_datatype_hashable_doc,
+"");
+
+static PyObject *
+_datatype_hashable(PyObject *module, PyObject *args) //, PyObject *kw)
+{
+    PyObject *cls, *hashable;
+
+    cls = PyTuple_GET_ITEM(args, 0);
+    hashable = PyTuple_GET_ITEM(args, 1);
+
+    return _set_hashable(cls, hashable);
+}
+
 
 static PyObject*
 _set_iterable(PyObject *cls, PyObject *iterable) {
@@ -2045,6 +2076,21 @@ _set_iterable(PyObject *cls, PyObject *iterable) {
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(_datatype_iterable_doc,
+"");
+
+static PyObject *
+_datatype_iterable(PyObject *module, PyObject *args) //, PyObject *kw)
+{
+    PyObject *cls, *iterable;
+
+    cls = PyTuple_GET_ITEM(args, 0);
+    iterable = PyTuple_GET_ITEM(args, 1);
+
+    return _set_iterable(cls, iterable);
+}
+
+
 static PyObject*
 _set_dictoffset(PyObject *cls, PyObject *add_dict) {
     PyTypeObject *tp;
@@ -2072,6 +2118,21 @@ _set_dictoffset(PyObject *cls, PyObject *add_dict) {
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(_datatype_use_dict_doc,
+"");
+
+static PyObject *
+_datatype_use_dict(PyObject *module, PyObject *args) //, PyObject *kw)
+{
+    PyObject *cls, *use_dict;
+
+    cls = PyTuple_GET_ITEM(args, 0);
+    use_dict = PyTuple_GET_ITEM(args, 1);
+
+    return _set_dictoffset(cls, use_dict);
+}
+
+
 static PyObject*
 _set_weaklistoffset(PyObject *cls, PyObject* add_weakref) {
     PyTypeObject *tp;
@@ -2098,15 +2159,29 @@ _set_weaklistoffset(PyObject *cls, PyObject* add_weakref) {
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(_datatype_use_weakref_doc,
+"");
+
+static PyObject *
+_datatype_use_weakref(PyObject *module, PyObject *args) //, PyObject *kw)
+{
+    PyObject *cls, *use_weakref;
+
+    cls = PyTuple_GET_ITEM(args, 0);
+    use_weakref = PyTuple_GET_ITEM(args, 1);
+
+    return _set_weaklistoffset(cls, use_weakref);
+}
+
 static PyObject *
 _enable_gc(PyObject *cls)
 {
     PyTypeObject *type;
 
-    if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
-        PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of type");
-        return NULL;
-    }
+    // if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
+    //     PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of type");
+    //     return NULL;
+    // }
 
     type = (PyTypeObject*)cls;
     type->tp_flags |= Py_TPFLAGS_HAVE_GC;
@@ -2117,9 +2192,20 @@ _enable_gc(PyObject *cls)
     type->tp_alloc = dataobject_alloc_gc;
     type->tp_free = PyObject_GC_Del;
 
-//     PyType_Modified(type);
+    PyType_Modified(type);
 
     Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(_datatype_enable_gc_doc,
+"");
+
+static PyObject *
+_datatype_enable_gc(PyObject *module, PyObject *args) //, PyObject *kw)
+{
+    PyObject *cls = PyTuple_GET_ITEM(args, 0);
+
+    return _enable_gc(cls);
 }
 
 static PyObject *
@@ -2129,10 +2215,10 @@ _set_deep_dealloc(PyObject *cls, PyObject *state)
     int have_gc;
     int  is_deep = PyObject_IsTrue(state);
 
-    if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
-        PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of a type");
-        return NULL;
-    }
+    // if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
+    //     PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of a type");
+    //     return NULL;
+    // }
 
     type = (PyTypeObject*)cls;
     have_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
@@ -2145,6 +2231,51 @@ _set_deep_dealloc(PyObject *cls, PyObject *state)
 
     Py_RETURN_NONE;
 }
+
+PyDoc_STRVAR(_datatype_deep_dealloc_doc,
+"");
+
+static PyObject *
+_datatype_deep_dealloc(PyObject *module, PyObject *args) //, PyObject *kw)
+{
+    PyObject *cls = PyTuple_GET_ITEM(args, 0);
+    PyObject *is_deep = PyTuple_GET_ITEM(args, 1);
+
+    return _set_deep_dealloc(cls, is_deep);
+}
+
+static PyObject *
+_vector_call_set(PyObject *cls)
+{
+    PyTypeObject *tp = (PyTypeObject *)cls;
+
+    tp->tp_new = dataobject_new_basic;
+    tp->tp_init = dataobject_init_basic;
+
+#if PY_VERSION_HEX >= 0x030A0000
+    tp->tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall);
+    tp->tp_vectorcall = dataobject_vectorcall;
+    tp->tp_flags |= Py_TPFLAGS_HAVE_VECTORCALL;
+    // tp->tp_flags |= Py_TPFLAGS_IMMUTABLETYPE;
+    // printf("vc\n");
+#endif        
+
+    Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(_datatype_vectorcall_doc,
+"");
+
+static PyObject *
+_datatype_vectorcall(PyObject *module, PyObject *args) //, PyObject *kw)
+{
+    PyObject *cls;
+
+    cls = PyTuple_GET_ITEM(args, 0);
+
+    return _vector_call_set(cls);
+}
+
 
 static PyObject *
 _astuple(PyObject *op)
@@ -2389,63 +2520,13 @@ dataobject_update(PyObject *module, PyObject *args, PyObject *kw)
     Py_RETURN_NONE;
 }
 
-static PyObject *
-_vector_call_set(PyObject *cls)
-{
-    PyTypeObject *tp = (PyTypeObject *)cls;
 
-    tp->tp_new = dataobject_new_basic;
-    tp->tp_init = dataobject_init_basic;
-
-#if PY_VERSION_HEX >= 0x030A0000
-    tp->tp_vectorcall_offset = offsetof(PyTypeObject, tp_vectorcall);
-    tp->tp_vectorcall = dataobject_vectorcall;
-    tp->tp_flags |= Py_TPFLAGS_HAVE_VECTORCALL;
-    // tp->tp_flags |= Py_TPFLAGS_IMMUTABLETYPE;
-    // printf("vc\n");
-#endif        
-
-    Py_RETURN_NONE;
-}
-
-
-PyDoc_STRVAR(clsconfig_doc,
+PyDoc_STRVAR(_pytype_modified_doc,
 "Configure some class aspects");
 
 static PyObject *
-clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
+_pytype_modified(PyObject *module, PyObject *args) {
     PyObject *cls = PyTuple_GET_ITEM(args, 0);
-    PyObject *sequence = PyMapping_GetItemString(kw, "sequence");
-    PyObject *mapping = PyMapping_GetItemString(kw, "mapping");
-    PyObject *readonly = PyMapping_GetItemString(kw, "readonly");
-    PyObject *use_dict = PyMapping_GetItemString(kw, "use_dict");
-    PyObject *use_weakref = PyMapping_GetItemString(kw, "use_weakref");
-    PyObject *iterable = PyMapping_GetItemString(kw, "iterable");
-    PyObject *gc = PyMapping_GetItemString(kw, "gc");
-    PyObject *set_dd = PyMapping_GetItemString(kw, "deep_dealloc");
-    // PyObject *mapping_only = PyMapping_GetItemString(kw, "mapping_only");
-    PyObject *is_pyinit = PyMapping_GetItemString(kw, "is_pyinit");
-    PyObject *is_pynew = PyMapping_GetItemString(kw, "is_pynew");
-
-    _set_dictoffset(cls, use_dict);
-    _set_weaklistoffset(cls, use_weakref);
-
-    _collection_protocol(cls, sequence, mapping, readonly);
-    _set_iterable(cls, iterable);
-
-    PyObject *hashable = PyMapping_GetItemString(kw, "hashable");
-    _set_hashable(cls, hashable);
-    Py_XDECREF(hashable);
-
-    if (PyObject_IsTrue(gc))
-        _enable_gc(cls);
-
-    _set_deep_dealloc(cls, set_dd);
-
-    if (!PyObject_IsTrue(is_pyinit) & !PyObject_IsTrue(is_pynew))
-        _vector_call_set(cls);
-    else {
-    }
 
     PyTypeObject *tp = (PyTypeObject*)cls;
 
@@ -2455,18 +2536,6 @@ clsconfig(PyObject *module, PyObject *args, PyObject *kw) {
     
     if(PyType_Ready(tp) < 0)
         printf("Ready failed\n");
-
-    Py_XDECREF(sequence);
-    Py_XDECREF(mapping);
-    Py_XDECREF(readonly);
-    Py_XDECREF(use_dict);
-    Py_XDECREF(use_weakref);
-    Py_XDECREF(iterable);
-    Py_XDECREF(gc);
-    Py_XDECREF(set_dd);
-    // Py_XDECREF(mapping_only);
-    Py_XDECREF(is_pyinit);
-    Py_XDECREF(is_pynew);
 
     Py_RETURN_NONE;
 }
@@ -2582,12 +2651,20 @@ PyDoc_STRVAR(dataobjectmodule_doc,
 static PyMethodDef dataobjectmodule_methods[] = {
     {"asdict", asdict, METH_VARARGS, asdict_doc},
     {"astuple", astuple, METH_VARARGS, astuple_doc},
+    {"_datatype_collection_mapping", _datatype_collection_mapping, METH_VARARGS, _datatype_collection_mapping_doc},
+    {"_datatype_hashable", _datatype_hashable, METH_VARARGS, _datatype_hashable_doc},
+    {"_datatype_iterable", _datatype_iterable, METH_VARARGS, _datatype_iterable_doc},
+    {"_datatype_use_dict", _datatype_use_dict, METH_VARARGS, _datatype_use_dict_doc},
+    {"_datatype_use_weakref", _datatype_use_weakref, METH_VARARGS, _datatype_use_weakref_doc},
+    {"_datatype_enable_gc", _datatype_enable_gc, METH_VARARGS, _datatype_enable_gc_doc},
+    {"_datatype_deep_dealloc", _datatype_deep_dealloc, METH_VARARGS, _datatype_deep_dealloc_doc},
+    {"_datatype_vectorcall", _datatype_vectorcall, METH_VARARGS, _datatype_vectorcall_doc},
     // {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
     {"clone", (PyCFunction)dataobject_clone, METH_VARARGS | METH_KEYWORDS, dataobject_clone_doc},
     {"update", (PyCFunction)dataobject_update, METH_VARARGS | METH_KEYWORDS, dataobject_update_doc},
     {"_dataobject_type_init", _dataobject_type_init, METH_VARARGS, _dataobject_type_init_doc},
-    {"_clsconfig", (PyCFunction)clsconfig, METH_VARARGS | METH_KEYWORDS, clsconfig_doc},
+    {"_pytype_modified", (PyCFunction)_pytype_modified, METH_VARARGS , _pytype_modified_doc},
     {"member_new", member_new, METH_VARARGS, member_new_doc},
     {"_is_readonly_member", _is_readonly_member, METH_VARARGS, is_readonly_member_doc},
     {0, 0, 0, 0}

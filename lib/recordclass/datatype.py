@@ -67,7 +67,7 @@ class datatype(type):
 
         from .utils import check_name, collect_info_from_bases, _have_pyinit, _have_pynew
         from ._dataobject import dataobject
-        from ._dataobject import _clsconfig, _dataobject_type_init, dataobjectproperty
+        from ._dataobject import dataobjectproperty
         from sys import intern as _intern
         if _PY311:
             from ._dataobject import member_new
@@ -307,15 +307,42 @@ class datatype(type):
                         ds = dataobjectproperty(i, False)
                 setattr(cls, name, ds)
 
+        cls.__configure__(sequence=sequence, mapping=mapping, readonly=readonly,
+                          hashable=hashable, iterable=iterable, use_dict=use_dict, use_weakref=use_weakref,
+                          is_pynew=is_pynew, is_pyinit=is_pyinit, gc=gc, deep_dealloc=deep_dealloc,
+                         )
+
+        # _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly,
+        #                 use_dict=use_dict, use_weakref=use_weakref, 
+        #                 iterable=iterable, hashable=hashable,
+        #                 gc=gc, deep_dealloc=deep_dealloc, mapping_only=mapping_only,
+        #                 is_pyinit=is_pyinit, is_pynew=is_pynew,
+        #           )
+        return cls
+
+    def __configure__(cls,  gc=False, fast_new=True, readonly=False, iterable=False,
+                            deep_dealloc=False, sequence=False, mapping=False,
+                            use_dict=False, use_weakref=False, hashable=False, 
+                            mapping_only=False, is_pynew=False, is_pyinit=False):
+
+        from ._dataobject import _datatype_collection_mapping, _datatype_hashable, _datatype_iterable,\
+                                 _datatype_use_weakref, _datatype_use_dict, _datatype_enable_gc, \
+                                 _datatype_deep_dealloc, _datatype_vectorcall, _pytype_modified, \
+                                 _dataobject_type_init
+        
         _dataobject_type_init(cls)
 
-        _clsconfig(cls, sequence=sequence, mapping=mapping, readonly=readonly,
-                        use_dict=use_dict, use_weakref=use_weakref, 
-                        iterable=iterable, hashable=hashable,
-                        gc=gc, deep_dealloc=deep_dealloc, mapping_only=mapping_only,
-                        is_pyinit=is_pyinit, is_pynew=is_pynew,
-                  )
-        return cls
+        _datatype_collection_mapping(cls, sequence, mapping, readonly)
+        _datatype_hashable(cls, hashable)
+        _datatype_iterable(cls, iterable)
+        _datatype_use_dict(cls, use_dict)
+        _datatype_use_weakref(cls, use_weakref)
+        if gc:
+            _datatype_enable_gc(cls)
+        _datatype_deep_dealloc(cls, deep_dealloc)
+        if not is_pyinit and not is_pynew:
+            _datatype_vectorcall(cls)
+        _pytype_modified(cls)
 
     def __delattr__(cls, name):
         from ._dataobject import dataobjectproperty
