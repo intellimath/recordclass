@@ -687,7 +687,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 #### 0.19.2
 
-* Exception message for Cls(**kwargs) with invalid argument is more precise.
+* Exception message for Cls(**kwargs) with invalid kweyword argument is more precise (#37).
 
 #### 0.19.1
 
