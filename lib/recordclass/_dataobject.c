@@ -54,13 +54,13 @@ static PyTypeObject PyDataObjectProperty_Type;
 
 static PyObject *pydataobject_make;
 
-PyObject *__fields__name;
-PyObject *__dict__name;
-PyObject *__weakref__name;
-PyObject *__defaults__name;
-PyObject *__init__name;
+static PyObject *__fields__name;
+static PyObject *__dict__name;
+static PyObject *__weakref__name;
+static PyObject *__defaults__name;
+static PyObject *__init__name;
 
-PyObject *fields_dict_name;
+static PyObject *fields_dict_name;
 
 typedef struct {
     PyObject_HEAD
@@ -665,7 +665,7 @@ dataobject_sq_item(PyObject *op, Py_ssize_t i)
     if (i < 0)
         i += n;
     if (i < 0 || i >= n) {
-        PyErr_SetString(PyExc_IndexError, "index out of range");
+        PyErr_Format(PyExc_IndexError, "index %d out of range", i);
         return NULL;
     }
 
@@ -687,7 +687,7 @@ dataobject_sq_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     if (i < 0)
         i += n;
     if (i < 0 || i >= n) {
-        PyErr_SetString(PyExc_IndexError, "index out of range");
+        PyErr_Format(PyExc_IndexError, "index %d out of range", i);
         return -1;
     }
 
