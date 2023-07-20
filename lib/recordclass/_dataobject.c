@@ -2098,10 +2098,10 @@ _set_dictoffset(PyObject *cls, PyObject *add_dict) {
     tp = (PyTypeObject*)cls;
     state = PyObject_IsTrue(add_dict);
 
-    if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
-        PyErr_SetString(PyExc_TypeError, "argument is not a subtype of the type");
-        return NULL;
-    }
+    // if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
+    //     PyErr_SetString(PyExc_TypeError, "argument is not a subtype of the type");
+    //     return NULL;
+    // }
 
     if (!tp->tp_dictoffset && state) {
         if (!tp->tp_weaklistoffset) {
@@ -2138,10 +2138,10 @@ _set_weaklistoffset(PyObject *cls, PyObject* add_weakref) {
     int state;
 
     tp = (PyTypeObject*)cls;
-    if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
-        PyErr_SetString(PyExc_TypeError, "argument is not a subtype of the type");
-        return NULL;
-    }
+    // if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
+    //     PyErr_SetString(PyExc_TypeError, "argument is not a subtype of the type");
+    //     return NULL;
+    // }
 
     state = PyObject_IsTrue(add_weakref);
 
@@ -2273,6 +2273,21 @@ _datatype_vectorcall(PyObject *module, PyObject *args) //, PyObject *kw)
     cls = PyTuple_GET_ITEM(args, 0);
 
     return _vector_call_set(cls);
+}
+
+PyDoc_STRVAR(_datatype_immutable_doc,
+"");
+
+static PyObject *
+_datatype_immutable(PyObject *module, PyObject *args) //, PyObject *kw)
+{
+    PyTypeObject *tp;
+
+    tp = (PyTypeObject*)PyTuple_GET_ITEM(args, 0);
+
+    tp->tp_flags |= Py_TPFLAGS_IMMUTABLETYPE;
+
+    Py_RETURN_NONE;
 }
 
 
@@ -2658,6 +2673,7 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"_datatype_enable_gc", _datatype_enable_gc, METH_VARARGS, _datatype_enable_gc_doc},
     {"_datatype_deep_dealloc", _datatype_deep_dealloc, METH_VARARGS, _datatype_deep_dealloc_doc},
     {"_datatype_vectorcall", _datatype_vectorcall, METH_VARARGS, _datatype_vectorcall_doc},
+    {"_datatype_immutable", _datatype_immutable, METH_VARARGS, _datatype_immutable_doc},
     // {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
     {"clone", (PyCFunction)dataobject_clone, METH_VARARGS | METH_KEYWORDS, dataobject_clone_doc},

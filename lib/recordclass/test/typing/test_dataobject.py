@@ -12,6 +12,7 @@ from recordclass import asdict, make
 
 # _PY36 = _sys.version_info[:2] >= (3, 6)
 _PY37 = sys.version_info[:2] >= (3, 7)
+_PY311 = sys.version_info[:2] >= (3, 11)
 
 if 'PyPy' in sys.version:
     is_pypy = True
@@ -1093,6 +1094,16 @@ class DataObjectTest3(unittest.TestCase):
 
 #         with self.assertRaises(AttributeError):        
 #             a = A(1,2)
+
+    if _PY311:
+        def test_immutable_type(self):
+            class A(dataobject, immutable_type=True):
+                x:int
+                y:int
+
+            with self.assertRaises(TypeError):                        
+                A.z = 1
+
 
 def main():
     suite = unittest.TestSuite()

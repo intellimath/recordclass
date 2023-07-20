@@ -63,7 +63,7 @@ class datatype(type):
                 gc=False, fast_new=True, readonly=False, iterable=False,
                 deep_dealloc=False, sequence=False, mapping=False,
                 use_dict=False, use_weakref=False, hashable=False, 
-                mapping_only=False):
+                mapping_only=False, immutable_type=False):
 
         from .utils import check_name, collect_info_from_bases
         from ._dataobject import dataobject
@@ -93,6 +93,8 @@ class datatype(type):
             options['use_dict'] = use_dict
         if use_weakref:
             options['use_weakref'] = use_weakref
+        if immutable_type:
+            options['immutable_type'] = immutable_type
         
         if bases:
             base0 = bases[0]
@@ -158,6 +160,10 @@ class datatype(type):
             hashable = True
         if hashable:
             options['hashable'] = hashable
+
+        if not _PY311 and immutable_type:
+            import warnings
+            warnings.warn("immutable_type parameter can be used only for python >= 3.11")
 
         if has_fields:
             if annotations:
@@ -295,7 +301,7 @@ class datatype(type):
 
         cls.__configure__(sequence=sequence, mapping=mapping, readonly=readonly,
                           hashable=hashable, iterable=iterable, use_dict=use_dict, use_weakref=use_weakref,
-                          gc=gc, deep_dealloc=deep_dealloc,
+                          gc=gc, deep_dealloc=deep_dealloc, immutable_type=immutable_type
                          )
 
         return cls
@@ -303,12 +309,12 @@ class datatype(type):
     def __configure__(cls,  gc=False, fast_new=True, readonly=False, iterable=False,
                             deep_dealloc=False, sequence=False, mapping=False,
                             use_dict=False, use_weakref=False, hashable=False, 
-                            mapping_only=False):
+                            mapping_only=False, immutable_type=False):
 
         from ._dataobject import (_datatype_collection_mapping, _datatype_hashable, _datatype_iterable,
                                   _datatype_use_weakref, _datatype_use_dict, _datatype_enable_gc, 
                                   _datatype_deep_dealloc, _datatype_vectorcall, _pytype_modified, 
-                                  _dataobject_type_init)
+                                  _datatype_immutable, _dataobject_type_init)
         from .utils import _have_pyinit, _have_pynew
 
 
@@ -331,6 +337,8 @@ class datatype(type):
         _datatype_deep_dealloc(cls, deep_dealloc)
         if not is_pyinit and not is_pynew:
             _datatype_vectorcall(cls)
+        if _PY311 and immutable_type:
+            _datatype_immutable(cls)
         _pytype_modified(cls)
 
     def __delattr__(cls, name):
