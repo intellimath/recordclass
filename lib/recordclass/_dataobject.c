@@ -1049,7 +1049,7 @@ dataobject_item(PyObject *op, Py_ssize_t i)
     if (i < 0)
         i += n;
     if (i < 0 || i >= n) {
-        PyErr_SetString(PyExc_IndexError, "index out of range");
+        PyErr_Format(PyExc_IndexError, "index %d out of range", i);
         return NULL;
     }
 
@@ -1065,7 +1065,7 @@ static int dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
     if (i < 0)
         i += n;
     if (i < 0 || i >= n) {
-        PyErr_SetString(PyExc_IndexError, "index out of range");
+        PyErr_Format(PyExc_IndexError, "index %d out of range", i);
         return -1;
     }
 
@@ -1725,7 +1725,7 @@ dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value)
         return 0;
 
     if (((dataobjectproperty_object *)self)->readonly) {
-        PyErr_SetString(PyExc_AttributeError, "item is readonly");
+        PyErr_SetString(PyExc_AttributeError, "the field is readonly");
         return -1;
     }
     
@@ -1760,7 +1760,6 @@ dataobjectproperty_readonly(PyObject *self)
 
 static PyGetSetDef dataobjectproperty_getsets[] = {
     {"index", (getter)dataobjectproperty_index, NULL, NULL},
-//     {"readonly", (getter)dataobjectproperty_readonly, (setter)dataobjectproperty_readonly_set, NULL},
     {"readonly", (getter)dataobjectproperty_readonly, NULL, NULL},
     {0}
 };
