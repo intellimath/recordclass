@@ -32,7 +32,7 @@ int_type = type(1)
     
 def make_arrayclass(typename, n_fields, *, namespace=None, 
              use_weakref=False, hashable=False, readonly=False, gc=False,
-             module=None):
+             module=None, immutable_type=False):
 
     from ._dataobject import dataobject
     from .datatype import datatype
@@ -69,6 +69,6 @@ def make_arrayclass(typename, n_fields, *, namespace=None,
     cls = datatype(typename, bases, ns,
                    use_dict=False, use_weakref=use_weakref, hashable=hashable, 
                    sequence=True, mapping=False, iterable=True, readonly=readonly, 
-                   gc=gc, fast_new=True)
+                   gc=gc, fast_new=True, immutable_type=immutable_type)
 
     return cls

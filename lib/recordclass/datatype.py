@@ -63,7 +63,7 @@ class datatype(type):
                 gc=False, fast_new=True, readonly=False, iterable=False,
                 deep_dealloc=False, sequence=False, mapping=False,
                 use_dict=False, use_weakref=False, hashable=False, 
-                mapping_only=False, immutable_type=False):
+                immutable_type=False):
 
         from .utils import check_name, collect_info_from_bases
         from ._dataobject import dataobject

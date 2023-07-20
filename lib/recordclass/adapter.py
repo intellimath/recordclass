@@ -24,7 +24,7 @@
 
 def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
                     sequence=False, mapping=False, iterable=False, readonly=False,
-                    module=None, fast_new=True, rename=False, gc=False, mapping_only=False):
+                    module=None, fast_new=True, rename=False, gc=False):
 
     """Returns a new dataobject-based class with named fields, smaller memory footprint and 
     faster instance creation.
@@ -36,7 +36,7 @@ def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
     """
     def _adapter(cls, use_dict=use_dict, use_weakref=use_weakref, hashable=hashable,
                       sequence=sequence, mapping=mapping, iterable=iterable, readonly=readonly,
-                      fast_new=fast_new, rename=rename, gc=gc, mapping_only=mapping_only):
+                      fast_new=fast_new, rename=rename, gc=gc):
         from ._dataobject import dataobject
         from .datatype import datatype
         from sys import intern as _intern
@@ -65,7 +65,7 @@ def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
         new_cls = datatype(typename, (dataobject,), ns, 
                        gc=gc, fast_new=fast_new, readonly=readonly, iterable=iterable,
                        mapping=mapping, sequence=sequence, use_dict=use_dict, 
-                       use_weakref=use_weakref, hashable=hashable, mapping_only=mapping_only)
+                       use_weakref=use_weakref, hashable=hashable)
 
         return new_cls
     return _adapter
