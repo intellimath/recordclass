@@ -124,23 +124,23 @@ PyDataObject_GetDict(PyObject *obj)
     return dict;
 }
 
-static PyObject*
-_PyObject_GetModule(const char *modname_c)
-{
-    PyObject *modname;
-    PyObject *mod;
+// static PyObject*
+// _PyObject_GetModule(const char *modname_c)
+// {
+//     PyObject *modname;
+//     PyObject *mod;
 
-    modname = PyUnicode_FromString(modname_c);
-    if (modname == NULL)
-        return NULL;
-    mod = PyImport_Import(modname);
-    if (mod == NULL) {
-        Py_DECREF(modname);
-        return NULL;
-    }
+//     modname = PyUnicode_FromString(modname_c);
+//     if (modname == NULL)
+//         return NULL;
+//     mod = PyImport_Import(modname);
+//     if (mod == NULL) {
+//         Py_DECREF(modname);
+//         return NULL;
+//     }
 
-    return mod;
-}
+//     return mod;
+// }
 
 static PyObject *
 _PyObject_GetObject(const char *modname_c, const char *attrname_c)
@@ -2281,11 +2281,11 @@ PyDoc_STRVAR(_datatype_immutable_doc,
 static PyObject *
 _datatype_immutable(PyObject *module, PyObject *args) //, PyObject *kw)
 {
-    PyTypeObject *tp;
-
-    tp = (PyTypeObject*)PyTuple_GET_ITEM(args, 0);
+#if PY_VERSION_HEX >= 0x030A0000
+    PyTypeObject *tp = (PyTypeObject*)PyTuple_GET_ITEM(args, 0);
 
     tp->tp_flags |= Py_TPFLAGS_IMMUTABLETYPE;
+#endif
 
     Py_RETURN_NONE;
 }

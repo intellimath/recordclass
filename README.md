@@ -688,6 +688,8 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 #### 0.19.2
 
 * Exception message for Cls(**kwargs) with invalid kweyword argument is more precise (#37).
+* Add parameter `immutable_type` for python >= 3.11. If `immutable_type=True` then a generated class
+  (not an instance) will be immutable.
 
 #### 0.19.1
 
