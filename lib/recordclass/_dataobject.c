@@ -2464,7 +2464,6 @@ _dataobject_update(PyObject *op, PyObject *kwds)
     // int has___dict___ = type->tp_dictoffset;
     PyObject *tp_dict = type->tp_dict;
     PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-    
     PyObject *fields = mp->mp_subscript(type->tp_dict, __fields__name);
 
     iter = PyObject_GetIter(kwds);
@@ -2485,16 +2484,17 @@ _dataobject_update(PyObject *op, PyObject *kwds)
             Py_DECREF(val);
             Py_DECREF(key);
             continue;
-        } else {
-            // if (!has___dict___) {
-            //     PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
-            //     Py_DECREF(val);
-            //     Py_DECREF(key);
-            //     Py_DECREF(iter);
-            //     Py_DECREF(fields);
-            //     return -1;
-            // }
-        }
+        } 
+        // else {
+        //     if (!has___dict___) {
+        //         PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
+        //         Py_DECREF(val);
+        //         Py_DECREF(key);
+        //         Py_DECREF(iter);
+        //         Py_DECREF(fields);
+        //         return -1;
+        //     }
+        // }
         
         if (PyObject_SetAttr(op, key, val) < 0) {
             PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
@@ -2545,8 +2545,10 @@ _pytype_modified(PyObject *module, PyObject *args) {
 
     PyType_Modified(tp);
     
-    if(PyType_Ready(tp) < 0)
-        printf("Ready failed\n");
+    if(PyType_Ready(tp) < 0) {
+        printf("PyType_Ready failed\n");
+        return NULL;
+    }
 
     Py_RETURN_NONE;
 }
