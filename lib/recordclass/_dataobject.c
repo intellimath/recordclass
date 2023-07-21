@@ -52,8 +52,6 @@ static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataObjectProperty_Type;
 
-static PyObject *pydataobject_make;
-
 static PyObject *__fields__name;
 static PyObject *__dict__name;
 static PyObject *__weakref__name;
@@ -444,7 +442,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static PyObject*
 dataobject_new_empty(PyTypeObject *type)
 {
-    
     PyObject *op = type->tp_alloc(type, 0); 
     
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
@@ -2638,7 +2635,7 @@ _is_readonly_member(PyObject *module, PyObject *args)
             return Py_True;
         } else {
             Py_INCREF(Py_False);
-            return Py_False;            
+            return Py_False;
         }
     }
     if (tp == &PyDataObjectProperty_Type) {
@@ -2735,8 +2732,8 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataObjectProperty_Type);
     PyModule_AddObject(m, "dataobjectproperty", (PyObject *)&PyDataObjectProperty_Type);
 
-    pydataobject_make = PyObject_GetAttrString(m, "make");
-    Py_INCREF(pydataobject_make);
+    // pydataobject_make = PyObject_GetAttrString(m, "make");
+    // Py_INCREF(pydataobject_make);
     
     fields_dict_name = PyUnicode_FromString("__fields_dict__");
     if (fields_dict_name == NULL)
