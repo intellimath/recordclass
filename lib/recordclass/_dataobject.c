@@ -1326,7 +1326,7 @@ dataobject_setstate(PyObject *ob, PyObject *state) {
     PyObject *dict;
 
     if (!state || state == Py_None)
-        return 0;
+        return NULL;
 
     if (tp->tp_dictoffset) {
         dict = PyDataObject_GetDict(ob);

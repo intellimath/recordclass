@@ -1104,7 +1104,6 @@ class DataObjectTest3(unittest.TestCase):
             with self.assertRaises(TypeError):                        
                 A.z = 1
 
-
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(DataObjectTest3))
