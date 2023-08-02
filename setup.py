@@ -35,7 +35,7 @@ _PY310 = sys.version_info[:2] >= (3, 10)
 extra_compile_args = []
 extra_link_args = []
 
-use_cython = 1
+use_cython = 0
 
 if use_cython:
     ext_modules = [
