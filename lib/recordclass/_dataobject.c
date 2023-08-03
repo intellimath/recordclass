@@ -69,6 +69,9 @@ typedef struct {
 static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value);
 static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type);
 
+static int dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val);
+static Py_ssize_t _tuple_index(PyTupleObject *self, PyObject *value);
+
 static inline PyObject *
 type_error(const char *msg, PyObject *obj)
 {
@@ -201,10 +204,11 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 {
     PyObject *op = (PyObject*)_PyObject_New(type);
 
-#if PY_VERSION_HEX < 0x03080000
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_INCREF(type);
-#endif
+// #if PY_VERSION_HEX < 0x03080000
+//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+//         Py_INCREF(type);
+// #endif
+
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
@@ -223,10 +227,11 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 {
     PyObject *op = _PyObject_GC_New(type);
 
-#if PY_VERSION_HEX < 0x03080000
-    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
-        Py_INCREF(type);
-#endif
+// #if PY_VERSION_HEX < 0x03080000
+//     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+//         Py_INCREF(type);
+// #endif
+
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
@@ -297,14 +302,30 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     if (kwnames && n_kwnames > 0) {
         PyObject *val;
         PyObject *name;
+        PyObject *tp_dict = type->tp_dict;
+        PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
+        PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
 
         for(i=0; i<n_kwnames; i++) {
             name = PyTuple_GET_ITEM(kwnames, i);
             val = args[n_args + i];
+
+            Py_ssize_t index = _tuple_index((PyTupleObject*)fields, name);
+            if (index >= 0) {
+                dataobject_ass_item(op, index, val);
+                continue;
+            } else {
+                if (!type->tp_dictoffset) {
+                    PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", name);
+                    Py_DECREF(fields);
+                    return NULL;
+                }
+            }
             
             Py_INCREF(val);
             PyObject_SetAttr(op, name, val);
         }
+        Py_DECREF(fields);
     }
 
     return op;
@@ -1429,7 +1450,7 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_as_buffer */
 #if PY_VERSION_HEX >= 0x030A0000
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|
-    Py_TPFLAGS_HAVE_VECTORCALL, // |Py_TPFLAGS_IMMUTABLETYPE,
+    Py_TPFLAGS_HAVE_VECTORCALL,
 #else        
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
 #endif
@@ -1874,6 +1895,16 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     }
 
     Py_DECREF(fields);
+    
+    #if PY_VERSION_HEX >= 0x030B0000
+            tp->tp_flags &= ~Py_TPFLAGS_MANAGED_DICT;
+    #endif
+
+    #if PY_VERSION_HEX >= 0x030C0000
+            tp->tp_flags &= ~Py_TPFLAGS_MANAGED_WEAKREF;
+            tp->tp_flags &= ~Py_TPFLAGS_PREHEADER;
+    #endif
+
 
     tp->tp_basicsize = sizeof(PyObject) + n_fields * sizeof(PyObject*);
     tp->tp_itemsize = n_fields;
@@ -1881,11 +1912,6 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_dictoffset = tp_base->tp_dictoffset;
     tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
 
-#if PY_VERSION_HEX >= 0x030B0000
-        tp->tp_flags &= ~Py_TPFLAGS_MANAGED_DICT;
-        // tp->tp_flags &= ~Py_TPFLAGS_MANAGED_WEAKREF;
-        // tp->tp_flags &= ~Py_TPFLAGS_PREHEADER;
-#endif
 
 // #if PY_VERSION_HEX >= 0x030A0000
 //         tp->tp_flags &= ~Py_TPFLAGS_IMMUTABLETYPE;
@@ -2461,7 +2487,7 @@ _dataobject_update(PyObject *op, PyObject *kwds)
     PyObject *iter, *key, *val;
     
     PyTypeObject *type = Py_TYPE(op);
-    // int has___dict___ = type->tp_dictoffset;
+    int has___dict___ = type->tp_dictoffset;
     PyObject *tp_dict = type->tp_dict;
     PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
     PyObject *fields = mp->mp_subscript(type->tp_dict, __fields__name);
@@ -2485,16 +2511,16 @@ _dataobject_update(PyObject *op, PyObject *kwds)
             Py_DECREF(key);
             continue;
         } 
-        // else {
-        //     if (!has___dict___) {
-        //         PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
-        //         Py_DECREF(val);
-        //         Py_DECREF(key);
-        //         Py_DECREF(iter);
-        //         Py_DECREF(fields);
-        //         return -1;
-        //     }
-        // }
+        else {
+            if (!has___dict___) {
+                PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
+                Py_DECREF(val);
+                Py_DECREF(key);
+                Py_DECREF(iter);
+                Py_DECREF(fields);
+                return -1;
+            }
+        }
         
         if (PyObject_SetAttr(op, key, val) < 0) {
             PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);

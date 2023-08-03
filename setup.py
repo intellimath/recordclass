@@ -1,19 +1,19 @@
 # coding: utf-8
 
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) <2015-2022> <Shibzukhov Zaur, szport at gmail dot com>
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,7 +35,7 @@ _PY310 = sys.version_info[:2] >= (3, 10)
 extra_compile_args = []
 extra_link_args = []
 
-use_cython = 0
+use_cython = 1
 
 if use_cython:
     ext_modules = [
@@ -97,7 +97,7 @@ description = """Mutable variant of namedtuple -- recordclass, which support ass
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
-packages = [ 'recordclass', 
+packages = [ 'recordclass',
              'recordclass.test',
              'recordclass.test.typing',
              'recordclass.typing',
@@ -106,7 +106,7 @@ packages = [ 'recordclass',
 
 setup(
     name = 'recordclass',
-    version = '0.19.2',
+    version = '0.20',
     description = description,
     author = 'Zaur Shibzukhov',
     author_email = 'szport@gmail.com',
@@ -136,6 +136,7 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
