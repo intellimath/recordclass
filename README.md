@@ -688,6 +688,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 #### 0.20
 
 * Library codebase is compatible with python 3.12
+  (tested for linux only, windows until python3.12 support on appveyor).
 
 #### 0.19.2
 

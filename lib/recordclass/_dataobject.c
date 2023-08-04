@@ -197,7 +197,7 @@ pyobject_get_builtin(const char *attrname_c)
 // static Py_ssize_t dataobject_len(PyObject *op);
 // static PyObject* dataobject_sq_item(PyObject *op, Py_ssize_t i);
 static PyObject* _astuple(PyObject *op);
-static int _dataobject_update(PyObject *op, PyObject *kw);
+static int _dataobject_update(PyObject *op, PyObject *kw, int flag);
 
 static PyObject *
 dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
@@ -257,11 +257,12 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     const Py_ssize_t n_args = PyVectorcall_NARGS(nargsf);
     PyObject **items = PyDataObject_ITEMS(op);
 
-    // printf("new_vc\n");
     Py_ssize_t n_kwnames = 0;
     if (kwnames)
         n_kwnames = Py_SIZE(kwnames);
 
+    // printf("new_vc %d %d\n", n_args, n_kwnames);
+    
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
             "the number of the arguments greater than the number of fields");
@@ -345,7 +346,7 @@ dataobject_init_vc(PyObject *op, PyObject **args,
     }
 
     if (kwds) {
-        int retval = _dataobject_update(op, kwds);
+        int retval = _dataobject_update(op, kwds, 1);
         if (retval < 0)
             return retval;
     }
@@ -402,7 +403,7 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
     }
 
     if (kwds) {
-        int retval = _dataobject_update(op, kwds);
+        int retval = _dataobject_update(op, kwds, 1);
         if (retval < 0)
             return NULL;
     }
@@ -1046,7 +1047,7 @@ dataobject_copy(PyObject* op)
             int retval;
 
             Py_INCREF(dict);
-            retval = _dataobject_update(new_op, dict);
+            retval = _dataobject_update(new_op, dict, 1);
             Py_DECREF(dict);
 
             if (retval < 0)
@@ -2457,7 +2458,7 @@ dataobject_clone(PyObject *module, PyObject *args0, PyObject *kw)
 
     new_ob = dataobject_copy(ob);
     if (kw) {
-        if (_dataobject_update(new_ob, kw) < 0)
+        if (_dataobject_update(new_ob, kw, 1) < 0)
             return NULL;
     }
 
@@ -2480,7 +2481,7 @@ _tuple_index(PyTupleObject *self, PyObject *value)
 }
 
 static int
-_dataobject_update(PyObject *op, PyObject *kwds)
+_dataobject_update(PyObject *op, PyObject *kwds, int flag)
 {
     PyObject *iter, *key, *val;
 
@@ -2502,21 +2503,23 @@ _dataobject_update(PyObject *op, PyObject *kwds)
         //     return -1;
         // }
 
-        Py_ssize_t index = _tuple_index((PyTupleObject*)fields, key);
-        if (index >= 0) {
-            dataobject_ass_item(op, index, val);
-            Py_DECREF(val);
-            Py_DECREF(key);
-            continue;
-        }
-        else {
-            if (!has___dict___) {
-                PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
+        if (flag) {            
+            Py_ssize_t index = _tuple_index((PyTupleObject*)fields, key);
+            if (index >= 0) {
+                dataobject_ass_item(op, index, val);
                 Py_DECREF(val);
                 Py_DECREF(key);
-                Py_DECREF(iter);
-                Py_DECREF(fields);
-                return -1;
+                continue;
+            }
+            else {
+                if (!has___dict___) {
+                    PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__ and has not __dict__", key);
+                    Py_DECREF(val);
+                    Py_DECREF(key);
+                    Py_DECREF(iter);
+                    Py_DECREF(fields);
+                    return -1;
+                }
             }
         }
 
@@ -2549,7 +2552,7 @@ dataobject_update(PyObject *module, PyObject *args, PyObject *kw)
 
     PyObject *op = PyTuple_GET_ITEM(args, 0);
 
-    if (_dataobject_update(op, kw) < 0)
+    if (_dataobject_update(op, kw, 0) < 0)
         return NULL;
 
     Py_RETURN_NONE;

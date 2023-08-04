@@ -634,7 +634,13 @@ class DataobjectTest(unittest.TestCase):
         a = A(1, 2, z=3)
         update(a, x=100, y=200, z=300)
         self.assertEqual(a, A(100, 200, z=300))
-        
+
+    def test_update3(self):
+        A = make_dataclass("A", {'x':int, 'y':int}, readonly=True)
+        a = A(1, 2)
+        with self.assertRaises(TypeError):        
+            update(a, x=100)
+    
     def test_readonly(self):
         A = make_dataclass("A", {'x':int, 'y':int}, readonly=True)
         a = A(1,2)
