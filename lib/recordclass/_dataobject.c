@@ -204,6 +204,10 @@ dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 {
     PyObject *op = (PyObject*)_PyObject_New(type);
 
+#if PY_VERSION_HEX < 0x03080000
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_INCREF(type);
+#endif
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
@@ -222,6 +226,10 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 {
     PyObject *op = _PyObject_GC_New(type);
 
+#if PY_VERSION_HEX < 0x03080000
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_INCREF(type);
+#endif
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
