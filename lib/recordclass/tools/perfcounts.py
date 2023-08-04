@@ -5,6 +5,8 @@ from timeit import timeit
 import sys
 import gc
 
+_PY311 = sys.version_info[:2] >= (3, 11)
+
 PointNT = namedtuple("PointNT", "x y z")
 nan = float('nan')
 
@@ -18,22 +20,39 @@ class PointSlots:
 
     def norm2(self):
         return self.x*self.x + self.y*self.y + self.z*self.z
-        
-class Point(dataobject, sequence=True):
-    x:int
-    y:int
-    z:int
 
-    def norm2(self):
-        return self.x*self.x + self.y*self.y + self.z*self.z
-
-class PointGC(dataobject, sequence=True, gc=True):
-    x:int
-    y:int
-    z:int
-
-    def norm2(self):
-        return self.x*self.x + self.y*self.y + self.z*self.z
+if _PY311:
+    class Point(dataobject, sequence=True, immutable_type=True):
+        x:int
+        y:int
+        z:int
+    
+        def norm2(self):
+            return self.x*self.x + self.y*self.y + self.z*self.z
+    
+    class PointGC(dataobject, sequence=True, gc=True, immutable_type=True):
+        x:int
+        y:int
+        z:int
+    
+        def norm2(self):
+            return self.x*self.x + self.y*self.y + self.z*self.z
+else:
+    class Point(dataobject, sequence=True):
+        x:int
+        y:int
+        z:int
+    
+        def norm2(self):
+            return self.x*self.x + self.y*self.y + self.z*self.z
+    
+    class PointGC(dataobject, sequence=True, gc=True):
+        x:int
+        y:int
+        z:int
+    
+        def norm2(self):
+            return self.x*self.x + self.y*self.y + self.z*self.z
 
 
 # class FastPoint(dataobject, sequence=True, fast_new=True):
