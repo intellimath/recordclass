@@ -495,6 +495,81 @@ dataobject_init(PyObject *op, PyObject *args, PyObject *kwds)
     return ret;
 }
 
+static Py_ssize_t
+_tuple_index(PyTupleObject *self, PyObject *value)
+{
+    Py_ssize_t i, n = Py_SIZE(self);
+
+    for (i = 0; i < n; i++) {
+        PyObject *cmp = PyUnicode_RichCompare(self->ob_item[i], value, Py_EQ);
+        if (cmp == Py_True)
+            return i;
+        else if (cmp == NULL)
+            return -1;
+    }
+    return -1;
+}
+
+static int
+_dataobject_update(PyObject *op, PyObject *kwds, int flag)
+{
+    PyObject *iter, *key, *val;
+
+    PyTypeObject *type = Py_TYPE(op);
+    int has___dict___ = type->tp_dictoffset;
+    PyObject *tp_dict = type->tp_dict;
+    PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
+    PyObject *fields = mp->mp_subscript(type->tp_dict, __fields__name);
+
+    iter = PyObject_GetIter(kwds);
+    while ((key = PyIter_Next(iter))) {
+        val = PyObject_GetItem(kwds, key);
+
+        // if (!val) {
+        //     PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
+        //     Py_DECREF(key);
+        //     Py_DECREF(iter);
+        //     Py_DECREF(fields);
+        //     return -1;
+        // }
+
+        if (flag) {            
+            Py_ssize_t index = _tuple_index((PyTupleObject*)fields, key);
+            if (index >= 0) {
+                dataobject_ass_item(op, index, val);
+                Py_DECREF(val);
+                Py_DECREF(key);
+                continue;
+            }
+            else {
+                if (!has___dict___) {
+                    PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__ and has not __dict__", key);
+                    Py_DECREF(val);
+                    Py_DECREF(key);
+                    Py_DECREF(iter);
+                    Py_DECREF(fields);
+                    return -1;
+                }
+            }
+        }
+
+        if (PyObject_SetAttr(op, key, val) < 0) {
+            PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
+            Py_DECREF(val);
+            Py_DECREF(key);
+            Py_DECREF(iter);
+            Py_DECREF(fields);
+            return -1;
+        }
+        Py_DECREF(val);
+        Py_DECREF(key);
+    }
+    Py_DECREF(iter);
+    Py_DECREF(fields);
+    return 0;
+}
+
+
 static int
 dataobject_clear(PyObject *op)
 {
@@ -2465,79 +2540,6 @@ dataobject_clone(PyObject *module, PyObject *args0, PyObject *kw)
     return new_ob;
 }
 
-static Py_ssize_t
-_tuple_index(PyTupleObject *self, PyObject *value)
-{
-    Py_ssize_t i, n = Py_SIZE(self);
-
-    for (i = 0; i < n; i++) {
-        PyObject *cmp = PyUnicode_RichCompare(self->ob_item[i], value, Py_EQ);
-        if (cmp == Py_True)
-            return i;
-        else if (cmp == NULL)
-            return -1;
-    }
-    return -1;
-}
-
-static int
-_dataobject_update(PyObject *op, PyObject *kwds, int flag)
-{
-    PyObject *iter, *key, *val;
-
-    PyTypeObject *type = Py_TYPE(op);
-    int has___dict___ = type->tp_dictoffset;
-    PyObject *tp_dict = type->tp_dict;
-    PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-    PyObject *fields = mp->mp_subscript(type->tp_dict, __fields__name);
-
-    iter = PyObject_GetIter(kwds);
-    while ((key = PyIter_Next(iter))) {
-        val = PyObject_GetItem(kwds, key);
-
-        // if (!val) {
-        //     PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
-        //     Py_DECREF(key);
-        //     Py_DECREF(iter);
-        //     Py_DECREF(fields);
-        //     return -1;
-        // }
-
-        if (flag) {            
-            Py_ssize_t index = _tuple_index((PyTupleObject*)fields, key);
-            if (index >= 0) {
-                dataobject_ass_item(op, index, val);
-                Py_DECREF(val);
-                Py_DECREF(key);
-                continue;
-            }
-            else {
-                if (!has___dict___) {
-                    PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__ and has not __dict__", key);
-                    Py_DECREF(val);
-                    Py_DECREF(key);
-                    Py_DECREF(iter);
-                    Py_DECREF(fields);
-                    return -1;
-                }
-            }
-        }
-
-        if (PyObject_SetAttr(op, key, val) < 0) {
-            PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
-            Py_DECREF(val);
-            Py_DECREF(key);
-            Py_DECREF(iter);
-            Py_DECREF(fields);
-            return -1;
-        }
-        Py_DECREF(val);
-        Py_DECREF(key);
-    }
-    Py_DECREF(iter);
-    Py_DECREF(fields);
-    return 0;
-}
 
 PyDoc_STRVAR(dataobject_update_doc,
 "Update dataobject-based object");
@@ -2551,9 +2553,22 @@ dataobject_update(PyObject *module, PyObject *args, PyObject *kw)
     }
 
     PyObject *op = PyTuple_GET_ITEM(args, 0);
+    PyObject *iter, *key, *val;
 
-    if (_dataobject_update(op, kw, 0) < 0)
-        return NULL;
+    iter = PyObject_GetIter(kw);
+    while ((key = PyIter_Next(iter))) {
+        val = PyObject_GetItem(kw, key);
+        if (PyObject_SetAttr(op, key, val) < 0) {
+            PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
+            Py_DECREF(val);
+            Py_DECREF(key);
+            Py_DECREF(iter);
+            return NULL;
+        }
+        Py_DECREF(val);
+        Py_DECREF(key);
+    }
+    Py_DECREF(iter);
 
     Py_RETURN_NONE;
 }
