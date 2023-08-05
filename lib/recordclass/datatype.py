@@ -272,18 +272,6 @@ class datatype(type):
         
         ns['__options__'] = options
 
-        cls = type.__new__(metatype, typename, bases, ns)
-
-        if has_fields and _PY311:
-            for i, name in enumerate(fields):
-                fd = fields_dict[name]
-                fd_readonly = fd.get('readonly', False)
-                if fd_readonly:
-                    ds = member_new(cls, name, i, 1)
-                else:
-                    ds = member_new(cls, name, i, 0)
-                setattr(cls, name, ds)
-
         if has_fields and not _PY311:
             for i, name in enumerate(fields):
                 fd = fields_dict[name]
@@ -297,6 +285,19 @@ class datatype(type):
                         ds = dataobjectproperty(i, True)
                     else:
                         ds = dataobjectproperty(i, False)
+                ns[name] = ds
+                # setattr(cls, name, ds)
+
+        cls = type.__new__(metatype, typename, bases, ns)
+
+        if has_fields and _PY311:
+            for i, name in enumerate(fields):
+                fd = fields_dict[name]
+                fd_readonly = fd.get('readonly', False)
+                if fd_readonly:
+                    ds = member_new(cls, name, i, 1)
+                else:
+                    ds = member_new(cls, name, i, 0)
                 setattr(cls, name, ds)
 
         cls.__configure__(sequence=sequence, mapping=mapping, readonly=readonly,
