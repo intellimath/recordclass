@@ -257,7 +257,6 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     const Py_ssize_t n_args = PyVectorcall_NARGS(nargsf);
     PyObject **items = PyDataObject_ITEMS(op);
 
-    Py_ssize_t n_kwnames = 0;
     // if (kwnames)
     //     n_kwnames = Py_SIZE(kwnames);
 
@@ -299,7 +298,7 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     }
 
     if (kwnames) {
-        n_kwnames = Py_SIZE(kwnames);
+        Py_ssize_t n_kwnames = Py_SIZE(kwnames);
         if (n_kwnames > 0) {
             PyObject *val;
             PyObject *name;
