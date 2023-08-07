@@ -286,7 +286,6 @@ class datatype(type):
                     else:
                         ds = dataobjectproperty(i, False)
                 ns[name] = ds
-                # setattr(cls, name, ds)
 
         cls = type.__new__(metatype, typename, bases, ns)
 

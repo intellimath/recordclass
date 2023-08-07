@@ -248,7 +248,7 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 #if PY_VERSION_HEX >= 0x030A0000
 static PyObject*
 dataobject_vectorcall(PyObject *type0, PyObject * const*args,
-                 size_t nargsf, PyObject *kwnames)
+                      size_t nargsf, PyObject *kwnames)
 {
     PyTypeObject *type = (PyTypeObject*)type0;
     PyObject *op = type->tp_alloc(type, 0);
@@ -258,8 +258,8 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     PyObject **items = PyDataObject_ITEMS(op);
 
     Py_ssize_t n_kwnames = 0;
-    if (kwnames)
-        n_kwnames = Py_SIZE(kwnames);
+    // if (kwnames)
+    //     n_kwnames = Py_SIZE(kwnames);
 
     // printf("new_vc %d %d\n", n_args, n_kwnames);
     
@@ -298,33 +298,36 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
         }
     }
 
-    if (kwnames && n_kwnames > 0) {
-        PyObject *val;
-        PyObject *name;
-        PyObject *tp_dict = type->tp_dict;
-        PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-        PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
+    if (kwnames) {
+        n_kwnames = Py_SIZE(kwnames);
+        if (n_kwnames > 0) {
+            PyObject *val;
+            PyObject *name;
+            PyObject *tp_dict = type->tp_dict;
+            PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
+            PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
 
-        for(i=0; i<n_kwnames; i++) {
-            name = PyTuple_GET_ITEM(kwnames, i);
-            val = args[n_args + i];
-
-            Py_ssize_t index = _tuple_index((PyTupleObject*)fields, name);
-            if (index >= 0) {
-                dataobject_ass_item(op, index, val);
-                continue;
-            } else {
-                if (!type->tp_dictoffset) {
-                    PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", name);
-                    Py_DECREF(fields);
-                    return NULL;
+            for(i=0; i<n_kwnames; i++) {
+                name = PyTuple_GET_ITEM(kwnames, i);
+                val = args[n_args + i];
+    
+                Py_ssize_t index = _tuple_index((PyTupleObject*)fields, name);
+                if (index >= 0) {
+                    dataobject_ass_item(op, index, val);
+                    continue;
+                } else {
+                    if (!type->tp_dictoffset) {
+                        PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", name);
+                        Py_DECREF(fields);
+                        return NULL;
+                    }
                 }
+    
+                Py_INCREF(val);
+                PyObject_SetAttr(op, name, val);
             }
-
-            Py_INCREF(val);
-            PyObject_SetAttr(op, name, val);
-        }
-        Py_DECREF(fields);
+            Py_DECREF(fields);            
+        } 
     }
 
     return op;
