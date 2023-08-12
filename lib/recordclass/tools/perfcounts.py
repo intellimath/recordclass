@@ -347,6 +347,7 @@ def test_iterate():
 def test_all(relative=True):
     import pandas as pd
     from math import isnan
+    from prettytable import PrettyTable
 
     test_new()
     test_getattr()
@@ -372,23 +373,21 @@ def test_all(relative=True):
       # sys.getsizeof(PointDict(0,0,0)),   
     ])
 
-    if relative:
-        for key in results.keys():
-            if key in ('id', 'size'):
-                continue
-            minval = min([x for x in results[key] if not isnan(x)])
-            results[key] = [(round(x/minval,2) if not isnan(x) else x)  for x in results[key]]
-    else:
-        for key in results.keys():
-            if key in ('id', 'size'):
-                continue
-            results[key] = [(round(x,2) if not isnan(x) else x)  for x in results[key]]
+    for key in results.keys():
+        if key in ('id', 'size'):
+            continue
+        results[key] = [(round(x,2) if not isnan(x) else ' ')  for x in results[key]]
 
-    pd.options.mode.use_inf_as_na = True
-    df = pd.DataFrame.from_dict(results)
-    df.fillna('', inplace=True)
-    return df
+    pt = PrettyTable()
+    pt.field_names = list(results.keys())
+    for k in range(len(results['id'])):
+        pt.add_row([results[key][k] for key in pt.field_names])
 
-df = test_all(relative=False)
-print(df.to_markdown(index=False))
-# print(df.to_html(index=False))
+    pt.align = 'l'
+    
+    return pt
+
+pt = test_all()
+print(pt)
+# print(pt.get_html_string())
+
