@@ -10,6 +10,16 @@ _PY311 = sys.version_info[:2] >= (3, 11)
 PointNT = namedtuple("PointNT", "x y z")
 nan = float('nan')
 
+class PyPoint:
+
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def norm2(self):
+        return self.x*self.x + self.y*self.y + self.z*self.z
+
 class PointSlots:
     __slots__ = 'x', 'y', 'z'
     
@@ -74,10 +84,10 @@ results = {'id':[], 'size':[], 'new':[],
 
 results['id'].extend(
     ['litetuple', 'mutabletuple', 'tuple', 'namedtuple', 'class+slots', 'dataobject',  
-     'dataobject+gc', 'dict', 'dataobject+map'])
+     'dataobject+gc', 'dict', 'dataobject+map', 'class'])
 
 classes = (litetuple, mutabletuple, tuple, PointNT, PointSlots, 
-           Point, PointGC, dict, PointMap)
+           Point, PointGC, dict, PointMap, PyPoint)
 
 N = 300_000
 
@@ -141,7 +151,7 @@ def test_copy():
             res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
         elif cls is PointNT:
             res = timeit("test2(cls)", number=numbers, globals={'cls':cls, 'test2':test2})
-        elif cls is PointSlots:
+        elif cls in (PointSlots, PyPoint):
             res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
@@ -209,7 +219,7 @@ def test_getitem():
             
     for cls in classes:
         gc.collect()
-        if cls in (dict, PointSlots, PointMap,):
+        if cls in (dict, PointSlots, PointMap, PyPoint):
             res = nan
         elif cls is tuple:
             res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
@@ -271,7 +281,7 @@ def test_setitem():
             
     for cls in classes:
         gc.collect()
-        if cls in (litetuple, dict, tuple, PointNT, PointSlots, PointMap):
+        if cls in (litetuple, dict, tuple, PointNT, PointSlots, PointMap, PyPoint):
             res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
@@ -318,7 +328,7 @@ def test_iterate():
             res = timeit("test_dict()", number=numbers, globals={'test':test, 'test_dict':test_dict})
         elif cls is tuple:
             res = timeit("test_tuple()", number=numbers, globals={'test':test, 'test_tuple':test_tuple})
-        elif cls is PointSlots:
+        elif cls in (PointSlots, PyPoint):
             res = nan
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
@@ -349,6 +359,7 @@ def test_all(relative=True):
       sys.getsizeof(PointGC(0,0,0)),   
       sys.getsizeof({'x':0,'y':0, 'z':0}),   
       sys.getsizeof(PointMap(0,0,0)),   
+      sys.getsizeof(PyPoint(0,0,0)),   
       # sys.getsizeof(PointDict(0,0,0)),   
     ])
 

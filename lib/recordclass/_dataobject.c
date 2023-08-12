@@ -30,19 +30,19 @@
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
-#define pyobject_size(tp) ( (tp)->tp_basicsize )
+// #define pyobject_size(tp) ( (tp)->tp_basicsize )
 
-#define pyobject_cast(o) ((PyObject*)(o))
+#define PyObject_CAST(o) ((PyObject*)(o))
 
 #if !defined(Py_SET_TYPE)
-#define Py_SET_TYPE(op, type) (pyobject_cast(op)->ob_type) = (type)
+#define Py_SET_TYPE(op, type) (PyObject_CAST(op)->ob_type) = (type)
 #endif
 
 #if !defined(Py_TYPE)
-#define Py_TYPE(op) pyobject_cast(op)->ob_type
+#define Py_TYPE(op) PyObject_CAST(op)->ob_type
 #endif
 
-#define py_refcnt(op) (pyobject_cast(op)->ob_refcnt)
+#define py_refcnt(op) (((PyObject*)op)->ob_refcnt)
 
 #if !defined(Py_SET_SIZE)
 #define Py_SET_SIZE(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
