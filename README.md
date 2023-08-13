@@ -685,6 +685,10 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.20.1
+
+* Improve row_factory for `sqlite` on the ground of `dataobject`-based classes.
+
 #### 0.20
 
 * Library codebase is compatible with python 3.12
