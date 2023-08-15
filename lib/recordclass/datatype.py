@@ -324,6 +324,9 @@ class datatype(type):
             is_pyinit = _have_pyinit(cls.__bases__)
         if not is_pynew:
             is_pynew = _have_pynew(cls.__bases__)
+
+        if immutable_type and (is_pynew or is_pyinit):
+            raise TypeError('if immutable_type=True then __init__ or __new__ are not allowed')
         
         _dataobject_type_init(cls)
 
