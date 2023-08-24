@@ -114,15 +114,18 @@ class datatype(type):
             if isinstance(fields, int_type):
                 fields_dict = {}
             else:
+                fields_dict = {}
                 for fn in fields:
                     if fn in classvars:
                         raise TypeError(f'__fields__ contain  {fn}:ClassVar')
-                fields_dict = {fn:Field() for fn in fields}
-                
+                    if fn in annotations:
+                        fields_dict[fn] = Field(type=annotations[fn])
+                    else:
+                        fields_dict[fn] = Field()
         else:
             fields_dict = {fn:Field(type=tp) \
                            for fn,tp in annotations.items() \
-                           if not _is_classvar(tp)}
+                           if fn not in classvars}
             fields = tuple(fields_dict)
             
         has_fields = True
@@ -190,13 +193,10 @@ class datatype(type):
                 defaults_dict = {f:ns[f] for f in fields if f in ns}
             _matching_annotations_and_defaults(annotations, defaults_dict)
 
-            fields_dict = {}
-            for fn in fields:
-                fields_dict[fn] = f = Field()
-                if fn in annotations:
-                    f['type'] = annotations[fn]
-                if fn in defaults_dict:
-                    f['default'] = defaults_dict[fn]
+            for fn,val in defaults_dict.items():
+                f = fields_dict.get(fn, None)
+                if f is not None:
+                    f['default'] = val
 
             if readonly:
                 if type(readonly) is bool:
@@ -235,7 +235,6 @@ class datatype(type):
                 del _fields, _fields_dict, _use_dict
 
             fields = tuple(fields)
-            n_fields = len(fields)
 
             if has_fields and not fast_new and '__new__' not in ns:
                 __new__ = _make_new_function(typename, fields, defaults_dict, annotations, use_dict)
