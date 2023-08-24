@@ -109,14 +109,14 @@ class datatype(type):
 
         if '__fields__' in ns:
             fields = ns['__fields__']
-            if annotations:
-                for fn in fields:
-                    if _is_classvar(annotations.get(fn, None)):
-                        raise TypeError(f'__fields__ contain  {fn}:ClassVar')
-            if not isinstance(fields, int_type):
-                fields_dict = {fn:Field() for fn in fields}
-            else:
+            if isinstance(fields, int_type):
                 fields_dict = {}
+            else:
+                if annotations:
+                    for fn in fields:
+                        if _is_classvar(annotations.get(fn, None)):
+                            raise TypeError(f'__fields__ contain  {fn}:ClassVar')
+                fields_dict = {fn:Field() for fn in fields}
                 
             classvars = set()
         else:
