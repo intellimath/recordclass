@@ -104,6 +104,8 @@ class datatype(type):
             bases = (dataobject,)
 
         annotations = ns.get('__annotations__', {})
+        classvars = {fn for fn,tp in annotations.items() \
+                        if _is_classvar(tp)}
         
         int_type = type(1)
 
@@ -112,20 +114,15 @@ class datatype(type):
             if isinstance(fields, int_type):
                 fields_dict = {}
             else:
-                if annotations:
-                    for fn in fields:
-                        if _is_classvar(annotations.get(fn, None)):
-                            raise TypeError(f'__fields__ contain  {fn}:ClassVar')
+                for fn in fields:
+                    if fn in classvars:
+                        raise TypeError(f'__fields__ contain  {fn}:ClassVar')
                 fields_dict = {fn:Field() for fn in fields}
                 
-            classvars = set()
         else:
             fields_dict = {fn:Field(type=tp) \
                            for fn,tp in annotations.items() \
                            if not _is_classvar(tp)}
-            classvars = {fn \
-                           for fn,tp in annotations.items() \
-                           if _is_classvar(tp)}
             fields = tuple(fields_dict)
             
         has_fields = True
