@@ -207,7 +207,7 @@ class datatype(type):
                         fields_dict[fn]['readonly'] = True
             fields = [f for f in fields if f in fields_dict]
 
-            if (bases and (len(bases) > 1) or bases[0] is not dataobject):
+            if bases and (len(bases) > 1) or bases[0] is not dataobject:
                 _fields, _fields_dict, _use_dict, _use_weakref = collect_info_from_bases(bases)
                 for fn in classvars:
                     if fn in _fields:
@@ -236,7 +236,7 @@ class datatype(type):
 
             fields = tuple(fields)
 
-            if has_fields and not fast_new and '__new__' not in ns:
+            if has_fields and not fast_new and ('__new__' not in ns or '__init__' not in ns):
                 __new__ = _make_new_function(typename, fields, defaults_dict, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
                 if not __new__.__doc__:
