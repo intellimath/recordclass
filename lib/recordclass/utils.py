@@ -141,10 +141,9 @@ def number_of_dataitems(cls):
     else:
         return len(fields)
 
-def collect_info_from_bases(bases):
+def collect_info_from_bases(bases, fields, fields_dict, options):
     from ._dataobject import _is_readonly_member
-    fields = []
-    fields_dict = {}
+    _fields = []
     use_dict = False
     use_weakref = False
     # readonly = True
@@ -154,18 +153,17 @@ def collect_info_from_bases(bases):
             continue
         elif issubclass(base, dataobject):
             use_dict = base.__options__.get('use_dict', False) or use_dict
+            if use_dict:
+                options['use_dict'] = True
             use_weakref = base.__options__.get('use_weakref', False) or use_weakref
-            # readonly = base.__options__.get('readonly', False) and readonly
-            # _hashable = base.__options__.get('hashable', None)
-            # if _hashable is not None:
-            #     hashable = _hashable
-            # if base.__dictoffset__ > 0:
-            #     use_dict = True
+            if use_weakref:
+                options['use_weakref'] = True
         else:
             continue
 
         fs = getattr(base, '__fields__', ())
         base_defaults = getattr(base, '__defaults__', {})
+        n_defaults = len(base_defaults)
         base_annotations = getattr(base, '__annotations__', {})
         n = number_of_dataitems(base)
         if type(fs) is tuple and len(fs) == n:
@@ -176,20 +174,20 @@ def collect_info_from_bases(bases):
                     fields_dict[fn] = f = Field()
                     if _is_readonly_member(base.__dict__[fn]):
                         f['readonly'] = True
-                    # if fn in base_defaults:
-                    f['default'] = base_defaults[i]
+                    if n-i <= n_defaults:
+                        f['default'] = base_defaults[i]
                     if fn in base_annotations:
                         f['type'] = base_annotations[fn]
-                    fields.append(fn)
+                    _fields.append(fn)
         else:
             raise TypeError("invalid fields in base class %r" % base)
 
-    for f in fields_dict.values():
-        if not f.get('readonly', False):
-            readonly = False
-            break
+    # for f in fields_dict.values():
+    #     if not f.get('readonly', False):
+    #         readonly = False
+    #         break
         
-    return fields, fields_dict, use_dict, use_weakref #, readonly, hashable
+    return _fields + fields
 
 def _have_pyinit(bases):
     for base in bases:

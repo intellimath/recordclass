@@ -117,9 +117,9 @@ class datatype(type):
                     if fn in classvars:
                         raise TypeError(f'__fields__ contain  {fn}:ClassVar')
                     if fn in annotations:
-                        fields_dict[fn] = Field(type=annotations[fn])
+                        fields_dict[fn] = f = Field(type=annotations[fn])
                     else:
-                        fields_dict[fn] = Field()
+                        fields_dict[fn] = f = Field()
         else:
             fields_dict = {fn:Field(type=tp) \
                            for fn,tp in annotations.items() \
@@ -206,31 +206,14 @@ class datatype(type):
             fields = [f for f in fields if f in fields_dict]
 
             if bases and (len(bases) > 1) or bases[0] is not dataobject:
-                _fields, _fields_dict, _use_dict, _use_weakref = collect_info_from_bases(bases)
+                fields = collect_info_from_bases(bases, fields, fields_dict, options)
                 for fn in classvars:
-                    if fn in _fields:
+                    if fn in fields:
                         raise TypeError(f"field '{fn}' is a class variable and an instance field at the same time")
-                use_dict = _use_dict or use_dict
-                use_weakref = _use_weakref or use_weakref
-                _defaults_dict = {fn:fd['default'] for fn,fd in _fields_dict.items() if 'default' in fd} 
-                _annotations = {fn:fd['type'] for fn,fd in _fields_dict.items() if 'type' in fd} 
-
-                if fields:
-                    for fn in fields:
-                        if fn in _fields:
-                            raise TypeError(f"the field name '{fn}' duplicate the same field name in the base class")
-
-                fields = _fields + fields
-
-                _fields_dict.update(fields_dict)
-                fields_dict = _fields_dict
-
-                _defaults_dict.update(defaults_dict)
-                defaults_dict = _defaults_dict
-
-                _annotations.update(annotations)
-                annotations = _annotations
-                del _fields, _fields_dict, _use_dict
+                use_dict = options.get('use_dict', None)
+                use_weakref = options.get('use_weakref', None)
+                defaults_dict = {fn:fd['default'] for fn,fd in fields_dict.items() if 'default' in fd} 
+                annotations = {fn:fd['type'] for fn,fd in fields_dict.items() if 'type' in fd} 
 
             fields = tuple(fields)
 
@@ -253,7 +236,8 @@ class datatype(type):
             pass
                     
         if has_fields:
-            defaults = tuple([defaults_dict.get(fn, None) for fn in fields])
+            print(fields_dict)
+            defaults = tuple([fields_dict[fn].get('default',None) for fn in fields])
             ns['__fields__'] = fields
             ns['__defaults__'] = defaults
             ns['__annotations__'] = annotations
