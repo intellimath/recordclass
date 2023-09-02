@@ -30,8 +30,6 @@
 
 #define PyObject_GetDictPtr(o) (PyObject**)((char*)o + (Py_TYPE(o)->tp_dictoffset))
 
-// #define pyobject_size(tp) ( (tp)->tp_basicsize )
-
 #define PyObject_CAST(o) ((PyObject*)(o))
 
 #if !defined(Py_SET_TYPE)
@@ -103,7 +101,7 @@ PyDataObject_GetDictPtr(PyObject *ob)
         return NULL;
 }
 
-static PyObject *
+static PyObject*
 PyDataObject_GetDict(PyObject *obj)
 {
     PyObject **dictptr = PyDataObject_GetDictPtr(obj);

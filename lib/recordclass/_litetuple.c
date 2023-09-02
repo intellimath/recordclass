@@ -122,11 +122,11 @@ litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return newobj;
 }
 
+#if PY_VERSION_HEX >= 0x030A0000
 static PyObject *
 litetuple_vectorcall(PyObject *type, PyObject * const*args,
                  size_t nargsf, PyObject *kwnames)
 {
-    // const Py_ssize_t n = Py_SIZE(args);
     const Py_ssize_t n = PyVectorcall_NARGS(nargsf);
 
     PyObject *newobj = (PyObject*)_PyObject_NewVar((PyTypeObject*)type, n);
@@ -142,6 +142,7 @@ litetuple_vectorcall(PyObject *type, PyObject * const*args,
 
     return newobj;
 }
+#endif
 
 static int
 litetuple_init(PyObject *ob, PyObject *args, PyObject *kwds) {

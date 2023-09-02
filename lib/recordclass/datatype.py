@@ -111,10 +111,8 @@ class datatype(type):
 
         if '__fields__' in ns:
             fields = ns['__fields__']
-            if isinstance(fields, int_type):
-                fields_dict = {}
-            else:
-                fields_dict = {}
+            fields_dict = {}
+            if not isinstance(fields, int_type):
                 for fn in fields:
                     if fn in classvars:
                         raise TypeError(f'__fields__ contain  {fn}:ClassVar')
