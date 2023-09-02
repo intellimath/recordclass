@@ -174,8 +174,8 @@ def collect_info_from_bases(bases, fields, fields_dict, options):
                     fields_dict[fn] = f = Field()
                     if _is_readonly_member(base.__dict__[fn]):
                         f['readonly'] = True
-                    if n-i <= n_defaults:
-                        f['default'] = base_defaults[i]
+                    if fn in base_defaults:
+                        f['default'] = base_defaults[fn]
                     if fn in base_annotations:
                         f['type'] = base_annotations[fn]
                     _fields.append(fn)

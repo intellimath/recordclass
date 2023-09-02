@@ -407,10 +407,10 @@ class DataObjectTest3(unittest.TestCase):
             z:int=2
 
         self.assertEqual(A.__fields__, ('x', 'y'))
-        self.assertEqual(A.__defaults__, (0,1))
+        self.assertEqual(A.__default_vals__, (0,1))
 
         self.assertEqual(B.__fields__, ('x', 'y', 'z'))
-        self.assertEqual(B.__defaults__, (0, 1, 2))
+        self.assertEqual(B.__default_vals__, (0, 1, 2))
         b = B()
         self.assertEqual(b.x, 0)
         self.assertEqual(b.y, 1)

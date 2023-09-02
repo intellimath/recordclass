@@ -236,17 +236,17 @@ class datatype(type):
             pass
                     
         if has_fields:
-            print(fields_dict)
-            defaults = tuple([fields_dict[fn].get('default',None) for fn in fields])
+            default_vals = tuple([fields_dict[fn].get('default',None) for fn in fields])
             ns['__fields__'] = fields
-            ns['__defaults__'] = defaults
+            ns['__defaults__'] = defaults_dict
+            ns['__default_vals__'] = default_vals
             ns['__annotations__'] = annotations
 
             if _PY310:
                 ns['__match_args__'] = fields
 
             if '__doc__' not in ns:
-                ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
+                ns['__doc__'] = _make_cls_doc(typename, fields, annotations, default_vals, use_dict)
         
         ns['__options__'] = options
 

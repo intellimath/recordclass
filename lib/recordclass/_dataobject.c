@@ -53,7 +53,7 @@ static PyTypeObject PyDataObjectProperty_Type;
 static PyObject *__fields__name;
 static PyObject *__dict__name;
 static PyObject *__weakref__name;
-static PyObject *__defaults__name;
+static PyObject *__default_vals__name;
 static PyObject *__init__name;
 
 static PyObject *fields_dict_name;
@@ -276,9 +276,9 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     if (n_args < n_items) {
         PyObject *tp_dict = type->tp_dict;
         PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-        PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
+        PyObject *default_vals = mp->mp_subscript(tp_dict, __default_vals__name);
 
-        if (defaults == NULL) {
+        if (default_vals == NULL) {
             PyErr_Clear();
             for(i = n_args; i < n_items; i++) {
                 Py_INCREF(Py_None);
@@ -286,12 +286,12 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
             }
         } else {
             for(i = n_args; i < n_items; i++) {
-                PyObject *value = PyTuple_GET_ITEM(defaults, i);
+                PyObject *value = PyTuple_GET_ITEM(default_vals, i);
 
                 Py_INCREF(value);
                 items[i] = value;
             }
-            Py_DECREF(defaults);
+            Py_DECREF(default_vals);
         }
     }
 
@@ -383,9 +383,9 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (n_args < n_items) {
         PyObject *tp_dict = type->tp_dict;
         PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-        PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
+        PyObject *default_vals = mp->mp_subscript(tp_dict, __default_vals__name);
 
-        if (defaults == NULL) {
+        if (default_vals == NULL) {
             PyErr_Clear();
             for(i = n_args; i < n_items; i++) {
                 Py_INCREF(Py_None);
@@ -393,12 +393,12 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
             }
         } else {
             for(i = n_args; i < n_items; i++) {
-                PyObject *value = PyTuple_GET_ITEM(defaults, i);
+                PyObject *value = PyTuple_GET_ITEM(default_vals, i);
 
                 Py_INCREF(value);
                 items[i] = value;
             }
-            Py_DECREF(defaults);
+            Py_DECREF(default_vals);
         }
     }
 
@@ -437,9 +437,9 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (n_args < n_items) {
         PyObject *tp_dict = type->tp_dict;
         PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
-        PyObject *defaults = mp->mp_subscript(tp_dict, __defaults__name);
+        PyObject *default_vals = mp->mp_subscript(tp_dict, __default_vals__name);
 
-        if (defaults == NULL) {
+        if (default_vals == NULL) {
             PyErr_Clear();
             for(i = n_args; i < n_items; i++) {
                 Py_INCREF(Py_None);
@@ -447,12 +447,12 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             }
         } else {
             for(i = n_args; i < n_items; i++) {
-                PyObject *value = PyTuple_GET_ITEM(defaults, i);
+                PyObject *value = PyTuple_GET_ITEM(default_vals, i);
 
                 Py_INCREF(value);
                 items[i] = value;
             }
-            Py_DECREF(defaults);
+            Py_DECREF(default_vals);
         }
     }
 
@@ -2795,8 +2795,8 @@ PyInit__dataobject(void)
     if (__weakref__name == NULL)
         return NULL;
 
-    __defaults__name = PyUnicode_FromString("__defaults__");
-    if (__defaults__name == NULL)
+    __default_vals__name = PyUnicode_FromString("__default_vals__");
+    if (__default_vals__name == NULL)
         return NULL;
 
     __init__name = PyUnicode_FromString("__init__");
