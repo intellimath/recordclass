@@ -688,6 +688,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 #### 0.20.1
 
 * Improve row_factory for `sqlite` on the ground of `dataobject`-based classes.
+* Move recordclass repository to https://github.com/intellimath/recordclass from bitbucket.org.
 
 #### 0.20
 

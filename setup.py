@@ -117,7 +117,7 @@ setup(
     ext_modules = ext_modules,
     package_dir = {'': 'lib'},
     packages = packages,
-    url = 'https://bitbucket.org/intellimath/recordclass',
+    url = 'https://github.com/intellimath/recordclass',
     download_url = 'https://pypi.org/project/recordclass/#files',
     long_description=long_description,
     long_description_content_type='text/markdown',
