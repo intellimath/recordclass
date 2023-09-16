@@ -114,7 +114,7 @@ def process_fields(fields, defaults, rename, invalid_names):
         defaults = {fields[i]:defaults[i] for i in range(-n_defaults,0)}
     return fields, annotations, defaults
 
-def check_name(name, i=0, rename=False, invalid_names=()):
+def check_name(name, rename=False, i=0, invalid_names=()):
     if not isinstance(name, str):
         raise TypeError('Type names and field names must be strings')
 
@@ -165,6 +165,8 @@ def collect_info_from_bases(bases, fields, fields_dict, options):
         base_defaults = getattr(base, '__defaults__', {})
         n_defaults = len(base_defaults)
         base_annotations = getattr(base, '__annotations__', {})
+        base_options = getattr(base, '__options__', {})
+        base_fields_dict = base_options['fields_dict']
         n = number_of_dataitems(base)
         if type(fs) is tuple and len(fs) == n:
             for i, fn in enumerate(fs):

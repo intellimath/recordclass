@@ -236,6 +236,7 @@ class datatype(type):
             pass
                     
         if has_fields:
+            options['fields_dict'] = fields_dict
             default_vals = tuple([fields_dict[fn].get('default',None) for fn in fields])
             ns['__fields__'] = fields
             ns['__defaults__'] = defaults_dict
