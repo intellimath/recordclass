@@ -33,5 +33,5 @@ from .arrayclass import make_arrayclass
 from .adapter import as_dataclass
 
 structclass = make_dataclass
-
-__version__ = '0.20'
+s
+__version__ = '0.20.1'

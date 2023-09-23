@@ -408,11 +408,11 @@ Here is the table with performance counters, which was measured using `tools/per
   </tbody>
 </table>
 
-Main repository for `recordclass` is on [bitbucket](https://bitbucket.org/intellimath/recordclass).
+Main repository for `recordclass` is on [github](https://github.com/intellimath/recordclass).
 
-Here is also a simple [example](http://nbviewer.ipython.org/urls/bitbucket.org/intellimath/recordclass/raw/master/examples/what_is_recordclass.ipynb).
+Here is also a simple [example](http://nbviewer.ipython.org/urls/github.com/intellimath/recordclass/raw/master/examples/what_is_recordclass.ipynb).
 
-More examples can be found in the folder [examples](https://bitbucket.org/intellimath/recordclass/examples).
+More examples can be found in the folder [examples](https://github.com/intellimath/recordclass/examples).
 
 ## Quick start
 
