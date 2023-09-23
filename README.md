@@ -412,7 +412,7 @@ Main repository for `recordclass` is on [github](https://github.com/intellimath/
 
 Here is also a simple [example](https://github.com/intellimath/recordclass/blob/main/examples/what_is_recordclass.ipynb).
 
-More examples can be found in the folder [examples](https://github.com/intellimath/recordclass/examples).
+More examples can be found in the folder [examples](https://github.com/intellimath/recordclass/tree/main/examples).
 
 ## Quick start
 
