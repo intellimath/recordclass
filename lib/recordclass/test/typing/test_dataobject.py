@@ -1144,6 +1144,21 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.d, b.d)
         self.assertNotEqual(id(a.d), id(b.d))
 
+    def test_copy_default_5(self):
+        class B(dataobject):
+            x:int
+            y:int
+
+        class A(dataobject, copy_default=True):
+            d : B = B(0,0)
+
+        a = A()
+        b = A()
+        # print(id(a.d), id(b.d))
+        self.assertEqual(a.d, b.d)
+        self.assertNotEqual(id(a.d), id(b.d))
+
+
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(DataObjectTest3))

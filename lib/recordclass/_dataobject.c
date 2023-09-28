@@ -433,27 +433,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return op;
 }
 
-static PyObject* _copy_default(PyObject *op) {
-
-    if (op == Py_None) {
-        Py_INCREF(op);
-        return op;        
-    }
-    
-    PyTypeObject *tp = Py_TYPE(op);
-
-    if (tp == &PyList_Type)
-         return PyList_GetSlice(op, 0, Py_SIZE(op));
-    if (tp == &PyDict_Type) 
-        return PyObject_CallMethod(op, "copy", NULL);
-    if (PyObject_HasAttrString(op, "__copy__"))
-        return PyObject_CallMethod(op, "__copy__", NULL);
-
-    Py_INCREF(op);
-    return op;
-    
-}
-
 static PyObject*
 dataobject_new_copy_default(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
@@ -491,7 +470,26 @@ dataobject_new_copy_default(PyTypeObject *type, PyObject *args, PyObject *kwds)
         } else {
             for(i = n_args; i < n_items; i++) {
                 PyObject *value = PyTuple_GET_ITEM(default_vals, i);
-                items[i] = _copy_default(value);    
+                if (value == Py_None) {
+                    Py_INCREF(Py_None);
+                    items[i] = Py_None;                    
+                } 
+                else {
+                    PyObject *val;
+                    PyTypeObject *tp = Py_TYPE(value);
+
+                    if (tp == &PyList_Type)
+                        val = PyList_GetSlice(value, 0, Py_SIZE(value));
+                    else if (tp == &PyDict_Type) 
+                        val = PyObject_CallMethod(value, "copy", NULL);
+                    else if (PyObject_HasAttrString(value, "__copy__"))
+                        val = PyObject_CallMethod(value, "__copy__", NULL);
+                    else {
+                        val = value;
+                        Py_INCREF(val);
+                    }                        
+                    items[i] = val;    
+                }
             }
             Py_DECREF(default_vals);
         }
