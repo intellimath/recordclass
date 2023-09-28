@@ -296,7 +296,8 @@ class datatype(type):
         from ._dataobject import (_datatype_collection_mapping, _datatype_hashable, _datatype_iterable,
                                   _datatype_use_weakref, _datatype_use_dict, _datatype_enable_gc, 
                                   _datatype_deep_dealloc, _datatype_vectorcall, _pytype_modified, 
-                                  _datatype_immutable, _dataobject_type_init, _datatype_copy_default)
+                                  _datatype_immutable, _dataobject_type_init, _datatype_copy_default,
+                                  _datatype_from_basetype_hashable, _datatype_from_basetype_iterable)
         from .utils import _have_pyinit, _have_pynew
 
 
@@ -313,13 +314,22 @@ class datatype(type):
         _dataobject_type_init(cls)
 
         _datatype_collection_mapping(cls, sequence, mapping, readonly)
-        _datatype_hashable(cls, hashable)
-        _datatype_iterable(cls, iterable)
-        _datatype_use_dict(cls, use_dict)
-        _datatype_use_weakref(cls, use_weakref)
+        if hashable:
+            _datatype_hashable(cls)
+        else:
+            _datatype_from_basetype_hashable(cls)
+        if iterable:
+            _datatype_iterable(cls)
+        else:
+            _datatype_from_basetype_iterable(cls)
+        if use_dict:
+            _datatype_use_dict(cls)
+        if use_weakref:
+            _datatype_use_weakref(cls)
         if gc:
             _datatype_enable_gc(cls)
-        _datatype_deep_dealloc(cls, deep_dealloc)
+        if deep_dealloc:
+            _datatype_deep_dealloc(cls)
         if not copy_default and not is_pyinit and not is_pynew:
             _datatype_vectorcall(cls)
         if copy_default and not is_pyinit and not is_pynew:

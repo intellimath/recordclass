@@ -480,7 +480,7 @@ dataobject_new_copy_default(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
                     if (tp == &PyList_Type)
                         val = PyList_GetSlice(value, 0, Py_SIZE(value));
-                    else if (tp == &PyDict_Type) 
+                    else if (tp == &PyDict_Type || tp == &PySet_Type) 
                         val = PyObject_CallMethod(value, "copy", NULL);
                     else if (PyObject_HasAttrString(value, "__copy__"))
                         val = PyObject_CallMethod(value, "__copy__", NULL);
@@ -1420,7 +1420,7 @@ PyDoc_STRVAR(dataobject_reduce_doc,
 "T.__reduce__()");
 
 static PyObject *
-dataobject_reduce(PyObject *ob) //, PyObject *Py_UNUSED(ignore))
+dataobject_reduce(PyObject *ob, PyObject *Py_UNUSED(ignore))
 {
     PyObject *args;
     PyObject *result;
@@ -2169,10 +2169,12 @@ _datatype_collection_mapping(PyObject *module, PyObject *args) //, PyObject *kw)
     return _collection_protocol(cls, sequence, mapping, readonly);
 }
 
+PyDoc_STRVAR(_datatype_from_basetype_hashable_doc,
+"");
+
 static PyObject*
-_set_hashable(PyObject *cls, PyObject *hashable) {
+_datatype_from_basetype_hashable(PyObject *module, PyObject *cls) {
     PyTypeObject *tp = (PyTypeObject*)cls;
-    int state;
 
     PyObject *bases = tp->tp_bases;
     Py_ssize_t i, n_bases = Py_SIZE(bases);
@@ -2180,44 +2182,32 @@ _set_hashable(PyObject *cls, PyObject *hashable) {
         PyTypeObject *base = (PyTypeObject*)PyTuple_GetItem(bases, i);
         if (base->tp_hash) {
                 tp->tp_hash = base->tp_hash;
-                break;
+                Py_INCREF(Py_True);
+                return Py_True;
         }
     }
-
-    state = PyObject_IsTrue(hashable);
-    if (state)
-        tp->tp_hash = dataobject_hash;
-
-    Py_RETURN_NONE;
+    Py_INCREF(Py_False);
+    return Py_False;
 }
 
 PyDoc_STRVAR(_datatype_hashable_doc,
 "");
 
-static PyObject *
-_datatype_hashable(PyObject *module, PyObject *args) //, PyObject *kw)
-{
-    PyObject *cls, *hashable;
+static PyObject*
+_datatype_hashable(PyObject *module, PyObject *cls) {
+    PyTypeObject *tp = (PyTypeObject*)cls;
 
-    cls = PyTuple_GET_ITEM(args, 0);
-    hashable = PyTuple_GET_ITEM(args, 1);
-
-    return _set_hashable(cls, hashable);
+    tp->tp_hash = dataobject_hash;
+    Py_RETURN_NONE;
 }
 
 
+PyDoc_STRVAR(_datatype_from_basetype_iterable_doc,
+"");
+
 static PyObject*
-_set_iterable(PyObject *cls, PyObject *iterable) {
-    PyTypeObject *tp;
-    const int state = PyObject_IsTrue(iterable);
-
-    if (!state)
-        Py_RETURN_NONE;
-
-    tp = (PyTypeObject*)cls;
-
-    if (!tp->tp_iter && state)
-        tp->tp_iter = dataobject_iter;
+_datatype_from_basetype_iterable(PyObject *module, PyObject *cls) {
+    PyTypeObject *tp = (PyTypeObject*)cls;
 
     PyObject *bases = tp->tp_bases;
     Py_ssize_t i, n_bases = Py_SIZE(bases);
@@ -2226,43 +2216,42 @@ _set_iterable(PyObject *cls, PyObject *iterable) {
         if (base->tp_iter) {
             if (base->tp_iter == dataobject_iter) {
                 tp->tp_iter = base->tp_iter;
-                Py_RETURN_NONE;
+                Py_INCREF(Py_True);
+                return Py_True;
             }
         }
     }
-
-    Py_RETURN_NONE;
+    Py_INCREF(Py_False);
+    return Py_False;
 }
+
 
 PyDoc_STRVAR(_datatype_iterable_doc,
 "");
 
-static PyObject *
-_datatype_iterable(PyObject *module, PyObject *args) //, PyObject *kw)
-{
-    PyObject *cls, *iterable;
+static PyObject*
+_datatype_iterable(PyObject *module, PyObject *cls) {
+    PyTypeObject *tp = (PyTypeObject*)cls;
 
-    cls = PyTuple_GET_ITEM(args, 0);
-    iterable = PyTuple_GET_ITEM(args, 1);
+    tp->tp_iter = dataobject_iter;
 
-    return _set_iterable(cls, iterable);
+    Py_RETURN_NONE;
 }
 
 
-static PyObject*
-_set_dictoffset(PyObject *cls, PyObject *add_dict) {
-    PyTypeObject *tp;
-    int state;
+PyDoc_STRVAR(_datatype_use_dict_doc,
+"");
 
-    tp = (PyTypeObject*)cls;
-    state = PyObject_IsTrue(add_dict);
+static PyObject*
+_datatype_use_dict(PyObject *module, PyObject *cls) {
+    PyTypeObject *tp = (PyTypeObject*)cls;
 
     // if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
     //     PyErr_SetString(PyExc_TypeError, "argument is not a subtype of the type");
     //     return NULL;
     // }
 
-    if (!tp->tp_dictoffset && state) {
+    if (!tp->tp_dictoffset) {
         if (!tp->tp_weaklistoffset) {
             tp->tp_dictoffset = tp->tp_basicsize;
             tp->tp_basicsize += sizeof(PyObject*);
@@ -2276,35 +2265,18 @@ _set_dictoffset(PyObject *cls, PyObject *add_dict) {
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(_datatype_use_dict_doc,
+PyDoc_STRVAR(_datatype_use_weakref_doc,
 "");
 
-static PyObject *
-_datatype_use_dict(PyObject *module, PyObject *args) //, PyObject *kw)
-{
-    PyObject *cls, *use_dict;
-
-    cls = PyTuple_GET_ITEM(args, 0);
-    use_dict = PyTuple_GET_ITEM(args, 1);
-
-    return _set_dictoffset(cls, use_dict);
-}
-
-
 static PyObject*
-_set_weaklistoffset(PyObject *cls, PyObject* add_weakref) {
-    PyTypeObject *tp;
-    int state;
-
-    tp = (PyTypeObject*)cls;
+_datatype_use_weakref(PyObject *module, PyObject *cls) {
+    PyTypeObject *tp = (PyTypeObject*)cls;
     // if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
     //     PyErr_SetString(PyExc_TypeError, "argument is not a subtype of the type");
     //     return NULL;
     // }
 
-    state = PyObject_IsTrue(add_weakref);
-
-    if (!tp->tp_weaklistoffset && state) {
+    if (!tp->tp_weaklistoffset) {
         if (!tp->tp_dictoffset) {
             tp->tp_weaklistoffset = tp->tp_basicsize;
             tp->tp_basicsize += sizeof(PyObject*);
@@ -2317,31 +2289,19 @@ _set_weaklistoffset(PyObject *cls, PyObject* add_weakref) {
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(_datatype_use_weakref_doc,
+PyDoc_STRVAR(_datatype_enable_gc_doc,
 "");
 
 static PyObject *
-_datatype_use_weakref(PyObject *module, PyObject *args) //, PyObject *kw)
+_datatype_enable_gc(PyObject *module, PyObject *cls)
 {
-    PyObject *cls, *use_weakref;
-
-    cls = PyTuple_GET_ITEM(args, 0);
-    use_weakref = PyTuple_GET_ITEM(args, 1);
-
-    return _set_weaklistoffset(cls, use_weakref);
-}
-
-static PyObject *
-_enable_gc(PyObject *cls)
-{
-    PyTypeObject *type;
+    PyTypeObject *type = (PyTypeObject*)cls;
 
     // if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
     //     PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of type");
     //     return NULL;
     // }
 
-    type = (PyTypeObject*)cls;
     type->tp_flags |= Py_TPFLAGS_HAVE_GC;
     type->tp_traverse = dataobject_traverse;
     type->tp_clear = dataobject_clear;
@@ -2350,42 +2310,7 @@ _enable_gc(PyObject *cls)
     type->tp_alloc = dataobject_alloc_gc;
     type->tp_free = PyObject_GC_Del;
 
-    PyType_Modified(type);
-
-    Py_RETURN_NONE;
-}
-
-PyDoc_STRVAR(_datatype_enable_gc_doc,
-"");
-
-static PyObject *
-_datatype_enable_gc(PyObject *module, PyObject *args) //, PyObject *kw)
-{
-    PyObject *cls = PyTuple_GET_ITEM(args, 0);
-
-    return _enable_gc(cls);
-}
-
-static PyObject *
-_set_deep_dealloc(PyObject *cls, PyObject *state)
-{
-    PyTypeObject *type;
-    int have_gc;
-    int  is_deep = PyObject_IsTrue(state);
-
-    // if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
-    //     PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of a type");
-    //     return NULL;
-    // }
-
-    type = (PyTypeObject*)cls;
-    have_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
-
-    if (!have_gc && is_deep) {
-        type->tp_finalize = dataobject_finalize;
-    }
-
-//     PyType_Modified(type);
+    // PyType_Modified(type);
 
     Py_RETURN_NONE;
 }
@@ -2394,16 +2319,30 @@ PyDoc_STRVAR(_datatype_deep_dealloc_doc,
 "");
 
 static PyObject *
-_datatype_deep_dealloc(PyObject *module, PyObject *args) //, PyObject *kw)
+_datatype_deep_dealloc(PyObject *module, PyObject *cls)
 {
-    PyObject *cls = PyTuple_GET_ITEM(args, 0);
-    PyObject *is_deep = PyTuple_GET_ITEM(args, 1);
+    PyTypeObject *type = (PyTypeObject*)cls;
+    int have_gc;
 
-    return _set_deep_dealloc(cls, is_deep);
+    // if (!PyObject_IsInstance(cls, (PyObject*)&PyType_Type)) {
+    //     PyErr_SetString(PyExc_TypeError, "Argument have to be an instance of a type");
+    //     return NULL;
+    // }
+
+    have_gc = type->tp_flags & Py_TPFLAGS_HAVE_GC;
+
+    if (!have_gc) {
+        type->tp_finalize = dataobject_finalize;
+    }
+
+    Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(_datatype_vectorcall_doc,
+"");
+
 static PyObject *
-_vector_call_set(PyObject *cls)
+_datatype_vectorcall(PyObject *module, PyObject *cls)
 {
     PyTypeObject *tp = (PyTypeObject *)cls;
 
@@ -2421,27 +2360,15 @@ _vector_call_set(PyObject *cls)
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(_datatype_vectorcall_doc,
-"");
-
-static PyObject *
-_datatype_vectorcall(PyObject *module, PyObject *args) //, PyObject *kw)
-{
-    PyObject *cls;
-
-    cls = PyTuple_GET_ITEM(args, 0);
-
-    return _vector_call_set(cls);
-}
 
 PyDoc_STRVAR(_datatype_immutable_doc,
 "");
 
 static PyObject *
-_datatype_immutable(PyObject *module, PyObject *args) //, PyObject *kw)
+_datatype_immutable(PyObject *module, PyObject *cls)
 {
 #if PY_VERSION_HEX >= 0x030A0000
-    PyTypeObject *tp = (PyTypeObject*)PyTuple_GET_ITEM(args, 0);
+    PyTypeObject *tp = (PyTypeObject*)cls;
 
     tp->tp_flags |= Py_TPFLAGS_IMMUTABLETYPE;
 #endif
@@ -2453,10 +2380,10 @@ PyDoc_STRVAR(_datatype_copy_default_doc,
 "");
 
 static PyObject *
-_datatype_copy_default(PyObject *module, PyObject *args) //, PyObject *kw)
+_datatype_copy_default(PyObject *module, PyObject *cls) //, PyObject *kw)
 {
 
-    PyTypeObject *tp = (PyTypeObject*)PyTuple_GET_ITEM(args, 0);
+    PyTypeObject *tp = (PyTypeObject*)cls;
 
     tp->tp_new = dataobject_new_copy_default;
     // tp->tp_init = dataobject_init_copy_default;
@@ -2783,15 +2710,17 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"asdict", asdict, METH_VARARGS, asdict_doc},
     {"astuple", astuple, METH_VARARGS, astuple_doc},
     {"_datatype_collection_mapping", _datatype_collection_mapping, METH_VARARGS, _datatype_collection_mapping_doc},
-    {"_datatype_hashable", _datatype_hashable, METH_VARARGS, _datatype_hashable_doc},
-    {"_datatype_iterable", _datatype_iterable, METH_VARARGS, _datatype_iterable_doc},
-    {"_datatype_use_dict", _datatype_use_dict, METH_VARARGS, _datatype_use_dict_doc},
-    {"_datatype_use_weakref", _datatype_use_weakref, METH_VARARGS, _datatype_use_weakref_doc},
-    {"_datatype_enable_gc", _datatype_enable_gc, METH_VARARGS, _datatype_enable_gc_doc},
-    {"_datatype_deep_dealloc", _datatype_deep_dealloc, METH_VARARGS, _datatype_deep_dealloc_doc},
-    {"_datatype_vectorcall", _datatype_vectorcall, METH_VARARGS, _datatype_vectorcall_doc},
-    {"_datatype_immutable", _datatype_immutable, METH_VARARGS, _datatype_immutable_doc},
-    {"_datatype_copy_default", _datatype_copy_default, METH_VARARGS, _datatype_copy_default_doc},
+    {"_datatype_from_basetype_hashable", _datatype_from_basetype_hashable, METH_O, _datatype_from_basetype_hashable_doc},
+    {"_datatype_hashable", _datatype_hashable, METH_O, _datatype_hashable_doc},
+    {"_datatype_from_basetype_iterable", _datatype_from_basetype_iterable, METH_O, _datatype_from_basetype_iterable_doc},
+    {"_datatype_iterable", _datatype_iterable, METH_O, _datatype_iterable_doc},
+    {"_datatype_use_dict", _datatype_use_dict, METH_O, _datatype_use_dict_doc},
+    {"_datatype_use_weakref", _datatype_use_weakref, METH_O, _datatype_use_weakref_doc},
+    {"_datatype_enable_gc", _datatype_enable_gc, METH_O, _datatype_enable_gc_doc},
+    {"_datatype_deep_dealloc", _datatype_deep_dealloc, METH_O, _datatype_deep_dealloc_doc},
+    {"_datatype_vectorcall", _datatype_vectorcall, METH_O, _datatype_vectorcall_doc},
+    {"_datatype_immutable", _datatype_immutable, METH_O, _datatype_immutable_doc},
+    {"_datatype_copy_default", _datatype_copy_default, METH_O, _datatype_copy_default_doc},
     // {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
     {"clone", (PyCFunction)dataobject_clone, METH_VARARGS | METH_KEYWORDS, dataobject_clone_doc},
