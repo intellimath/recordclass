@@ -74,9 +74,9 @@ class DataObjectTest3(unittest.TestCase):
             x:object
             y:object
 
-        print(A.__fields__)
+        # print(A.__fields__)
         a = A([1,2,3],[3,4,5])
-        print(a)
+        # print(a)
 
     def test_datatype_tp(self):
         class A(dataobject):
@@ -237,7 +237,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.__dict__, {})
 
         a.z = 3
-        print(repr(a))
+        # print(repr(a))
         self.assertEqual(a.z, a.__dict__['z'])
         self.assertEqual(repr(a), "A(x=1, y=2, **{'z': 3})")
         #a = None
@@ -1024,12 +1024,12 @@ class DataObjectTest3(unittest.TestCase):
                 print("__init__")
                 pass
 
-        print("A0", A0.__dict__)
-        print("A", A.__dict__)
+        # print("A0", A0.__dict__)
+        # print("A", A.__dict__)
         a0 = A0(1,2)
-        print(a0)
+        # print(a0)
         a = A(1,2)
-        print(a)
+        # print(a)
         self.assertEqual(a.x, None)
         self.assertEqual(a.y, None)
 
@@ -1130,7 +1130,7 @@ class DataObjectTest3(unittest.TestCase):
 
         a = A()
         b = A()
-        print(id(a.l), id(b.l))
+        # print(id(a.l), id(b.l))
         self.assertEqual(a.l, b.l)
         self.assertNotEqual(id(a.l), id(b.l))
 
@@ -1140,7 +1140,7 @@ class DataObjectTest3(unittest.TestCase):
 
         a = A()
         b = A()
-        print(id(a.d), id(b.d))
+        # print(id(a.d), id(b.d))
         self.assertEqual(a.d, b.d)
         self.assertNotEqual(id(a.d), id(b.d))
 

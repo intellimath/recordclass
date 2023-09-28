@@ -139,9 +139,9 @@ class XMethBad(RecordClass):
         self.assertNotEqual(hash(b), hash_b)
 
     def test_hash_subcls(self):
-        print(H.__options__)
+        # print(H.__options__)
         class B(H): pass
-        print(B.__options__)
+        # print(B.__options__)
         b = B(1,2)
         hash(b)
 

@@ -116,9 +116,7 @@ class RecordClassTest(unittest.TestCase):
         self.assertEqual(p, Point(y=22, x=11))
         self.assertEqual(p, Point(*(11, 22)))
         self.assertEqual(p, Point(**dict(x=11, y=22)))
-        print('1')
         self.assertRaises(TypeError, eval, 'Point(XXX=1, y=2)', locals())   # wrong keyword argument
-        print('2')
         # self.assertRaises(TypeError, eval, 'Point(x=1)', locals())          # missing keyword argument
         self.assertEqual(repr(p), 'Point(x=11, y=22)')
         #self.assertNotIn('__weakref__', dir(p))
@@ -287,11 +285,11 @@ class RecordClassTest(unittest.TestCase):
         
     def test_hash(self):
         A = recordclass('A', 'x y', readonly=True)
-        print(A.__options__)
+        # print(A.__options__)
         a = A(1, 2)
         self.assertNotEqual(hash(a), id(a))
         B = recordclass('B', 'x y', hashable=True)
-        print(B.__options__)
+        # print(B.__options__)
         b = B(1, 2)
         hash_b = hash(b)
         #self.assertEqual(hash_b, hash(tuple(b)))

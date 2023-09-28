@@ -434,6 +434,12 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 static PyObject* _copy_default(PyObject *op) {
+
+    if (op == Py_None) {
+        Py_INCREF(op);
+        return op;        
+    }
+    
     PyTypeObject *tp = Py_TYPE(op);
 
     if (tp == &PyList_Type)
