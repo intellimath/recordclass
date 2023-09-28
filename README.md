@@ -685,6 +685,32 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
 ### Changes:
 
+#### 0.21
+
+* Add a new option `copy_default` (default `False`) to allow assigning a copy of the default
+  value for the field. For example:
+  
+       class A(dataobject, copy_default=True):
+            l: list = []
+
+       a = A()
+       b = A()
+       assert(a.l == b.l)
+       assert(id(a.l) != id(b.l))
+
+* Allow to inherit the options. For example:
+  
+       class Base(dataobject, copy_default=True):
+          pass
+
+      class A(Base):
+            l: list = []
+
+       a = A()
+       b = A()
+       assert(a.l == b.l)
+       assert(id(a.l) != id(b.l))
+
 #### 0.20.1
 
 * Improve row_factory for `sqlite` on the ground of `dataobject`-based classes.

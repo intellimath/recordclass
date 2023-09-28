@@ -328,29 +328,6 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
 }
 #endif
 
-static int
-dataobject_init_vc(PyObject *op, PyObject **args,
-                  const Py_ssize_t n_args, PyObject *kwds)
-{
-    PyObject **items = PyDataObject_ITEMS(op);
-    Py_ssize_t i;
-
-    for (i = 0; i < n_args; i++) {
-        PyObject *v = *(args++);
-        Py_INCREF(v);
-        Py_DECREF(*items);
-        *(items++) = v;
-    }
-
-    if (kwds) {
-        int retval = _dataobject_update(op, kwds, 1);
-        if (retval < 0)
-            return retval;
-    }
-
-    return 0;
-}
-
 static PyObject*
 dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
@@ -456,6 +433,67 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return op;
 }
 
+static PyObject* _copy_default(PyObject *op) {
+    PyTypeObject *tp = Py_TYPE(op);
+
+    if (tp == &PyList_Type)
+         return PyList_GetSlice(op, 0, Py_SIZE(op));
+    if (tp == &PyDict_Type) 
+        return PyObject_CallMethod(op, "copy", NULL);
+    if (PyObject_HasAttrString(op, "__copy__"))
+        return PyObject_CallMethod(op, "__copy__", NULL);
+
+    Py_INCREF(op);
+    return op;
+    
+}
+
+static PyObject*
+dataobject_new_copy_default(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    // printf("new\n");
+
+    PyObject *op = type->tp_alloc(type, 0);
+
+    const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
+    const Py_ssize_t n_args = Py_SIZE(args);
+    PyObject **items = PyDataObject_ITEMS(op);
+
+    if (n_args > n_items) {
+        PyErr_SetString(PyExc_TypeError,
+            "number of the arguments greater than the number of fields");
+        return NULL;
+    }
+
+    Py_ssize_t i;
+    for(i = 0; i < n_args; i++) {
+        Py_INCREF(Py_None);
+        items[i] = Py_None;
+    }
+
+    if (n_args < n_items) {
+        PyObject *tp_dict = type->tp_dict;
+        PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
+        PyObject *default_vals = mp->mp_subscript(tp_dict, __default_vals__name);
+
+        if (default_vals == NULL) {
+            PyErr_Clear();
+            for(i = n_args; i < n_items; i++) {
+                Py_INCREF(Py_None);
+                items[i] = Py_None;
+            }
+        } else {
+            for(i = n_args; i < n_items; i++) {
+                PyObject *value = PyTuple_GET_ITEM(default_vals, i);
+                items[i] = _copy_default(value);    
+            }
+            Py_DECREF(default_vals);
+        }
+    }
+
+    return op;
+}
+
 static PyObject*
 dataobject_new_empty(PyTypeObject *type)
 {
@@ -481,13 +519,36 @@ dataobject_init_basic(PyObject *op, PyObject *args, PyObject *kwds)
 }
 
 static int
+dataobject_init_vc(PyObject *op, PyObject **args,
+                  const Py_ssize_t n_args)
+{
+    PyObject **items = PyDataObject_ITEMS(op);
+    Py_ssize_t i;
+
+    for (i = 0; i < n_args; i++) {
+        PyObject *v = *(args++);
+        Py_DECREF(*items);
+        Py_INCREF(v);
+        *(items++) = v;            
+    }
+
+    return 0;
+}
+
+static int
 dataobject_init(PyObject *op, PyObject *args, PyObject *kwds)
 {
     PyTupleObject *tmp = (PyTupleObject*)args;
 
     // printf("init\n");
 
-    int ret = dataobject_init_vc(op, (PyObject**)(tmp->ob_item), Py_SIZE(tmp), kwds);
+    int ret = dataobject_init_vc(op, (PyObject**)(tmp->ob_item), Py_SIZE(tmp));
+
+    if (kwds) {
+        int retval = _dataobject_update(op, kwds, 1);
+        if (retval < 0)
+            return retval;
+    }    
 
     return ret;
 }
@@ -2384,6 +2445,20 @@ _datatype_immutable(PyObject *module, PyObject *args) //, PyObject *kw)
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(_datatype_copy_default_doc,
+"");
+
+static PyObject *
+_datatype_copy_default(PyObject *module, PyObject *args) //, PyObject *kw)
+{
+
+    PyTypeObject *tp = (PyTypeObject*)PyTuple_GET_ITEM(args, 0);
+
+    tp->tp_new = dataobject_new_copy_default;
+    // tp->tp_init = dataobject_init_copy_default;
+
+    Py_RETURN_NONE;
+}
 
 static PyObject *
 _astuple(PyObject *op)
@@ -2712,6 +2787,7 @@ static PyMethodDef dataobjectmodule_methods[] = {
     {"_datatype_deep_dealloc", _datatype_deep_dealloc, METH_VARARGS, _datatype_deep_dealloc_doc},
     {"_datatype_vectorcall", _datatype_vectorcall, METH_VARARGS, _datatype_vectorcall_doc},
     {"_datatype_immutable", _datatype_immutable, METH_VARARGS, _datatype_immutable_doc},
+    {"_datatype_copy_default", _datatype_copy_default, METH_VARARGS, _datatype_copy_default_doc},
     // {"new", (PyCFunction)dataobject_new_instance, METH_VARARGS | METH_KEYWORDS, dataobject_new_doc},
     {"make", (PyCFunction)dataobject_make, METH_VARARGS | METH_KEYWORDS, dataobject_make_doc},
     {"clone", (PyCFunction)dataobject_clone, METH_VARARGS | METH_KEYWORDS, dataobject_clone_doc},

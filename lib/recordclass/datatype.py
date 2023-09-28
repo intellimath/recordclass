@@ -63,7 +63,7 @@ class datatype(type):
                 gc=False, fast_new=True, readonly=False, iterable=False,
                 deep_dealloc=False, sequence=False, mapping=False,
                 use_dict=False, use_weakref=False, hashable=False, 
-                immutable_type=False):
+                immutable_type=False, copy_default=False):
 
         from .utils import check_name, collect_info_from_bases
         from ._dataobject import dataobject
@@ -95,6 +95,8 @@ class datatype(type):
             options['use_weakref'] = use_weakref
         if immutable_type:
             options['immutable_type'] = immutable_type
+        if copy_default:
+            options['copy_default'] = copy_default
         
         if bases:
             base0 = bases[0]
@@ -280,7 +282,8 @@ class datatype(type):
 
         cls.__configure__(sequence=sequence, mapping=mapping, readonly=readonly,
                           hashable=hashable, iterable=iterable, use_dict=use_dict, use_weakref=use_weakref,
-                          gc=gc, deep_dealloc=deep_dealloc, immutable_type=immutable_type
+                          gc=gc, deep_dealloc=deep_dealloc, immutable_type=immutable_type,
+                          copy_default=copy_default,
                          )
 
         return cls
@@ -288,12 +291,12 @@ class datatype(type):
     def __configure__(cls,  gc=False, fast_new=True, readonly=False, iterable=False,
                             deep_dealloc=False, sequence=False, mapping=False,
                             use_dict=False, use_weakref=False, hashable=False, 
-                            mapping_only=False, immutable_type=False):
+                            mapping_only=False, immutable_type=False, copy_default=False):
 
         from ._dataobject import (_datatype_collection_mapping, _datatype_hashable, _datatype_iterable,
                                   _datatype_use_weakref, _datatype_use_dict, _datatype_enable_gc, 
                                   _datatype_deep_dealloc, _datatype_vectorcall, _pytype_modified, 
-                                  _datatype_immutable, _dataobject_type_init)
+                                  _datatype_immutable, _dataobject_type_init, _datatype_copy_default)
         from .utils import _have_pyinit, _have_pynew
 
 
@@ -317,8 +320,10 @@ class datatype(type):
         if gc:
             _datatype_enable_gc(cls)
         _datatype_deep_dealloc(cls, deep_dealloc)
-        if not is_pyinit and not is_pynew:
+        if not copy_default and not is_pyinit and not is_pynew:
             _datatype_vectorcall(cls)
+        if copy_default and not is_pyinit and not is_pynew:
+            _datatype_copy_default(cls)
         if _PY311 and immutable_type:
             _datatype_immutable(cls)
         _pytype_modified(cls)

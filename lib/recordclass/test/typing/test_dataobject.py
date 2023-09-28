@@ -1104,6 +1104,46 @@ class DataObjectTest3(unittest.TestCase):
             with self.assertRaises(TypeError):                        
                 A.z = 1
 
+    def test_copy_default_1(self):
+        class A(dataobject):
+            l: list = []
+
+        a = A()
+        b = A()
+        # print(id(a.l), id(b.l))
+        self.assertEqual(a.l, b.l)
+        self.assertEqual(id(a.l), id(b.l))
+
+    def test_copy_default_2(self):
+        class A(dataobject):
+            d: dict = {}
+
+        a = A()
+        b = A()
+        # print(id(a.d), id(b.d))
+        self.assertEqual(a.d, b.d)
+        self.assertEqual(id(a.d), id(b.d))
+    
+    def test_copy_default_3(self):
+        class A(dataobject, copy_default=True):
+            l: list = []
+
+        a = A()
+        b = A()
+        print(id(a.l), id(b.l))
+        self.assertEqual(a.l, b.l)
+        self.assertNotEqual(id(a.l), id(b.l))
+
+    def test_copy_default_4(self):
+        class A(dataobject, copy_default=True):
+            d: dict = {}
+
+        a = A()
+        b = A()
+        print(id(a.d), id(b.d))
+        self.assertEqual(a.d, b.d)
+        self.assertNotEqual(id(a.d), id(b.d))
+
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(DataObjectTest3))
