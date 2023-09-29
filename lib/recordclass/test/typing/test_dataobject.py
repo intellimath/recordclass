@@ -1125,8 +1125,18 @@ class DataObjectTest3(unittest.TestCase):
         # print(id(a.d), id(b.d))
         self.assertEqual(a.d, b.d)
         self.assertEqual(id(a.d), id(b.d))
-    
+
     def test_copy_default_3(self):
+        class A(dataobject):
+            d: set = set()
+
+        a = A()
+        b = A()
+        # print(id(a.d), id(b.d))
+        self.assertEqual(a.d, b.d)
+        self.assertEqual(id(a.d), id(b.d))
+    
+    def test_copy_default_4(self):
         class A(dataobject, copy_default=True):
             l: list = []
 
@@ -1136,7 +1146,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.l, b.l)
         self.assertNotEqual(id(a.l), id(b.l))
 
-    def test_copy_default_4(self):
+    def test_copy_default_5(self):
         class A(dataobject, copy_default=True):
             d: dict = {}
 
@@ -1146,7 +1156,17 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.d, b.d)
         self.assertNotEqual(id(a.d), id(b.d))
 
-    def test_copy_default_5(self):
+    def test_copy_default_6(self):
+        class A(dataobject, copy_default=True):
+            d: set = set()
+
+        a = A()
+        b = A()
+        # print(id(a.d), id(b.d))
+        self.assertEqual(a.d, b.d)
+        self.assertNotEqual(id(a.d), id(b.d))
+    
+    def test_copy_default_7(self):
         class B(dataobject):
             x:int
             y:int
