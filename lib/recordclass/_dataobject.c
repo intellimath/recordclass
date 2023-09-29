@@ -2382,7 +2382,6 @@ PyDoc_STRVAR(_datatype_copy_default_doc,
 static PyObject *
 _datatype_copy_default(PyObject *module, PyObject *cls) //, PyObject *kw)
 {
-
     PyTypeObject *tp = (PyTypeObject*)cls;
 
     tp->tp_new = dataobject_new_copy_default;

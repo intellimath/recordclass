@@ -10,6 +10,8 @@ from recordclass import make_dataclass, datatype, as_dataclass
 from recordclass import dataobject, datatype
 from recordclass import asdict, make
 
+from typing import ClassVar
+
 # _PY36 = _sys.version_info[:2] >= (3, 6)
 _PY37 = sys.version_info[:2] >= (3, 7)
 _PY311 = sys.version_info[:2] >= (3, 11)
@@ -1157,6 +1159,24 @@ class DataObjectTest3(unittest.TestCase):
         # print(id(a.d), id(b.d))
         self.assertEqual(a.d, b.d)
         self.assertNotEqual(id(a.d), id(b.d))
+
+    def test_copy_default_classvar(self):
+
+        class A(dataobject, copy_default=True):
+            x : list = []
+            y : ClassVar[list] = [1] # attribute y in A.__dict__
+
+        a = A()
+        print(type(A.x), type(A.y))
+        self.assertTrue(type(A.y) is list)
+        self.assertTrue(a.y is A.y)
+
+        b = A()
+        self.assertTrue(b.y is A.y)
+        self.assertEqual(a.x, b.x)
+        self.assertNotEqual(id(a.x), id(b.x))
+        self.assertEqual(a.y, b.y)
+        self.assertEqual(id(a.y), id(b.y))
 
 
 def main():

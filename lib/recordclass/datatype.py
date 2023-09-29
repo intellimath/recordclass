@@ -38,7 +38,8 @@ if _PY37:
                     and a_type.__origin__ is typing.ClassVar))
 else:
     def _is_classvar(a_type):
-        return a_type is typing._ClassVar #  or issubclass(a_type, typing.ClassVar)
+        print(a_type)
+        return isinstance(a_type, typing._ClassVar) #or issubclass(a_type, typing.ClassVar)
 
 def _matching_annotations_and_defaults(annotations, defaults):
     first_default = False
