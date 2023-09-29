@@ -1160,6 +1160,19 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.d, b.d)
         self.assertNotEqual(id(a.d), id(b.d))
 
+    def test_copy_default_base_1(self):
+        class Base(dataobject, copy_default=True):
+            pass
+        
+        class A(Base):
+            l : list = []
+
+        a = A()
+        b = A()
+        # print(id(a.l), id(b.l))
+        self.assertEqual(a.l, b.l)
+        self.assertNotEqual(id(a.l), id(b.l))
+    
     def test_copy_default_classvar(self):
 
         class A(dataobject, copy_default=True):

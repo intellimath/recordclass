@@ -698,7 +698,7 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
        assert(a.l == b.l)
        assert(id(a.l) != id(b.l))
 
-* Allow to inherit the options. For example:
+* Allow to inherit the options: `copy_default`, `gc`, `iterable`. For example:
   
        class Base(dataobject, copy_default=True):
           pass

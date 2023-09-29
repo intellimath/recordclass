@@ -144,20 +144,32 @@ def number_of_dataitems(cls):
 def collect_info_from_bases(bases, fields, fields_dict, options):
     from ._dataobject import _is_readonly_member
     _fields = []
-    use_dict = False
-    use_weakref = False
+    use_dict = options.get('use_dict', False)
+    use_weakref = options.get('use_weakref', False)
+    copy_default = options.get('copy_default', False)
+    gc = options.get('gc', False)
+    iterable = options.get('iterable', False)
     # readonly = True
     # hashable = None
     for base in bases:
         if base is dataobject:
             continue
         elif issubclass(base, dataobject):
-            use_dict = base.__options__.get('use_dict', False) or use_dict
+            use_dict = use_dict or base.__options__.get('use_dict', False)
             if use_dict:
                 options['use_dict'] = True
-            use_weakref = base.__options__.get('use_weakref', False) or use_weakref
+            use_weakref = use_weakref or base.__options__.get('use_weakref', False)
             if use_weakref:
                 options['use_weakref'] = True
+            copy_default = copy_default or base.__options__.get('copy_default', False)
+            if copy_default:
+                options['copy_default'] = True
+            gc = gc or base.__options__.get('gc', False)
+            if gc:
+                options['gc'] = True
+            iterable = iterable or base.__options__.get('iterable', False)
+            if iterable:
+                options['iterable'] = True
         else:
             continue
 

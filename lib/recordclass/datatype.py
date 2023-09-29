@@ -149,12 +149,12 @@ class datatype(type):
             
         if '__iter__' in ns:
             iterable = options['iterable'] = True
-        else:
-            for base in bases:
-                if '__iter__' in base.__dict__:
-                    iterable = True
-                    options['iterable'] = True
-                    break
+        # else:
+        #     for base in bases:
+        #         if '__iter__' in base.__dict__:
+        #             iterable = True
+        #             options['iterable'] = True
+        #             break
 
         if readonly:
             hashable = True
@@ -212,8 +212,11 @@ class datatype(type):
                 for fn in classvars:
                     if fn in fields:
                         raise TypeError(f"field '{fn}' is a class variable and an instance field at the same time")
-                use_dict = options.get('use_dict', None)
-                use_weakref = options.get('use_weakref', None)
+                use_dict = options.get('use_dict', False)
+                use_weakref = options.get('use_weakref', False)
+                copy_default = options.get('copy_default', False)
+                gc = options.get('gc', False)
+                iterable = options.get('iterable', False)
                 defaults_dict = {fn:fd['default'] for fn,fd in fields_dict.items() if 'default' in fd} 
                 annotations = {fn:fd['type'] for fn,fd in fields_dict.items() if 'type' in fd} 
 
