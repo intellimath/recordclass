@@ -543,6 +543,34 @@ But
 
 is not allowed. A fields without default value may not appear after a field with default value.
 
+There is an option `copy_default` (starting from 0.21) in order to assign a copy of the default value when creating an instance:
+
+     class Polygon(dataobject, copy_default=True):
+        points: list = []
+
+    >>> pg1 = Polygon()
+    >>> pg2 = Polygon()
+    >>> assert pg1.points == pg2.points
+    True
+    >>> assert id(pg1.points) != id(pg2.points)
+    True
+
+A `Factory` (starting from 0.21) allows you to setup a factory function to calculate the default value:
+
+    from recordclass import Factory
+
+    class A(dataobject, copy_default=True):
+        x: tuple = Factory( lambda: (list(), dict()) )
+
+    >>> a = A()
+    >>> b = A()
+    >>> assert a.x == b.x
+    True
+    >>> assert id(a.x[0]) != id(b.x[0])
+    True
+    >>> assert id(a.x[1]) != id(b.x[1])
+    True
+
 There is the options `fast_new`. By default it is `True`. If one like to have options for
 introspection then one need specify `fast_new=False`.
 
@@ -560,15 +588,20 @@ The followings timings explain (in jupyter notebook) boosting effect of `fast_ne
 
 The downside of `fast_new=True` option is less options for introspection of the instance.
 
-If one like to exclude some attributes from the `__fields__` the there is `ClassVar` trick:
+If someone wants to define a class attribute, then there is a `ClassVar` trick:
 
     class Point(dataobject):
         x:int
         y:int
-        color:ClassVar[int]
+        color:ClassVar[int] = 0
 
     >>> print(Point.__fields__)
     ('x', 'y')
+    >>> print(Point.color)
+    0
+
+If the default value for the `ClassVar`-attribute is not specified, 
+it will just be excluded from `__fields___`.
 
 
 ### Quick start with recordclass
