@@ -93,10 +93,11 @@ class datatype(type):
             options['use_dict'] = use_dict
         if use_weakref:
             options['use_weakref'] = use_weakref
-        if immutable_type:
-            options['immutable_type'] = immutable_type
         if copy_default:
             options['copy_default'] = copy_default
+        if immutable_type:
+            options['immutable_type'] = immutable_type
+            
         
         if bases:
             base0 = bases[0]

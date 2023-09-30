@@ -724,6 +724,20 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
         assert id(a.x[0]) != id(b.x[0])
         assert id(a.x[1]) != id(b.x[1])
 
+        from recordclass import Factory
+        class A(dataobject, copy_default=True):
+            l: list = []
+            x: tuple = Factory(lambda: (list(), dict()))
+
+        a = A()
+        b = A()
+        assert a.x == ([],{})
+        assert id(a.x) != id(b.x)
+        assert a.l == []
+        assert id(a.l) != id(b.l)
+
+  
+
 #### 0.20.1
 
 * Improve row_factory for `sqlite` on the ground of `dataobject`-based classes.

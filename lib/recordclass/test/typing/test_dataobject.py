@@ -1146,6 +1146,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.l, b.l)
         self.assertNotEqual(id(a.l), id(b.l))
 
+    
     def test_copy_default_5(self):
         class A(dataobject, copy_default=True):
             d: dict = {}
@@ -1226,14 +1227,15 @@ class DataObjectTest3(unittest.TestCase):
     def test_Factory_2(self):
         from recordclass import Factory
         class A(dataobject, copy_default=True):
+            l: list = []
             x: tuple = Factory(lambda: (list(), dict()))
 
         a = A()
         b = A()
         self.assertEqual(a.x, ([],{}))
         self.assertNotEqual(id(a.x), id(b.x))
-        self.assertNotEqual(id(a.x[0]), id(b.x[0]))
-        self.assertNotEqual(id(a.x[1]), id(b.x[1]))
+        self.assertEqual(a.l, [])
+        self.assertNotEqual(id(a.l), id(b.l))
 
 
 def main():
