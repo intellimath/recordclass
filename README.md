@@ -708,8 +708,21 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
 
        a = A()
        b = A()
-       assert(a.l == b.l)
-       assert(id(a.l) != id(b.l))
+       assert a.l == b.l
+       assert id(a.l) != id(b.l)
+
+* Add `Factory` to specify factory function for default values. For example:
+
+        from recordclass import Factory
+        class A(dataobject):
+            x: tuple = Factory(lambda: (list(), dict()))
+
+        a = A()
+        b = A()
+        assert a.x == ([],{})
+        assert id(a.x) != id(b.x)
+        assert id(a.x[0]) != id(b.x[0])
+        assert id(a.x[1]) != id(b.x[1])
 
 #### 0.20.1
 

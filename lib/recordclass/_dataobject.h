@@ -3,6 +3,11 @@ typedef struct {
     PyObject *ob_items[1];
 } PyDataStruct;
 
+struct PyFactoryObject {
+  PyObject_HEAD
+  PyObject *factory;
+};
+
 #define PyDataObject_ITEMS(op) (PyObject**)(((PyDataStruct*)op)->ob_items)
 
 #define PyDataObject_NUMITEMS(tp) (tp->tp_itemsize)

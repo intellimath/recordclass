@@ -22,7 +22,7 @@
 
 
 from .datatype import datatype
-from ._dataobject import dataobject, astuple, asdict, clone, update, make
+from ._dataobject import dataobject, astuple, asdict, clone, update, make, Factory
 from ._litelist import litelist, litelist_fromargs
 from ._litetuple import litetuple, mutabletuple
 from .recordclass import recordclass

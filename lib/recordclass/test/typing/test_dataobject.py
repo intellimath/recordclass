@@ -1211,6 +1211,30 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.y, b.y)
         self.assertEqual(id(a.y), id(b.y))
 
+    def test_Factory_1(self):
+        from recordclass import Factory
+        class A(dataobject):
+            x: tuple = Factory(lambda: (list(), dict()))
+
+        a = A()
+        b = A()
+        self.assertEqual(a.x, ([],{}))
+        self.assertNotEqual(id(a.x), id(b.x))
+        self.assertNotEqual(id(a.x[0]), id(b.x[0]))
+        self.assertNotEqual(id(a.x[1]), id(b.x[1]))
+
+    def test_Factory_2(self):
+        from recordclass import Factory
+        class A(dataobject, copy_default=True):
+            x: tuple = Factory(lambda: (list(), dict()))
+
+        a = A()
+        b = A()
+        self.assertEqual(a.x, ([],{}))
+        self.assertNotEqual(id(a.x), id(b.x))
+        self.assertNotEqual(id(a.x[0]), id(b.x[0]))
+        self.assertNotEqual(id(a.x[1]), id(b.x[1]))
+
 
 def main():
     suite = unittest.TestSuite()

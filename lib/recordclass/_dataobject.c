@@ -49,6 +49,7 @@
 static PyTypeObject PyDataObject_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataObjectProperty_Type;
+static PyTypeObject PyFactory_Type;
 
 static PyObject *__fields__name;
 static PyObject *__dict__name;
@@ -197,6 +198,22 @@ pyobject_get_builtin(const char *attrname_c)
 static PyObject* _astuple(PyObject *op);
 static int _dataobject_update(PyObject *op, PyObject *kw, int flag);
 
+static PyObject* call_factory(PyObject *f) {
+    struct PyFactoryObject *p = (struct PyFactoryObject *)f;
+    PyObject *f_args = PyTuple_New(0);
+    PyObject *ret;
+
+    ret = PyObject_Call(p->factory, f_args, NULL);
+    if (!ret) {
+        Py_DECREF(f_args);
+        PyErr_SetString(PyExc_TypeError, "Bad call of the factory function");
+        return NULL;
+    }
+
+    Py_DECREF(f_args);
+    return ret;
+}
+
 static PyObject *
 dataobject_alloc(PyTypeObject *type, Py_ssize_t unused)
 {
@@ -285,8 +302,15 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
             for(i = n_args; i < n_items; i++) {
                 PyObject *value = PyTuple_GET_ITEM(default_vals, i);
 
-                Py_INCREF(value);
-                items[i] = value;
+                if (Py_TYPE(value) == &PyFactory_Type) {
+                    PyObject *val = call_factory(value);
+                    if (!val)
+                        return NULL;
+                    items[i] = val;
+                } else {
+                    Py_INCREF(value);
+                    items[i] = value;                    
+                }
             }
             Py_DECREF(default_vals);
         }
@@ -369,8 +393,15 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
             for(i = n_args; i < n_items; i++) {
                 PyObject *value = PyTuple_GET_ITEM(default_vals, i);
 
-                Py_INCREF(value);
-                items[i] = value;
+                if (Py_TYPE(value) == &PyFactory_Type) {
+                    PyObject *val = call_factory(value);
+                    if (!val)
+                        return NULL;
+                    items[i] = val;
+                } else {
+                    Py_INCREF(value);
+                    items[i] = value;                    
+                }
             }
             Py_DECREF(default_vals);
         }
@@ -423,8 +454,15 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             for(i = n_args; i < n_items; i++) {
                 PyObject *value = PyTuple_GET_ITEM(default_vals, i);
 
-                Py_INCREF(value);
-                items[i] = value;
+                if (Py_TYPE(value) == &PyFactory_Type) {
+                    PyObject *val = call_factory(value);
+                    if (!val)
+                        return NULL;
+                    items[i] = val;
+                } else {
+                    Py_INCREF(value);
+                    items[i] = value;                    
+                }
             }
             Py_DECREF(default_vals);
         }
@@ -482,6 +520,13 @@ dataobject_new_copy_default(PyTypeObject *type, PyObject *args, PyObject *kwds)
                         val = PyList_GetSlice(value, 0, Py_SIZE(value));
                     else if (tp == &PyDict_Type || tp == &PySet_Type) 
                         val = PyObject_CallMethod(value, "copy", NULL);
+                    else if (tp == &PyFactory_Type) {
+                        val = call_factory(value);
+                        if (!val) {
+                            Py_DECREF(default_vals);
+                            return NULL;
+                        }
+                    }
                     else if (PyObject_HasAttrString(value, "__copy__"))
                         val = PyObject_CallMethod(value, "__copy__", NULL);
                     else {
@@ -1961,6 +2006,87 @@ static PyTypeObject PyDataObjectProperty_Type = {
     0, /*tp_is_gc*/
 };
 
+///////////////////////// Factory ////////////////////////////////////////
+
+static PyObject *Factory_new(PyTypeObject *tp, PyObject *args, PyObject *kw) {
+    struct PyFactoryObject *p;
+    Py_ssize_t n_args = Py_SIZE(args);
+    PyObject *o;
+    
+    o = (*tp->tp_alloc)(tp, 0);
+    if (!o) return NULL;
+    
+    p = ((struct PyFactoryObject *)o);
+    if (n_args != 1) {
+        PyErr_SetString(PyExc_TypeError, "number of arguments != 1");
+        return NULL;        
+    }
+    
+    PyObject *f = PyTuple_GET_ITEM(args, 0);
+    p->factory = f; Py_INCREF(f);
+
+    return o;
+}
+
+static void Factory_dealloc(PyObject *o) {
+    struct PyFactoryObject *p = (struct PyFactoryObject *)o;
+    PyTypeObject *t = Py_TYPE(o);
+    
+    Py_CLEAR(p->factory);
+    t->tp_free(o);
+}
+
+static PyMethodDef Factory_methods[] = {
+  {0, 0, 0, 0}
+};
+
+static PyGetSetDef Factory_getsets[] = {
+    {0}
+};
+
+static PyTypeObject PyFactory_Type = {
+    PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
+    "recordclass._dataobject.Factory", /*tp_name*/
+    sizeof(struct PyFactoryObject), /*tp_basicsize*/
+    0, /*tp_itemsize*/
+    Factory_dealloc, /*tp_dealloc*/
+    0, /*tp_print*/
+    0, /*tp_getattr*/
+    0, /*tp_setattr*/
+    0, /*reserved*/
+    0, /*tp_repr*/
+    0, /*tp_as_number*/
+    0, /*tp_as_sequence*/
+    0, /*tp_as_mapping*/
+    0, /*tp_hash*/
+    0, /*tp_call*/
+    0, /*tp_str*/
+    0, /*tp_getattro*/
+    0, /*tp_setattro*/
+    0, /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    0, /*tp_doc*/
+    0, /*tp_traverse*/
+    0, /*tp_clear*/
+    0, /*tp_richcompare*/
+    0, /*tp_weaklistoffset*/
+    0, /*tp_iter*/
+    0, /*tp_iternext*/
+    Factory_methods, /*tp_methods*/
+    0, /*tp_members*/
+    Factory_getsets, /*tp_getset*/
+    0, /*tp_base*/
+    0, /*tp_dict*/
+    0, /*tp_descr_get*/
+    0, /*tp_descr_set*/
+    0, /*tp_dictoffset*/
+    0, /*tp_init*/
+    0, /*tp_alloc*/
+    Factory_new, /*tp_new*/
+    0, /*tp_free*/
+    0, /*tp_is_gc*/
+};
+
 
 //////////////////// datatype ////////////////////////////////////////////
 
@@ -2772,6 +2898,9 @@ PyInit__dataobject(void)
     if (PyType_Ready(&PyDataObjectProperty_Type) < 0)
         Py_FatalError("Can't initialize dataobjectproperty type");
 
+    if (PyType_Ready(&PyFactory_Type) < 0)
+        Py_FatalError("Can't initialize Factory type");
+    
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
 
@@ -2781,6 +2910,9 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataObjectProperty_Type);
     PyModule_AddObject(m, "dataobjectproperty", (PyObject *)&PyDataObjectProperty_Type);
 
+    Py_INCREF(&PyFactory_Type);
+    PyModule_AddObject(m, "Factory", (PyObject *)&PyFactory_Type);
+    
     // pydataobject_make = PyObject_GetAttrString(m, "make");
     // Py_INCREF(pydataobject_make);
 
