@@ -260,6 +260,23 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
     return op;
 }
 
+static void _fill_items(PyObject **items, PyObject * const*args, const Py_ssize_t n_args) {
+   Py_ssize_t i;
+    for (i = 0; i < n_args; i++) {
+        PyObject *v = args[i];
+        Py_INCREF(v);
+        items[i] = v;
+    } 
+}
+
+static void _fill_items_none(PyObject **items, const Py_ssize_t start, const Py_ssize_t n_args) {
+    Py_ssize_t i;
+    for (i = start; i < n_args; i++) {
+        Py_INCREF(Py_None);
+        items[i] = Py_None;
+    } 
+}
+
 #if PY_VERSION_HEX >= 0x030A0000
 static PyObject*
 dataobject_vectorcall(PyObject *type0, PyObject * const*args,
@@ -272,20 +289,13 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
     const Py_ssize_t n_args = PyVectorcall_NARGS(nargsf);
     PyObject **items = PyDataObject_ITEMS(op);
 
-    // printf("new_vc %d %d\n", n_args, n_kwnames);
-    
     if (n_args > n_items) {
         PyErr_SetString(PyExc_TypeError,
             "the number of the arguments greater than the number of fields");
         return NULL;
     }
 
-    Py_ssize_t i;
-    for (i = 0; i < n_args; i++) {
-        PyObject *v = args[i];
-        Py_INCREF(v);
-        items[i] = v;
-    }
+    _fill_items(items, args, n_args);
 
     if (n_args < n_items) {
         PyObject *tp_dict = type->tp_dict;
@@ -294,11 +304,9 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
 
         if (default_vals == NULL) {
             PyErr_Clear();
-            for(i = n_args; i < n_items; i++) {
-                Py_INCREF(Py_None);
-                items[i] = Py_None;
-            }
+            _fill_items_none(items, n_args, n_items);
         } else {
+            Py_ssize_t i;
             for(i = n_args; i < n_items; i++) {
                 PyObject *value = PyTuple_GET_ITEM(default_vals, i);
 
@@ -325,6 +333,7 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
             PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
             PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
 
+            Py_ssize_t i;
             for(i=0; i<n_kwnames; i++) {
                 name = PyTuple_GET_ITEM(kwnames, i);
                 val = args[n_args + i];
@@ -355,7 +364,6 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
 static PyObject*
 dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    // printf("new_basic\n");
     PyObject *op = type->tp_alloc(type, 0);
 
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
@@ -371,12 +379,7 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
     const PyTupleObject *tpl = (const PyTupleObject*)args;
     PyObject *const*tmp = (PyObject*const*)(tpl->ob_item);
 
-    Py_ssize_t i;
-    for (i = 0; i < n_args; i++) {
-        PyObject *v = tmp[i];
-        Py_INCREF(v);
-        items[i] = v;
-    }
+    _fill_items(items, tmp, n_args);
 
     if (n_args < n_items) {
         PyObject *tp_dict = type->tp_dict;
@@ -385,11 +388,9 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
         if (default_vals == NULL) {
             PyErr_Clear();
-            for(i = n_args; i < n_items; i++) {
-                Py_INCREF(Py_None);
-                items[i] = Py_None;
-            }
+            _fill_items_none(items, n_args, n_items);
         } else {
+            Py_ssize_t i;
             for(i = n_args; i < n_items; i++) {
                 PyObject *value = PyTuple_GET_ITEM(default_vals, i);
 
@@ -419,8 +420,6 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static PyObject*
 dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    // printf("new\n");
-
     PyObject *op = type->tp_alloc(type, 0);
 
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
@@ -433,12 +432,9 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         return NULL;
     }
 
-    Py_ssize_t i;
-    for(i = 0; i < n_args; i++) {
-        Py_INCREF(Py_None);
-        items[i] = Py_None;
-    }
+    _fill_items_none(items, 0, n_args);
 
+    Py_ssize_t i;
     if (n_args < n_items) {
         PyObject *tp_dict = type->tp_dict;
         PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
@@ -446,10 +442,7 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
         if (default_vals == NULL) {
             PyErr_Clear();
-            for(i = n_args; i < n_items; i++) {
-                Py_INCREF(Py_None);
-                items[i] = Py_None;
-            }
+            _fill_items_none(items, n_args, n_items);
         } else {
             for(i = n_args; i < n_items; i++) {
                 PyObject *value = PyTuple_GET_ITEM(default_vals, i);
@@ -474,8 +467,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static PyObject*
 dataobject_new_copy_default(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    // printf("new\n");
-
     PyObject *op = type->tp_alloc(type, 0);
 
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
@@ -488,11 +479,7 @@ dataobject_new_copy_default(PyTypeObject *type, PyObject *args, PyObject *kwds)
         return NULL;
     }
 
-    Py_ssize_t i;
-    for(i = 0; i < n_args; i++) {
-        Py_INCREF(Py_None);
-        items[i] = Py_None;
-    }
+    _fill_items_none(items, 0, n_args);
 
     if (n_args < n_items) {
         PyObject *tp_dict = type->tp_dict;
@@ -501,11 +488,9 @@ dataobject_new_copy_default(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
         if (default_vals == NULL) {
             PyErr_Clear();
-            for(i = n_args; i < n_items; i++) {
-                Py_INCREF(Py_None);
-                items[i] = Py_None;
-            }
+            _fill_items_none(items, n_args, n_items);
         } else {
+            Py_ssize_t i;
             for(i = n_args; i < n_items; i++) {
                 PyObject *value = PyTuple_GET_ITEM(default_vals, i);
                 if (value == Py_None) {
@@ -551,11 +536,7 @@ dataobject_new_empty(PyTypeObject *type)
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
     PyObject **items = PyDataObject_ITEMS(op);
 
-    Py_ssize_t i;
-    for(i = 0; i < n_items; i++) {
-        Py_INCREF(Py_None);
-        items[i] = Py_None;
-    }
+    _fill_items_none(items, 0, n_items);
 
     return op;
 }
@@ -563,17 +544,19 @@ dataobject_new_empty(PyTypeObject *type)
 static int
 dataobject_init_basic(PyObject *op, PyObject *args, PyObject *kwds)
 {
-    // printf("init_basic\n");
     return 0;
 }
 
 static int
-dataobject_init_vc(PyObject *op, PyObject **args,
-                  const Py_ssize_t n_args)
+dataobject_init(PyObject *op, PyObject *args0, PyObject *kwds)
 {
-    PyObject **items = PyDataObject_ITEMS(op);
-    Py_ssize_t i;
+    PyTupleObject *tmp = (PyTupleObject*)args0;
+    PyObject *const*args = (PyObject**)(tmp->ob_item);
+    const Py_ssize_t n_args = Py_SIZE(tmp);
 
+    PyObject **items = PyDataObject_ITEMS(op);
+
+    Py_ssize_t i;
     for (i = 0; i < n_args; i++) {
         PyObject *v = *(args++);
         Py_DECREF(*items);
@@ -581,25 +564,13 @@ dataobject_init_vc(PyObject *op, PyObject **args,
         *(items++) = v;            
     }
 
-    return 0;
-}
-
-static int
-dataobject_init(PyObject *op, PyObject *args, PyObject *kwds)
-{
-    PyTupleObject *tmp = (PyTupleObject*)args;
-
-    // printf("init\n");
-
-    int ret = dataobject_init_vc(op, (PyObject**)(tmp->ob_item), Py_SIZE(tmp));
-
     if (kwds) {
         int retval = _dataobject_update(op, kwds, 1);
         if (retval < 0)
             return retval;
     }    
 
-    return ret;
+    return 0;
 }
 
 static Py_ssize_t
@@ -1203,7 +1174,6 @@ static PyObject *
 dataobject_copy(PyObject* op)
 {
     PyTypeObject *type = Py_TYPE(op);
-    Py_ssize_t i;
 
     const Py_ssize_t n_items = PyDataObject_NUMITEMS(type);
 
@@ -1212,11 +1182,7 @@ dataobject_copy(PyObject* op)
     PyObject **items = PyDataObject_ITEMS(new_op);
     PyObject **args = (PyObject**)PyDataObject_ITEMS(op);
 
-    for(i=0; i<n_items; i++) {
-        PyObject *v = args[i];
-        Py_INCREF(v);
-        items[i] = v;
-    }
+    _fill_items(items, args, n_items);
 
     if (type->tp_dictoffset) {
         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
