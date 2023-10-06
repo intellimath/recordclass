@@ -195,20 +195,18 @@ pyobject_get_builtin(const char *attrname_c)
 // forward decaration
 static PyObject* _astuple(PyObject *op);
 static int _dataobject_update(PyObject *op, PyObject *kw, int flag);
+static PyObject *empty_tuple;
 
 static PyObject* call_factory(PyObject *f) {
     struct PyFactoryObject *p = (struct PyFactoryObject *)f;
-    PyObject *f_args = PyTuple_New(0);
     PyObject *ret;
 
-    ret = PyObject_Call(p->factory, f_args, NULL);
+    ret = PyObject_Call(p->factory, empty_tuple, NULL);
     if (!ret) {
-        Py_DECREF(f_args);
         PyErr_Format(PyExc_TypeError, "Bad call of the factory: %U", p->factory);
         return NULL;
     }
 
-    Py_DECREF(f_args);
     return ret;
 }
 
@@ -2931,6 +2929,8 @@ PyInit__dataobject(void)
     __init__name = PyUnicode_FromString("__init__");
     if (__init__name == NULL)
         return NULL;
+
+    empty_tuple = PyTuple_New(0);
 
     return m;
 }
