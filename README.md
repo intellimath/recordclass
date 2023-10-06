@@ -714,7 +714,7 @@ There is builtin more fast deallocation method using finalization mechanizm when
 
 > Note that for classes with `gc=True` this method is disabled: the python's cyclic GC is used in these cases.
 
-For more details see notebook [example_datatypes](examples/example_datatypes.ipynb).
+For more details see notebook [example_datatypes](https://github.com/intellimath/recordclass/tree/main/examples/example_datatypes.ipynb).
 
 ### Changes:
 
@@ -768,6 +768,8 @@ For more details see notebook [example_datatypes](examples/example_datatypes.ipy
         assert id(a.x) != id(b.x)
         assert a.l == []
         assert id(a.l) != id(b.l)
+
+  * Recordclass supports python 3.12 (tested on linux/debian 11/12 and windows via appveyor).
 
   
 

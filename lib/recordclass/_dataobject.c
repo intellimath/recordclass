@@ -193,8 +193,6 @@ pyobject_get_builtin(const char *attrname_c)
 }
 
 // forward decaration
-// static Py_ssize_t dataobject_len(PyObject *op);
-// static PyObject* dataobject_sq_item(PyObject *op, Py_ssize_t i);
 static PyObject* _astuple(PyObject *op);
 static int _dataobject_update(PyObject *op, PyObject *kw, int flag);
 
@@ -206,7 +204,7 @@ static PyObject* call_factory(PyObject *f) {
     ret = PyObject_Call(p->factory, f_args, NULL);
     if (!ret) {
         Py_DECREF(f_args);
-        PyErr_SetString(PyExc_TypeError, "Bad call of the factory function");
+        PyErr_Format(PyExc_TypeError, "Bad call of the factory: %U", p->factory);
         return NULL;
     }
 
@@ -2486,6 +2484,7 @@ static PyObject *
 _astuple(PyObject *op)
 {
     const Py_ssize_t n = PyDataObject_LEN(op);
+    // const Py_ssize_t nn = dataobject_len(op);
     Py_ssize_t i;
 
     PyObject *tpl = PyTuple_New(n);
@@ -2494,6 +2493,32 @@ _astuple(PyObject *op)
         Py_INCREF(v);
         PyTuple_SetItem(tpl, i, v);
     }
+
+//     if (n == nn) goto TOEND;
+
+//     PyTypeObject *type = Py_TYPE(op);
+//     if (type->tp_dictoffset) {
+//         PyObject **dictptr = PyDataObject_DICTPTR(type, op);
+//         PyObject* dict = NULL;
+
+//         if (*dictptr)
+//             dict = *dictptr;
+
+//         if (dict != NULL) {
+//             PyObject *iter = PyObject_GetIter(dict);
+//             PyObject *key, *val;
+
+//             i = n;
+//             while (i < nn && (key = PyIter_Next(iter))) {
+//                 val = PyObject_GetItem(dict, key);
+//                 PyTuple_SetItem(tpl, i, val);
+//                 i++;
+//                 Py_DECREF(key);                
+//             }
+//         }
+//     }
+
+// TOEND:
     return (PyObject*)tpl;
 }
 
@@ -2626,6 +2651,7 @@ dataobject_clone(PyObject *module, PyObject *args0, PyObject *kw)
     ob = PyTuple_GET_ITEM(args0, 0);
 
     new_ob = dataobject_copy(ob);
+
     if (kw) {
         if (_dataobject_update(new_ob, kw, 1) < 0)
             return NULL;
