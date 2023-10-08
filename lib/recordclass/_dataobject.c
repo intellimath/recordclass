@@ -273,6 +273,26 @@ static void _fill_items_none(PyObject **items, const Py_ssize_t start, const Py_
     } 
 }
 
+static int
+_fill_items_defaults(PyObject **items, const PyObject *default_vals, 
+                    const Py_ssize_t n_args, const Py_ssize_t n_items) {
+    Py_ssize_t i;
+    for(i = n_args; i < n_items; i++) {
+        PyObject *value = PyTuple_GET_ITEM(default_vals, i);
+
+        if (Py_TYPE(value) == &PyFactory_Type) {
+            PyObject *val = call_factory(value);
+            if (!val)
+                return 0;
+            items[i] = val;
+        } else {
+            Py_INCREF(value);
+            items[i] = value;                    
+        }
+    }
+    return 1;
+}
+
 #if PY_VERSION_HEX >= 0x030A0000
 static PyObject*
 dataobject_vectorcall(PyObject *type0, PyObject * const*args,
@@ -302,21 +322,10 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
             PyErr_Clear();
             _fill_items_none(items, n_args, n_items);
         } else {
-            Py_ssize_t i;
-            for(i = n_args; i < n_items; i++) {
-                PyObject *value = PyTuple_GET_ITEM(default_vals, i);
-
-                if (Py_TYPE(value) == &PyFactory_Type) {
-                    PyObject *val = call_factory(value);
-                    if (!val)
-                        return NULL;
-                    items[i] = val;
-                } else {
-                    Py_INCREF(value);
-                    items[i] = value;                    
-                }
-            }
+            int ret = _fill_items_defaults(items, default_vals, n_args, n_items);
             Py_DECREF(default_vals);
+            if (!ret)
+                return NULL;
         }
     }
 
@@ -386,21 +395,10 @@ dataobject_new_basic(PyTypeObject *type, PyObject *args, PyObject *kwds)
             PyErr_Clear();
             _fill_items_none(items, n_args, n_items);
         } else {
-            Py_ssize_t i;
-            for(i = n_args; i < n_items; i++) {
-                PyObject *value = PyTuple_GET_ITEM(default_vals, i);
-
-                if (Py_TYPE(value) == &PyFactory_Type) {
-                    PyObject *val = call_factory(value);
-                    if (!val)
-                        return NULL;
-                    items[i] = val;
-                } else {
-                    Py_INCREF(value);
-                    items[i] = value;                    
-                }
-            }
+            int ret = _fill_items_defaults(items, default_vals, n_args, n_items);
             Py_DECREF(default_vals);
+            if (!ret)
+                return NULL;
         }
     }
 
@@ -430,7 +428,6 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     _fill_items_none(items, 0, n_args);
 
-    Py_ssize_t i;
     if (n_args < n_items) {
         PyObject *tp_dict = type->tp_dict;
         PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
@@ -440,20 +437,10 @@ dataobject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             PyErr_Clear();
             _fill_items_none(items, n_args, n_items);
         } else {
-            for(i = n_args; i < n_items; i++) {
-                PyObject *value = PyTuple_GET_ITEM(default_vals, i);
-
-                if (Py_TYPE(value) == &PyFactory_Type) {
-                    PyObject *val = call_factory(value);
-                    if (!val)
-                        return NULL;
-                    items[i] = val;
-                } else {
-                    Py_INCREF(value);
-                    items[i] = value;                    
-                }
-            }
+            int ret = _fill_items_defaults(items, default_vals, n_args, n_items);
             Py_DECREF(default_vals);
+            if (!ret)
+                return NULL;
         }
     }
 
