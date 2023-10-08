@@ -65,11 +65,12 @@ It also provide a factory function `make_dataclass` for creation of subclasses o
         >>> print(p.x, p.y)
         1 -1
 
-There is also a factory function `make_arrayclass` for creation of the subclass of `dataobject`, which can be considered as a compact array of simple objects.
    If one want to use some sequence for initialization then:
 
         >>> p = Point(*sequence)
 
+
+There is also a factory function `make_arrayclass` for creation of the subclass of `dataobject`, which can be considered as a compact array of simple objects.
    For example:
 
         >>> Pair = make_arrayclass(2)
@@ -78,7 +79,7 @@ There is also a factory function `make_arrayclass` for creation of the subclass 
         >>> print(p)
         Pair(2, -1)
 
-It provide in addition the classes `lightlist` (immutable) and `litetuple`, which considers as list-like and tuple-like *light* containers in order to save memory. They do not supposed to participate in cyclic GC too. Mutable variant of litetuple is called by `mutabletuple`.
+The library provide in addition the classes `lightlist` (immutable) and `litetuple`, which considers as list-like and tuple-like *light* containers in order to save memory. They do not supposed to participate in cyclic GC too. Mutable variant of litetuple is called by `mutabletuple`.
     For example:
 
         >>> lt = litetuple(1, 2, 3)
@@ -90,6 +91,12 @@ It provide in addition the classes `lightlist` (immutable) and `litetuple`, whic
         False
         >>> print(sys.getsizeof((1,2,3)), sys.getsizeof(litetuple(1,2,3)))
         64 48
+
+Note if one like create `litetuple` or `mutabletuple` from some iterable then:
+
+        >>> seq = [1,2,3]
+        >>> lt = litetuple(*seq)
+        >>> mt = mutabletuple(*seq)
 
 ### Memory footprint
 
@@ -571,7 +578,7 @@ A `Factory` (starting from 0.21) allows you to setup a factory function to calcu
     >>> assert id(a.x[1]) != id(b.x[1])
     True
 
-There is the options `fast_new`. By default it is `True`. If one like to have options for
+There is the options `fast_new`. By default it is `True`. If one like to more options for
 introspection then one need specify `fast_new=False`.
 
     class SlowerPoint(dataobject, fast_new=False):
@@ -586,7 +593,7 @@ The followings timings explain (in jupyter notebook) boosting effect of `fast_ne
     25.6 ms ± 2.4 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
     10.4 ms ± 426 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
-The downside of `fast_new=True` option is less options for introspection of the instance.
+The downside of `fast_new=True` option is less possibilities for introspection of the instance.
 
 If someone wants to define a class attribute, then there is a `ClassVar` trick:
 
@@ -601,7 +608,7 @@ If someone wants to define a class attribute, then there is a `ClassVar` trick:
     0
 
 If the default value for the `ClassVar`-attribute is not specified, 
-it will just be excluded from `__fields___`.
+it will just be excluded from the `__fields___`.
 
 
 ### Quick start with recordclass

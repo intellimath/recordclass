@@ -59,12 +59,6 @@ static PyObject *__init__name;
 
 static PyObject *fields_dict_name;
 
-typedef struct {
-    PyObject_HEAD
-    Py_ssize_t index;
-    int readonly;
-} dataobjectproperty_object;
-
 static int dataobjectproperty_set(PyObject *self, PyObject *obj, PyObject *value);
 static PyObject* dataobjectproperty_get(PyObject *self, PyObject *obj, PyObject *type);
 
@@ -334,6 +328,7 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
         if (n_kwnames > 0) {
             PyObject *val;
             PyObject *name;
+
             PyObject *tp_dict = type->tp_dict;
             PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
             PyObject *fields = mp->mp_subscript(tp_dict, __fields__name);
@@ -604,7 +599,9 @@ _dataobject_update(PyObject *op, PyObject *kwds, int flag)
             }
             else {
                 if (!has___dict___) {
-                    PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__ and has not __dict__", key);
+                    PyErr_Format(
+                        PyExc_TypeError,
+                        "Invalid kwarg: %U not in __fields__ and has not __dict__", key);
                     Py_DECREF(val);
                     Py_DECREF(key);
                     Py_DECREF(iter);
@@ -615,7 +612,9 @@ _dataobject_update(PyObject *op, PyObject *kwds, int flag)
         }
 
         if (PyObject_SetAttr(op, key, val) < 0) {
-            PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
+            PyErr_Format(
+                PyExc_TypeError, 
+                "Invalid kwarg: %U not in __fields__", key);
             Py_DECREF(val);
             Py_DECREF(key);
             Py_DECREF(iter);

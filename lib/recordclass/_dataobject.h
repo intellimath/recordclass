@@ -8,6 +8,13 @@ struct PyFactoryObject {
   PyObject *factory;
 };
 
+typedef struct {
+    PyObject_HEAD
+    Py_ssize_t index;
+    int readonly;
+} dataobjectproperty_object;
+
+
 #define PyDataObject_ITEMS(op) (PyObject**)(((PyDataStruct*)op)->ob_items)
 
 #define PyDataObject_NUMITEMS(tp) (tp->tp_itemsize)
