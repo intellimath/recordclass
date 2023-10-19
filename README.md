@@ -610,6 +610,20 @@ If someone wants to define a class attribute, then there is a `ClassVar` trick:
 If the default value for the `ClassVar`-attribute is not specified, 
 it will just be excluded from the `__fields___`.
 
+Starting with python 3.10 `__match_args__` is specified by default so that `__match_args__` == `__fields`.
+User can define it's own during definition:
+
+    class User(dataobject):
+        first_name: str
+        last_name: str
+        age: int
+        __match_args__ = 'first_name', 'last_name'
+
+or
+
+    User = make_dataclass("User", "first_name last_name * age")
+
+
 
 ### Quick start with recordclass
 
@@ -724,6 +738,21 @@ There is builtin more fast deallocation method using finalization mechanizm when
 For more details see notebook [example_datatypes](https://github.com/intellimath/recordclass/tree/main/examples/example_datatypes.ipynb).
 
 ### Changes:
+
+#### 0.21.1
+
+* Allow to specify `__match_args__`. For example,
+
+         class User(dataobject):
+             first_name: str
+             last_name: str
+             age: int
+             __match_args__ = 'first_name', 'last_name'
+
+  or
+
+          User = make_dataclass("User", "first_name last_name * age")
+
 
 #### 0.21
 

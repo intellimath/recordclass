@@ -63,7 +63,7 @@ class datatype(type):
                 gc=False, fast_new=True, readonly=False, iterable=False,
                 deep_dealloc=False, sequence=False, mapping=False,
                 use_dict=False, use_weakref=False, hashable=False, 
-                immutable_type=False, copy_default=False):
+                immutable_type=False, copy_default=False, match=None):
 
         from .utils import check_name, collect_info_from_bases
         from ._dataobject import dataobject
@@ -97,7 +97,9 @@ class datatype(type):
             options['copy_default'] = copy_default
         if immutable_type:
             options['immutable_type'] = immutable_type
-            
+
+        if '__match_args__' in ns:
+            options['match'] = ns[__match_args__]            
         
         if bases:
             base0 = bases[0]
@@ -250,7 +252,17 @@ class datatype(type):
             ns['__annotations__'] = annotations
 
             if _PY310:
-                ns['__match_args__'] = fields
+                if match:
+                    ns['__match_args__'] = match
+
+                if '__match_args__' in ns:
+                    match_args = ns['__match_args__']
+                    n_match = len(match_args)
+                    if n_match > len(fields) or fields[:n_match] != match_args:
+                        print(match_args, fields[:n_match])
+                        raise TypeError(f"__match_args__ is not valid")
+                else:
+                    ns['__match_args__'] = fields
 
             if '__doc__' not in ns:
                 ns['__doc__'] = _make_cls_doc(typename, fields, annotations, default_vals, use_dict)

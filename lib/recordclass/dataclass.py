@@ -32,7 +32,7 @@ def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=Non
                    use_dict=False, use_weakref=False, hashable=False,
                    sequence=False, mapping=False, iterable=False, readonly=False, invalid_names=(),
                    deep_dealloc=False, module=None, fast_new=True, rename=False, gc=False, 
-                   immutable_type=False, copy_default=False):
+                   immutable_type=False, copy_default=False, match=None):
 
     """Returns a new class with named fields and small memory footprint.
 
@@ -57,7 +57,7 @@ def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=Non
     from .datatype import datatype
     import sys as _sys
 
-    fields, annotations, defaults = process_fields(fields, defaults, rename, invalid_names)
+    fields, annotations, defaults, match = process_fields(fields, defaults, rename, invalid_names)
     typename = check_name(typename)
     
     if namespace is None:
@@ -86,7 +86,7 @@ def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=Non
                    use_dict=use_dict, use_weakref=use_weakref,
                    gc=gc, fast_new=fast_new,
                    hashable=hashable, immutable_type=immutable_type, 
-                   copy_default=copy_default)
+                   copy_default=copy_default, match=match)
 
     return cls
 

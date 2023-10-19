@@ -78,8 +78,12 @@ def process_fields(fields, defaults, rename, invalid_names):
         fields = [fn.strip() for fn in fields]
 
     field_names = []
+    i_match = -1
     if isinstance(fields, dict):
         for i, fn in enumerate(fields):
+            if fn == '*':
+                i_match = i
+                continue
             tp = fields[fn]
             tp = _type_check(tp, msg)
             check_name(fn, i, rename, invalid_names)
@@ -88,6 +92,9 @@ def process_fields(fields, defaults, rename, invalid_names):
             field_names.append(fn)
     else:
         for i, fn in enumerate(fields):
+            if fn == '*':
+                i_match = i
+                continue
             if type(fn) is tuple:
                 fn, tp = fn
                 tp = _type_check(tp, msg)
@@ -112,7 +119,7 @@ def process_fields(fields, defaults, rename, invalid_names):
 
     if isinstance(defaults, (tuple,list)) and n_defaults > 0:
         defaults = {fields[i]:defaults[i] for i in range(-n_defaults,0)}
-    return fields, annotations, defaults
+    return fields, annotations, defaults, (tuple(fields[:i_match]) if i_match > 0 else None)
 
 def check_name(name, rename=False, i=0, invalid_names=()):
     if not isinstance(name, str):
