@@ -619,6 +619,15 @@ User can define it's own during definition:
         age: int
         __match_args__ = 'first_name', 'last_name'
 
+or        
+
+    from recordclass import MATCH
+    class User(dataobject):
+        first_name: str
+        last_name: str
+        _: MATCH
+        age: int
+
 or
 
     User = make_dataclass("User", "first_name last_name * age")

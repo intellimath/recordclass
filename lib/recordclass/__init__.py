@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 
-from .datatype import datatype
+from .datatype import datatype, MATCH
 from ._dataobject import dataobject, astuple, asdict, clone, update, make, Factory
 from ._litelist import litelist, litelist_fromargs
 from ._litetuple import litetuple, mutabletuple
@@ -34,4 +34,4 @@ from .adapter import as_dataclass
 
 structclass = make_dataclass
 
-__version__ = '0.21'
+__version__ = '0.21.1'

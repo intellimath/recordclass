@@ -52,6 +52,8 @@ def _matching_annotations_and_defaults(annotations, defaults):
 _ds_cache = {}
 _ds_ro_cache = {}
 
+MATCH = object()
+
 class Field(dict):
     pass
                 

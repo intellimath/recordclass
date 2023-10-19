@@ -1,6 +1,6 @@
 import unittest
 
-from recordclass import make_dataclass, make_arrayclass, dataobject
+from recordclass import make_dataclass, make_arrayclass, dataobject, MATCH
 
 class dataobjectmatchTest(unittest.TestCase):
 
@@ -63,6 +63,28 @@ class dataobjectmatchTest(unittest.TestCase):
     def test_match_5(self):
         Point = make_dataclass("Point", "x y * z")
         Point2 = make_dataclass("Point2", "x y * z")
+        x = Point(1,2)
+        p = Point2(1, 2)
+        with self.assertRaises(TypeError): 
+            match x:
+                case Point2(1, 2, 3):
+                    pass
+                case _:
+                    raise TypeError(f"{x} does not match {p}")
+
+    def test_match_6(self):
+        class Point(dataobject):
+            x: int
+            y: int
+            _: MATCH
+            z: int
+
+        class Point2(dataobject):
+            x: int
+            y: int
+            _: MATCH
+            z: int
+        
         x = Point(1,2)
         p = Point2(1, 2)
         with self.assertRaises(TypeError): 

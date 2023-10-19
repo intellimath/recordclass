@@ -81,7 +81,7 @@ def process_fields(fields, defaults, rename, invalid_names):
     i_match = -1
     if isinstance(fields, dict):
         for i, fn in enumerate(fields):
-            if fn == '*':
+            if fn in ('*', '_'):
                 i_match = i
                 continue
             tp = fields[fn]
@@ -92,7 +92,7 @@ def process_fields(fields, defaults, rename, invalid_names):
             field_names.append(fn)
     else:
         for i, fn in enumerate(fields):
-            if fn == '*':
+            if fn in ('*', '_'):
                 i_match = i
                 continue
             if type(fn) is tuple:
