@@ -632,8 +632,6 @@ or
 
     User = make_dataclass("User", "first_name last_name * age")
 
-
-
 ### Quick start with recordclass
 
 The `recordclass` factory function is designed to create classes that support `namedtuple`'s API, can be mutable and immutable, provide fast creation of the instances and have a minimum memory footprint.
@@ -821,7 +819,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 #### 0.20.1
 
 * Improve row_factory for `sqlite` on the ground of `dataobject`-based classes.
-* Move recordclass repository to https://github.com/intellimath/recordclass from bitbucket.org.
+* Move recordclass repository to [github](https://github.com/intellimath/recordclass) from [bitbucket](hhtps://bitbucket.org).
 
 #### 0.20
 

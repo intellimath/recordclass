@@ -156,8 +156,7 @@ def collect_info_from_bases(bases, fields, fields_dict, options):
     copy_default = options.get('copy_default', False)
     gc = options.get('gc', False)
     iterable = options.get('iterable', False)
-    # readonly = True
-    # hashable = None
+    # others = {}
     for base in bases:
         if base is dataobject:
             continue
@@ -203,10 +202,13 @@ def collect_info_from_bases(bases, fields, fields_dict, options):
         else:
             raise TypeError("invalid fields in base class %r" % base)
 
-    # for f in fields_dict.values():
-    #     if not f.get('readonly', False):
-    #         readonly = False
-    #         break
+        # for name in base.__dict__:
+        #     if name.startswith('__'):
+        #         continue
+        #     if name not in fs:
+        #         others[name] = getattr(base, name)
+        # if others:
+        #     options['others'] = others
         
     return _fields + fields
 

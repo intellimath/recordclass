@@ -154,12 +154,6 @@ class datatype(type):
             
         if '__iter__' in ns:
             iterable = options['iterable'] = True
-        # else:
-        #     for base in bases:
-        #         if '__iter__' in base.__dict__:
-        #             iterable = True
-        #             options['iterable'] = True
-        #             break
 
         if readonly:
             hashable = True
@@ -285,6 +279,22 @@ class datatype(type):
                     else:
                         ds = dataobjectproperty(i, False)
                 ns[name] = ds
+
+        # if 'others' in options:
+        #     ns.update(options.pop('others'))
+
+        # bases = tuple(base for base in bases if base is dataobject or not issubclass(base, dataobject))
+        # if not bases:
+        #     bases = (dataobject,)
+        # if dataobject not in bases:
+        #     bases = (dataobject,) + bases
+        # print(typename, bases)
+
+        # if has_fields and use_slots:
+        #     ns['__slots__'] = fields
+        #     for name in fields:
+        #         if name in ns:
+        #             del ns[name]
 
         cls = type.__new__(metatype, typename, bases, ns)
 

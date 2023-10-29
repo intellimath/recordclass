@@ -42,7 +42,5 @@ class recordclassmeta(datatype):
 class RecordClass(dataobject, metaclass=recordclassmeta):
     pass
 
-
-
 __all__ = 'RecordClass',
 

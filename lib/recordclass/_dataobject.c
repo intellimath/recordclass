@@ -2076,9 +2076,9 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp = (PyTypeObject*)cls;
     tp_base = tp->tp_base;
 
-    if (!PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
-        PyErr_SetString(PyExc_TypeError,
-                        "common base class should be subclass of dataobject");
+    if (tp_base != &PyDataObject_Type && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
+        PyErr_Format(PyExc_TypeError,
+                        "common base class %s should be subclass of dataobject", tp_base->tp_name);
         return NULL;
     }
 

@@ -1188,6 +1188,7 @@ class DataObjectTest3(unittest.TestCase):
         class A(Base):
             l : list = []
 
+        print(A.__bases__, A.__base__)
         a = A()
         b = A()
         # print(id(a.l), id(b.l))
