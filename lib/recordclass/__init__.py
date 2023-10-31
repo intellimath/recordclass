@@ -30,7 +30,7 @@ from .typing import RecordClass
 from .dataclass import make_dataclass, make_class, join_dataclasses
 from .dictclass import make_dictclass
 from .arrayclass import make_arrayclass
-from .adapter import as_dataclass
+from .adapter import as_dataclass, as_record
 
 structclass = make_dataclass
 

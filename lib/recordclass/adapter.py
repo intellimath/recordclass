@@ -69,3 +69,22 @@ def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
 
         return new_cls
     return _adapter
+
+def as_record(readonly=False, immutable_type=True, copy_default=False):
+    def _adapter(func, **kw):
+        name = func.__name__
+        varnames = func.__code__.co_varnames
+        annotations = func.__annotations__
+        defaults = func.__defaults__
+        fields = []
+        for fn in varnames:
+            tp = annotations.get(fn, None)
+            if tp is None:
+                fields.append(fn)
+            else:
+                fields.append((fn,tp))
+                
+        return make_dataclass(name, fields, defaults, bases=(dataobject,),
+                              readonly=readonly, immutable_type=immutable_type, 
+                              copy_default=copy_default)
+    return _adapter

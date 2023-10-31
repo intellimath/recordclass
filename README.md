@@ -451,7 +451,7 @@ Run tests:
 
 First load inventory:
 
-    >>> from recordclass import dataobject, asdict, astuple, as_dataclass
+    >>> from recordclass import dataobject, asdict, astuple, as_dataclass, as_record
 
 Define class one of three ways:
 
@@ -465,6 +465,11 @@ or
     class Point:
         x: int
         y: int
+
+or
+
+    @as_record
+    def Point(x:int, y:int): pass
 
 or
 
@@ -759,6 +764,20 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
   or
 
           User = make_dataclass("User", "first_name last_name * age")
+  
+* Add `@as_record` adapter for `def`-style decalarations of dataclasses
+  that are considered as just struct. For example:
+
+        @as_record()
+        def Point(x:float, y:float, meta=None): pass
+
+        >>> p = Point(1,2)
+        >>> print(p)
+        Point(x=1, y=2, meta=None)
+
+  It's almost equivalent to:
+  
+        Point = make_dataclass('Point', [('x':float), ('y',float),'meta'], (None,))
 
 
 #### 0.21
@@ -813,9 +832,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
         assert id(a.l) != id(b.l)
 
   * Recordclass supports python 3.12 (tested on linux/debian 11/12 and windows via appveyor).
-
   
-
 #### 0.20.1
 
 * Improve row_factory for `sqlite` on the ground of `dataobject`-based classes.
