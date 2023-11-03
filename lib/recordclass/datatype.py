@@ -59,7 +59,7 @@ class Field(dict):
                 
 class datatype(type):
     """
-    Metatype for creating classes based on dataobject.
+    Metatype for creating classes based on a dataobject.
     """
     def __new__(metatype, typename, bases, ns, *,
                 gc=False, fast_new=True, readonly=False, iterable=False,
@@ -321,11 +321,7 @@ class datatype(type):
                             use_dict=False, use_weakref=False, hashable=False, 
                             mapping_only=False, immutable_type=False, copy_default=False):
 
-        from ._dataobject import (_datatype_collection_mapping, _datatype_hashable, _datatype_iterable,
-                                  _datatype_use_weakref, _datatype_use_dict, _datatype_enable_gc, 
-                                  _datatype_deep_dealloc, _datatype_vectorcall, _pytype_modified, 
-                                  _datatype_immutable, _dataobject_type_init, _datatype_copy_default,
-                                  _datatype_from_basetype_hashable, _datatype_from_basetype_iterable)
+        import recordclass._dataobject as _dataobject
         from .utils import _have_pyinit, _have_pynew
 
 
@@ -339,32 +335,32 @@ class datatype(type):
         if immutable_type and (is_pynew or is_pyinit):
             raise TypeError('if immutable_type=True then __init__ or __new__ are not allowed')
         
-        _dataobject_type_init(cls)
+        _dataobject._dataobject_type_init(cls)
 
-        _datatype_collection_mapping(cls, sequence, mapping, readonly)
+        _dataobject._datatype_collection_mapping(cls, sequence, mapping, readonly)
         if hashable:
-            _datatype_hashable(cls)
+            _dataobject._datatype_hashable(cls)
         else:
-            _datatype_from_basetype_hashable(cls)
+            _dataobject._datatype_from_basetype_hashable(cls)
         if iterable:
-            _datatype_iterable(cls)
+            _dataobject._datatype_iterable(cls)
         else:
-            _datatype_from_basetype_iterable(cls)
+            _dataobject._datatype_from_basetype_iterable(cls)
         if use_dict:
-            _datatype_use_dict(cls)
+            _dataobject._datatype_use_dict(cls)
         if use_weakref:
-            _datatype_use_weakref(cls)
+            _dataobject._datatype_use_weakref(cls)
         if gc:
-            _datatype_enable_gc(cls)
+            _dataobject._datatype_enable_gc(cls)
         if deep_dealloc:
-            _datatype_deep_dealloc(cls)
+            _dataobject._datatype_deep_dealloc(cls)
         if not copy_default and not is_pyinit and not is_pynew:
-            _datatype_vectorcall(cls)
+            _dataobject._datatype_vectorcall(cls)
         if copy_default and not is_pyinit and not is_pynew:
-            _datatype_copy_default(cls)
+            _dataobject._datatype_copy_default(cls)
         if _PY311 and immutable_type:
-            _datatype_immutable(cls)
-        _pytype_modified(cls)
+            _dataobject._datatype_immutable(cls)
+        _dataobject._pytype_modified(cls)
 
     def __delattr__(cls, name):
         from ._dataobject import dataobjectproperty
