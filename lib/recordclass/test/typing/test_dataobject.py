@@ -761,24 +761,24 @@ class DataObjectTest3(unittest.TestCase):
             self.assertEqual(a.x, 1)
             self.assertEqual(a.y, 2)
 
-    def test_signature_tp(self):
-        class A(dataobject, fast_new=False):
-            x:int
-            y:int=2
+    # def test_signature_tp(self):
+    #     class A(dataobject):
+    #         x:int
+    #         y:int=2
 
-        import inspect
-        s = inspect.signature(A)
-        px = s.parameters['x']
-        self.assertEqual(px.name, 'x')
-        self.assertEqual(px.annotation, int)
-        self.assertEqual(px.default, px.empty)
-        py = s.parameters['y']
-        self.assertEqual(py.name, 'y')
-        self.assertEqual(py.annotation, int)
-        self.assertEqual(py.default, 2)
+    #     import inspect
+    #     s = inspect.signature(A)
+    #     px = s.parameters['x']
+    #     self.assertEqual(px.name, 'x')
+    #     self.assertEqual(px.annotation, int)
+    #     self.assertEqual(px.default, px.empty)
+    #     py = s.parameters['y']
+    #     self.assertEqual(py.name, 'y')
+    #     self.assertEqual(py.annotation, int)
+    #     self.assertEqual(py.default, 2)
 
     def test_fast_new_tp(self):
-        class A(dataobject, fast_new=True):
+        class A(dataobject):
             __fields__ = 'x', 'y'
 
         self.assertTrue('__new__' not in A.__dict__)
@@ -799,7 +799,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.y, 2)
 
     def test_missing_args1_tp(self):
-        class A(dataobject, fast_new=True):
+        class A(dataobject):
             __fields__ = 'a','b','c'
 
         a=A(1)
@@ -808,7 +808,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.c, None)
 
     def test_missing_args2_tp(self):
-        class A(dataobject, fast_new=True):
+        class A(dataobject):
             __fields__ = 'a','b','c'
             b = 2
             c = 3
@@ -836,7 +836,7 @@ class DataObjectTest3(unittest.TestCase):
             self.assertEqual(count, 100)
 
         def test_deep_dealloc(self):
-            class LinkedItem(dataobject, fast_new=True):
+            class LinkedItem(dataobject):
                 val: object
                 next: 'LinkedItem'
 

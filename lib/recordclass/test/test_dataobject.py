@@ -27,15 +27,15 @@ class DataobjectTest(unittest.TestCase):
             A = make_dataclass("A", 'x y', defaults=(0,0,0))
             # a = A(x=1, y=2, z=3)
     
-    def test_bad_makeclass2(self):
-        with self.assertRaises(TypeError):        
-            A = make_dataclass("A", 'x y', defaults=(0,0,0), fast_new=False)
-            # a = A(x=1, y=2, z=3)
+    # def test_bad_makeclass2(self):
+    #     with self.assertRaises(TypeError):        
+    #         A = make_dataclass("A", 'x y', defaults=(0,0,0), fast_new=False)
+    #         # a = A(x=1, y=2, z=3)
 
-    def test_bad_call(self):
-        A = make_dataclass("A", 'x y', defaults=(0,), fast_new=False)
-        with self.assertRaises(TypeError):        
-            a = A(x=1, y=2, z=3)
+    # def test_bad_call(self):
+    #     A = make_dataclass("A", 'x y', defaults=(0,), fast_new=False)
+    #     with self.assertRaises(TypeError):        
+    #         a = A(x=1, y=2, z=3)
 
     def test_bad_call2(self):
         A = make_dataclass("A", 'x y', defaults=(0,))
@@ -378,7 +378,7 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a3.z, 3)
 
     def test_keyword_args_defaults2(self):
-        A = make_dataclass("A", ('x', 'y', 'z'), fast_new=True)
+        A = make_dataclass("A", ('x', 'y', 'z'))
 
         a1 = A(x=1)
         self.assertEqual(repr(a1), "A(x=1, y=None, z=None)")
@@ -397,7 +397,7 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a3.z, 3)
 
     def test_keyword_args_defaults3(self):
-        A = make_dataclass("A", ('x', 'y', 'z'), fast_new=True)
+        A = make_dataclass("A", ('x', 'y', 'z'))
 
         a1 = A(1, y=2,)
         self.assertEqual(repr(a1), "A(x=1, y=2, z=None)")
@@ -416,7 +416,7 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a3.z, 3)
         
     def test_missing_args(self):
-        A = make_dataclass("A", ("a", "b", "c"), fast_new=True, sequence=True)
+        A = make_dataclass("A", ("a", "b", "c"), sequence=True)
         # print(A.__options__)
         a=A(1)
         self.assertEqual(a[0], 1)
@@ -431,14 +431,14 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a.z, None)
         
     def test_missing_args3(self):
-        A = make_dataclass("A", ('a','b','c'), fast_new=True)
+        A = make_dataclass("A", ('a','b','c'))
         a=A(1)
         self.assertEqual(a.a, 1)
         self.assertEqual(a.b, None)
         self.assertEqual(a.c, None)
         
     def test_missing_args4(self):
-        A = make_dataclass("A", ('a','b','c'), defaults=(-1,), fast_new=True)
+        A = make_dataclass("A", ('a','b','c'), defaults=(-1,))
         a=A(1)
 #         with self.assertRaises(TypeError):     
 #             a=A(1)
@@ -447,7 +447,7 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a.c, -1)
 
     def test_missing_args5(self):
-        A = make_dataclass("A", ('a','b','c'), defaults=(-1,-2), fast_new=True)
+        A = make_dataclass("A", ('a','b','c'), defaults=(-1,-2))
 #         print(A.__defualts__)
         a=A(1)
         self.assertEqual(a.a, 1)

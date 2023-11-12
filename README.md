@@ -24,7 +24,7 @@ But in many cases, this can still be avoided provided that the developer underst
 Another option is to use static code analyzers along with type annotations to monitor compliance with typehints.
 
 The library is built on top of the base class `dataobject`. The type of `dataobject` is special metaclass `datatype`.
-   It control creation  of subclasses, which  will not participate in cyclic GC and do not contain `__dict__`  and `__weakref__`  by default.
+   It control creation  of subclasses, which  will not participate in cyclic GC and do not contain `PyGC_Head`-prefix, `__dict__`  and `__weakref__`  by default.
    As the result the instance of such class need less memory.
    It's memory footprint is similar to memory footprint of instances of the classes with `__slots__` but without `PyGC_Head`. So the difference in memory size is equal to the size of `PyGC_Head`.
    It also tunes `basicsize` of the instances, creates descriptors for the fields and etc.
@@ -453,7 +453,7 @@ First load inventory:
 
     >>> from recordclass import dataobject, asdict, astuple, as_dataclass, as_record
 
-Define class one of three ways:
+Define class one of the ways:
 
     class Point(dataobject):
         x: int
@@ -474,6 +474,10 @@ or
 or
 
     >>> Point = make_dataclass("Point", [("x",int), ("y",int)])
+
+or
+
+    >>> Point = make_dataclass("Point", {"x":int, "y",int})
 
 Annotations of the fields are defined as a dict in `__annotations__`:
 
@@ -582,23 +586,6 @@ A `Factory` (starting from 0.21) allows you to setup a factory function to calcu
     True
     >>> assert id(a.x[1]) != id(b.x[1])
     True
-
-There is the options `fast_new`. By default it is `True`. If one like to more options for
-introspection then one need specify `fast_new=False`.
-
-    class SlowerPoint(dataobject, fast_new=False):
-        x: int
-        y: int
-
-The followings timings explain (in jupyter notebook) boosting effect of `fast_new` option:
-
-    %timeit l1 = [SlowerPoint(i,i) for i in range(100000)]
-    %timeit l2 = [Point(i,i) for i in range(100000)]
-    # output with python 3.9 64bit
-    25.6 ms ± 2.4 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
-    10.4 ms ± 426 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-
-The downside of `fast_new=True` option is less possibilities for introspection of the instance.
 
 If someone wants to define a class attribute, then there is a `ClassVar` trick:
 
@@ -778,6 +765,17 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
   It's almost equivalent to:
   
         Point = make_dataclass('Point', [('x':float), ('y',float),'meta'], (None,))
+
+* The option `fast_new` will be removed in 0.22. It will be always as `fast_new=True` by creation.
+
+        class Point(dataobject):
+            x:int
+            y:int
+
+            def __new__(cls, x=0, y=0):
+                 return dataobject.__new__(cls, x, y)
+
+              
 
 
 #### 0.21
