@@ -753,7 +753,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
           User = make_dataclass("User", "first_name last_name * age")
   
 * Add `@as_record` adapter for `def`-style decalarations of dataclasses
-  that are considered as just struct. For example:
+  that are considered as just a struct. For example:
 
         @as_record()
         def Point(x:float, y:float, meta=None): pass
@@ -774,6 +774,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
             def __new__(cls, x=0, y=0):
                  return dataobject.__new__(cls, x, y)
+* Fix issues with `_PyUnicodeWriter` for python3.13.
 
               
 
