@@ -1235,18 +1235,17 @@ PyDoc_STRVAR(dataobject_repr_doc,
 static PyObject *
 dataobject_repr(PyObject *self)
 {
-    Py_ssize_t i, n, n_fs = 0;
-    // PyUnicodeWriter writer;
+    Py_ssize_t i;
     PyObject *fs;
     PyTypeObject *tp = Py_TYPE(self);
     PyObject *tp_name = PyObject_GetAttrString((PyObject*)tp, "__name__");
-    PyObject *text;
-    PyObject *items;
     PyObject *tmp;
-    PyObject *ret;
+    PyObject *sep = PyUnicode_FromString(", ");
+    PyObject *eq = PyUnicode_FromString("=");
 
     fs = PyObject_GetAttrString(self, "__fields__");
     if (fs) {
+        Py_ssize_t n_fs = 0;
         if (Py_TYPE(fs) == &PyTuple_Type) {
             n_fs = PyObject_Length(fs);
         } else {
@@ -1261,21 +1260,22 @@ dataobject_repr(PyObject *self)
     } else
         PyErr_Clear();
 
-    n = PyDataObject_LEN(self);
+    Py_ssize_t n = PyDataObject_LEN(self);
     if (n == 0) {
         PyObject *s = PyUnicode_FromString("()");
-        text = PyUnicode_Concat(tp_name, s);
+        PyObject *text = PyUnicode_Concat(tp_name, s);
         Py_DECREF(s);
         Py_DECREF(tp_name);
         return text;
     }
+    
     i = Py_ReprEnter((PyObject *)self);
     if (i != 0) {
         Py_DECREF(tp_name);
         return i > 0 ? PyUnicode_FromString("(...)") : NULL;
     }
 
-    items = PyList_New(0);
+    PyObject *items = PyList_New(0);
 
     PyList_Append(items, tp_name);
 
@@ -1287,23 +1287,16 @@ dataobject_repr(PyObject *self)
 
     /* Do repr() on each element. */
     for (i = 0; i < n; ++i) {
-        PyObject *s, *ob;
-        PyObject *fn;
-
-        fn = PyTuple_GET_ITEM(fs, i);
-        Py_INCREF(fn);
+        PyObject *fn = PyTuple_GET_ITEM(fs, i);
         PyList_Append(items, fn);
-        Py_DECREF(fn);
 
-        tmp = PyUnicode_FromString("=");
-        PyList_Append(items, tmp);
-        Py_DECREF(tmp);
+        PyList_Append(items, eq);
         
-        ob = dataobject_item(self, i);
+        PyObject *ob = dataobject_item(self, i);
         if (ob == NULL)
             goto error;
 
-        s = PyObject_Repr(ob);
+        PyObject *s = PyObject_Repr(ob);
         if (s == NULL) {
             Py_DECREF(ob);
             goto error;
@@ -1313,17 +1306,16 @@ dataobject_repr(PyObject *self)
         Py_DECREF(ob);
 
         if (i < n-1) {
-            tmp = PyUnicode_FromString(", ");
-            PyList_Append(items, tmp);
-            Py_DECREF(tmp);
+            PyList_Append(items, sep);
         }
     }
 
     Py_XDECREF(fs);
+    Py_DECREF(sep);
+    Py_DECREF(eq);
 
     if (tp->tp_dictoffset) {
         PyObject *dict = PyObject_GetAttrString(self, "__dict__");
-        PyObject *s;
 
         if (dict) {
             if (PyObject_IsTrue(dict)) {
@@ -1331,7 +1323,7 @@ dataobject_repr(PyObject *self)
                 PyList_Append(items, tmp);
                 Py_DECREF(tmp);
 
-                s = PyObject_Repr(dict);
+                PyObject *s = PyObject_Repr(dict);
                 PyList_Append(items, s);
                 Py_DECREF(s);
             }
@@ -1345,7 +1337,7 @@ dataobject_repr(PyObject *self)
 
     Py_ReprLeave((PyObject *)self);
     tmp = PyUnicode_FromString("");
-    ret = PyUnicode_Join(tmp, items);
+    PyObject *ret = PyUnicode_Join(tmp, items);
     Py_DECREF(tmp);
 
     return ret;
