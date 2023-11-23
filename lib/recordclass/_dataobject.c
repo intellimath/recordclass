@@ -1227,11 +1227,6 @@ static int dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 PyDoc_STRVAR(dataobject_repr_doc,
 "T.__repr__() -- representation of T");
 
-// #if PY_VERSION_HEX > 0x030C0000
-// #include "unicodewriter.h"
-// #endif
-
-
 static PyObject *
 dataobject_repr(PyObject *self)
 {
