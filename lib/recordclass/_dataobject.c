@@ -572,7 +572,7 @@ _dataobject_update(PyObject *op, PyObject *kwds, int flag)
     PyObject *iter, *key, *val;
 
     PyTypeObject *type = Py_TYPE(op);
-    int has___dict___ = type->tp_dictoffset;
+    Py_ssize_t has___dict___ = type->tp_dictoffset;
     PyObject *tp_dict = type->tp_dict;
     PyMappingMethods *mp = Py_TYPE(tp_dict)->tp_as_mapping;
     PyObject *fields = mp->mp_subscript(type->tp_dict, __fields__name);
@@ -1227,26 +1227,23 @@ static int dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 PyDoc_STRVAR(dataobject_repr_doc,
 "T.__repr__() -- representation of T");
 
-#if PY_VERSION_HEX <= 0x030C0000
-#define PyUnicodeWriter _PyUnicodeWriter
-#define PyUnicodeWriter_Init _PyUnicodeWriter_Init
-#define PyUnicodeWriter_WriteStr _PyUnicodeWriter_WriteStr
-#define PyUnicodeWriter_WriteChar _PyUnicodeWriter_WriteChar
-#define PyUnicodeWriter_WriteASCIIString _PyUnicodeWriter_WriteASCIIString
-#define PyUnicodeWriter_Finish _PyUnicodeWriter_Finish
-#define PyUnicodeWriter_Dealloc _PyUnicodeWriter_Dealloc
-#endif
+// #if PY_VERSION_HEX > 0x030C0000
+// #include "unicodewriter.h"
+// #endif
 
 
 static PyObject *
 dataobject_repr(PyObject *self)
 {
     Py_ssize_t i, n, n_fs = 0;
-    PyUnicodeWriter writer;
+    // PyUnicodeWriter writer;
     PyObject *fs;
     PyTypeObject *tp = Py_TYPE(self);
     PyObject *tp_name = PyObject_GetAttrString((PyObject*)tp, "__name__");
     PyObject *text;
+    PyObject *items;
+    PyObject *tmp;
+    PyObject *ret;
 
     fs = PyObject_GetAttrString(self, "__fields__");
     if (fs) {
@@ -1278,24 +1275,15 @@ dataobject_repr(PyObject *self)
         return i > 0 ? PyUnicode_FromString("(...)") : NULL;
     }
 
-    _PyUnicodeWriter_Init(&writer);
-    writer.overallocate = 1;
-    if (n > 1) {
-        /* "(" + "1" + ", 2" * (len - 1) + ")" */
-        writer.min_length = 1 + 1 + (2 + 1) * (n-1) + 1;
-    }
-    else {
-        /* "(1,)" */
-        writer.min_length = 4;
-    }
+    items = PyList_New(0);
 
-    if (_PyUnicodeWriter_WriteStr(&writer, tp_name) < 0)
-        goto error;
+    PyList_Append(items, tp_name);
 
     Py_DECREF(tp_name);
 
-    if (_PyUnicodeWriter_WriteChar(&writer, '(') < 0)
-        goto error;
+    tmp = PyUnicode_FromString("(");
+    PyList_Append(items, tmp);
+    Py_DECREF(tmp);
 
     /* Do repr() on each element. */
     for (i = 0; i < n; ++i) {
@@ -1304,14 +1292,13 @@ dataobject_repr(PyObject *self)
 
         fn = PyTuple_GET_ITEM(fs, i);
         Py_INCREF(fn);
-        if (_PyUnicodeWriter_WriteStr(&writer, fn) < 0) {
-            Py_DECREF(fn);
-            goto error;
-        }
+        PyList_Append(items, fn);
         Py_DECREF(fn);
-        if (_PyUnicodeWriter_WriteChar(&writer, '=') < 0)
-            goto error;
 
+        tmp = PyUnicode_FromString("=");
+        PyList_Append(items, tmp);
+        Py_DECREF(tmp);
+        
         ob = dataobject_item(self, i);
         if (ob == NULL)
             goto error;
@@ -1321,18 +1308,14 @@ dataobject_repr(PyObject *self)
             Py_DECREF(ob);
             goto error;
         }
-
-        if (_PyUnicodeWriter_WriteStr(&writer, s) < 0) {
-            Py_DECREF(s);
-            Py_DECREF(ob);
-            goto error;
-        }
+        PyList_Append(items, s);
         Py_DECREF(s);
         Py_DECREF(ob);
 
         if (i < n-1) {
-            if (_PyUnicodeWriter_WriteASCIIString(&writer, ", ", 2) < 0)
-                goto error;
+            tmp = PyUnicode_FromString(", ");
+            PyList_Append(items, tmp);
+            Py_DECREF(tmp);
         }
     }
 
@@ -1344,32 +1327,32 @@ dataobject_repr(PyObject *self)
 
         if (dict) {
             if (PyObject_IsTrue(dict)) {
-                if (_PyUnicodeWriter_WriteASCIIString(&writer, ", **", 4) < 0)
-                    goto error;
+                tmp = PyUnicode_FromString(", **");
+                PyList_Append(items, tmp);
+                Py_DECREF(tmp);
+
                 s = PyObject_Repr(dict);
-                if (_PyUnicodeWriter_WriteStr(&writer, s) < 0) {
-                    Py_DECREF(s);
-                    Py_DECREF(dict);
-                    goto error;
-                }
+                PyList_Append(items, s);
                 Py_DECREF(s);
             }
             Py_DECREF(dict);
         }
     }
 
-    writer.overallocate = 0;
-
-    if (_PyUnicodeWriter_WriteChar(&writer, ')') < 0)
-        goto error;
+    tmp = PyUnicode_FromString(")");
+    PyList_Append(items, tmp);
+    Py_DECREF(tmp);
 
     Py_ReprLeave((PyObject *)self);
-    return _PyUnicodeWriter_Finish(&writer);
+    tmp = PyUnicode_FromString("");
+    ret = PyUnicode_Join(tmp, items);
+    Py_DECREF(tmp);
+
+    return ret;
 
 error:
     Py_XDECREF(fs);
 
-    _PyUnicodeWriter_Dealloc(&writer);
     Py_ReprLeave((PyObject *)self);
     return NULL;
 }
