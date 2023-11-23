@@ -1227,11 +1227,22 @@ static int dataobject_ass_item(PyObject *op, Py_ssize_t i, PyObject *val)
 PyDoc_STRVAR(dataobject_repr_doc,
 "T.__repr__() -- representation of T");
 
+#if PY_VERSION_HEX <= 0x030C0000
+#define PyUnicodeWriter _PyUnicodeWriter
+#define PyUnicodeWriter_Init _PyUnicodeWriter_Init
+#define PyUnicodeWriter_WriteStr _PyUnicodeWriter_WriteStr
+#define PyUnicodeWriter_WriteChar _PyUnicodeWriter_WriteChar
+#define PyUnicodeWriter_WriteASCIIString _PyUnicodeWriter_WriteASCIIString
+#define PyUnicodeWriter_Finish _PyUnicodeWriter_Finish
+#define PyUnicodeWriter_Dealloc _PyUnicodeWriter_Dealloc
+#endif
+
+
 static PyObject *
 dataobject_repr(PyObject *self)
 {
     Py_ssize_t i, n, n_fs = 0;
-    _PyUnicodeWriter writer;
+    PyUnicodeWriter writer;
     PyObject *fs;
     PyTypeObject *tp = Py_TYPE(self);
     PyObject *tp_name = PyObject_GetAttrString((PyObject*)tp, "__name__");
