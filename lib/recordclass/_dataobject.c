@@ -1273,7 +1273,6 @@ dataobject_repr(PyObject *self)
     PyObject *items = PyList_New(0);
 
     PyList_Append(items, tp_name);
-
     Py_DECREF(tp_name);
 
     tmp = PyUnicode_FromString("(");
@@ -1396,17 +1395,14 @@ PyDoc_STRVAR(dataobject_reduce_doc,
 static PyObject *
 dataobject_reduce(PyObject *ob, PyObject *Py_UNUSED(ignore))
 {
-    PyObject *args;
     PyObject *result;
     PyTypeObject *tp = Py_TYPE(ob);
     PyObject *kw = NULL;
     PyObject **dictptr;
 
-    args = _astuple(ob);
+    PyObject *args = _astuple(ob);
     if (args == NULL)
         return NULL;
-
-    // tp_args = PyTuple_Pack(2, tp, args);
 
     if (tp->tp_dictoffset) {
         dictptr = PyObject_GetDictPtr(ob);
@@ -1421,8 +1417,6 @@ dataobject_reduce(PyObject *ob, PyObject *Py_UNUSED(ignore))
         result = PyTuple_Pack(3, tp, args, kw);
     else
         result = PyTuple_Pack(2, tp, args);
-
-    // Py_INCREF(pydataobject_make);
 
     // printf("reduce: %s\n", tp->tp_name);
 

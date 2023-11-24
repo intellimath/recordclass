@@ -22,9 +22,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-def as_dataclass(*, use_dict=False, use_weakref=False, hashable=False,
-                    sequence=False, mapping=False, iterable=False, readonly=False,
-                    module=None, fast_new=True, rename=False, gc=False):
+def as_dataclass(*, use_dict:bool=False, use_weakref:bool=False, hashable:bool=False,
+                    sequence:bool=False, mapping:bool=False, iterable:bool=False, readonly:bool=False,
+                    module="str | None", fast_new:bool=True, rename:bool=False, gc:bool=False):
 
     """Returns a new dataobject-based class with named fields, smaller memory footprint and 
     faster instance creation.
