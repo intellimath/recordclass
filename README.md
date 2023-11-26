@@ -137,7 +137,7 @@ As a result the size of the instance is decreased by 24-32 bytes for cpython 3.4
 
 Here is the table with performance counters, which was measured using `tools/perfcounts.py` script:
 
-* recordclass 0.19, python 3.10, debian/testing linux, x86-64:
+* recordclass 0.21, python 3.10, debian/testing linux, x86-64:
 
 <table border="1" class="dataframe">
   <thead>
@@ -276,144 +276,310 @@ Here is the table with performance counters, which was measured using `tools/per
   </tbody>
 </table>
 
-* recordclass 0.19, python 3.11, debian/testing linux, x86-64:
+* recordclass 0.21, python 3.11, debian/testing linux, x86-64:
 
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th>id</th>
-      <th>size</th>
-      <th>new</th>
-      <th>getattr</th>
-      <th>setattr</th>
-      <th>getitem</th>
-      <th>setitem</th>
-      <th>getkey</th>
-      <th>setkey</th>
-      <th>iterate</th>
-      <th>copy</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>litetuple</td>
-      <td>48</td>
-      <td>0.17</td>
-      <td></td>
-      <td></td>
-      <td>0.19</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>0.27</td>
-      <td>0.13</td>
-    </tr>
-    <tr>
-      <td>mutabletuple</td>
-      <td>48</td>
-      <td>0.16</td>
-      <td></td>
-      <td></td>
-      <td>0.19</td>
-      <td>0.2</td>
-      <td></td>
-      <td></td>
-      <td>0.27</td>
-      <td>0.14</td>
-    </tr>
-    <tr>
-      <td>tuple</td>
-      <td>64</td>
-      <td>0.16</td>
-      <td></td>
-      <td></td>
-      <td>0.12</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>0.27</td>
-      <td>0.15</td>
-    </tr>
-    <tr>
-      <td>namedtuple</td>
-      <td>64</td>
-      <td>0.72</td>
-      <td>0.19</td>
-      <td></td>
-      <td>0.17</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>0.26</td>
-      <td>0.2</td>
-    </tr>
-    <tr>
-      <td>class+slots</td>
-      <td>56</td>
-      <td>0.45</td>
-      <td>0.1</td>
-      <td>0.11</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>dataobject</td>
-      <td>40</td>
-      <td>0.17</td>
-      <td>0.11</td>
-      <td>0.1</td>
-      <td>0.19</td>
-      <td>0.19</td>
-      <td></td>
-      <td></td>
-      <td>0.25</td>
-      <td>0.19</td>
-    </tr>
-    <tr>
-      <td>dataobject+gc</td>
-      <td>56</td>
-      <td>0.20</td>
-      <td>0.11</td>
-      <td>0.1</td>
-      <td>0.18</td>
-      <td>0.19</td>
-      <td></td>
-      <td></td>
-      <td>0.25</td>
-      <td>0.21</td>
-    </tr>
-    <tr>
-      <td>dict</td>
-      <td>184</td>
-      <td>0.30</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>0.2</td>
-      <td>0.22</td>
-      <td>0.3</td>
-      <td>0.19</td>
-    </tr>
-    <tr>
-      <td>dataobject+map</td>
-      <td>40</td>
-      <td>0.17</td>
-      <td>0.11</td>
-      <td>0.11</td>
-      <td></td>
-      <td></td>
-      <td>0.21</td>
-      <td>0.27</td>
-      <td>0.25</td>
-      <td>0.19</td>
-    </tr>
-  </tbody>
+<table>
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>size</th>
+            <th>new</th>
+            <th>getattr</th>
+            <th>setattr</th>
+            <th>getitem</th>
+            <th>setitem</th>
+            <th>getkey</th>
+            <th>setkey</th>
+            <th>iterate</th>
+            <th>copy</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>litetuple</td>
+            <td>48</td>
+            <td>0.11</td>
+            <td> </td>
+            <td> </td>
+            <td>0.11</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td>0.18</td>
+            <td>0.09</td>
+        </tr>
+        <tr>
+            <td>mutabletuple</td>
+            <td>48</td>
+            <td>0.11</td>
+            <td> </td>
+            <td> </td>
+            <td>0.11</td>
+            <td>0.12</td>
+            <td> </td>
+            <td> </td>
+            <td>0.18</td>
+            <td>0.08</td>
+        </tr>
+        <tr>
+            <td>tuple</td>
+            <td>64</td>
+            <td>0.1</td>
+            <td> </td>
+            <td> </td>
+            <td>0.08</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td>0.17</td>
+            <td>0.1</td>
+        </tr>
+        <tr>
+            <td>namedtuple</td>
+            <td>64</td>
+            <td>0.49</td>
+            <td>0.13</td>
+            <td> </td>
+            <td>0.11</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td>0.17</td>
+            <td>0.13</td>
+        </tr>
+        <tr>
+            <td>class+slots</td>
+            <td>56</td>
+            <td>0.31</td>
+            <td>0.06</td>
+            <td>0.06</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+        </tr>
+        <tr>
+            <td>dataobject</td>
+            <td>40</td>
+            <td>0.13</td>
+            <td>0.06</td>
+            <td>0.06</td>
+            <td>0.11</td>
+            <td>0.12</td>
+            <td> </td>
+            <td> </td>
+            <td>0.16</td>
+            <td>0.12</td>
+        </tr>
+        <tr>
+            <td>dataobject+gc</td>
+            <td>56</td>
+            <td>0.14</td>
+            <td>0.06</td>
+            <td>0.06</td>
+            <td>0.1</td>
+            <td>0.12</td>
+            <td> </td>
+            <td> </td>
+            <td>0.16</td>
+            <td>0.14</td>
+        </tr>
+        <tr>
+            <td>dict</td>
+            <td>184</td>
+            <td>0.2</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td>0.12</td>
+            <td>0.13</td>
+            <td>0.19</td>
+            <td>0.13</td>
+        </tr>
+        <tr>
+            <td>dataobject+map</td>
+            <td>40</td>
+            <td>0.12</td>
+            <td>0.07</td>
+            <td>0.06</td>
+            <td> </td>
+            <td> </td>
+            <td>0.15</td>
+            <td>0.16</td>
+            <td>0.16</td>
+            <td>0.12</td>
+        </tr>
+        <tr>
+            <td>class</td>
+            <td>56</td>
+            <td>0.35</td>
+            <td>0.06</td>
+            <td>0.06</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+        </tr>
+    </tbody>
 </table>
+
+* recordclas 0.21, python3.12, debian/testing linux, x86-64:
+
+<table>
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>size</th>
+            <th>new</th>
+            <th>getattr</th>
+            <th>setattr</th>
+            <th>getitem</th>
+            <th>setitem</th>
+            <th>getkey</th>
+            <th>setkey</th>
+            <th>iterate</th>
+            <th>copy</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>litetuple</td>
+            <td>48</td>
+            <td>0.13</td>
+            <td> </td>
+            <td> </td>
+            <td>0.12</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td>0.19</td>
+            <td>0.09</td>
+        </tr>
+        <tr>
+            <td>mutabletuple</td>
+            <td>48</td>
+            <td>0.13</td>
+            <td> </td>
+            <td> </td>
+            <td>0.11</td>
+            <td>0.12</td>
+            <td> </td>
+            <td> </td>
+            <td>0.18</td>
+            <td>0.09</td>
+        </tr>
+        <tr>
+            <td>tuple</td>
+            <td>64</td>
+            <td>0.11</td>
+            <td> </td>
+            <td> </td>
+            <td>0.09</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td>0.16</td>
+            <td>0.09</td>
+        </tr>
+        <tr>
+            <td>namedtuple</td>
+            <td>64</td>
+            <td>0.52</td>
+            <td>0.13</td>
+            <td> </td>
+            <td>0.11</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td>0.16</td>
+            <td>0.12</td>
+        </tr>
+        <tr>
+            <td>class+slots</td>
+            <td>56</td>
+            <td>0.34</td>
+            <td>0.08</td>
+            <td>0.07</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+        </tr>
+        <tr>
+            <td>dataobject</td>
+            <td>40</td>
+            <td>0.14</td>
+            <td>0.08</td>
+            <td>0.08</td>
+            <td>0.11</td>
+            <td>0.12</td>
+            <td> </td>
+            <td> </td>
+            <td>0.17</td>
+            <td>0.12</td>
+        </tr>
+        <tr>
+            <td>dataobject+gc</td>
+            <td>56</td>
+            <td>0.15</td>
+            <td>0.08</td>
+            <td>0.07</td>
+            <td>0.12</td>
+            <td>0.12</td>
+            <td> </td>
+            <td> </td>
+            <td>0.17</td>
+            <td>0.13</td>
+        </tr>
+        <tr>
+            <td>dict</td>
+            <td>184</td>
+            <td>0.19</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td>0.11</td>
+            <td>0.14</td>
+            <td>0.2</td>
+            <td>0.12</td>
+        </tr>
+        <tr>
+            <td>dataobject+map</td>
+            <td>40</td>
+            <td>0.14</td>
+            <td>0.08</td>
+            <td>0.08</td>
+            <td> </td>
+            <td> </td>
+            <td>0.16</td>
+            <td>0.17</td>
+            <td>0.17</td>
+            <td>0.12</td>
+        </tr>
+        <tr>
+            <td>class</td>
+            <td>48</td>
+            <td>0.41</td>
+            <td>0.08</td>
+            <td>0.08</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+        </tr>
+    </tbody>
+</table>
+
 
 Main repository for `recordclass` is on [github](https://github.com/intellimath/recordclass).
 

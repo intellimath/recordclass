@@ -378,6 +378,6 @@ def test_all(relative=True):
     return pt
 
 pt = test_all()
-print(pt)
-# print(pt.get_html_string())
+# print(pt)
+print(pt.get_html_string())
 
