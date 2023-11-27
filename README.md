@@ -942,9 +942,6 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
                  return dataobject.__new__(cls, x, y)
 * Fix issues with `_PyUnicodeWriter` for python3.13.
 
-              
-
-
 #### 0.21
 
 * Add a new option `copy_default` (default `False`) to allow assigning a copy of the default
