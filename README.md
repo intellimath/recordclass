@@ -768,7 +768,7 @@ If someone wants to define a class attribute, then there is a `ClassVar` trick:
 If the default value for the `ClassVar`-attribute is not specified, 
 it will just be excluded from the `__fields___`.
 
-Starting with python 3.10 `__match_args__` is specified by default so that `__match_args__` == `__fields`.
+Starting with python 3.10 `__match_args__` is specified by default so that `__match_args__` == `__fields__`.
 User can define it's own during definition:
 
     class User(dataobject):
@@ -933,6 +933,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
         Point = make_dataclass('Point', [('x':float), ('y',float),'meta'], (None,))
 
 * The option `fast_new` will be removed in 0.22. It will be always as `fast_new=True` by creation.
+  One can specify own `__new__`, for example:
 
         class Point(dataobject):
             x:int
@@ -940,6 +941,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
             def __new__(cls, x=0, y=0):
                  return dataobject.__new__(cls, x, y)
+
 * Fix issues with `_PyUnicodeWriter` for python3.13.
 
 #### 0.21
