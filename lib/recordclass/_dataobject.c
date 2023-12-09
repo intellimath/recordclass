@@ -250,7 +250,8 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
     return op;
 }
 
-static void _fill_items(PyObject **items, PyObject * const*args, const Py_ssize_t n_args) {
+static void 
+_fill_items(PyObject **items, PyObject * const*args, const Py_ssize_t n_args) {
    Py_ssize_t i;
     for (i = 0; i < n_args; i++) {
         PyObject *v = args[i];
@@ -259,7 +260,8 @@ static void _fill_items(PyObject **items, PyObject * const*args, const Py_ssize_
     } 
 }
 
-static void _fill_items_none(PyObject **items, const Py_ssize_t start, const Py_ssize_t n_args) {
+static void 
+_fill_items_none(PyObject **items, const Py_ssize_t start, const Py_ssize_t n_args) {
     Py_ssize_t i;
     for (i = start; i < n_args; i++) {
         Py_INCREF(Py_None);
@@ -580,14 +582,6 @@ _dataobject_update(PyObject *op, PyObject *kwds, int flag)
     iter = PyObject_GetIter(kwds);
     while ((key = PyIter_Next(iter))) {
         val = PyObject_GetItem(kwds, key);
-
-        // if (!val) {
-        //     PyErr_Format(PyExc_TypeError, "Invalid kwarg: %U not in __fields__", key);
-        //     Py_DECREF(key);
-        //     Py_DECREF(iter);
-        //     Py_DECREF(fields);
-        //     return -1;
-        // }
 
         if (flag) {            
             Py_ssize_t index = _tuple_index((PyTupleObject*)fields, key);
