@@ -68,7 +68,7 @@ class datatype(type):
                 immutable_type=False, copy_default=False, match=None):
 
         from .utils import check_name, collect_info_from_bases
-        from ._dataobject import dataobject
+        from ._dataobject import dataobject, datastruct
         from ._dataobject import dataobjectproperty
         from sys import intern as _intern
         if _PY311:
@@ -102,11 +102,25 @@ class datatype(type):
 
         if '__match_args__' in ns:
             options['match'] = ns[__match_args__]            
-        
+
+        is_dataobject = is_datastruct = False
         if bases:
             base0 = bases[0]
-            if not issubclass(base0, dataobject):
-                raise TypeError("First base class should be subclass of dataobject")
+            if not issubclass(base0, dataobject) and not issubclass(base0, datastruct):
+                raise TypeError("First base class should be subclass of dataobject or datastruct")
+            
+            if issubclass(base0, dataobject):
+                for base in bases[1:]:
+                    if issubclass(base, datastruct):
+                        raise TypeError("base class can not be subclass of datastruct")
+                is_dataobject = True
+            if issubclass(base0, datastruct):
+                for base in bases[1:]:
+                    if issubclass(base, dataobject):
+                        raise TypeError("base class can not be subclass of dataobject")
+                is_datastruct = True
+            
+                
         else:
             bases = (dataobject,)
 
@@ -160,10 +174,13 @@ class datatype(type):
         if hashable:
             options['hashable'] = hashable
 
+        if is_datastruct:
+            options['immutable_type'] = immutable_type = True
+
         if not _PY311 and immutable_type:
             import warnings
             warnings.warn("immutable_type parameter can be used only for python >= 3.11")
-
+        
         if has_fields:
             if annotations:
                 annotations = {fn:annotations[fn] \
@@ -220,6 +237,9 @@ class datatype(type):
                 annotations = {fn:fd['type'] for fn,fd in fields_dict.items() if 'type' in fd} 
 
             fields = tuple(fields)
+
+            if is_datastruct and use_dict:
+                raise TypeError('datastruct subclasses can not have __dict__')
 
             if has_fields and not fast_new and ('__new__' not in ns or '__init__' not in ns):
                 __new__ = _make_new_function(typename, fields, defaults_dict, annotations, use_dict)
@@ -280,21 +300,12 @@ class datatype(type):
                         ds = dataobjectproperty(i, False)
                 ns[name] = ds
 
-        # if 'others' in options:
-        #     ns.update(options.pop('others'))
-
         # bases = tuple(base for base in bases if base is dataobject or not issubclass(base, dataobject))
         # if not bases:
         #     bases = (dataobject,)
         # if dataobject not in bases:
         #     bases = (dataobject,) + bases
         # print(typename, bases)
-
-        # if has_fields and use_slots:
-        #     ns['__slots__'] = fields
-        #     for name in fields:
-        #         if name in ns:
-        #             del ns[name]
 
         cls = type.__new__(metatype, typename, bases, ns)
 
@@ -309,9 +320,9 @@ class datatype(type):
                 setattr(cls, name, ds)
 
         cls.__configure__(sequence=sequence, mapping=mapping, readonly=readonly,
-                          hashable=hashable, iterable=iterable, use_dict=use_dict, use_weakref=use_weakref,
-                          gc=gc, deep_dealloc=deep_dealloc, immutable_type=immutable_type,
-                          copy_default=copy_default,
+                          hashable=hashable, iterable=iterable, use_dict=use_dict,
+                          use_weakref=use_weakref, gc=gc, deep_dealloc=deep_dealloc,
+                          immutable_type=immutable_type, copy_default=copy_default,
                          )
 
         return cls
@@ -332,8 +343,11 @@ class datatype(type):
         if not is_pynew:
             is_pynew = _have_pynew(cls.__bases__)
 
-        if immutable_type and (is_pynew or is_pyinit):
-            raise TypeError('if immutable_type=True then __init__ or __new__ are not allowed')
+        if is_pynew or is_pyinit:
+            if issubclass(cls, _dataobject.datastruct):
+                raise TypeError('datastruct subclasses can not have __new__/__init__')
+            if immutable_type:
+                raise TypeError('if immutable_type=True then __init__ or __new__ are not allowed')
         
         _dataobject._dataobject_type_init(cls)
 

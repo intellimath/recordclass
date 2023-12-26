@@ -47,6 +47,7 @@
 #endif
 
 static PyTypeObject PyDataObject_Type;
+static PyTypeObject PyDataStruct_Type;
 static PyTypeObject *datatype;
 static PyTypeObject PyDataObjectProperty_Type;
 static PyTypeObject PyFactory_Type;
@@ -1546,12 +1547,12 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_getattro */
     0,                                      /* tp_setattro */
     0,                                      /* tp_as_buffer */
-#if PY_VERSION_HEX >= 0x030A0000
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|
-    Py_TPFLAGS_HAVE_VECTORCALL,
-#else
+// #if PY_VERSION_HEX >= 0x030A0000
+//     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|
+//     Py_TPFLAGS_HAVE_VECTORCALL,
+// #else
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
-#endif
+// #endif
                                             /* tp_flags */
     dataobject_doc,                         /* tp_doc */
     0,                                      /* tp_traverse */
@@ -1571,6 +1572,67 @@ static PyTypeObject PyDataObject_Type = {
     dataobject_init,                                      /* tp_init */
     dataobject_alloc,                       /* tp_alloc */
     dataobject_new,                                      /* tp_new */
+    PyObject_Del,                        /* tp_free */
+    0,                                       /* tp_is_gc */
+// #if PY_VERSION_HEX >= 0x030A0000
+//     .tp_vectorcall = dataobject_vectorcall,                                      /* tp_vectorcall */
+// #endif
+};
+
+PyDoc_STRVAR(datastruct_doc,
+"datastruct(...) --> datastruct\n\n\
+");
+
+static PyTypeObject PyDataStruct_Type = {
+    PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
+    "recordclass._dataobject.structobject",   /* tp_name */
+    sizeof(PyObject),                       /* tp_basicsize */
+    0,                                      /* tp_itemsize */
+    /* methods */
+    (destructor)dataobject_dealloc,         /* tp_dealloc */
+#if PY_VERSION_HEX >= 0x030B0000
+    offsetof(PyTypeObject, tp_vectorcall),
+#else
+    0,                                      /* tp_print */
+#endif
+    0,                                      /* tp_getattr */
+    0,                                      /* tp_setattr */
+    0,                                      /* tp_reserved */
+    0,                                      /* tp_repr */
+    0,                                      /* tp_as_number */
+    &dataobject_as_sequence0,               /* tp_as_sequence */
+    &dataobject_as_mapping0,                /* tp_as_mapping */
+    dataobject_hash_byref,                  /* tp_hash */
+    0,                                      /* tp_call */
+    0,                                      /* tp_str */
+    0,                                      /* tp_getattro */
+    0,                                      /* tp_setattro */
+    0,                                      /* tp_as_buffer */
+#if PY_VERSION_HEX >= 0x030A0000
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|
+    Py_TPFLAGS_HAVE_VECTORCALL,
+#else
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+#endif
+                                            /* tp_flags */
+    datastruct_doc,                         /* tp_doc */
+    0,                                      /* tp_traverse */
+    0,                                      /* tp_clear */
+    dataobject_richcompare,                 /* tp_richcompare */
+    0,                                      /* tp_weaklistoffset*/
+    0,                                      /* tp_iter */
+    0,                                      /* tp_iternext */
+    dataobject_methods,                     /* tp_methods */
+    0,                                      /* tp_members */
+    0,                                      /* tp_getset */
+    0,                                      /* tp_base */
+    0,                                      /* tp_dict */
+    0,                                      /* tp_descr_get */
+    0,                                      /* tp_descr_set */
+    0,                                      /* tp_dictoffset */
+    dataobject_init_basic,                                      /* tp_init */
+    dataobject_alloc,                       /* tp_alloc */
+    dataobject_new_basic,                                      /* tp_new */
     PyObject_Del,                        /* tp_free */
     0,                                       /* tp_is_gc */
 #if PY_VERSION_HEX >= 0x030A0000
@@ -2045,9 +2107,10 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp = (PyTypeObject*)cls;
     tp_base = tp->tp_base;
 
-    if (tp_base != &PyDataObject_Type && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
+    if ((tp_base != &PyDataObject_Type && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) &&
+         (tp_base != &PyDataStruct_Type && !PyType_IsSubtype(tp_base, &PyDataStruct_Type))) {
         PyErr_Format(PyExc_TypeError,
-                        "common base class %s should be subclass of dataobject", tp_base->tp_name);
+                        "common base class %s should be subclass of dataobject or datastruct", tp_base->tp_name);
         return NULL;
     }
 
@@ -2088,8 +2151,15 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
     tp->tp_basicsize = sizeof(PyObject) + n_fields * sizeof(PyObject*);
     tp->tp_itemsize = n_fields;
 
-    tp->tp_dictoffset = tp_base->tp_dictoffset;
-    tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
+    if (tp_base == &PyDataStruct_Type) {
+        tp->tp_dictoffset = 0;
+        tp->tp_weaklistoffset = 0;
+        tp->tp_flags &= ~Py_TPFLAGS_BASETYPE;
+    }
+    else {
+        tp->tp_dictoffset = tp_base->tp_dictoffset;
+        tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;        
+    }
 
 
 // #if PY_VERSION_HEX >= 0x030A0000
@@ -2837,6 +2907,9 @@ PyInit__dataobject(void)
     if (PyType_Ready(&PyDataObject_Type) < 0)
         Py_FatalError("Can't initialize dataobject type");
 
+    if (PyType_Ready(&PyDataStruct_Type) < 0)
+        Py_FatalError("Can't initialize datastruct type");
+    
     if (PyType_Ready(&PyDataObjectIter_Type) < 0)
         Py_FatalError("Can't initialize dataobjectiter type");
 
@@ -2849,6 +2922,9 @@ PyInit__dataobject(void)
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
 
+    Py_INCREF(&PyDataStruct_Type);
+    PyModule_AddObject(m, "datastruct", (PyObject *)&PyDataStruct_Type);
+    
     Py_INCREF(&PyDataObjectIter_Type);
     PyModule_AddObject(m, "dataobjectiter", (PyObject *)&PyDataObjectIter_Type);
 
