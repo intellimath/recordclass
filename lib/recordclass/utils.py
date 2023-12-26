@@ -26,7 +26,7 @@ import sys as _sys
 _PY36 = _sys.version_info[:2] >= (3, 6)
 
 from keyword import iskeyword
-from recordclass import dataobject
+from recordclass import dataobject, datastruct
 from .datatype import Field
 
 _intern = _sys.intern
@@ -214,7 +214,7 @@ def collect_info_from_bases(bases, fields, fields_dict, options):
 
 def _have_pyinit(bases):
     for base in bases:
-        if base is object or base is dataobject:
+        if base is object or base is dataobject or base is datastruct:
             continue
         if '__init__' in base.__dict__:
             return True
@@ -225,7 +225,7 @@ def _have_pyinit(bases):
 
 def _have_pynew(bases):
     for base in bases:
-        if base is object or base is dataobject:
+        if base is object or base is dataobject or base is datastruct:
             continue
         if '__new__' in base.__dict__:
             return True

@@ -27,11 +27,11 @@ from ._litelist import litelist, litelist_fromargs
 from ._litetuple import litetuple, mutabletuple
 from .recordclass import recordclass
 from .typing import RecordClass
-from .dataclass import make_dataclass, make_class, join_dataclasses
+from .dataclass import make_dataclass, make_structclass, make_class, join_dataclasses
 from .dictclass import make_dictclass
 from .arrayclass import make_arrayclass
 from .adapter import as_dataclass, as_record
 
-structclass = make_dataclass
+structclass = make_structclass
 
 __version__ = '0.21.1'

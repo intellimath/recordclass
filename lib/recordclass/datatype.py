@@ -97,7 +97,8 @@ class datatype(type):
             options['use_weakref'] = use_weakref
         if copy_default:
             options['copy_default'] = copy_default
-        if immutable_type:
+        
+        if _PY311 and immutable_type:
             options['immutable_type'] = immutable_type
 
         if '__match_args__' in ns:
@@ -106,20 +107,18 @@ class datatype(type):
         is_dataobject = is_datastruct = False
         if bases:
             base0 = bases[0]
-            if not issubclass(base0, dataobject) and not issubclass(base0, datastruct):
-                raise TypeError("First base class should be subclass of dataobject or datastruct")
-            
             if issubclass(base0, dataobject):
                 for base in bases[1:]:
                     if issubclass(base, datastruct):
                         raise TypeError("base class can not be subclass of datastruct")
                 is_dataobject = True
-            if issubclass(base0, datastruct):
+            elif issubclass(base0, datastruct):
                 for base in bases[1:]:
                     if issubclass(base, dataobject):
                         raise TypeError("base class can not be subclass of dataobject")
                 is_datastruct = True
-            
+            else:
+                raise TypeError("First base class should be subclass of dataobject or datastruct")
                 
         else:
             bases = (dataobject,)
@@ -174,12 +173,12 @@ class datatype(type):
         if hashable:
             options['hashable'] = hashable
 
-        if is_datastruct:
+        if is_datastruct and _PY311:
             options['immutable_type'] = immutable_type = True
 
         if not _PY311 and immutable_type:
             import warnings
-            warnings.warn("immutable_type parameter can be used only for python >= 3.11")
+            warnings.warn("immutable_type=True can be used only for python >= 3.11")
         
         if has_fields:
             if annotations:
@@ -335,7 +334,6 @@ class datatype(type):
         import recordclass._dataobject as _dataobject
         from .utils import _have_pyinit, _have_pynew
 
-
         is_pyinit = '__init__' in cls.__dict__
         is_pynew = '__new__' in cls.__dict__
         if not is_pyinit:
@@ -345,8 +343,8 @@ class datatype(type):
 
         if is_pynew or is_pyinit:
             if issubclass(cls, _dataobject.datastruct):
-                raise TypeError('datastruct subclasses can not have __new__/__init__')
-            if immutable_type:
+                raise TypeError('datastruct subclasses can not have __new__ and __init__')
+            elif immutable_type:
                 raise TypeError('if immutable_type=True then __init__ or __new__ are not allowed')
         
         _dataobject._dataobject_type_init(cls)

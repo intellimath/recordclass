@@ -26,6 +26,11 @@ from .utils import process_fields
 from .utils import check_name, collect_info_from_bases
 from ._dataobject import dataobject
 
+try:
+    from ._dataobject import datastruct
+except:
+    datastruct = dataobject
+
 __all__ = 'make_dataclass', 'join_dataclasses', 'DataclassStorage'
 
 def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=None,
@@ -91,6 +96,20 @@ def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=Non
     return cls
 
 make_class = make_dataclass
+
+
+
+def make_structclass(typename, fields, defaults=None, *, bases=(datastruct,), namespace=None,
+                   use_weakref=False, hashable=False,
+                   sequence=False, mapping=False, iterable=False, readonly=False, 
+                   module=None, fast_new=True, gc=False, 
+                   copy_default=False, match=None):
+    return make_dataclass(typename, fields, defaults=defaults, bases=bases, namespace=namespace,
+                   use_dict=False, use_weakref=use_weakref, hashable=hashable,
+                   sequence=sequence, mapping=mapping, iterable=iterable, readonly=readonly, invalid_names=(),
+                   deep_dealloc=False, module=module, fast_new=True, rename=False, gc=gc, 
+                   immutable_type=True, copy_default=copy_default, match=match)
+
 
 class DataclassStorage:
     #

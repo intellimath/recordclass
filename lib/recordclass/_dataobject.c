@@ -1529,11 +1529,7 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_itemsize */
     /* methods */
     (destructor)dataobject_dealloc,         /* tp_dealloc */
-#if PY_VERSION_HEX >= 0x030B0000
-    offsetof(PyTypeObject, tp_vectorcall),
-#else
     0,                                      /* tp_print */
-#endif
     0,                                      /* tp_getattr */
     0,                                      /* tp_setattr */
     0,                                      /* tp_reserved */
@@ -1574,9 +1570,6 @@ static PyTypeObject PyDataObject_Type = {
     dataobject_new,                                      /* tp_new */
     PyObject_Del,                        /* tp_free */
     0,                                       /* tp_is_gc */
-// #if PY_VERSION_HEX >= 0x030A0000
-//     .tp_vectorcall = dataobject_vectorcall,                                      /* tp_vectorcall */
-// #endif
 };
 
 PyDoc_STRVAR(datastruct_doc,
@@ -1794,10 +1787,10 @@ dataobject_iter(PyObject *seq)
     if (!seq)
         return NULL;
 
-    if (Py_TYPE(seq)->tp_base != &PyDataObject_Type && !PyType_IsSubtype(Py_TYPE(seq), &PyDataObject_Type)) {
-        PyErr_SetString(PyExc_TypeError, "the object is not instance of dataobject");
-        return NULL;
-    }
+    // if (Py_TYPE(seq)->tp_base != &PyDataObject_Type && !PyType_IsSubtype(Py_TYPE(seq), &PyDataObject_Type)) {
+    //     PyErr_SetString(PyExc_TypeError, "the object is not instance of dataobject");
+    //     return NULL;
+    // }
 
     it = PyObject_New(dataobjectiterobject, &PyDataObjectIter_Type);
     if (it == NULL)
@@ -2208,10 +2201,10 @@ _collection_protocol(PyObject *cls, PyObject *sequence, PyObject *mapping, PyObj
 
     PyTypeObject *tp_base = tp->tp_base;
 
-    if ((tp_base != &PyDataObject_Type) && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
-        PyErr_SetString(PyExc_TypeError, "the type should be dataobject or it's subtype");
-        return NULL;
-    }
+    // if ((tp_base != &PyDataObject_Type) && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
+    //     PyErr_SetString(PyExc_TypeError, "the type should be dataobject or it's subtype");
+    //     return NULL;
+    // }
 
     copy_mapping_methods(tp->tp_as_mapping, tp_base->tp_as_mapping);
     copy_sequence_methods(tp->tp_as_sequence, tp_base->tp_as_sequence);
@@ -2593,11 +2586,11 @@ asdict(PyObject *module, PyObject *args)
     op = PyTuple_GET_ITEM(args, 0);
     type = Py_TYPE(op);
 
-    if (type != &PyDataObject_Type &&
-        !PyType_IsSubtype(type, &PyDataObject_Type)) {
-            PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
-            return NULL;
-    }
+    // if (type != &PyDataObject_Type &&
+    //     !PyType_IsSubtype(type, &PyDataObject_Type)) {
+    //         PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
+    //         return NULL;
+    // }
 
     return _asdict(op);
 }
@@ -2616,10 +2609,10 @@ astuple(PyObject *module, PyObject *args)
 
     PyTypeObject* tp_base = type->tp_base;
 
-    if ((tp_base != &PyDataObject_Type) && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
-            PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
-            return NULL;
-    }
+    // if ((tp_base != &PyDataObject_Type) && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
+    //         PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
+    //         return NULL;
+    // }
 
     return _astuple(op);
 }
@@ -2902,6 +2895,8 @@ PyInit__dataobject(void)
 
     datatype = (PyTypeObject*)_PyObject_GetObject("recordclass", "datatype");
     __fix_type((PyObject*)&PyDataObject_Type, datatype);
+    Py_DECREF(datatype);
+    __fix_type((PyObject*)&PyDataStruct_Type, datatype);
     Py_DECREF(datatype);
 
     if (PyType_Ready(&PyDataObject_Type) < 0)

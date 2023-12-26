@@ -1,5 +1,5 @@
 from collections import namedtuple
-from recordclass import dataobject, make_dictclass
+from recordclass import dataobject, datastruct, make_dictclass
 from recordclass import litetuple, mutabletuple
 from timeit import timeit
 import sys
@@ -31,8 +31,17 @@ class PointSlots:
     def norm2(self):
         return self.x*self.x + self.y*self.y + self.z*self.z
 
+class PointStruct(datastruct, sequence=True):
+    x:int
+    y:int
+    z:int
+
+    def norm2(self):
+        return self.x*self.x + self.y*self.y + self.z*self.z
+
 if _PY311:
-    class Point(dataobject, sequence=True, immutable_type=True):
+
+    class Point(dataobject, sequence=True):
         x:int
         y:int
         z:int
@@ -83,11 +92,11 @@ results = {'id':[], 'size':[], 'new':[],
           }
 
 results['id'].extend(
-    ['litetuple', 'mutabletuple', 'tuple', 'namedtuple', 'class+slots', 'dataobject',  
+    ['litetuple', 'mutabletuple', 'tuple', 'namedtuple', 'class+slots', 'datastruct', 'dataobject',  
      'dataobject+gc', 'dict', 'dataobject+map', 'class'])
 
 classes = (litetuple, mutabletuple, tuple, PointNT, PointSlots, 
-           Point, PointGC, dict, PointMap, PyPoint)
+           PointStruct, Point, PointGC, dict, PointMap, PyPoint)
 
 N = 300_000
 
@@ -355,6 +364,7 @@ def test_all(relative=True):
       sys.getsizeof((0,0,0)),   
       sys.getsizeof(PointNT(0,0,0)),   
       sys.getsizeof(PointSlots(0,0,0)),   
+      sys.getsizeof(PointStruct(0,0,0)),   
       sys.getsizeof(Point(0,0,0)),   
       sys.getsizeof(PointGC(0,0,0)),   
       sys.getsizeof({'x':0,'y':0, 'z':0}),   
@@ -378,6 +388,6 @@ def test_all(relative=True):
     return pt
 
 pt = test_all()
-# print(pt)
-print(pt.get_html_string())
+print(pt)
+# print(pt.get_html_string())
 
