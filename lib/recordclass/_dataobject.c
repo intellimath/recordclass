@@ -1578,7 +1578,7 @@ PyDoc_STRVAR(datastruct_doc,
 
 static PyTypeObject PyDataStruct_Type = {
     PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type), 0)
-    "recordclass._dataobject.structobject",   /* tp_name */
+    "recordclass._dataobject.datastruct",   /* tp_name */
     sizeof(PyObject),                       /* tp_basicsize */
     0,                                      /* tp_itemsize */
     /* methods */
