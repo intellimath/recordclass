@@ -117,6 +117,7 @@ class datatype(type):
                     if issubclass(base, dataobject):
                         raise TypeError("base class can not be subclass of dataobject")
                 is_datastruct = True
+                options['immutable_type'] = immutable_type = True
             else:
                 raise TypeError("First base class should be subclass of dataobject or datastruct")
                 
@@ -172,9 +173,6 @@ class datatype(type):
             hashable = True
         if hashable:
             options['hashable'] = hashable
-
-        if is_datastruct and _PY311:
-            options['immutable_type'] = immutable_type = True
 
         if not _PY311 and immutable_type:
             import warnings
@@ -298,13 +296,6 @@ class datatype(type):
                     else:
                         ds = dataobjectproperty(i, False)
                 ns[name] = ds
-
-        # bases = tuple(base for base in bases if base is dataobject or not issubclass(base, dataobject))
-        # if not bases:
-        #     bases = (dataobject,)
-        # if dataobject not in bases:
-        #     bases = (dataobject,) + bases
-        # print(typename, bases)
 
         cls = type.__new__(metatype, typename, bases, ns)
 

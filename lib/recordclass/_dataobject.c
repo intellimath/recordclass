@@ -1543,12 +1543,7 @@ static PyTypeObject PyDataObject_Type = {
     0,                                      /* tp_getattro */
     0,                                      /* tp_setattro */
     0,                                      /* tp_as_buffer */
-// #if PY_VERSION_HEX >= 0x030A0000
-//     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|
-//     Py_TPFLAGS_HAVE_VECTORCALL,
-// #else
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
-// #endif
                                             /* tp_flags */
     dataobject_doc,                         /* tp_doc */
     0,                                      /* tp_traverse */
