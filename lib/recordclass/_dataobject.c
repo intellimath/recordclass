@@ -1578,7 +1578,7 @@ static PyTypeObject PyDataStruct_Type = {
     0,                                      /* tp_itemsize */
     /* methods */
     (destructor)dataobject_dealloc,         /* tp_dealloc */
-#if PY_VERSION_HEX >= 0x030B0000
+#if PY_VERSION_HEX >= 0x030A0000
     offsetof(PyTypeObject, tp_vectorcall),
 #else
     0,                                      /* tp_print */

@@ -70,8 +70,11 @@ def as_dataclass(*, use_dict:bool=False, use_weakref:bool=False, hashable:bool=F
         return new_cls
     return _adapter
 
-def as_record(readonly=False, immutable_type=True, copy_default=False):
+def as_record(readonly=False, copy_default=False):
     def _adapter(func, **kw):
+        from ._dataobject import datastruct
+        from .dataclass import make_dataclass
+
         name = func.__name__
         varnames = func.__code__.co_varnames
         annotations = func.__annotations__
@@ -84,7 +87,7 @@ def as_record(readonly=False, immutable_type=True, copy_default=False):
             else:
                 fields.append((fn,tp))
                 
-        return make_dataclass(name, fields, defaults, bases=(dataobject,),
-                              readonly=readonly, immutable_type=immutable_type, 
+        return make_dataclass(name, fields, defaults, bases=(datastruct,),
+                              readonly=readonly, immutable_type=True, 
                               copy_default=copy_default)
     return _adapter
