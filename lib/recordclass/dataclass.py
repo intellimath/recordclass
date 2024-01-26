@@ -97,8 +97,6 @@ def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=Non
 
 make_class = make_dataclass
 
-
-
 def make_structclass(typename, fields, defaults=None, *, bases=(datastruct,), namespace=None,
                    use_weakref=False, hashable=False,
                    sequence=False, mapping=False, iterable=False, readonly=False, 

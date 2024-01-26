@@ -253,7 +253,7 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
 
 static void 
 _fill_items(PyObject **items, PyObject * const*args, const Py_ssize_t n_args) {
-   Py_ssize_t i;
+    Py_ssize_t i;
     for (i = 0; i < n_args; i++) {
         PyObject *v = args[i];
         Py_INCREF(v);
@@ -2576,10 +2576,10 @@ static PyObject *
 asdict(PyObject *module, PyObject *args)
 {
     PyObject *op;
-    PyTypeObject *type;
+    // PyTypeObject *type;
 
     op = PyTuple_GET_ITEM(args, 0);
-    type = Py_TYPE(op);
+    // type = Py_TYPE(op);
 
     // if (type != &PyDataObject_Type &&
     //     !PyType_IsSubtype(type, &PyDataObject_Type)) {
@@ -2597,12 +2597,12 @@ static PyObject *
 astuple(PyObject *module, PyObject *args)
 {
     PyObject *op;
-    PyTypeObject *type;
+    // PyTypeObject *type;
 
     op = PyTuple_GET_ITEM(args, 0);
-    type = Py_TYPE(op);
+    // type = Py_TYPE(op);
 
-    PyTypeObject* tp_base = type->tp_base;
+    // PyTypeObject* tp_base = type->tp_base;
 
     // if ((tp_base != &PyDataObject_Type) && !PyType_IsSubtype(tp_base, &PyDataObject_Type)) {
     //         PyErr_SetString(PyExc_TypeError, "1st argument is not subclass of dataobject");
