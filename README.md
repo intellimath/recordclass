@@ -904,6 +904,10 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 ### Changes:
 
+#### 0.22
+
+* Add `datastruct` base class.
+
 #### 0.21.1
 
 * Allow to specify `__match_args__`. For example,
