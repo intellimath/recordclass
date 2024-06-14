@@ -906,7 +906,8 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 #### 0.22
 
-* Add `datastruct` base class.
+* Add a base class `datastruct` for subclasses that should behave more like simple datastructures.
+* Fix bug with `__match_args__` (#6).
 
 #### 0.21.1
 
