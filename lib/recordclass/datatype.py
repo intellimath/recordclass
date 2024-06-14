@@ -67,12 +67,12 @@ class datatype(type):
                 use_dict=False, use_weakref=False, hashable=False, 
                 immutable_type=False, copy_default=False, match=None):
 
-        from .utils import check_name, collect_info_from_bases
-        from ._dataobject import dataobject, datastruct
-        from ._dataobject import dataobjectproperty
+        from recordclass.utils import check_name, collect_info_from_bases
+        from recordclass._dataobject import dataobject, datastruct
+        from recordclass._dataobject import dataobjectproperty
         from sys import intern as _intern
         if _PY311:
-            from ._dataobject import member_new
+            from recordclass._dataobject import member_new
 
         options = {}
         if gc:
@@ -449,8 +449,8 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
     joined_fields2 = ', '.join(fields2)
 
     if use_dict:
-        doc = f"""{typename}({joined_fields2}, **kw)\n--\nCreate class {typename} instance"""
+        doc = f"""{typename}({joined_fields2}, **kw)\n\nCreate class {typename} instance"""
     else:
-        doc = f"""{typename}({joined_fields2})\n--\nCreate class {typename} instance"""
+        doc = f"""{typename}({joined_fields2})\n\nCreate class {typename} instance"""
 
     return doc
