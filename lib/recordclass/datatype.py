@@ -102,7 +102,7 @@ class datatype(type):
             options['immutable_type'] = immutable_type
 
         if '__match_args__' in ns:
-            options['match'] = ns[__match_args__]            
+            options['match'] = ns['__match_args__']            
 
         is_dataobject = is_datastruct = False
         if bases:
