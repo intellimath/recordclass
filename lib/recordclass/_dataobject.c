@@ -2135,6 +2135,10 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
             tp->tp_flags &= ~Py_TPFLAGS_PREHEADER;
     #endif
 
+    #if PY_VERSION_HEX >= 0x030D0000
+            tp->tp_flags &= ~Py_TPFLAGS_INLINE_VALUES;
+            tp->tp_flags &= ~Py_TPFLAGS_ITEMS_AT_END;
+    #endif
 
     tp->tp_basicsize = sizeof(PyObject) + n_fields * sizeof(PyObject*);
     tp->tp_itemsize = n_fields;
