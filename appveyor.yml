@@ -4,23 +4,24 @@ environment:
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
     # See: http://stackoverflow.com/a/13751649/163740
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+    GIT_CLONE_PROTECTION_ACTIVE: false
 
   matrix:
 
     - PYTHON: "C:\\Python312"
-      PYTHON_VERSION: "3.12.0" 
+      PYTHON_VERSION: "3.12.3" 
       PYTHON_ARCH: "32"
 
     - PYTHON: "C:\\Python312-x64"
-      PYTHON_VERSION: "3.12.0" 
+      PYTHON_VERSION: "3.12.3" 
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python311"
-      PYTHON_VERSION: "3.11.0" 
+      PYTHON_VERSION: "3.11.9" 
       PYTHON_ARCH: "32"
 
     - PYTHON: "C:\\Python311-x64"
-      PYTHON_VERSION: "3.11.0" 
+      PYTHON_VERSION: "3.11.9" 
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python310"
@@ -55,13 +56,13 @@ environment:
       PYTHON_VERSION: "3.7.x" 
       PYTHON_ARCH: "64"
 
-    - PYTHON: "C:\\Python36"
-      PYTHON_VERSION: "3.6.x" 
-      PYTHON_ARCH: "32"
+    # - PYTHON: "C:\\Python36"
+    #   PYTHON_VERSION: "3.6.x" 
+    #   PYTHON_ARCH: "32"
 
-    - PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.x" 
-      PYTHON_ARCH: "64"
+    # - PYTHON: "C:\\Python36-x64"
+    #   PYTHON_VERSION: "3.6.x" 
+    #   PYTHON_ARCH: "64"
 
 install:
   - ECHO "Filesystem root:"
