@@ -908,6 +908,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 * Add a base class `datastruct` for subclasses that should behave more like simple datastructures.
 * Fix bug with `__match_args__` (#6).
+* Start support for python3.13.
 
 #### 0.21.1
 
