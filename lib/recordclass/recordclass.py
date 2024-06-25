@@ -22,11 +22,9 @@
 
 __all__ = 'recordclass', 'RecordclassStorage'
 
-from .datatype import datatype
-from ._dataobject import dataobject
 
 def _add_namedtuple_api(typename, readonly):
-    from ._dataobject import astuple, asdict
+    from ._dataobject import asdict
 
     def _make(_cls, iterable):
         ob = _cls(*iterable)

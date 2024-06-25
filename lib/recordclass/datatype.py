@@ -263,7 +263,7 @@ class datatype(type):
                     n_match = len(match_args)
                     if n_match > len(fields) or fields[:n_match] != match_args:
                         print(match_args, fields[:n_match])
-                        raise TypeError(f"__match_args__ is not valid")
+                        raise TypeError("__match_args__ is not valid")
                 else:
                     ns['__match_args__'] = fields
 

@@ -1,11 +1,9 @@
 """Unit tests for recordclass.py."""
-import unittest, doctest, operator
+import unittest
 from recordclass import recordclass
 from recordclass.recordclass import RecordclassStorage
-from collections import OrderedDict
-import pickle, copy
-import keyword
-import re
+import pickle
+import copy
 import sys
 
 # try:
@@ -17,7 +15,6 @@ if 'PyPy' in sys.version:
     is_pypy = True
 else:
     is_pypy = False
-    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 
 TestNT = recordclass('TestNT', 'x y z')    # type used for pickle tests
@@ -188,7 +185,8 @@ class RecordClassTest(unittest.TestCase):
 
         # n = 5000
         n = 254 # SyntaxError: more than 255 arguments:
-        import string, random
+        import string
+        import random
         names = list({''.join([random.choice(string.ascii_letters)
                                   for j in range(10)]) for i in range(n)})
         n = len(names)

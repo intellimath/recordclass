@@ -1,14 +1,12 @@
 import unittest
-import pickle, copy
-import keyword
-import re
+import pickle
+import copy
 import sys
-import gc
 import weakref
 
-from recordclass import make_dataclass, datatype, as_record
-from recordclass import datastruct, datatype
-from recordclass import asdict, make
+from recordclass import as_record
+from recordclass import datastruct
+from recordclass import asdict
 
 from typing import ClassVar
 
@@ -16,7 +14,7 @@ if 'PyPy' in sys.version:
     is_pypy = True
 else:
     is_pypy = False
-    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+    from recordclass.utils import headgc_size, pyobject_size, pyvarobject_size
 
     _t = ()
     _t1 = (1,)
@@ -373,7 +371,6 @@ class datastructTest3(unittest.TestCase):
                 self.assertEqual(p, q)
 
     def test_datastruct_invalid_defaults_tp(self):
-        import copy
 
         with self.assertRaises(TypeError):
             class A(datastruct):
@@ -381,7 +378,6 @@ class datastructTest3(unittest.TestCase):
                 y:int
 
     def test_datastruct_copy_tp(self):
-        import copy
 
         class A(datastruct):
             x:int

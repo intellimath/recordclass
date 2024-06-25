@@ -1,6 +1,6 @@
 import unittest
 import sqlite3 as sql
-from recordclass import dataobject, make_dataclass
+from recordclass import dataobject
 from recordclass.tools.sqlite import dataclass_row_factory
 
 class DataobjectSqliteTest(unittest.TestCase):

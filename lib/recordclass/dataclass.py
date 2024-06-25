@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 from .utils import process_fields
-from .utils import check_name, collect_info_from_bases
+from .utils import check_name
 from ._dataobject import dataobject
 
 try:
@@ -56,7 +56,6 @@ def make_dataclass(typename, fields, defaults=None, *, bases=None, namespace=Non
     >>> Point(**d)                      # convert from a dictionary
     Point(x=1, y=-1)
     """
-    from ._dataobject import dataobject
     from .datatype import datatype
     import sys as _sys
 

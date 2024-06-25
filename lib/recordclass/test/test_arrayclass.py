@@ -1,17 +1,15 @@
 import unittest
 import sys
-import gc
 import weakref
-import pickle, copy
+import pickle
 
-from recordclass import make_arrayclass, datatype
+from recordclass import make_arrayclass
 # from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 if 'PyPy' in sys.version:
     is_pypy = True
 else:
     is_pypy = False
-    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 
 TPickle1 = make_arrayclass("TPickle1", 3)

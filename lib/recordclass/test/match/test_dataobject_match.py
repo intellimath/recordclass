@@ -1,6 +1,6 @@
 import unittest
 
-from recordclass import make_dataclass, make_arrayclass, dataobject, MATCH
+from recordclass import make_dataclass, dataobject, MATCH
 
 class dataobjectmatchTest(unittest.TestCase):
 

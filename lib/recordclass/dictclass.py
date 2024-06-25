@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 from .utils import process_fields
-from .utils import check_name, collect_info_from_bases
+from .utils import check_name
 
 __all__ = 'make_dictclass', 'DictclassStorage'
 
@@ -36,7 +36,7 @@ def make_dictclass(typename, keys, defaults=None, *, bases=None, namespace=None,
     'Point(x, y)'
     >>> p = Point(1, 2)                 # instantiate with positional args or keywords
     """
-    from ._dataobject import dataobject, astuple, asdict
+    from ._dataobject import dataobject
     from .datatype import datatype
     import sys as _sys
 

@@ -1,5 +1,5 @@
 from collections import namedtuple
-from recordclass import dataobject, datastruct, make_dictclass
+from recordclass import dataobject, datastruct
 from recordclass import litetuple, mutabletuple
 from timeit import timeit
 import sys

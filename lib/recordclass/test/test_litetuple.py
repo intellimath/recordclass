@@ -2,7 +2,6 @@ import unittest
 from recordclass import litetuple, mutabletuple
 
 import gc
-import pickle
 import copy
 
 class litetupleTest(unittest.TestCase):

@@ -1,7 +1,6 @@
 import unittest
 from recordclass import litelist, litelist_fromargs
 
-import gc
 import pickle
 import sys
 

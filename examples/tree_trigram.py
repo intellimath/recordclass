@@ -4,7 +4,6 @@
 
 
 import random
-import sys
 from collections import deque
 from recordclass import dataobject
 import time
@@ -161,7 +160,6 @@ q2 = math.sqrt(2)
 # In[12]:
 
 
-import gc
 gc.collect()
 
 
@@ -226,7 +224,6 @@ while n < n2+1:
 
 
 import seaborn as sb
-import statsmodels
 x = np.log(ns)
 y = np.log(np.array(times) - np.array(times2))
 sb.regplot(x, y, robust=True, fit_reg=True)

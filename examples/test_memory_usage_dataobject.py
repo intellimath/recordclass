@@ -5,7 +5,7 @@ import time
 import psutil
 import os
 
-from recordclass import make_dataclass, litelist
+from recordclass import make_dataclass
 
 def memory_usage_psutil():
     # return the memory usage in percentage like top

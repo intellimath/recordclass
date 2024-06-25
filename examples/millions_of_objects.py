@@ -5,7 +5,6 @@ from recordclass import dataobject
 from time import time
 from random import randrange
 import sys
-import gc
 
 ijw = [(randrange(100), randrange(100), randrange(1000)) for _ in range(10000000)]
 

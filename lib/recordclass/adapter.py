@@ -49,7 +49,6 @@ if _PY311:
                           fast_new=fast_new, rename=rename, gc=gc) -> type[T]:
             from ._dataobject import dataobject
             from .datatype import datatype
-            from sys import intern as _intern
 
             ns = {}
             if '__fields__' not in _cls_.__dict__:
@@ -101,7 +100,6 @@ else:
                           fast_new=fast_new, rename=rename, gc=gc):
             from ._dataobject import dataobject
             from .datatype import datatype
-            from sys import intern as _intern
 
             ns = {}
             if '__fields__' not in cls.__dict__:

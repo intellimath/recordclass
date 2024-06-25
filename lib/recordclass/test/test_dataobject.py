@@ -1,19 +1,17 @@
 import unittest
-import pickle, copy
-import keyword
-import re
+import pickle
 import sys
 import gc
 import weakref
 
-from recordclass import make_dataclass, make_arrayclass, dataobject, make, clone, update
-from recordclass import datatype, asdict, astuple, join_dataclasses
+from recordclass import make_dataclass, dataobject, make, clone, update
+from recordclass import asdict, astuple, join_dataclasses
 
 if 'PyPy' in sys.version:
     is_pypy = True
 else:
     is_pypy = False
-    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+    from recordclass.utils import headgc_size, ref_size, pyobject_size
 
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
 TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)

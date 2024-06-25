@@ -1,10 +1,8 @@
 """Unit tests for recordclass.py."""
-import unittest, doctest, operator
+import unittest
 from recordclass.typing import RecordClass
 
 import pickle
-import typing
-import sys as _sys
 
 class CoolEmployee(RecordClass):
     name: str
