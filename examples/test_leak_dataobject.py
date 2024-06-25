@@ -13,17 +13,17 @@ def memory_usage_psutil():
     mem = process.memory_info().rss
     return mem
 
-Cls = make_dataclass('Cls', ['a','b','c'])
+Cls = make_dataclass('Cls', "a b c")
 
 N = 1000000
-while True:
+for i in range(1000):
     print(memory_usage_psutil())
     rnd = random.randint
-    lst = litelist()
+    lst = litelist([])
     for i in range(N):
         o = Cls(rnd(1,1024), rnd(1,1024), rnd(1,1024))
         lst.append(o)
     print(memory_usage_psutil())
-    del a
+    del lst
     time.sleep(1.)
   

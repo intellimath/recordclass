@@ -25,6 +25,7 @@
 #endif
 
 #include "Python.h"
+#include "_litelist.h"
 
 #define PyLiteList_ITEMS(op) ((PyLiteListObject *)(op))->ob_item
 #define PyLiteList_GET_ITEM(op, i) (((PyLiteListObject *)(op))->ob_item[i])
@@ -40,22 +41,22 @@
 
 #define pyobject_size(tp) ( (tp)->tp_basicsize )
 
-#if !defined(Py_SET_TYPE)
-#define Py_SET_TYPE(ob, type) (((PyObject*)(ob))->ob_type) = (type)
-#endif
+// #if !defined(Py_SET_TYPE)
+// #define Py_SET_TYPE(ob, type) (((PyObject*)(ob))->ob_type) = (type)
+// #endif
 
-#if !defined(Py_TYPE)
-#define Py_TYPE(ob) ((PyObject*)(ob))->ob_type
-#endif
+// #if !defined(Py_TYPE)
+// #define Py_TYPE(ob) ((PyObject*)(ob))->ob_type
+// #endif
 
 #define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
 
-#if !defined(Py_SET_SIZE)
-#define Py_SET_SIZE(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
-#endif
+// #if !defined(Py_SET_SIZE)
+// #define Py_SET_SIZE(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
+// #endif
 
 static PyTypeObject PyLiteList_Type;
-typedef PyListObject PyLiteListObject;
+//typedef PyListObject PyLiteListObject;
 
 static void
 litelist_resize(PyObject *op, Py_ssize_t size) {

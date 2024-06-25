@@ -16,7 +16,7 @@ def memory_usage_psutil():
 X = make_dataclass('X', fields=['a','b','c'])
 #X = new_datatype('X', fields=3)
 
-while True:
+for i in range(1000):
   a = X(randint(1,100), randint(1,100), randint(1,100))
   x = a.a
   a.a = 1

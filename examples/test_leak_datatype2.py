@@ -16,7 +16,7 @@ def memory_usage_psutil():
 
 N = 1000000
 X = make_dataclass('X', fields=['a','b','c'])
-Y = make_arrayclass('Y', fields=N)
+Y = make_arrayclass('Y', n_fields=N)
 
 gc.collect()
 time.sleep(1.)
