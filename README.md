@@ -904,6 +904,10 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 ### Changes:
 
+#### 0.22.0.2
+
+* Make release on github with right tag.
+
 #### 0.22.0.1
 
 * Fix regression with `as_dataclass`.
