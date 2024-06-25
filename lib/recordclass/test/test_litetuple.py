@@ -2,7 +2,6 @@ import unittest
 from recordclass import litetuple, mutabletuple
 
 import gc
-import pickle
 import copy
 
 class litetupleTest(unittest.TestCase):
@@ -20,7 +19,7 @@ class litetupleTest(unittest.TestCase):
         self.assertEqual(mutabletuple(0, 1, 2, 3), mutabletuple(0, 1, 2, 3))
         self.assertEqual(mutabletuple(''), mutabletuple(''))
         self.assertEqual(mutabletuple(*'abc'), mutabletuple(*'abc'))
-        
+
     def test_truth(self):
         self.assertTrue(not litetuple())
         self.assertTrue(litetuple(42))
@@ -34,7 +33,7 @@ class litetupleTest(unittest.TestCase):
         self.assertEqual(len(mutabletuple()), 0)
         self.assertEqual(len(mutabletuple(0)), 1)
         self.assertEqual(len(mutabletuple(0, 1, 2)), 3)
-        
+
     def test_concat(self):
         t1 = litetuple(1,2)
         t2 = litetuple(3,4)
@@ -64,7 +63,7 @@ class litetupleTest(unittest.TestCase):
         self.assertEqual(t, t[:])
         self.assertEqual(t, t[:1])
         self.assertEqual(t, t[:2])
-        
+
     def test_slice2(self):
         t = litetuple(1)
         self.assertEqual(t, t[:])
@@ -76,7 +75,7 @@ class litetupleTest(unittest.TestCase):
         self.assertEqual(t, t[:])
         self.assertEqual(t, t[:1])
         self.assertEqual(t, t[:2])
-        
+
     def test_slice3(self):
         t = litetuple(1,2,3)
         self.assertEqual(t, t[:])
@@ -95,9 +94,9 @@ class litetupleTest(unittest.TestCase):
 
     def test_hash2(self):
         t = mutabletuple(1, 2, 3)
-        with self.assertRaises(TypeError):     
+        with self.assertRaises(TypeError):
             hash(t)
-        
+
     def test_copy1(self):
         t = litetuple()
         self.assertEqual(t, t.__copy__())
@@ -105,7 +104,7 @@ class litetupleTest(unittest.TestCase):
     def test_copy12(self):
         t = mutabletuple()
         self.assertEqual(t, t.__copy__())
-        
+
     def test_copy2(self):
         t = litetuple(1, 2, 3)
         self.assertEqual(t, t.__copy__())
@@ -113,7 +112,7 @@ class litetupleTest(unittest.TestCase):
     def test_copy22(self):
         t = mutabletuple(1, 2, 3)
         self.assertEqual(t, t.__copy__())
-        
+
     def test_copy3(self):
         t = litetuple()
         self.assertEqual(t, copy.copy(t))
@@ -121,7 +120,7 @@ class litetupleTest(unittest.TestCase):
     def test_copy32(self):
         t = mutabletuple()
         self.assertEqual(t, copy.copy(t))
-        
+
     def test_copy4(self):
         t = litetuple(1, 2, 3)
         self.assertEqual(t, copy.copy(t))
@@ -129,14 +128,13 @@ class litetupleTest(unittest.TestCase):
     def test_copy42(self):
         t = mutabletuple(1, 2, 3)
         self.assertEqual(t, copy.copy(t))
-        
+
     def test_litetupleresizebug(self):
         # Check that a specific bug in _PyTuple_Resize() is squashed.
         def f():
-            for i in range(1000):
-                yield i
+            yield from range(1000)
         self.assertEqual(list(litetuple(*f())), list(range(1000)))
- 
+
     def test_repr(self):
         l0 = litetuple()
         l2 = litetuple(0, 1, 2)
@@ -159,7 +157,7 @@ class litetupleTest(unittest.TestCase):
         gc.collect()
         gc.collect()
         self.assertFalse(gc.is_tracked(t))
-        
+
     def test_repr_large(self):
         # Check the repr of large list objects
         def check(n):
@@ -169,7 +167,7 @@ class litetupleTest(unittest.TestCase):
                 'litetuple(' + ', '.join(['0'] * n) + ')')
         check(10)       # check our checking code
         check(1000000)
-    
+
 #     def test_iterator_pickle(self):
 #         # Userlist iterators don't support pickling yet since
 #         # they are based on generators.
@@ -185,7 +183,7 @@ class litetupleTest(unittest.TestCase):
 #         next(it)
 #         d = pickle.dumps(it)
 #         self.assertEqual(self.type2test(*it), self.type2test(data)[1:])
-        
+
     def test_reversed(self):
         t = litetuple(1,2,3)
         tr = litetuple(*reversed(t))
@@ -195,7 +193,7 @@ class litetupleTest(unittest.TestCase):
         t = mutabletuple(1,2,3)
         tr = mutabletuple(*reversed(t))
         self.assertEqual(tr, mutabletuple(3,2,1))
-        
+
 #     def test_reversed_pickle(self):
 #         data = self.type2test(4, 5, 6, 7)
 #         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
@@ -204,7 +202,7 @@ class litetupleTest(unittest.TestCase):
 #             it = pickle.loads(d)
 #             self.assertEqual(type(itorg), type(it))
 #             self.assertEqual(self.type2test(*it), self.type2test(*reversed(data)))
-    
+
 #             it = pickle.loads(d)
 #             next(it)
 #             d = pickle.dumps(it, proto)
@@ -220,6 +218,6 @@ class litetupleTest(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(litetupleTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(litetupleTest))
     return suite
 

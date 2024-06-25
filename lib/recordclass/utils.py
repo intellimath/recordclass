@@ -1,14 +1,12 @@
-# coding: utf-8
- 
 # The MIT License (MIT)
 
 # Copyright (c) «2015-2023» «Shibzukhov Zaur, szport at gmail dot com»
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software - recordclass library - and associated documentation files 
-# (the "Software"), to deal in the Software without restriction, including 
-# without limitation the rights to use, copy, modify, merge, publish, distribute, 
-# sublicense, and/or sell copies of the Software, and to permit persons to whom 
+# of this software - recordclass library - and associated documentation files
+# (the "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom
 # the Software is furnished to do so, subject to the following conditions:
 
 # The above copyright notice and this permission notice shall be included in
@@ -22,26 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
+import sys
 
 from keyword import iskeyword
 from recordclass import dataobject, datastruct
 from .datatype import Field
 
-_intern = _sys.intern
-if _PY36:
-    from typing import _type_check
-else:
-    def _type_check(t, msg):
-        if isinstance(t, (type, str)):
-            return t
-        else:
-            raise TypeError('invalid type annotation', t)    
+_intern = sys.intern
+from typing import _type_check
 
 ### sizes
 
-if 'PyPy' in _sys.version:
+if 'PyPy' in sys.version:
     is_pypy = True
 else:
     is_pypy = False
@@ -49,13 +39,12 @@ else:
     _t = ()
     _t1 = (1,)
     _o = object()
-    headgc_size = _sys.getsizeof(_t) - _t.__sizeof__()
-    ref_size = _sys.getsizeof(_t1) - _sys.getsizeof(_t)
+    headgc_size = sys.getsizeof(_t) - _t.__sizeof__()
+    ref_size = sys.getsizeof(_t1) - sys.getsizeof(_t)
     pyobject_size = _o.__sizeof__()
     pyvarobject_size = _t.__sizeof__()
     pyssize = pyvarobject_size - pyobject_size
     del _t, _t1, _o
-del _sys
 
 #############
 
@@ -103,7 +92,7 @@ def process_fields(fields, defaults, rename, invalid_names):
             fn = _intern(fn)
             field_names.append(fn)
     fields = field_names
-        
+
     seen = set()
     for fn in fields:
         if fn in seen:
@@ -138,7 +127,7 @@ def check_name(name, rename=False, i=0, invalid_names=()):
             raise ValueError('Name must be valid identifiers: %r' % name)
         if iskeyword(name):
             raise ValueError('Name cannot be a keyword: %r' % name)
-    
+
     return name
 
 def number_of_dataitems(cls):
@@ -189,7 +178,7 @@ def collect_info_from_bases(bases, fields, fields_dict, options):
         if type(fs) is tuple and len(fs) == n:
             for i, fn in enumerate(fs):
                 if fn in fields:
-                    raise TypeError('field %s is already defined in the %s' % (fn, base))
+                    raise TypeError('field {} is already defined in the {}'.format(fn, base))
                 else:
                     fields_dict[fn] = f = Field()
                     if _is_readonly_member(base.__dict__[fn]):
@@ -209,7 +198,7 @@ def collect_info_from_bases(bases, fields, fields_dict, options):
         #         others[name] = getattr(base, name)
         # if others:
         #     options['others'] = others
-        
+
     return _fields + fields
 
 def _have_pyinit(bases):
@@ -220,7 +209,7 @@ def _have_pyinit(bases):
             return True
         elif _have_pyinit(base.__bases__):
             return True
-        
+
     return False
 
 def _have_pynew(bases):
@@ -231,5 +220,5 @@ def _have_pynew(bases):
             return True
         elif _have_pynew(base.__bases__):
             return True
-        
+
     return False

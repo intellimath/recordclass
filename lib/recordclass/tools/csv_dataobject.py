@@ -40,11 +40,11 @@ class GeneralReader:
     @fieldnames.setter
     def fieldnames(self, value):
         self._fieldnames = value
-        
+
     @property
     def line_num(self):
         return self.reader.line_num
-    
+
     def __default_row_factory(self, *row):
         return row
 
@@ -52,7 +52,7 @@ class GeneralReader:
         row = next(self.reader)
         while row == []:
             row = next(self.reader)
-        
+
         if self.row_factory is None:
             if self.fieldnames is None:
                 # Remove trailing spaces.
@@ -68,7 +68,7 @@ class GeneralReader:
 
             if self.factory is None:
                 self.row_factory = self.__default_row_factory
-            else:                   
+            else:
                 self.row_factory = self.factory(self._fieldnames)
 
         row = self.row_factory(*row)

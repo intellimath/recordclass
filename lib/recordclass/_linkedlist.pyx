@@ -6,16 +6,16 @@
 # cython: nonecheck=False
 # cython: embedsignature=True
 # cython: initializedcheck=False
- 
+
 # The MIT License (MIT)
 
 # Copyright (c) «2020-2023» «Shibzukhov Zaur, szport at gmail dot com»
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software - recordclass library - and associated documentation files 
-# (the "Software"), to deal in the Software without restriction, including 
-# without limitation the rights to use, copy, modify, merge, publish, distribute, 
-# sublicense, and/or sell copies of the Software, and to permit persons to whom 
+# of this software - recordclass library - and associated documentation files
+# (the "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom
 # the Software is furnished to do so, subject to the following conditions:
 
 # The above copyright notice and this permission notice shall be included in
@@ -36,7 +36,7 @@ cimport cython
 cdef public class linkeditem[object LinkedItem, type LinkedItemType]:
     cdef object val
     cdef linkeditem next
-    
+
 @cython.final
 cdef public class linkedlist[object LinkedList, type LinkedListType]:
     cdef public linkeditem start
@@ -91,14 +91,14 @@ cdef public class linkedlist[object LinkedList, type LinkedListType]:
     #
     def __iter__(self):
         return iterlinkedlist(self)
-        
+
 @cython.final
 cdef class iterlinkedlist:
     cdef linkeditem node
-    
+
     def __init__(self, linkedlist ll):
         self.node = ll.start
-    
+
     def __next__(self):
         cdef linkeditem node
 
@@ -180,7 +180,7 @@ cdef public class dlinkedlist[object DLinkedList, type DLinkedListType]:
 
     def __iter__(self):
         return iterdlinkedlist(self.start)
-    
+
 @cython.final
 cdef class iterdlinkedlist:
     cdef dlinkeditem node

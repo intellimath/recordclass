@@ -15,7 +15,7 @@ nd = NDTest(a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10,k=11)
 NDTest2 = make_dataclass("NDTest", "a b c d e f g h i j k", fast_new=True, gc=True)
 nd = NDTest2(a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10,k=11)
 
-class Test(object):
+class Test:
     __slots__ = ["a","b","c","d","e","f","g","h","i","j","k"]
 
     def __init__(self, a, b, c, d, e, f, g, h, i, j, k):
@@ -111,7 +111,7 @@ class R(object):
         self.d = d; self.e = e; self.f = f
         self.g = g; self.h = h; self.i = i
         self.j = j; self.k = k
-        
+
 r = R(1,2,3,4,5,6,7,8,9,10,11)
 """
 )
@@ -150,7 +150,7 @@ class R(object):
         self.d = d; self.e = e; self.f = f
         self.g = g; self.h = h; self.i = i
         self.j = j; self.k = k
-        
+
 r = R(1,2,3,4,5,6,7,8,9,10,11)
 """
 )

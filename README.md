@@ -765,7 +765,7 @@ If someone wants to define a class attribute, then there is a `ClassVar` trick:
     >>> print(Point.color)
     0
 
-If the default value for the `ClassVar`-attribute is not specified, 
+If the default value for the `ClassVar`-attribute is not specified,
 it will just be excluded from the `__fields___`.
 
 Starting with python 3.10 `__match_args__` is specified by default so that `__match_args__` == `__fields__`.
@@ -777,7 +777,7 @@ User can define it's own during definition:
         age: int
         __match_args__ = 'first_name', 'last_name'
 
-or        
+or
 
     from recordclass import MATCH
     class User(dataobject):
@@ -931,7 +931,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
   or
 
           User = make_dataclass("User", "first_name last_name * age")
-  
+
 * Add `@as_record` adapter for `def`-style decalarations of dataclasses
   that are considered as just a struct. For example:
 
@@ -943,7 +943,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
         Point(x=1, y=2, meta=None)
 
   It's almost equivalent to:
-  
+
         Point = make_dataclass('Point', [('x':float), ('y',float),'meta'], (None,))
 
 * The option `fast_new` will be removed in 0.22. It will be always as `fast_new=True` by creation.
@@ -962,7 +962,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 * Add a new option `copy_default` (default `False`) to allow assigning a copy of the default
   value for the field. For example:
-  
+
        class A(dataobject, copy_default=True):
             l: list = []
 
@@ -972,7 +972,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
        assert(id(a.l) != id(b.l))
 
 * Allow to inherit the options: `copy_default`, `gc`, `iterable`. For example:
-  
+
        class Base(dataobject, copy_default=True):
           pass
 
@@ -1010,7 +1010,7 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
         assert id(a.l) != id(b.l)
 
   * Recordclass supports python 3.12 (tested on linux/debian 11/12 and windows via appveyor).
-  
+
 #### 0.20.1
 
 * Improve row_factory for `sqlite` on the ground of `dataobject`-based classes.

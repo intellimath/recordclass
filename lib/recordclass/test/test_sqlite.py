@@ -1,6 +1,6 @@
 import unittest
 import sqlite3 as sql
-from recordclass import dataobject, make_dataclass
+from recordclass import dataobject
 from recordclass.tools.sqlite import dataclass_row_factory
 
 class DataobjectSqliteTest(unittest.TestCase):
@@ -18,7 +18,7 @@ class DataobjectSqliteTest(unittest.TestCase):
         self.assertEqual(row.name, 'Earth')
         self.assertEqual(row.radius, 6378)
         self.assertEqual(type(row).__name__, 'Planet')
-        
+
     def test_row_factory_2(self):
         class Planet(dataobject, mapping=True):
             name:str
@@ -32,9 +32,8 @@ class DataobjectSqliteTest(unittest.TestCase):
         self.assertEqual(row['name'], 'Earth')
         self.assertEqual(row['radius'], 6378)
         self.assertEqual(type(row).__name__, 'Planet')
-        
+
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(DataobjectSqliteTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(DataobjectSqliteTest))
     return suite
-        

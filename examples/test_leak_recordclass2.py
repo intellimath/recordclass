@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 
-import random
 import time
 import psutil
 import os
 import gc
 
-from recordclass import recordclass
 from collections import namedtuple
 
 def memory_usage_psutil():

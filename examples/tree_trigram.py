@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-# coding: utf-8
 
 # In[1]:
 
 
 import random
-import sys
 from collections import deque
 from recordclass import dataobject
 import time
@@ -162,7 +160,6 @@ q2 = math.sqrt(2)
 # In[12]:
 
 
-import gc
 gc.collect()
 
 
@@ -191,7 +188,7 @@ while n < n2 + 1:
     ns.append(n)
     times.append(dt)
     times_del.append(dt2)
-    print(n, "%.2f %.2f" % (dt, dt2))
+    print(n, "{:.2f} {:.2f}".format(dt, dt2))
     n = int(n * q2)
 
 
@@ -219,7 +216,7 @@ while n < n2+1:
     ns2.append(n)
     times2.append(dt)
     times2_del.append(dt2)
-    print(n, "%.2f %.2f" % (dt, dt2))
+    print(n, "{:.2f} {:.2f}".format(dt, dt2))
     n = int(n * q2)
 
 
@@ -227,7 +224,6 @@ while n < n2+1:
 
 
 import seaborn as sb
-import statsmodels
 x = np.log(ns)
 y = np.log(np.array(times) - np.array(times2))
 sb.regplot(x, y, robust=True, fit_reg=True)

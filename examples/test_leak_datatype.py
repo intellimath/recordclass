@@ -28,4 +28,4 @@ for i in range(1000):
   del a
   time.sleep(.01)
   print(memory_usage_psutil())
-  
+

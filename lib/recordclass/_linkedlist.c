@@ -1516,7 +1516,7 @@ struct LinkedItem {
 __PYX_EXTERN_C DL_EXPORT(PyTypeObject) LinkedItemType;
 
 /* "recordclass/_linkedlist.pyx":41
- * 
+ *
  * @cython.final
  * cdef public class linkedlist[object LinkedList, type LinkedListType]:             # <<<<<<<<<<<<<<
  *     cdef public linkeditem start
@@ -1532,11 +1532,11 @@ struct LinkedList {
 __PYX_EXTERN_C DL_EXPORT(PyTypeObject) LinkedListType;
 
 /* "recordclass/_linkedlist.pyx":96
- * 
+ *
  * @cython.final
  * cdef class iterlinkedlist:             # <<<<<<<<<<<<<<
  *     cdef linkeditem node
- * 
+ *
  */
 struct __pyx_obj_11recordclass_11_linkedlist_iterlinkedlist {
   PyObject_HEAD
@@ -1561,7 +1561,7 @@ struct DLinkedItem {
 __PYX_EXTERN_C DL_EXPORT(PyTypeObject) DLinkedItemType;
 
 /* "recordclass/_linkedlist.pyx":121
- * 
+ *
  * @cython.final
  * cdef public class dlinkedlist[object DLinkedList, type DLinkedListType]:             # <<<<<<<<<<<<<<
  *     cdef public dlinkeditem start
@@ -1577,7 +1577,7 @@ struct DLinkedList {
 __PYX_EXTERN_C DL_EXPORT(PyTypeObject) DLinkedListType;
 
 /* "recordclass/_linkedlist.pyx":185
- * 
+ *
  * @cython.final
  * cdef class iterdlinkedlist:             # <<<<<<<<<<<<<<
  *     cdef dlinkeditem node
@@ -1592,7 +1592,7 @@ struct __pyx_obj_11recordclass_11_linkedlist_iterdlinkedlist {
 __PYX_EXTERN_C DL_EXPORT(PyTypeObject) LinkedListType;
 
 /* "recordclass/_linkedlist.pyx":41
- * 
+ *
  * @cython.final
  * cdef public class linkedlist[object LinkedList, type LinkedListType]:             # <<<<<<<<<<<<<<
  *     cdef public linkeditem start
@@ -1612,7 +1612,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
 __PYX_EXTERN_C DL_EXPORT(PyTypeObject) DLinkedListType;
 
 /* "recordclass/_linkedlist.pyx":121
- * 
+ *
  * @cython.final
  * cdef public class dlinkedlist[object DLinkedList, type DLinkedListType]:             # <<<<<<<<<<<<<<
  *     cdef public dlinkeditem start
@@ -3095,7 +3095,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_1__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_1__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3104,7 +3104,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_10linkeditem___reduce_cython__, "linkeditem.__reduce_cython__(self)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_10linkeditem_1__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_10linkeditem_1__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_10linkeditem___reduce_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_1__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_1__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3368,7 +3368,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkeditem___reduce_cyth
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_3__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_3__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3377,7 +3377,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_10linkeditem_2__setstate_cython__, "linkeditem.__setstate_cython__(self, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_10linkeditem_3__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_10linkeditem_3__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_10linkeditem_2__setstate_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_3__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkeditem_3__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3508,10 +3508,10 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkeditem_2__setstate_c
  *     #
  *     cpdef append(self, val):             # <<<<<<<<<<<<<<
  *         cdef linkeditem item
- * 
+ *
  */
 
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3531,7 +3531,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
 
   /* "recordclass/_linkedlist.pyx":48
  *         cdef linkeditem item
- * 
+ *
  *         item = linkeditem.__new__(linkeditem)             # <<<<<<<<<<<<<<
  *         item.val = val
  *         item.next = None
@@ -3542,7 +3542,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
   __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":49
- * 
+ *
  *         item = linkeditem.__new__(linkeditem)
  *         item.val = val             # <<<<<<<<<<<<<<
  *         item.next = None
@@ -3634,7 +3634,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
  *     #
  *     cpdef append(self, val):             # <<<<<<<<<<<<<<
  *         cdef linkeditem item
- * 
+ *
  */
 
   /* function exit code */
@@ -3652,7 +3652,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_append(struct 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3661,7 +3661,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_10linkedlist_append, "linkedlist.append(self, val)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_10linkedlist_1append = {"append", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_10linkedlist_append};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_1append(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3779,10 +3779,10 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_append(struct
  *     #
  *     cpdef extend(self, vals):             # <<<<<<<<<<<<<<
  *         cdef linkeditem item
- * 
+ *
  */
 
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3806,7 +3806,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
 
   /* "recordclass/_linkedlist.pyx":60
  *         cdef linkeditem item
- * 
+ *
  *         for val in vals:             # <<<<<<<<<<<<<<
  *             item = linkeditem.__new__(linkeditem)
  *             item.val = val
@@ -3867,7 +3867,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
     __pyx_t_4 = 0;
 
     /* "recordclass/_linkedlist.pyx":61
- * 
+ *
  *         for val in vals:
  *             item = linkeditem.__new__(linkeditem)             # <<<<<<<<<<<<<<
  *             item.val = val
@@ -3968,7 +3968,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
 
     /* "recordclass/_linkedlist.pyx":60
  *         cdef linkeditem item
- * 
+ *
  *         for val in vals:             # <<<<<<<<<<<<<<
  *             item = linkeditem.__new__(linkeditem)
  *             item.val = val
@@ -3981,7 +3981,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
  *     #
  *     cpdef extend(self, vals):             # <<<<<<<<<<<<<<
  *         cdef linkeditem item
- * 
+ *
  */
 
   /* function exit code */
@@ -4001,7 +4001,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_extend(struct 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4010,7 +4010,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_10linkedlist_2extend, "linkedlist.extend(self, vals)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_10linkedlist_3extend = {"extend", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_10linkedlist_2extend};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_3extend(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4128,10 +4128,10 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_2extend(struc
  *     #
  *     cpdef pop(self):             # <<<<<<<<<<<<<<
  *         cdef linkeditem start
- * 
+ *
  */
 
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_5pop(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_5pop(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4151,7 +4151,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
 
   /* "recordclass/_linkedlist.pyx":73
  *         cdef linkeditem start
- * 
+ *
  *         start = self.start             # <<<<<<<<<<<<<<
  *         if start is None:
  *             raise TypeError("linkedlist is empty")
@@ -4162,11 +4162,11 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
   __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":74
- * 
+ *
  *         start = self.start
  *         if start is None:             # <<<<<<<<<<<<<<
  *             raise TypeError("linkedlist is empty")
- * 
+ *
  */
   __pyx_t_2 = (((PyObject *)__pyx_v_start) == Py_None);
   if (unlikely(__pyx_t_2)) {
@@ -4175,7 +4175,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
  *         start = self.start
  *         if start is None:
  *             raise TypeError("linkedlist is empty")             # <<<<<<<<<<<<<<
- * 
+ *
  *         self.start = start.next
  */
     __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 75, __pyx_L1_error)
@@ -4185,17 +4185,17 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
     __PYX_ERR(0, 75, __pyx_L1_error)
 
     /* "recordclass/_linkedlist.pyx":74
- * 
+ *
  *         start = self.start
  *         if start is None:             # <<<<<<<<<<<<<<
  *             raise TypeError("linkedlist is empty")
- * 
+ *
  */
   }
 
   /* "recordclass/_linkedlist.pyx":77
  *             raise TypeError("linkedlist is empty")
- * 
+ *
  *         self.start = start.next             # <<<<<<<<<<<<<<
  *         if start is self.end:
  *             self.end = None
@@ -4209,7 +4209,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
   __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":78
- * 
+ *
  *         self.start = start.next
  *         if start is self.end:             # <<<<<<<<<<<<<<
  *             self.end = None
@@ -4232,7 +4232,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
     __pyx_v_self->end = ((struct LinkedItem *)Py_None);
 
     /* "recordclass/_linkedlist.pyx":78
- * 
+ *
  *         self.start = start.next
  *         if start is self.end:             # <<<<<<<<<<<<<<
  *             self.end = None
@@ -4257,7 +4257,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
  *     #
  *     cpdef pop(self):             # <<<<<<<<<<<<<<
  *         cdef linkeditem start
- * 
+ *
  */
 
   /* function exit code */
@@ -4273,7 +4273,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_10linkedlist_pop(struct Lin
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_5pop(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_5pop(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4282,7 +4282,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_10linkedlist_4pop, "linkedlist.pop(self)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_10linkedlist_5pop = {"pop", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_5pop, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_10linkedlist_4pop};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_5pop(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_5pop(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4371,7 +4371,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_10linkedlist_6__dealloc__(struc
 
   /* "recordclass/_linkedlist.pyx":86
  *         cdef linkeditem next
- * 
+ *
  *         curr = self.start             # <<<<<<<<<<<<<<
  *         while curr is not None:
  *             next = curr.next
@@ -4382,7 +4382,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_10linkedlist_6__dealloc__(struc
   __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":87
- * 
+ *
  *         curr = self.start
  *         while curr is not None:             # <<<<<<<<<<<<<<
  *             next = curr.next
@@ -4447,7 +4447,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_10linkedlist_6__dealloc__(struc
  *     #
  *     def __iter__(self):             # <<<<<<<<<<<<<<
  *         return iterlinkedlist(self)
- * 
+ *
  */
 
 /* Python wrapper */
@@ -4478,7 +4478,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_8__iter__(str
  *     #
  *     def __iter__(self):
  *         return iterlinkedlist(self)             # <<<<<<<<<<<<<<
- * 
+ *
  * @cython.final
  */
   __Pyx_XDECREF(__pyx_r);
@@ -4493,7 +4493,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_8__iter__(str
  *     #
  *     def __iter__(self):             # <<<<<<<<<<<<<<
  *         return iterlinkedlist(self)
- * 
+ *
  */
 
   /* function exit code */
@@ -4742,7 +4742,7 @@ static int __pyx_pf_11recordclass_11_linkedlist_10linkedlist_3end_4__del__(struc
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_11__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_11__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4751,7 +4751,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_10linkedlist_10__reduce_cython__, "linkedlist.__reduce_cython__(self)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_10linkedlist_11__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_11__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_10linkedlist_10__reduce_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_11__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_11__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5015,7 +5015,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_10__reduce_cy
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_13__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_13__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5024,7 +5024,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_10linkedlist_12__setstate_cython__, "linkedlist.__setstate_cython__(self, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_10linkedlist_13__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_10linkedlist_13__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_10linkedlist_12__setstate_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_13__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_10linkedlist_13__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5152,10 +5152,10 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_10linkedlist_12__setstate_
 
 /* "recordclass/_linkedlist.pyx":99
  *     cdef linkeditem node
- * 
+ *
  *     def __init__(self, linkedlist ll):             # <<<<<<<<<<<<<<
  *         self.node = ll.start
- * 
+ *
  */
 
 /* Python wrapper */
@@ -5249,10 +5249,10 @@ static int __pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist___init__(struct
   __Pyx_RefNannySetupContext("__init__", 1);
 
   /* "recordclass/_linkedlist.pyx":100
- * 
+ *
  *     def __init__(self, linkedlist ll):
  *         self.node = ll.start             # <<<<<<<<<<<<<<
- * 
+ *
  *     def __next__(self):
  */
   __pyx_t_1 = ((PyObject *)__pyx_v_ll->start);
@@ -5265,10 +5265,10 @@ static int __pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist___init__(struct
 
   /* "recordclass/_linkedlist.pyx":99
  *     cdef linkeditem node
- * 
+ *
  *     def __init__(self, linkedlist ll):             # <<<<<<<<<<<<<<
  *         self.node = ll.start
- * 
+ *
  */
 
   /* function exit code */
@@ -5279,10 +5279,10 @@ static int __pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist___init__(struct
 
 /* "recordclass/_linkedlist.pyx":102
  *         self.node = ll.start
- * 
+ *
  *     def __next__(self):             # <<<<<<<<<<<<<<
  *         cdef linkeditem node
- * 
+ *
  */
 
 /* Python wrapper */
@@ -5312,7 +5312,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist_2__next__
 
   /* "recordclass/_linkedlist.pyx":105
  *         cdef linkeditem node
- * 
+ *
  *         node =  self.node             # <<<<<<<<<<<<<<
  *         if node is None:
  *             raise StopIteration
@@ -5323,11 +5323,11 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist_2__next__
   __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":106
- * 
+ *
  *         node =  self.node
  *         if node is None:             # <<<<<<<<<<<<<<
  *             raise StopIteration
- * 
+ *
  */
   __pyx_t_2 = (((PyObject *)__pyx_v_node) == Py_None);
   if (unlikely(__pyx_t_2)) {
@@ -5336,24 +5336,24 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist_2__next__
  *         node =  self.node
  *         if node is None:
  *             raise StopIteration             # <<<<<<<<<<<<<<
- * 
+ *
  *         val = node.val
  */
     __pyx_error_without_exception = 1;
     goto __pyx_L1_error;;
 
     /* "recordclass/_linkedlist.pyx":106
- * 
+ *
  *         node =  self.node
  *         if node is None:             # <<<<<<<<<<<<<<
  *             raise StopIteration
- * 
+ *
  */
   }
 
   /* "recordclass/_linkedlist.pyx":109
  *             raise StopIteration
- * 
+ *
  *         val = node.val             # <<<<<<<<<<<<<<
  *         self.node = node.next
  *         return val
@@ -5364,11 +5364,11 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist_2__next__
   __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":110
- * 
+ *
  *         val = node.val
  *         self.node = node.next             # <<<<<<<<<<<<<<
  *         return val
- * 
+ *
  */
   __pyx_t_1 = ((PyObject *)__pyx_v_node->next);
   __Pyx_INCREF(__pyx_t_1);
@@ -5382,7 +5382,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist_2__next__
  *         val = node.val
  *         self.node = node.next
  *         return val             # <<<<<<<<<<<<<<
- * 
+ *
  * @cython.no_gc
  */
   __Pyx_XDECREF(__pyx_r);
@@ -5392,10 +5392,10 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist_2__next__
 
   /* "recordclass/_linkedlist.pyx":102
  *         self.node = ll.start
- * 
+ *
  *     def __next__(self):             # <<<<<<<<<<<<<<
  *         cdef linkeditem node
- * 
+ *
  */
 
   /* function exit code */
@@ -5420,7 +5420,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist_2__next__
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_14iterlinkedlist_5__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_14iterlinkedlist_5__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5429,7 +5429,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_14iterlinkedlist_4__reduce_cython__, "iterlinkedlist.__reduce_cython__(self)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_14iterlinkedlist_5__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_14iterlinkedlist_5__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_14iterlinkedlist_4__reduce_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_14iterlinkedlist_5__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_14iterlinkedlist_5__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5681,7 +5681,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist_4__reduce
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_14iterlinkedlist_7__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_14iterlinkedlist_7__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5690,7 +5690,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_14iterlinkedlist_6__setstate_cython__, "iterlinkedlist.__setstate_cython__(self, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_14iterlinkedlist_7__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_14iterlinkedlist_7__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_14iterlinkedlist_6__setstate_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_14iterlinkedlist_7__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_14iterlinkedlist_7__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5823,7 +5823,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_14iterlinkedlist_6__setsta
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkeditem_1__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkeditem_1__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5832,7 +5832,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_11dlinkeditem___reduce_cython__, "dlinkeditem.__reduce_cython__(self)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_11dlinkeditem_1__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_11dlinkeditem_1__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_11dlinkeditem___reduce_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkeditem_1__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkeditem_1__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6105,7 +6105,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_11dlinkeditem___reduce_cyt
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkeditem_3__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkeditem_3__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6114,7 +6114,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_11dlinkeditem_2__setstate_cython__, "dlinkeditem.__setstate_cython__(self, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_11dlinkeditem_3__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_11dlinkeditem_3__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_11dlinkeditem_2__setstate_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkeditem_3__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkeditem_3__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6248,7 +6248,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_11dlinkeditem_2__setstate_
  *         cdef dlinkeditem end
  */
 
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_1append(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_1append(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6272,7 +6272,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_11dlinkedlist_append(struct
 
   /* "recordclass/_linkedlist.pyx":130
  *         cdef dlinkeditem end
- * 
+ *
  *         item = dlinkeditem.__new__(linkeditem)             # <<<<<<<<<<<<<<
  *         item.val = val
  *         item.next = None
@@ -6306,7 +6306,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_11dlinkedlist_append(struct
   __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":131
- * 
+ *
  *         item = dlinkeditem.__new__(linkeditem)
  *         item.val = val             # <<<<<<<<<<<<<<
  *         item.next = None
@@ -6476,7 +6476,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist_11dlinkedlist_append(struct
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_1append(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_1append(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6485,7 +6485,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_11dlinkedlist_append, "dlinkedlist.append(self, val)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_11dlinkedlist_1append = {"append", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_1append, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_11dlinkedlist_append};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_1append(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_1append(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6632,7 +6632,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_11dlinkedlist_2__dealloc__(stru
 
   /* "recordclass/_linkedlist.pyx":174
  *         cdef dlinkeditem next
- * 
+ *
  *         curr = self.start             # <<<<<<<<<<<<<<
  *         while curr is not None:
  *             next = curr.next
@@ -6643,7 +6643,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_11dlinkedlist_2__dealloc__(stru
   __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":175
- * 
+ *
  *         curr = self.start
  *         while curr is not None:             # <<<<<<<<<<<<<<
  *             next = curr.next
@@ -6684,7 +6684,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_11dlinkedlist_2__dealloc__(stru
  *             curr.next = None
  *             curr.prev = None             # <<<<<<<<<<<<<<
  *             curr = next
- * 
+ *
  */
     __Pyx_INCREF(Py_None);
     __Pyx_GIVEREF(Py_None);
@@ -6696,7 +6696,7 @@ static void __pyx_pf_11recordclass_11_linkedlist_11dlinkedlist_2__dealloc__(stru
  *             curr.next = None
  *             curr.prev = None
  *             curr = next             # <<<<<<<<<<<<<<
- * 
+ *
  *     def __iter__(self):
  */
     __Pyx_INCREF((PyObject *)__pyx_v_next);
@@ -6724,10 +6724,10 @@ static void __pyx_pf_11recordclass_11_linkedlist_11dlinkedlist_2__dealloc__(stru
 
 /* "recordclass/_linkedlist.pyx":181
  *             curr = next
- * 
+ *
  *     def __iter__(self):             # <<<<<<<<<<<<<<
  *         return iterdlinkedlist(self.start)
- * 
+ *
  */
 
 /* Python wrapper */
@@ -6755,10 +6755,10 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_11dlinkedlist_4__iter__(st
   __Pyx_RefNannySetupContext("__iter__", 1);
 
   /* "recordclass/_linkedlist.pyx":182
- * 
+ *
  *     def __iter__(self):
  *         return iterdlinkedlist(self.start)             # <<<<<<<<<<<<<<
- * 
+ *
  * @cython.final
  */
   __Pyx_XDECREF(__pyx_r);
@@ -6770,10 +6770,10 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_11dlinkedlist_4__iter__(st
 
   /* "recordclass/_linkedlist.pyx":181
  *             curr = next
- * 
+ *
  *     def __iter__(self):             # <<<<<<<<<<<<<<
  *         return iterdlinkedlist(self.start)
- * 
+ *
  */
 
   /* function exit code */
@@ -7022,7 +7022,7 @@ static int __pyx_pf_11recordclass_11_linkedlist_11dlinkedlist_3end_4__del__(stru
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_7__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_7__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7031,7 +7031,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_11dlinkedlist_6__reduce_cython__, "dlinkedlist.__reduce_cython__(self)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_11dlinkedlist_7__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_7__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_11dlinkedlist_6__reduce_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_7__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_7__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7295,7 +7295,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_11dlinkedlist_6__reduce_cy
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_9__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_9__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7304,7 +7304,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_11dlinkedlist_8__setstate_cython__, "dlinkedlist.__setstate_cython__(self, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_11dlinkedlist_9__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_9__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_11dlinkedlist_8__setstate_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_9__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11dlinkedlist_9__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7592,7 +7592,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_15iterdlinkedlist_2__next_
 
   /* "recordclass/_linkedlist.pyx":195
  *         cdef dlinkeditem node
- * 
+ *
  *         node =  self.node             # <<<<<<<<<<<<<<
  *         if node is None:
  *             raise StopIteration
@@ -7603,11 +7603,11 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_15iterdlinkedlist_2__next_
   __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":196
- * 
+ *
  *         node =  self.node
  *         if node is None:             # <<<<<<<<<<<<<<
  *             raise StopIteration
- * 
+ *
  */
   __pyx_t_2 = (((PyObject *)__pyx_v_node) == Py_None);
   if (unlikely(__pyx_t_2)) {
@@ -7616,24 +7616,24 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_15iterdlinkedlist_2__next_
  *         node =  self.node
  *         if node is None:
  *             raise StopIteration             # <<<<<<<<<<<<<<
- * 
+ *
  *         val = node.val
  */
     __pyx_error_without_exception = 1;
     goto __pyx_L1_error;;
 
     /* "recordclass/_linkedlist.pyx":196
- * 
+ *
  *         node =  self.node
  *         if node is None:             # <<<<<<<<<<<<<<
  *             raise StopIteration
- * 
+ *
  */
   }
 
   /* "recordclass/_linkedlist.pyx":199
  *             raise StopIteration
- * 
+ *
  *         val = node.val             # <<<<<<<<<<<<<<
  *         self.node = node.next
  *         return val
@@ -7644,7 +7644,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_15iterdlinkedlist_2__next_
   __pyx_t_1 = 0;
 
   /* "recordclass/_linkedlist.pyx":200
- * 
+ *
  *         val = node.val
  *         self.node = node.next             # <<<<<<<<<<<<<<
  *         return val
@@ -7700,7 +7700,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_15iterdlinkedlist_2__next_
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_15iterdlinkedlist_5__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_15iterdlinkedlist_5__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7709,7 +7709,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_15iterdlinkedlist_4__reduce_cython__, "iterdlinkedlist.__reduce_cython__(self)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_15iterdlinkedlist_5__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_15iterdlinkedlist_5__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_15iterdlinkedlist_4__reduce_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_15iterdlinkedlist_5__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_15iterdlinkedlist_5__reduce_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7961,7 +7961,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_15iterdlinkedlist_4__reduc
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_15iterdlinkedlist_7__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_15iterdlinkedlist_7__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7970,7 +7970,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_15iterdlinkedlist_6__setstate_cython__, "iterdlinkedlist.__setstate_cython__(self, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_15iterdlinkedlist_7__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_15iterdlinkedlist_7__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_15iterdlinkedlist_6__setstate_cython__};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_15iterdlinkedlist_7__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_15iterdlinkedlist_7__setstate_cython__(PyObject *__pyx_v_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8103,7 +8103,7 @@ static PyObject *__pyx_pf_11recordclass_11_linkedlist_15iterdlinkedlist_6__setst
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8112,7 +8112,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist___pyx_unpickle_linkeditem, "__pyx_unpickle_linkeditem(__pyx_type, long __pyx_checksum, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem = {"__pyx_unpickle_linkeditem", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist___pyx_unpickle_linkeditem};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_1__pyx_unpickle_linkeditem(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8554,7 +8554,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkeditem__
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8563,7 +8563,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_2__pyx_unpickle_linkedlist, "__pyx_unpickle_linkedlist(__pyx_type, long __pyx_checksum, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist = {"__pyx_unpickle_linkedlist", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_2__pyx_unpickle_linkedlist};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_3__pyx_unpickle_linkedlist(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9006,7 +9006,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_linkedlist__
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_5__pyx_unpickle_iterlinkedlist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_5__pyx_unpickle_iterlinkedlist(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9015,7 +9015,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_4__pyx_unpickle_iterlinkedlist, "__pyx_unpickle_iterlinkedlist(__pyx_type, long __pyx_checksum, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_5__pyx_unpickle_iterlinkedlist = {"__pyx_unpickle_iterlinkedlist", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_5__pyx_unpickle_iterlinkedlist, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_4__pyx_unpickle_iterlinkedlist};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_5__pyx_unpickle_iterlinkedlist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_5__pyx_unpickle_iterlinkedlist(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9446,7 +9446,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_iterlinkedli
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_7__pyx_unpickle_dlinkeditem(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_7__pyx_unpickle_dlinkeditem(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9455,7 +9455,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_6__pyx_unpickle_dlinkeditem, "__pyx_unpickle_dlinkeditem(__pyx_type, long __pyx_checksum, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_7__pyx_unpickle_dlinkeditem = {"__pyx_unpickle_dlinkeditem", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_7__pyx_unpickle_dlinkeditem, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_6__pyx_unpickle_dlinkeditem};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_7__pyx_unpickle_dlinkeditem(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_7__pyx_unpickle_dlinkeditem(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9909,7 +9909,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_dlinkeditem_
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_9__pyx_unpickle_dlinkedlist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_9__pyx_unpickle_dlinkedlist(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9918,7 +9918,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_8__pyx_unpickle_dlinkedlist, "__pyx_unpickle_dlinkedlist(__pyx_type, long __pyx_checksum, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_9__pyx_unpickle_dlinkedlist = {"__pyx_unpickle_dlinkedlist", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_9__pyx_unpickle_dlinkedlist, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_8__pyx_unpickle_dlinkedlist};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_9__pyx_unpickle_dlinkedlist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_9__pyx_unpickle_dlinkedlist(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -10361,7 +10361,7 @@ static PyObject *__pyx_f_11recordclass_11_linkedlist___pyx_unpickle_dlinkedlist_
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11__pyx_unpickle_iterdlinkedlist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11__pyx_unpickle_iterdlinkedlist(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -10370,7 +10370,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ); /*proto*/
 PyDoc_STRVAR(__pyx_doc_11recordclass_11_linkedlist_10__pyx_unpickle_iterdlinkedlist, "__pyx_unpickle_iterdlinkedlist(__pyx_type, long __pyx_checksum, __pyx_state)");
 static PyMethodDef __pyx_mdef_11recordclass_11_linkedlist_11__pyx_unpickle_iterdlinkedlist = {"__pyx_unpickle_iterdlinkedlist", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_11recordclass_11_linkedlist_11__pyx_unpickle_iterdlinkedlist, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_11recordclass_11_linkedlist_10__pyx_unpickle_iterdlinkedlist};
-static PyObject *__pyx_pw_11recordclass_11_linkedlist_11__pyx_unpickle_iterdlinkedlist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_11recordclass_11_linkedlist_11__pyx_unpickle_iterdlinkedlist(PyObject *__pyx_self,
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -11911,7 +11911,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         start = self.start
  *         if start is None:
  *             raise TypeError("linkedlist is empty")             # <<<<<<<<<<<<<<
- * 
+ *
  *         self.start = start.next
  */
   __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_u_linkedlist_is_empty); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 75, __pyx_L1_error)
@@ -11964,7 +11964,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     #
  *     cpdef append(self, val):             # <<<<<<<<<<<<<<
  *         cdef linkeditem item
- * 
+ *
  */
   __pyx_tuple__11 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_val); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__11);
@@ -11976,7 +11976,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     #
  *     cpdef extend(self, vals):             # <<<<<<<<<<<<<<
  *         cdef linkeditem item
- * 
+ *
  */
   __pyx_tuple__13 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_vals); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 57, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__13);
@@ -11988,7 +11988,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     #
  *     cpdef pop(self):             # <<<<<<<<<<<<<<
  *         cdef linkeditem start
- * 
+ *
  */
   __pyx_tuple__15 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__15);
@@ -12654,7 +12654,7 @@ if (!__Pyx_RefNanny) {
  *     #
  *     cpdef append(self, val):             # <<<<<<<<<<<<<<
  *         cdef linkeditem item
- * 
+ *
  */
   __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_11recordclass_11_linkedlist_10linkedlist_1append, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_linkedlist_append, NULL, __pyx_n_s_recordclass__linkedlist, __pyx_d, ((PyObject *)__pyx_codeobj__12)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -12667,7 +12667,7 @@ if (!__Pyx_RefNanny) {
  *     #
  *     cpdef extend(self, vals):             # <<<<<<<<<<<<<<
  *         cdef linkeditem item
- * 
+ *
  */
   __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_11recordclass_11_linkedlist_10linkedlist_3extend, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_linkedlist_extend, NULL, __pyx_n_s_recordclass__linkedlist, __pyx_d, ((PyObject *)__pyx_codeobj__14)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -12680,7 +12680,7 @@ if (!__Pyx_RefNanny) {
  *     #
  *     cpdef pop(self):             # <<<<<<<<<<<<<<
  *         cdef linkeditem start
- * 
+ *
  */
   __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_11recordclass_11_linkedlist_10linkedlist_5pop, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_linkedlist_pop, NULL, __pyx_n_s_recordclass__linkedlist, __pyx_d, ((PyObject *)__pyx_codeobj__16)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -12884,7 +12884,7 @@ if (!__Pyx_RefNanny) {
 
   /* "recordclass/_linkedlist.pyx":1
  * # coding: utf-8             # <<<<<<<<<<<<<<
- * 
+ *
  * # cython: language_level=3
  */
   __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)

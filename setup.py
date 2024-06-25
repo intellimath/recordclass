@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # The MIT License (MIT)
 #
 # Copyright (c) <2015-2023> <Shibzukhov Zaur, szport at gmail dot com>
@@ -23,7 +21,7 @@
 # THE SOFTWARE.
 #
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
 import sys
@@ -117,6 +115,7 @@ setup(
     ext_modules = ext_modules,
     package_dir = {'': 'lib'},
     packages = packages,
+    python_requires='>=3.8',
     url = 'https://github.com/intellimath/recordclass',
     download_url = 'https://pypi.org/project/recordclass/#files',
     long_description=long_description,
@@ -130,8 +129,6 @@ setup(
         'Intended Audience :: Information Technology',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',

@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # The MIT License (MIT)
 
 # Copyright (c) «2017-2023» «Shibzukhov Zaur, szport at gmail dot com»
@@ -24,21 +22,13 @@
 
 __all__ = 'datatype',
 
-import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
-_PY37 = _sys.version_info[:2] >= (3, 7)
-_PY310 = _sys.version_info[:2] >= (3, 10)
-_PY311 = _sys.version_info[:2] >= (3, 11)
-    
+import sys
+
 import typing
-if _PY37:
-    def _is_classvar(a_type):
-        return (a_type is typing.ClassVar
-                or (type(a_type) is typing._GenericAlias
-                    and a_type.__origin__ is typing.ClassVar))
-else:
-    def _is_classvar(a_type):
-        return isinstance(a_type, typing._ClassVar) #or issubclass(a_type, typing.ClassVar)
+def _is_classvar(a_type):
+    return (a_type is typing.ClassVar
+            or (type(a_type) is typing._GenericAlias
+                and a_type.__origin__ is typing.ClassVar))
 
 def _matching_annotations_and_defaults(annotations, defaults):
     first_default = False
@@ -48,7 +38,7 @@ def _matching_annotations_and_defaults(annotations, defaults):
         else:
             if first_default:
                 raise TypeError('A field without default value appears after a field with default value')
-                
+
 _ds_cache = {}
 _ds_ro_cache = {}
 
@@ -56,7 +46,7 @@ MATCH = object()
 
 class Field(dict):
     pass
-                
+
 class datatype(type):
     """
     Metatype for creating classes based on a dataobject.
@@ -64,14 +54,14 @@ class datatype(type):
     def __new__(metatype, typename, bases, ns, *,
                 gc=False, fast_new=True, readonly=False, iterable=False,
                 deep_dealloc=False, sequence=False, mapping=False,
-                use_dict=False, use_weakref=False, hashable=False, 
+                use_dict=False, use_weakref=False, hashable=False,
                 immutable_type=False, copy_default=False, match=None):
 
         from recordclass.utils import check_name, collect_info_from_bases
         from recordclass._dataobject import dataobject, datastruct
         from recordclass._dataobject import dataobjectproperty
         from sys import intern as _intern
-        if _PY311:
+        if sys.version_info >= (3, 11):
             from recordclass._dataobject import member_new
 
         options = {}
@@ -97,12 +87,12 @@ class datatype(type):
             options['use_weakref'] = use_weakref
         if copy_default:
             options['copy_default'] = copy_default
-        
-        if _PY311 and immutable_type:
+
+        if sys.version_info >= (3, 11) and immutable_type:
             options['immutable_type'] = immutable_type
 
         if '__match_args__' in ns:
-            options['match'] = ns['__match_args__']            
+            options['match'] = ns['__match_args__']
 
         is_dataobject = is_datastruct = False
         if bases:
@@ -120,15 +110,15 @@ class datatype(type):
                 options['immutable_type'] = immutable_type = True
             else:
                 raise TypeError("First base class should be subclass of dataobject or datastruct")
-                
+
         else:
             bases = (dataobject,)
 
         annotations = ns.get('__annotations__', {})
         classvars = {fn for fn,tp in annotations.items() \
                         if _is_classvar(tp)}
-        
-        int_type = type(1)
+
+        int_type = int
 
         if '__fields__' in ns:
             fields = ns['__fields__']
@@ -146,7 +136,7 @@ class datatype(type):
                            for fn,tp in annotations.items() \
                            if fn not in classvars}
             fields = tuple(fields_dict)
-            
+
         has_fields = True
         if isinstance(fields, int_type):
             has_fields = False
@@ -161,11 +151,11 @@ class datatype(type):
             options['sequence'] = True
         if mapping:
             options['mapping'] = True
-            
+
         if sequence or mapping:
             iterable = True
             options['iterable'] = True
-            
+
         if '__iter__' in ns:
             iterable = options['iterable'] = True
 
@@ -174,17 +164,17 @@ class datatype(type):
         if hashable:
             options['hashable'] = hashable
 
-        if not _PY311 and immutable_type:
+        if sys.version_info < (3, 11) and immutable_type:
             import warnings
             warnings.warn("immutable_type=True can be used only for python >= 3.11")
-        
+
         if has_fields:
             if annotations:
                 annotations = {fn:annotations[fn] \
                                for fn in fields \
                                if fn in annotations}
 
-            if '__dict__' in fields:                
+            if '__dict__' in fields:
                 fields.remove('__dict__')
                 if '__dict__' in annotations:
                     del annotations['__dict__']
@@ -230,8 +220,8 @@ class datatype(type):
                 copy_default = options.get('copy_default', False)
                 gc = options.get('gc', False)
                 iterable = options.get('iterable', False)
-                defaults_dict = {fn:fd['default'] for fn,fd in fields_dict.items() if 'default' in fd} 
-                annotations = {fn:fd['type'] for fn,fd in fields_dict.items() if 'type' in fd} 
+                defaults_dict = {fn:fd['default'] for fn,fd in fields_dict.items() if 'default' in fd}
+                annotations = {fn:fd['type'] for fn,fd in fields_dict.items() if 'type' in fd}
 
             fields = tuple(fields)
 
@@ -249,13 +239,13 @@ class datatype(type):
         module = ns.get('__module__', None)
         if module is None:
             try:
-                module = _sys._getframe(2).f_globals.get('__name__', '__main__')
+                module = sys._getframe(2).f_globals.get('__name__', '__main__')
                 ns['__module'] = module
             except (AttributeError, ValueError):
                 pass
         else:
             pass
-                    
+
         if has_fields:
             options['fields_dict'] = fields_dict
             default_vals = tuple([fields_dict[fn].get('default',None) for fn in fields])
@@ -264,7 +254,7 @@ class datatype(type):
             ns['__default_vals__'] = default_vals
             ns['__annotations__'] = annotations
 
-            if _PY310:
+            if sys.version_info >= (3, 10):
                 if match:
                     ns['__match_args__'] = match
 
@@ -273,16 +263,16 @@ class datatype(type):
                     n_match = len(match_args)
                     if n_match > len(fields) or fields[:n_match] != match_args:
                         print(match_args, fields[:n_match])
-                        raise TypeError(f"__match_args__ is not valid")
+                        raise TypeError("__match_args__ is not valid")
                 else:
                     ns['__match_args__'] = fields
 
             if '__doc__' not in ns:
                 ns['__doc__'] = _make_cls_doc(typename, fields, annotations, default_vals, use_dict)
-        
+
         ns['__options__'] = options
 
-        if has_fields and not _PY311:
+        if has_fields and sys.version_info < (3, 10):
             for i, name in enumerate(fields):
                 fd = fields_dict[name]
                 fd_readonly = fd.get('readonly', False)
@@ -299,7 +289,7 @@ class datatype(type):
 
         cls = type.__new__(metatype, typename, bases, ns)
 
-        if has_fields and _PY311:
+        if has_fields and sys.version_info >= (3, 11):
             for i, name in enumerate(fields):
                 fd = fields_dict[name]
                 fd_readonly = fd.get('readonly', False)
@@ -319,7 +309,7 @@ class datatype(type):
 
     def __configure__(cls,  gc=False, fast_new=True, readonly=False, iterable=False,
                             deep_dealloc=False, sequence=False, mapping=False,
-                            use_dict=False, use_weakref=False, hashable=False, 
+                            use_dict=False, use_weakref=False, hashable=False,
                             mapping_only=False, immutable_type=False, copy_default=False):
 
         import recordclass._dataobject as _dataobject
@@ -337,7 +327,7 @@ class datatype(type):
                 raise TypeError('datastruct subclasses can not have __new__ and __init__')
             elif immutable_type:
                 raise TypeError('if immutable_type=True then __init__ or __new__ are not allowed')
-        
+
         _dataobject._dataobject_type_init(cls)
 
         _dataobject._datatype_collection_mapping(cls, sequence, mapping, readonly)
@@ -361,7 +351,7 @@ class datatype(type):
             _dataobject._datatype_vectorcall(cls)
         if copy_default and not is_pyinit and not is_pynew:
             _dataobject._datatype_copy_default(cls)
-        if _PY311 and immutable_type:
+        if sys.version_info >= (3, 11) and immutable_type:
             _dataobject._datatype_immutable(cls)
         _dataobject._pytype_modified(cls)
 
@@ -384,7 +374,7 @@ def _make_new_function(typename, fields, defaults_dict, annotations, use_dict):
 
     if fields and defaults_dict:
         fields2 = [fn for fn in fields if fn not in defaults_dict] + \
-                  ["%s=%r" % (fn,None) for fn in fields if fn in defaults_dict]
+                  ["{}={!r}".format(fn,None) for fn in fields if fn in defaults_dict]
     else:
         fields2 = fields
 
@@ -396,13 +386,13 @@ def __new__(_cls_, {joined_fields2}):
     "Create new instance: {typename}({joined_fields2})"
     return _method_new(_cls_, {joined_fields})
 """
-    
+
     new_func_def_use_dict = f"""\
 def __new__(_cls_, {joined_fields2}, **kw):
     "Create new instance: {typename}({joined_fields2}, **kw)"
     return _method_new(_cls_, {joined_fields}, **kw)
 """
-    
+
     if use_dict:
         new_func_def = new_func_def_use_dict
 
@@ -438,7 +428,7 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
     for i, fn in enumerate(fields):
         if fn in annotations:
             tp = annotations[fn]
-            fn_txt = "%s:%s" % (fn, (tp if type(tp) is str else _type2str(tp)))            
+            fn_txt = "{}:{}".format(fn, (tp if type(tp) is str else _type2str(tp)))
         else:
             fn_txt = fn
         defval = defaults[i]

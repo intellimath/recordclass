@@ -1,5 +1,3 @@
-from __future__ import print_function
-    
 import time
 import sys
 import random
@@ -62,16 +60,16 @@ def total_size(o, handlers={}, verbose=False):
 
 
 ##### NamedTuple #####
-class PricesNamedTuple(NamedTuple("Prices", 
-                         [('open', float), 
-                          ('high', float), 
-                          ('low', float), 
+class PricesNamedTuple(NamedTuple("Prices",
+                         [('open', float),
+                          ('high', float),
+                          ('low', float),
                           ('close', float)])):
     pass
 
-class TradeDayNamedTuple(NamedTuple("TradeDay", 
-                          (("symbol", str), 
-                           ("dt", date), 
+class TradeDayNamedTuple(NamedTuple("TradeDay",
+                          (("symbol", str),
+                           ("dt", date),
                            ("prices", PricesNamedTuple)))):
 
     def return_change(self):
@@ -84,7 +82,7 @@ class TradeDayNamedTuple(NamedTuple("TradeDay",
 
 ##### DataClass #####
 @dataclass
-class PricesDataClass: 
+class PricesDataClass:
     open: float
     high: float
     low: float
@@ -103,7 +101,7 @@ class TradeDayDataClass:
         self.symbol = symb
 
 
-##### RecordClass #####        
+##### RecordClass #####
 class PricesRecordClass(RecordClass):
     open: float
     high: float
@@ -121,7 +119,7 @@ class TradeDayRecordClass(RecordClass):
     def update_symbol(self, symb):
         self.symbol = symb
 
-##### dataobject #####        
+##### dataobject #####
 class PricesDataobject(dataobject, fast_new=True):
     open: float
     high: float
@@ -246,7 +244,7 @@ def run_test(objType):
     st = time.time()
     if objType == 'Dict':
         for k, v in data.items():
-            vprices = v['prices'] 
+            vprices = v['prices']
             d = int((vprices['close'] - vprices['open']) / vprices['open'])
     else:
         for k, v in data.items():
@@ -271,7 +269,7 @@ def run_test(objType):
     st = time.time()
     if objType == 'Dict':
         for k, v in data.items():
-            vprices = v['prices'] 
+            vprices = v['prices']
             d = int((vprices['close'] - vprices['open']) / vprices['open'])
     else:
         for k, v in data.items():
@@ -301,7 +299,7 @@ if __name__ == '__main__':
     run_test('RecordClass')
     run_test('Dataobject')
     run_test('NamedTuple')
-    
+
     pd.set_option("float_format", lambda x: "%.0f" % x)
     df = pd.DataFrame(stats)
     print(df)

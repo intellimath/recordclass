@@ -1,45 +1,43 @@
 import unittest
-import pickle, copy
-import keyword
-import re
+import pickle
 import sys
 import gc
 import weakref
 
-from recordclass import make_dataclass, make_arrayclass, dataobject, make, clone, update
-from recordclass import datatype, asdict, astuple, join_dataclasses
+from recordclass import make_dataclass, dataobject, make, clone, update
+from recordclass import asdict, astuple, join_dataclasses
 
 if 'PyPy' in sys.version:
     is_pypy = True
 else:
     is_pypy = False
-    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+    from recordclass.utils import headgc_size, ref_size, pyobject_size
 
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
 TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
 
 ##########################################################################
-        
+
 class DataobjectTest(unittest.TestCase):
 
     def test_bad_makeclass(self):
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             A = make_dataclass("A", 'x y', defaults=(0,0,0))
             # a = A(x=1, y=2, z=3)
-    
+
     # def test_bad_makeclass2(self):
-    #     with self.assertRaises(TypeError):        
+    #     with self.assertRaises(TypeError):
     #         A = make_dataclass("A", 'x y', defaults=(0,0,0), fast_new=False)
     #         # a = A(x=1, y=2, z=3)
 
     # def test_bad_call(self):
     #     A = make_dataclass("A", 'x y', defaults=(0,), fast_new=False)
-    #     with self.assertRaises(TypeError):        
+    #     with self.assertRaises(TypeError):
     #         a = A(x=1, y=2, z=3)
 
     def test_bad_call2(self):
         A = make_dataclass("A", 'x y', defaults=(0,))
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a = A(x=1, y=2, z=3)
 
     def test_caching(self):
@@ -104,9 +102,9 @@ class DataobjectTest(unittest.TestCase):
 
     # def test_dataobject_immutable_type(self):
     #     A = make_dataclass("A", 'x y', immutable_type=True)
-    #     # with self.assertRaises(TypeError):     
+    #     # with self.assertRaises(TypeError):
     #     A.color = 'red'
-    
+
     def test_dataobject_local_dict(self):
         A = make_dataclass("A", ('x', 'y'), use_dict=True)
         a = A(1,2)
@@ -124,14 +122,14 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         if not is_pypy:
             self.assertEqual(sys.getsizeof(a), pyobject_size+2*ref_size)
-        # with self.assertRaises(TypeError):     
+        # with self.assertRaises(TypeError):
         #     weakref.ref(a)
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.__dict__
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.z = 3
-        with self.assertRaises(AttributeError):     
-            a.z            
+        with self.assertRaises(AttributeError):
+            a.z
         a = None
 
     def test_datatype_nosq_nomp(self):
@@ -139,9 +137,9 @@ class DataobjectTest(unittest.TestCase):
         a = A(1,2)
         if not is_pypy:
             self.assertEqual(gc.is_tracked(a), False)
-        with self.assertRaises(TypeError):     
+        with self.assertRaises(TypeError):
             a[0]
-        with self.assertRaises(TypeError):     
+        with self.assertRaises(TypeError):
             a['x']
 
     def test_datatype_sq_nomp(self):
@@ -152,7 +150,7 @@ class DataobjectTest(unittest.TestCase):
             self.assertEqual(gc.is_tracked(a), False)
         self.assertEqual(a[0], 1)
         self.assertEqual(a[1], 2)
-        with self.assertRaises(TypeError):     
+        with self.assertRaises(TypeError):
             a['x']
 
     def test_datatype_nosq_mp(self):
@@ -163,7 +161,7 @@ class DataobjectTest(unittest.TestCase):
             self.assertEqual(gc.is_tracked(a), False)
         self.assertEqual(a['x'], 1)
         self.assertEqual(a['y'], 2)
-        with self.assertRaises(TypeError):     
+        with self.assertRaises(TypeError):
             a[0]
 
     def test_datatype_sq_mp(self):
@@ -206,7 +204,7 @@ class DataobjectTest(unittest.TestCase):
         a['x'] = 100
         self.assertEqual(a['x'], 100)
         a = None
-        
+
 #     def test_datatype_dict(self):
 #         A = make_dataclass("A", ('x', 'y'), use_dict=True, use_weakref=True)
 
@@ -220,7 +218,7 @@ class DataobjectTest(unittest.TestCase):
 #         self.assertEqual(asdict(a), {'x':1, 'y':2})
 #         weakref.ref(a)
 #         self.assertEqual(a.__dict__, {})
-        
+
 #         a.z = 3
 #         self.assertEqual(a.z, a.__dict__['z'])
 #         a = None
@@ -237,7 +235,7 @@ class DataobjectTest(unittest.TestCase):
 
     def test_defaults(self):
         A = make_dataclass("A", ('x', 'y', 'z'), defaults=(100, 200, 300))
-                
+
         a1 = A()
         self.assertEqual(repr(a1), "A(x=100, y=200, z=300)")
         self.assertEqual(a1.x, 100)
@@ -266,7 +264,7 @@ class DataobjectTest(unittest.TestCase):
         a['y'] = 200
         self.assertEqual(a['x'], 100)
         self.assertEqual(a['y'], 200)
-        
+
     def test_empty_fields_asdict(self):
         A = make_dataclass("A", ())
         a = A()
@@ -283,10 +281,10 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a.z, b.z)
         if not is_pypy:
             self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
-                           
+
     def test_subclass(self):
         A = make_dataclass("A", ('x', 'y'))
-                
+
         class B(A):
             pass
 
@@ -304,17 +302,17 @@ class DataobjectTest(unittest.TestCase):
         # self.assertEqual(sys.getsizeof(b), pyobject_size + 2*ref_size)
         if not is_pypy:
             self.assertEqual(A.__basicsize__, B.__basicsize__)
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(b)
-        with self.assertRaises(AttributeError):     
-            b.__dict__        
+        with self.assertRaises(AttributeError):
+            b.__dict__
 
     def test_subclass2(self):
         A = make_dataclass("A", ('x', 'y'))
 
         class B(A):
             __fields__ = ('z',)
-                
+
         class C(B):
             pass
 
@@ -333,12 +331,12 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(asdict(c), {'x':1, 'y':2, 'z':3})
         # self.assertEqual(sys.getsizeof(c), pyobject_size + 3*ref_size)
         if not is_pypy:
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(c)
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             c.__dict__
         c = None
-        
+
     def test_keyword_args(self):
         A = make_dataclass("A", ('x', 'y', 'z'), defaults=3*(None,))
 
@@ -414,7 +412,7 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a3.x, 1)
         self.assertEqual(a3.y, 2)
         self.assertEqual(a3.z, 3)
-        
+
     def test_missing_args(self):
         A = make_dataclass("A", ("a", "b", "c"), sequence=True)
         # print(A.__options__)
@@ -429,18 +427,18 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, None)
         self.assertEqual(a.z, None)
-        
+
     def test_missing_args3(self):
         A = make_dataclass("A", ('a','b','c'))
         a=A(1)
         self.assertEqual(a.a, 1)
         self.assertEqual(a.b, None)
         self.assertEqual(a.c, None)
-        
+
     def test_missing_args4(self):
         A = make_dataclass("A", ('a','b','c'), defaults=(-1,))
         a=A(1)
-#         with self.assertRaises(TypeError):     
+#         with self.assertRaises(TypeError):
 #             a=A(1)
         self.assertEqual(a.a, 1)
         self.assertEqual(a.b, None)
@@ -453,7 +451,7 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a.a, 1)
         self.assertEqual(a.b, -1)
         self.assertEqual(a.c, -2)
-        
+
     def test_tuple2(self):
         A = make_dataclass("A", ('x', 'y', 'z'), iterable=True)
         a=A(1, 2.0, "a")
@@ -471,7 +469,7 @@ class DataobjectTest(unittest.TestCase):
             pass
         b = B(1, 2.0, "a")
         hash(b)
-        
+
     def test_no_hash(self):
         A = make_dataclass("A", ("a", "b", "c"))
         a = A(1, 2.0, "a")
@@ -486,7 +484,7 @@ class DataobjectTest(unittest.TestCase):
 #         print(hash(a))
         # with self.assertRaises(TypeError):
         #     hash(b)
-            
+
     def test_reduce(self):
         A = make_dataclass("A", ("x","y","z"))
         a = A(1,2,3)
@@ -527,7 +525,7 @@ class DataobjectTest(unittest.TestCase):
                 tmp = dumps(p, protocol)
                 q = loads(tmp)
                 self.assertEqual(p, q)
-        
+
     def test_iter2(self):
         A = make_dataclass("A", ('x', 'y', 'z'), iterable=True)
         a=A(1, 2.0, "a")
@@ -538,24 +536,24 @@ class DataobjectTest(unittest.TestCase):
         a=A(1, 2.0, "a")
         with self.assertRaises(TypeError):
             iter(a)
-            
+
     def test_iterable_base(self):
         class iterable_do(dataobject, iterable=True):
             pass
-        
+
         class A(iterable_do):
             __fields__ = 'x', 'y', 'z'
-            
+
         a=A(1, 2.0, "a")
         self.assertEqual(list(a), [1, 2.0, "a"])
 
     def test_iterable_base2(self):
         class iterable_do(dataobject, iterable=True):
             pass
-        
+
         class A(iterable_do):
             __fields__ = 'x', 'y', 'z'
-            
+
         a=A(1, 2.0, "a")
         self.assertEqual(list(a), [1, 2.0, "a"])
 
@@ -595,12 +593,12 @@ class DataobjectTest(unittest.TestCase):
         a = make(A, ())
         self.assertEqual(A.__fields__, ())
         self.assertEqual(len(a), 0)
-            
+
     def test_make1(self):
         A = make_dataclass("A", {'x':int, 'y':int})
         a = make(A, (1,2))
         self.assertEqual(a, A(1, 2))
-        
+
     def test_make2(self):
         A = make_dataclass("A", {'x':int, 'y':int})
         a = make(A, (1,), y=2)
@@ -610,7 +608,7 @@ class DataobjectTest(unittest.TestCase):
         A = make_dataclass("A", {'x':int, 'y':int}, use_dict=True)
         a = make(A, (1,2), **{'z':3})
         self.assertEqual(a, A(1, 2, z=3))
-        
+
     def test_clone1(self):
         A = make_dataclass("A", {'x':int, 'y':int})
         a = A(1,2)
@@ -638,64 +636,64 @@ class DataobjectTest(unittest.TestCase):
     def test_update3(self):
         A = make_dataclass("A", {'x':int, 'y':int}, readonly=True)
         a = A(1, 2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             update(a, x=100)
-    
+
     def test_readonly(self):
         A = make_dataclass("A", {'x':int, 'y':int}, readonly=True)
         a = A(1,2)
-        with self.assertRaises(AttributeError):        
+        with self.assertRaises(AttributeError):
             a.x = -1
-        with self.assertRaises(AttributeError):        
+        with self.assertRaises(AttributeError):
             a.y = -2
 
     # def test_del_property(self):
     #     A = make_dataclass("A", 'x y')
-    #     with self.assertRaises(AttributeError):        
+    #     with self.assertRaises(AttributeError):
     #         del A.x
-    #     with self.assertRaises(AttributeError):        
+    #     with self.assertRaises(AttributeError):
     #         delattr(A, 'x')
 
     # def test_del_value(self):
     #     A = make_dataclass("A", 'x y')
     #     a = A(1, 2)
-    #     with self.assertRaises(AttributeError):        
+    #     with self.assertRaises(AttributeError):
     #         del a.x
-    #     with self.assertRaises(AttributeError):        
+    #     with self.assertRaises(AttributeError):
     #         delattr(a, 'x')
-            
+
     # def test_getitem(self):
     #     A = make_dataclass("A", 'x y')
     #     a = A(x=1, y=2)
-    #     with self.assertRaises(TypeError):        
+    #     with self.assertRaises(TypeError):
     #         a.__getitem__('x')
-    #     with self.assertRaises(TypeError):        
+    #     with self.assertRaises(TypeError):
     #         a.__getitem__('y')
-    #     with self.assertRaises(TypeError):        
+    #     with self.assertRaises(TypeError):
     #         a.__getitem__(0)
-    #     with self.assertRaises(TypeError):        
+    #     with self.assertRaises(TypeError):
     #         a.__getitem__(1)
 
     # def test_setitem(self):
     #     A = make_dataclass("A", 'x y')
     #     a = A(x=1, y=2)
-    #     with self.assertRaises(TypeError):        
+    #     with self.assertRaises(TypeError):
     #         a.__setitem__('x', 100)
-    #     with self.assertRaises(TypeError):        
+    #     with self.assertRaises(TypeError):
     #         a.__setitem__('y', 200)
-    #     with self.assertRaises(TypeError):        
+    #     with self.assertRaises(TypeError):
     #         a.__setitem__(0, 100)
-    #     with self.assertRaises(TypeError):        
+    #     with self.assertRaises(TypeError):
     #         a.__setitem__(1, 200)
-            
+
 #     def test_getitem_sq(self):
 #         A = make_dataclass("A", 'x y', sequence=True)
 #         a = A(x=1, y=2)
 #         self.assertEqual(a.__getitem__(0), 1)
 #         self.assertEqual(a.__getitem__(1), 2)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__getitem__('x')
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__getitem__('y')
 
 #     def test_setitem_sq(self):
@@ -705,41 +703,41 @@ class DataobjectTest(unittest.TestCase):
 #         a.__setitem__(1, 200)
 #         self.assertEqual(a.__getitem__(0), 100)
 #         self.assertEqual(a.__getitem__(1), 200)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__('x', 100)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__('y', 200)
-            
+
 #     def test_getitem_sq_ro(self):
 #         A = make_dataclass("A", 'x y', sequence=True, readonly=True)
 #         a = A(x=1, y=2)
 #         self.assertEqual(a.__getitem__(0), 1)
 #         self.assertEqual(a.__getitem__(1), 2)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__getitem__('x')
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__getitem__('y')
 
 #     def test_setitem_sq_ro(self):
 #         A = make_dataclass("A", 'x y', sequence=True, readonly=True)
 #         a = A(x=1, y=2)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__(0, 100)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__(1, 200)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__('x', 100)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__('y', 200)
-            
+
 #     def test_getitem_mp(self):
 #         A = make_dataclass("A", 'x y', mapping=True)
 #         a = A(x=1, y=2)
 #         self.assertEqual(a.__getitem__('x'), 1)
 #         self.assertEqual(a.__getitem__('y'), 2)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__getitem__(0)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__getitem__(1)
 
 #     def test_setitem_mp(self):
@@ -749,31 +747,31 @@ class DataobjectTest(unittest.TestCase):
 #         a.__setitem__('y', 200)
 #         self.assertEqual(a.__getitem__('x'), 100)
 #         self.assertEqual(a.__getitem__('y'), 200)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__(0, 100)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__(1, 200)
-            
+
 #     def test_getitem_mp_ro(self):
 #         A = make_dataclass("A", 'x y', mapping=True, readonly=True)
 #         a = A(x=1, y=2)
 #         self.assertEqual(a.__getitem__('x'), 1)
 #         self.assertEqual(a.__getitem__('y'), 2)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__getitem__(0)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__getitem__(1)
 
 #     def test_setitem_mp_ro(self):
 #         A = make_dataclass("A", 'x y', mapping=True, readonly=True)
 #         a = A(x=1, y=2)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__(0, 100)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__(1, 200)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__('x', 100)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__('y', 200)
 
 #     def test_getitem_mp_sq(self):
@@ -807,63 +805,63 @@ class DataobjectTest(unittest.TestCase):
 #         self.assertEqual(a.__getitem__('y'), 2)
 #         self.assertEqual(a.__getitem__(0), 1)
 #         self.assertEqual(a.__getitem__(1), 2)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__(0, 100)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__(1, 200)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__('x', 100)
-#         with self.assertRaises(TypeError):        
+#         with self.assertRaises(TypeError):
 #             a.__setitem__('y', 200)
-        
+
     def test_getkey(self):
         A = make_dataclass("A", 'x y')
         a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['x']
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['y']
 
     def test_setkey(self):
         A = make_dataclass("A", 'x y')
         a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['x'] = 100
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['y'] = 200
-            
+
     def test_getkey_sq(self):
         A = make_dataclass("A", 'x y', sequence=True)
         a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['x']
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['y']
 
     def test_setkey_sq(self):
         A = make_dataclass("A", 'x y', sequence=True)
         a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['x'] = 100
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['y'] = 200
-            
+
     def test_getkey_sq_ro(self):
         A = make_dataclass("A", 'x y', sequence=True, readonly=True)
         a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['x']
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['y']
 
     def test_setkey_sq_ro(self):
         A = make_dataclass("A", 'x y', sequence=True, readonly=True)
         a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['x'] = 100
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['y'] = 200
-            
+
     def test_getkey_mp(self):
         A = make_dataclass("A", 'x y', mapping=True)
         a = A(x=1, y=2)
@@ -877,7 +875,7 @@ class DataobjectTest(unittest.TestCase):
         a['y'] = 200
         self.assertEqual(a['x'], 100)
         self.assertEqual(a['y'], 200)
-            
+
     def test_getkey_mp_ro(self):
         A = make_dataclass("A", 'x y', mapping=True, readonly=True)
         a = A(x=1, y=2)
@@ -887,9 +885,9 @@ class DataobjectTest(unittest.TestCase):
     def test_setkey_mp_ro(self):
         A = make_dataclass("A", 'x y', mapping=True, readonly=True)
         a = A(x=1, y=2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['x'] =  100
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['y'] = 200
 
     def test_getkey_mp_sq(self):
@@ -923,16 +921,16 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a['y'], 2)
         self.assertEqual(a[0], 1)
         self.assertEqual(a[1], 2)
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a[0] = 100
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a[1] = 200
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['x'] = 100
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             a['y'] = 200
-            
+
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(DataobjectTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(DataobjectTest))
     return suite

@@ -23,7 +23,7 @@ struct LinkedItem {
 };
 
 /* "recordclass/_linkedlist.pyx":41
- * 
+ *
  * @cython.final
  * cdef public class linkedlist[object LinkedList, type LinkedListType]:             # <<<<<<<<<<<<<<
  *     cdef public linkeditem start
@@ -51,7 +51,7 @@ struct DLinkedItem {
 };
 
 /* "recordclass/_linkedlist.pyx":121
- * 
+ *
  * @cython.final
  * cdef public class dlinkedlist[object DLinkedList, type DLinkedListType]:             # <<<<<<<<<<<<<<
  *     cdef public dlinkeditem start
