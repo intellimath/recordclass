@@ -34,14 +34,14 @@ while True:
     # lst = litelist([])
     lst = []
     for i in range(N):
-        # o = Cls(rnd(1,1024), rnd(1,1024), rnd(1,1024), 
+        # o = Cls(rnd(1,1024), rnd(1,1024), rnd(1,1024),
         #         rnd(1,1024), rnd(1,1024), rnd(1,1024),
         #         rnd(1,1024), rnd(1,1024))
-        o = Cls2(rnd(1,1024), rnd(1,1024), rnd(1,1024), 
+        o = Cls2(rnd(1,1024), rnd(1,1024), rnd(1,1024),
                 rnd(1,1024), rnd(1,1024), rnd(1,1024),
                 rnd(1,1024), rnd(1,1024))
         lst.append(o)
     print(memory_usage_psutil())
     del lst
     time.sleep(0.2)
-  
+

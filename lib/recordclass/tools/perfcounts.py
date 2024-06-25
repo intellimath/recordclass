@@ -20,7 +20,7 @@ class PyPoint:
 
 class PointSlots:
     __slots__ = 'x', 'y', 'z'
-    
+
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
@@ -43,15 +43,15 @@ if sys.version_info >= (3, 11):
         x:int
         y:int
         z:int
-    
+
         def norm2(self):
             return self.x*self.x + self.y*self.y + self.z*self.z
-    
+
     class PointGC(dataobject, sequence=True, gc=True, immutable_type=True):
         x:int
         y:int
         z:int
-    
+
         def norm2(self):
             return self.x*self.x + self.y*self.y + self.z*self.z
 else:
@@ -59,15 +59,15 @@ else:
         x:int
         y:int
         z:int
-    
+
         def norm2(self):
             return self.x*self.x + self.y*self.y + self.z*self.z
-    
+
     class PointGC(dataobject, sequence=True, gc=True):
         x:int
         y:int
         z:int
-    
+
         def norm2(self):
             return self.x*self.x + self.y*self.y + self.z*self.z
 
@@ -79,21 +79,21 @@ class PointMap(dataobject, mapping=True, fast_new=True):
     def norm2(self):
         return self.x*self.x + self.y*self.y + self.z*self.z
 
-    
+
 # PointDict = make_dictclass("PointDict", "x y z", fast_new=True)
-    
-results = {'id':[], 'size':[], 'new':[], 
-           'getattr':[], 'setattr':[], 
+
+results = {'id':[], 'size':[], 'new':[],
+           'getattr':[], 'setattr':[],
            'getitem':[], 'setitem':[],
            'getkey':[], 'setkey':[],
            'iterate':[], 'copy':[],
           }
 
 results['id'].extend(
-    ['litetuple', 'mutabletuple', 'tuple', 'namedtuple', 'class+slots', 'datastruct', 'dataobject',  
+    ['litetuple', 'mutabletuple', 'tuple', 'namedtuple', 'class+slots', 'datastruct', 'dataobject',
      'dataobject+gc', 'dict', 'dataobject+map', 'class'])
 
-classes = (litetuple, mutabletuple, tuple, PointNT, PointSlots, 
+classes = (litetuple, mutabletuple, tuple, PointNT, PointSlots,
            PointStruct, Point, PointGC, dict, PointMap, PyPoint)
 
 N = 300_000
@@ -106,7 +106,7 @@ def test_new():
         for i in range(N):
             ob = cls(i, i, i)
             prev = ob
-        
+
     def test_tuple():
         for i in range(N):
             ob = tuple((i, i, i))
@@ -116,7 +116,7 @@ def test_new():
         for i in range(N):
             ob = {'x':i, 'y':i, 'z':i}
             prev = ob
-    
+
     for cls in classes:
         gc.collect()
         if cls is dict:
@@ -139,17 +139,17 @@ def test_copy():
         ob = cls(0,0,0)
         for i in range(N):
             ob1 = ob[:]
-            
+
     def test_tuple():
         ob = (0,0,0)
         for i in range(N):
             ob1 = ob[:]
-            
+
     def test_dict():
         ob = {'x':0,'y':0,'z':0}
         for i in range(N):
             ob1 = ob.copy()
-    
+
     for cls in classes:
         gc.collect()
         if cls is dict:
@@ -163,7 +163,7 @@ def test_copy():
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
         results['copy'].append(res)
-        
+
 def test_getattr():
     print("getattr")
     def test(cls):
@@ -172,7 +172,7 @@ def test_getattr():
             x = p.x
             y = p.y
             z = p.z
-            
+
     for cls in classes:
         gc.collect()
         if cls in (litetuple,mutabletuple,tuple,dict):
@@ -190,14 +190,14 @@ def test_getkey():
             x = p['x']
             y = p['y']
             z = p['z']
-            
+
     def test_dictclass(cls):
         p = cls(0,0,0)
         for i in range(N):
             x = p['x']
             y = p['y']
             z = p['z']
-            
+
     for cls in classes:
         gc.collect()
         if cls is dict:
@@ -207,7 +207,7 @@ def test_getkey():
         else:
             res = nan
         results['getkey'].append(res)
-        
+
 def test_getitem():
     print("getitem")
     def test(cls):
@@ -223,7 +223,7 @@ def test_getitem():
             x = p[0]
             y = p[1]
             z = p[2]
-            
+
     for cls in classes:
         gc.collect()
         if cls in (dict, PointSlots, PointMap, PyPoint):
@@ -233,7 +233,7 @@ def test_getitem():
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
         results['getitem'].append(res)
-        
+
 def test_setattr():
     print("setattr")
     def test(cls):
@@ -266,7 +266,7 @@ def test_setkey():
             p['x'] = 1
             p['y'] = 2
             p['z'] = 3
-            
+
     for cls in classes:
         gc.collect()
         if cls in (PointMap,):
@@ -276,7 +276,7 @@ def test_setkey():
         else:
             res = nan
         results['setkey'].append(res)
-        
+
 def test_setitem():
     print("setitem")
     def test(cls):
@@ -285,7 +285,7 @@ def test_setitem():
             p[0] = 1
             p[1] = 2
             p[2] = 2
-            
+
     for cls in classes:
         gc.collect()
         if cls in (litetuple, dict, tuple, PointNT, PointSlots, PointMap, PyPoint):
@@ -300,7 +300,7 @@ def test_getmethod():
         p = cls(0,0,0)
         for i in range(N):
             a = p.norm2
-            
+
     for cls in classes:
         gc.collect()
         if cls in (litetuple, mutabletuple, dict, tuple, PointNT,):
@@ -308,7 +308,7 @@ def test_getmethod():
         else:
             res = timeit("test(cls)", number=numbers, globals={'cls':cls, 'test':test})
         results['getmethod'].append(res)
-        
+
 def test_iterate():
     print("iterate")
     def test(cls):
@@ -322,13 +322,13 @@ def test_iterate():
         for i in range(N):
             for x in iter(p):
                 s = x
-    
+
     def test_dict():
         p = {'x':0, 'y':0, 'z':0}
         for i in range(N):
             for x in iter(p):
                 s = x
-    
+
     for cls in classes:
         gc.collect()
         if cls is dict:
@@ -357,18 +357,18 @@ def test_all(relative=True):
     test_copy()
 
     results['size'].extend([
-      sys.getsizeof(litetuple(0,0,0)),   
-      sys.getsizeof(mutabletuple(0,0,0)),   
-      sys.getsizeof((0,0,0)),   
-      sys.getsizeof(PointNT(0,0,0)),   
-      sys.getsizeof(PointSlots(0,0,0)),   
-      sys.getsizeof(PointStruct(0,0,0)),   
-      sys.getsizeof(Point(0,0,0)),   
-      sys.getsizeof(PointGC(0,0,0)),   
-      sys.getsizeof({'x':0,'y':0, 'z':0}),   
-      sys.getsizeof(PointMap(0,0,0)),   
-      sys.getsizeof(PyPoint(0,0,0)),   
-      # sys.getsizeof(PointDict(0,0,0)),   
+      sys.getsizeof(litetuple(0,0,0)),
+      sys.getsizeof(mutabletuple(0,0,0)),
+      sys.getsizeof((0,0,0)),
+      sys.getsizeof(PointNT(0,0,0)),
+      sys.getsizeof(PointSlots(0,0,0)),
+      sys.getsizeof(PointStruct(0,0,0)),
+      sys.getsizeof(Point(0,0,0)),
+      sys.getsizeof(PointGC(0,0,0)),
+      sys.getsizeof({'x':0,'y':0, 'z':0}),
+      sys.getsizeof(PointMap(0,0,0)),
+      sys.getsizeof(PyPoint(0,0,0)),
+      # sys.getsizeof(PointDict(0,0,0)),
     ])
 
     for key in results.keys():
@@ -382,7 +382,7 @@ def test_all(relative=True):
         pt.add_row([results[key][k] for key in pt.field_names])
 
     pt.align = 'l'
-    
+
     return pt
 
 pt = test_all()

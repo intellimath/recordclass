@@ -28,4 +28,4 @@ while True:
   del a
   time.sleep(.01)
   print(memory_usage_psutil())
-  
+

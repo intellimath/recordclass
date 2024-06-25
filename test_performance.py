@@ -111,7 +111,7 @@ class R(object):
         self.d = d; self.e = e; self.f = f
         self.g = g; self.h = h; self.i = i
         self.j = j; self.k = k
-        
+
 r = R(1,2,3,4,5,6,7,8,9,10,11)
 """
 )
@@ -150,7 +150,7 @@ class R(object):
         self.d = d; self.e = e; self.f = f
         self.g = g; self.h = h; self.i = i
         self.j = j; self.k = k
-        
+
 r = R(1,2,3,4,5,6,7,8,9,10,11)
 """
 )

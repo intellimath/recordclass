@@ -60,13 +60,13 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
         if not is_pypy:
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(a)
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.__dict__
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.z = 3
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.z
         a = None
 
@@ -84,13 +84,13 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(A.__fields__, ('x', 'y'))
         # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
         if not is_pypy:
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(a)
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.__dict__
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.z = 3
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.z
         a = None
 
@@ -108,14 +108,14 @@ class datastructTest3(unittest.TestCase):
         if not is_pypy:
             self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
         if not is_pypy:
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(a)
         # print('*')
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.__dict__
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.z = 3
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.z
         a = None
 
@@ -163,13 +163,13 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(a.y, 2)
 #         self.assertEqual(sys.getsizeof(a), 32)
         if not is_pypy:
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(a)
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.__dict__
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.z = 3
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.z
         a = None
 
@@ -195,7 +195,7 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(a3.x, 1)
         self.assertEqual(a3.y, 2)
         self.assertEqual(a3.z, 300)
-        
+
     def test_keyword_args_tp(self):
         class A(datastruct):
             x:int
@@ -234,7 +234,7 @@ class datastructTest3(unittest.TestCase):
         a3 = A(1,"a",3)
         self.assertEqual(a3.x, 1)
         self.assertEqual(a3.y, "a")
-        self.assertEqual(a3.z, 3)            
+        self.assertEqual(a3.z, 3)
 
     def test_keyword_args_defaults2_tp(self):
         class A(datastruct):
@@ -312,7 +312,7 @@ class datastructTest3(unittest.TestCase):
         a=A(1, 2.0, "a")
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2.0)
-        self.assertEqual(a.z, "a")        
+        self.assertEqual(a.z, "a")
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
 
     def test_datastruct_iter3_tp2(self):
@@ -322,7 +322,7 @@ class datastructTest3(unittest.TestCase):
         a=A(1, 2.0, "a")
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2.0)
-        self.assertEqual(a.z, "a")        
+        self.assertEqual(a.z, "a")
         self.assertEqual(list(iter(a)), [1, 2.0, "a"])
 
     def test_datastruct_iter4_tp(self):
@@ -332,7 +332,7 @@ class datastructTest3(unittest.TestCase):
         a=A(1, 2.0, "a")
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2.0)
-        self.assertEqual(a.z, "a")        
+        self.assertEqual(a.z, "a")
         with self.assertRaises(TypeError):
             iter(a)
 
@@ -350,7 +350,7 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(a.x, b.x)
         self.assertEqual(a.y, b.y)
         self.assertEqual(a.z, b.z)
-        # self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)        
+        # self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
 
     def test_datastruct_pickle2_tp(self):
         p = TestPickle2(10, 20, 30)
@@ -371,11 +371,11 @@ class datastructTest3(unittest.TestCase):
                 tmp = dumps(p, protocol)
                 q = loads(tmp)
                 self.assertEqual(p, q)
-                
+
     def test_datastruct_invalid_defaults_tp(self):
         import copy
 
-        with self.assertRaises(TypeError):        
+        with self.assertRaises(TypeError):
             class A(datastruct):
                 x:int=0
                 y:int
@@ -392,12 +392,12 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(a, b)
         c = copy.deepcopy(a)
         self.assertEqual(a, c)
-        
+
     def test_datastruct_vcall_1(self):
         class A(datastruct):
             x:int
             y:int
-            
+
         for i in range(1000):
             a = A(1,2)
             self.assertEqual(a.x, 1)
@@ -407,17 +407,17 @@ class datastructTest3(unittest.TestCase):
         class A(datastruct):
             x:int
             y:int
-            
+
         for i in range(1000):
             a = A(1,y=2)
             self.assertEqual(a.x, 1)
             self.assertEqual(a.y, 2)
-            
+
     def test_datastruct_vcall_3(self):
         class A(datastruct):
             x:int
             y:int
-            
+
         for i in range(1000):
             a = A(x=1,y=2)
             self.assertEqual(a.x, 1)
@@ -449,9 +449,9 @@ class datastructTest3(unittest.TestCase):
             y:int
 
         a = A(1,2)
-        with self.assertRaises(AttributeError):        
+        with self.assertRaises(AttributeError):
             a.x = -1
-        with self.assertRaises(AttributeError):        
+        with self.assertRaises(AttributeError):
             a.y = -2
 
     def test_datastruct_readonly_3(self):
@@ -474,7 +474,7 @@ class datastructTest3(unittest.TestCase):
         class Point(datastruct):
             x: float
             y: float
-            color: Color = Color.RED        
+            color: Color = Color.RED
 
         pt = Point(1,2)
         self.assertEqual(pt.color, Color.RED)
@@ -508,7 +508,7 @@ class datastructTest3(unittest.TestCase):
         # print(id(a.d), id(b.d))
         self.assertEqual(a.d, b.d)
         self.assertEqual(id(a.d), id(b.d))
-    
+
     def test_datastruct_copy_default_4(self):
         class A(datastruct, copy_default=True):
             l: list = []
@@ -519,7 +519,7 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(a.l, b.l)
         self.assertNotEqual(id(a.l), id(b.l))
 
-    
+
     def test_datastruct_copy_default_5(self):
         class A(datastruct, copy_default=True):
             d: dict = {}
@@ -539,8 +539,8 @@ class datastructTest3(unittest.TestCase):
         # print(id(a.d), id(b.d))
         self.assertEqual(a.d, b.d)
         self.assertNotEqual(id(a.d), id(b.d))
-    
-    
+
+
     def test_datastruct_copy_default_classvar(self):
 
         class A(datastruct, copy_default=True):

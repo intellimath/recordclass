@@ -19,10 +19,10 @@ class EdgeSlots:
          self.node1 = node1
          self.node2 = node2
          self.weight = weight
-            
+
     def __str__(self):
         return f'EdgeSlots(node1={self.node1}, node2={self.node2}, weight={self.weight})'
-            
+
 def list_size(lst):
     return sum(sys.getsizeof(o) for o in lst)
 
@@ -31,7 +31,7 @@ def test(C):
         obj = C(*args)
         prev = obj
 
-        
+
 print('__slots__ timinig:')
 t0 = time()
 list_slots = [EdgeSlots(*args) for args in ijw]

@@ -85,18 +85,18 @@ class arrayobjectTest(unittest.TestCase):
 #         gc.collect()
 #         cnt3 = gc.get_count()
 #         self.assertEqual(cnt1, cnt3)
-        
+
     def test_fields0(self):
         A = make_arrayclass("A", 0)
         a = A()
         self.assertEqual(len(a), 0)
         self.assertEqual(repr(a), "A()")
-        with self.assertRaises(IndexError): 
+        with self.assertRaises(IndexError):
             a[0]
         if not is_pypy:
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(a)
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.__dict__
         a = None
         with self.assertRaises(TypeError):
@@ -109,12 +109,12 @@ class arrayobjectTest(unittest.TestCase):
         self.assertEqual(len(a), 1)
         self.assertEqual(a[0], 100)
         self.assertEqual(a[-1], 100)
-        with self.assertRaises(IndexError): 
+        with self.assertRaises(IndexError):
             a[1]
         if not is_pypy:
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(a)
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.__dict__
         a = None
         with self.assertRaises(TypeError):
@@ -125,12 +125,12 @@ class arrayobjectTest(unittest.TestCase):
         a = A()
         self.assertEqual(repr(a), "A()")
         self.assertEqual(len(a), 0)
-        with self.assertRaises(IndexError): 
+        with self.assertRaises(IndexError):
             a[0]
         if not is_pypy:
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(a)
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.__dict__
         a = None
         with self.assertRaises(TypeError):
@@ -143,17 +143,17 @@ class arrayobjectTest(unittest.TestCase):
         self.assertEqual(len(a), 1)
         self.assertEqual(a[0], 100)
         self.assertEqual(a[-1], 100)
-        with self.assertRaises(IndexError): 
+        with self.assertRaises(IndexError):
             a[1]
         if not is_pypy:
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(a)
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.__dict__
         a = None
         with self.assertRaises(TypeError):
             A(1,2)
-            
+
 
     def test_fields_fixsize1(self):
         A = make_arrayclass("A", 2)
@@ -168,12 +168,12 @@ class arrayobjectTest(unittest.TestCase):
         a[1] = -200
         self.assertEqual(a[0], -100)
         self.assertEqual(a[1], -200)
-        with self.assertRaises(IndexError): 
+        with self.assertRaises(IndexError):
             a[2]
         if not is_pypy:
-            with self.assertRaises(TypeError):     
+            with self.assertRaises(TypeError):
                 weakref.ref(a)
-        with self.assertRaises(AttributeError):     
+        with self.assertRaises(AttributeError):
             a.__dict__
         a = None
 
@@ -191,13 +191,13 @@ class arrayobjectTest(unittest.TestCase):
         A = make_arrayclass("A", 3, hashable=True)
         a=A(1, 2.0, "a")
         hash(a)
-        
+
     def test_arrayclass_asdict(self):
         from recordclass import asdict
         A = make_arrayclass("A", 3)
         a = A()
         with self.assertRaises(TypeError):
-            t = asdict(a)        
+            t = asdict(a)
 
     def test_missing_args(self):
         A = make_arrayclass("A", 3)

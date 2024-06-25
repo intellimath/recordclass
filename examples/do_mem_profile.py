@@ -12,7 +12,7 @@ class NodeSlots:
 
 class NodeDO(dataobject):
     __fields__ = 'ob', 'left', 'right'
-    
+
 count = 0
 
 def add_nodes_do(level):

@@ -26,7 +26,7 @@ class XRepr(RecordClass):
         return f'{self.x} -> {self.y}'
     def __add__(self, other):
         return 0
-    
+
 class H(RecordClass, hashable=True):
     x: int
     y: int
@@ -34,14 +34,14 @@ class H(RecordClass, hashable=True):
 class HR(RecordClass, readonly=True):
     x: int
     y: int
-        
+
 class RecordClassTypingTest(unittest.TestCase):
-    
+
     def test_recordclass_lists(self):
         class A(RecordClass):
             x:object
             y:object
-    
+
         a = A([1,2,3],[3,4,5])
 
     def test_typing(self):
@@ -49,7 +49,7 @@ class RecordClassTypingTest(unittest.TestCase):
             a: int
             b: int
             c: object
-        
+
         tmp = A(a=1, b=2, c=[1,2,3])
         # self.assertEqual(repr(tmp), "A(a=1, b=2', c=[1, 2, 3])")
         # self.assertEqual(tmp.__annotations__, {'a': int, 'b': int, 'c': object})
@@ -128,7 +128,7 @@ class XMethBad(RecordClass):
             RecordClass('Name', [('x', int)], y=str)
         with self.assertRaises(TypeError):
             RecordClass('Name', x=1, y='a')
-            
+
     def test_hash(self):
         a = HR(1, 2)
         #self.assertEqual(hash(a), hash(tuple(a)))
@@ -165,9 +165,9 @@ class XMethBad(RecordClass):
         b = B(1,2)
         with self.assertRaises(AttributeError):
             b.x = 1
-        
+
     def test_pickle(self):
-        global Emp 
+        global Emp
         class Emp(RecordClass):
             name:str
             id:int
@@ -183,7 +183,7 @@ class XMethBad(RecordClass):
         class Emp2(RecordClass):
             name:str
             id:int
-        
+
         jane = Emp2('jane', 37)
         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             z = pickle.dumps(jane, proto)
@@ -196,7 +196,7 @@ class XMethBad(RecordClass):
             z = pickle.dumps(jane, proto)
             jane2 = pickle.loads(z)
             self.assertEqual(jane2, jane)
-            
+
 
 def main():
     suite = unittest.TestSuite()
