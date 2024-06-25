@@ -904,11 +904,15 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 ### Changes:
 
+#### 0.22.0.1
+
+* Fix regression with `as_dataclass`.
+
 #### 0.22
 
 * Add a base class `datastruct` for subclasses that should behave more like simple datastructures.
 * Fix bug with `__match_args__` (#6).
-* Start support for python3.13.
+* Start support for python 3.13.
 
 #### 0.21.1
 
