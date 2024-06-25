@@ -24,14 +24,10 @@
 
 __all__ = 'datatype',
 
-import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
-_PY37 = _sys.version_info[:2] >= (3, 7)
-_PY310 = _sys.version_info[:2] >= (3, 10)
-_PY311 = _sys.version_info[:2] >= (3, 11)
+import sys
     
 import typing
-if _PY37:
+if sys.version_info >= (3, 7):
     def _is_classvar(a_type):
         return (a_type is typing.ClassVar
                 or (type(a_type) is typing._GenericAlias
@@ -71,7 +67,7 @@ class datatype(type):
         from recordclass._dataobject import dataobject, datastruct
         from recordclass._dataobject import dataobjectproperty
         from sys import intern as _intern
-        if _PY311:
+        if sys.version_info >= (3, 11):
             from recordclass._dataobject import member_new
 
         options = {}
@@ -98,7 +94,7 @@ class datatype(type):
         if copy_default:
             options['copy_default'] = copy_default
         
-        if _PY311 and immutable_type:
+        if sys.version_info >= (3, 11) and immutable_type:
             options['immutable_type'] = immutable_type
 
         if '__match_args__' in ns:
@@ -174,7 +170,7 @@ class datatype(type):
         if hashable:
             options['hashable'] = hashable
 
-        if not _PY311 and immutable_type:
+        if sys.version_info < (3, 11) and immutable_type:
             import warnings
             warnings.warn("immutable_type=True can be used only for python >= 3.11")
         
@@ -249,7 +245,7 @@ class datatype(type):
         module = ns.get('__module__', None)
         if module is None:
             try:
-                module = _sys._getframe(2).f_globals.get('__name__', '__main__')
+                module = sys._getframe(2).f_globals.get('__name__', '__main__')
                 ns['__module'] = module
             except (AttributeError, ValueError):
                 pass
@@ -264,7 +260,7 @@ class datatype(type):
             ns['__default_vals__'] = default_vals
             ns['__annotations__'] = annotations
 
-            if _PY310:
+            if sys.version_info >= (3, 10):
                 if match:
                     ns['__match_args__'] = match
 
@@ -282,7 +278,7 @@ class datatype(type):
         
         ns['__options__'] = options
 
-        if has_fields and not _PY311:
+        if has_fields and sys.version_info < (3, 10):
             for i, name in enumerate(fields):
                 fd = fields_dict[name]
                 fd_readonly = fd.get('readonly', False)
@@ -299,7 +295,7 @@ class datatype(type):
 
         cls = type.__new__(metatype, typename, bases, ns)
 
-        if has_fields and _PY311:
+        if has_fields and sys.version_info >= (3, 11):
             for i, name in enumerate(fields):
                 fd = fields_dict[name]
                 fd_readonly = fd.get('readonly', False)
@@ -361,7 +357,7 @@ class datatype(type):
             _dataobject._datatype_vectorcall(cls)
         if copy_default and not is_pyinit and not is_pynew:
             _dataobject._datatype_copy_default(cls)
-        if _PY311 and immutable_type:
+        if sys.version_info >= (3, 11) and immutable_type:
             _dataobject._datatype_immutable(cls)
         _dataobject._pytype_modified(cls)
 

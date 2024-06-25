@@ -12,10 +12,6 @@ from recordclass import asdict, make
 
 from typing import ClassVar
 
-# _PY36 = _sys.version_info[:2] >= (3, 6)
-_PY37 = sys.version_info[:2] >= (3, 7)
-_PY311 = sys.version_info[:2] >= (3, 11)
-
 if 'PyPy' in sys.version:
     is_pypy = True
 else:

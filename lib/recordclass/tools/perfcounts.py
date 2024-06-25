@@ -5,8 +5,6 @@ from timeit import timeit
 import sys
 import gc
 
-_PY311 = sys.version_info[:2] >= (3, 11)
-
 PointNT = namedtuple("PointNT", "x y z")
 nan = float('nan')
 
@@ -39,7 +37,7 @@ class PointStruct(datastruct, sequence=True):
     def norm2(self):
         return self.x*self.x + self.y*self.y + self.z*self.z
 
-if _PY311:
+if sys.version_info >= (3, 11):
 
     class Point(dataobject, sequence=True):
         x:int

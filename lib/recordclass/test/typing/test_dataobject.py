@@ -12,10 +12,6 @@ from recordclass import asdict, make
 
 from typing import ClassVar
 
-# _PY36 = _sys.version_info[:2] >= (3, 6)
-_PY37 = sys.version_info[:2] >= (3, 7)
-_PY311 = sys.version_info[:2] >= (3, 11)
-
 if 'PyPy' in sys.version:
     is_pypy = True
 else:
@@ -906,7 +902,7 @@ class DataObjectTest3(unittest.TestCase):
         pt = Point(1,2)
         self.assertEqual(pt.color, Color.RED)
 
-    if _PY37:
+    if sys.version_info >= (3, 7):
         def test_classvar_1(self):
             from typing import ClassVar
             class Point(dataobject):
@@ -1097,7 +1093,7 @@ class DataObjectTest3(unittest.TestCase):
 #         with self.assertRaises(AttributeError):        
 #             a = A(1,2)
 
-    if _PY311:
+    if sys.version_info >= (3, 11):
         def test_immutable_type(self):
             class A(dataobject, immutable_type=True):
                 x:int

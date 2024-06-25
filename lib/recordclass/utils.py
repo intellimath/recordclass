@@ -22,15 +22,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
+import sys
 
 from keyword import iskeyword
 from recordclass import dataobject, datastruct
 from .datatype import Field
 
-_intern = _sys.intern
-if _PY36:
+_intern = sys.intern
+if sys.version_info >= (3, 6):
     from typing import _type_check
 else:
     def _type_check(t, msg):
@@ -41,7 +40,7 @@ else:
 
 ### sizes
 
-if 'PyPy' in _sys.version:
+if 'PyPy' in sys.version:
     is_pypy = True
 else:
     is_pypy = False
@@ -49,13 +48,12 @@ else:
     _t = ()
     _t1 = (1,)
     _o = object()
-    headgc_size = _sys.getsizeof(_t) - _t.__sizeof__()
-    ref_size = _sys.getsizeof(_t1) - _sys.getsizeof(_t)
+    headgc_size = sys.getsizeof(_t) - _t.__sizeof__()
+    ref_size = sys.getsizeof(_t1) - sys.getsizeof(_t)
     pyobject_size = _o.__sizeof__()
     pyvarobject_size = _t.__sizeof__()
     pyssize = pyvarobject_size - pyobject_size
     del _t, _t1, _o
-del _sys
 
 #############
 
