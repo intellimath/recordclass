@@ -96,5 +96,5 @@ class dataobjectmatchTest(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(dataobjectmatchTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(dataobjectmatchTest))
     return suite

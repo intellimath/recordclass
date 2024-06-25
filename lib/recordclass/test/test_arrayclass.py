@@ -228,6 +228,5 @@ class arrayobjectTest(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(arrayobjectTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(arrayobjectTest))
     return suite
-        

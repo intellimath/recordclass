@@ -1,5 +1,3 @@
-# coding: utf-8
- 
 # The MIT License (MIT)
 
 # Copyright (c) «2015-2023» «Shibzukhov Zaur, szport at gmail dot com»
@@ -29,14 +27,7 @@ from recordclass import dataobject, datastruct
 from .datatype import Field
 
 _intern = sys.intern
-if sys.version_info >= (3, 6):
-    from typing import _type_check
-else:
-    def _type_check(t, msg):
-        if isinstance(t, (type, str)):
-            return t
-        else:
-            raise TypeError('invalid type annotation', t)    
+from typing import _type_check
 
 ### sizes
 
@@ -187,7 +178,7 @@ def collect_info_from_bases(bases, fields, fields_dict, options):
         if type(fs) is tuple and len(fs) == n:
             for i, fn in enumerate(fs):
                 if fn in fields:
-                    raise TypeError('field %s is already defined in the %s' % (fn, base))
+                    raise TypeError('field {} is already defined in the {}'.format(fn, base))
                 else:
                     fields_dict[fn] = f = Field()
                     if _is_readonly_member(base.__dict__[fn]):

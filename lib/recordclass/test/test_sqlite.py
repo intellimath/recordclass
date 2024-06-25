@@ -35,6 +35,5 @@ class DataobjectSqliteTest(unittest.TestCase):
         
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(DataobjectSqliteTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(DataobjectSqliteTest))
     return suite
-        

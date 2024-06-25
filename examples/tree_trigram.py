@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
 
 # In[1]:
 
@@ -191,7 +190,7 @@ while n < n2 + 1:
     ns.append(n)
     times.append(dt)
     times_del.append(dt2)
-    print(n, "%.2f %.2f" % (dt, dt2))
+    print(n, "{:.2f} {:.2f}".format(dt, dt2))
     n = int(n * q2)
 
 
@@ -219,7 +218,7 @@ while n < n2+1:
     ns2.append(n)
     times2.append(dt)
     times2_del.append(dt2)
-    print(n, "%.2f %.2f" % (dt, dt2))
+    print(n, "{:.2f} {:.2f}".format(dt, dt2))
     n = int(n * q2)
 
 

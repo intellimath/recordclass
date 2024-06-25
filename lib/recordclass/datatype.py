@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # The MIT License (MIT)
 
 # Copyright (c) «2017-2023» «Shibzukhov Zaur, szport at gmail dot com»
@@ -27,14 +25,10 @@ __all__ = 'datatype',
 import sys
     
 import typing
-if sys.version_info >= (3, 7):
-    def _is_classvar(a_type):
-        return (a_type is typing.ClassVar
-                or (type(a_type) is typing._GenericAlias
-                    and a_type.__origin__ is typing.ClassVar))
-else:
-    def _is_classvar(a_type):
-        return isinstance(a_type, typing._ClassVar) #or issubclass(a_type, typing.ClassVar)
+def _is_classvar(a_type):
+    return (a_type is typing.ClassVar
+            or (type(a_type) is typing._GenericAlias
+                and a_type.__origin__ is typing.ClassVar))
 
 def _matching_annotations_and_defaults(annotations, defaults):
     first_default = False
@@ -124,7 +118,7 @@ class datatype(type):
         classvars = {fn for fn,tp in annotations.items() \
                         if _is_classvar(tp)}
         
-        int_type = type(1)
+        int_type = int
 
         if '__fields__' in ns:
             fields = ns['__fields__']
@@ -380,7 +374,7 @@ def _make_new_function(typename, fields, defaults_dict, annotations, use_dict):
 
     if fields and defaults_dict:
         fields2 = [fn for fn in fields if fn not in defaults_dict] + \
-                  ["%s=%r" % (fn,None) for fn in fields if fn in defaults_dict]
+                  ["{}={!r}".format(fn,None) for fn in fields if fn in defaults_dict]
     else:
         fields2 = fields
 
@@ -434,7 +428,7 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
     for i, fn in enumerate(fields):
         if fn in annotations:
             tp = annotations[fn]
-            fn_txt = "%s:%s" % (fn, (tp if type(tp) is str else _type2str(tp)))            
+            fn_txt = "{}:{}".format(fn, (tp if type(tp) is str else _type2str(tp)))            
         else:
             fn_txt = fn
         defval = defaults[i]

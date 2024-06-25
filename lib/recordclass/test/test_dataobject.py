@@ -934,5 +934,5 @@ class DataobjectTest(unittest.TestCase):
             
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(DataobjectTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(DataobjectTest))
     return suite

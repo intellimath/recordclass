@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # The MIT License (MIT)
 
 # Copyright (c) «2017-2023» «Shibzukhov Zaur, szport at gmail dot com»
@@ -151,4 +149,3 @@ def join_dataclasses(name, classes, *, readonly=False, use_dict=False, gc=False,
     return make_dataclass(name, _attrs,
                           readonly=readonly, use_dict=use_dict, gc=gc, use_weakref=use_weakref,
                           hashable=hashable, sequence=sequence, iterable=iterable, module=module)
-    

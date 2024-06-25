@@ -902,52 +902,51 @@ class DataObjectTest3(unittest.TestCase):
         pt = Point(1,2)
         self.assertEqual(pt.color, Color.RED)
 
-    if sys.version_info >= (3, 7):
-        def test_classvar_1(self):
-            from typing import ClassVar
-            class Point(dataobject):
-                color:ClassVar[int]
-                x: float
-                y: float
+    def test_classvar_1(self):
+        from typing import ClassVar
+        class Point(dataobject):
+            color:ClassVar[int]
+            x: float
+            y: float
 
-            self.assertTrue('color' not in Point.__dict__)
-            self.assertEqual(Point.__fields__, ('x','y'))
-            self.assertEqual(Point.__annotations__, {'x':float,'y':float})   
-            pt = Point(1,2)
-            self.assertEqual((pt.x, pt.y), (1, 2))
+        self.assertTrue('color' not in Point.__dict__)
+        self.assertEqual(Point.__fields__, ('x','y'))
+        self.assertEqual(Point.__annotations__, {'x':float,'y':float})   
+        pt = Point(1,2)
+        self.assertEqual((pt.x, pt.y), (1, 2))
 
-        def test_classvar_2(self):
-            from typing import ClassVar
-            class Point(dataobject):
-                x: float
-                y: float
-                color:ClassVar[int] = 1
+    def test_classvar_2(self):
+        from typing import ClassVar
+        class Point(dataobject):
+            x: float
+            y: float
+            color:ClassVar[int] = 1
 
-            self.assertEqual(Point.color, 1)
-            self.assertEqual(Point.__fields__, ('x','y'))
-            self.assertEqual(Point.__annotations__, {'x':float,'y':float})            
-            pt = Point(1,2)
-            self.assertEqual((pt.x, pt.y), (1, 2))
-            
-        def test_classvar_3(self):
-            from typing import ClassVar
-            class Example_State(dataobject):
-                x: float=1.0
-                y: float=2.0
+        self.assertEqual(Point.color, 1)
+        self.assertEqual(Point.__fields__, ('x','y'))
+        self.assertEqual(Point.__annotations__, {'x':float,'y':float})            
+        pt = Point(1,2)
+        self.assertEqual((pt.x, pt.y), (1, 2))
+        
+    def test_classvar_3(self):
+        from typing import ClassVar
+        class Example_State(dataobject):
+            x: float=1.0
+            y: float=2.0
 
-            with self.assertRaises(TypeError):                        
-                class Example_Derived_State(Example_State):
-                    x:ClassVar[int] = 10
+        with self.assertRaises(TypeError):                        
+            class Example_Derived_State(Example_State):
+                x:ClassVar[int] = 10
 
-        def test_classvar_4(self):
-            from typing import ClassVar
-            class Example_State(dataobject):
-                x: float=1.0
-                y: float=2.0
+    def test_classvar_4(self):
+        from typing import ClassVar
+        class Example_State(dataobject):
+            x: float=1.0
+            y: float=2.0
 
-            with self.assertRaises(TypeError):                        
-                class Example_Derived_State(Example_State):
-                    x:ClassVar[int]
+        with self.assertRaises(TypeError):                        
+            class Example_Derived_State(Example_State):
+                x:ClassVar[int]
 
     def test_initialize_in_init(self):
         class A(dataobject):
@@ -1237,5 +1236,5 @@ class DataObjectTest3(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(DataObjectTest3))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(DataObjectTest3))
     return suite

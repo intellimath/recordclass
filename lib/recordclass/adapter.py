@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # The MIT License (MIT)
 
 # Copyright (c) «2021-2024» «Shibzukhov Zaur, szport at gmail dot com»

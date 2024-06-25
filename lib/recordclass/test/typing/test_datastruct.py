@@ -587,5 +587,5 @@ class datastructTest3(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(datastructTest3))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(datastructTest3))
     return suite

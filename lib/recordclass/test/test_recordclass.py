@@ -189,8 +189,8 @@ class RecordClassTest(unittest.TestCase):
         # n = 5000
         n = 254 # SyntaxError: more than 255 arguments:
         import string, random
-        names = list(set(''.join([random.choice(string.ascii_letters)
-                                  for j in range(10)]) for i in range(n)))
+        names = list({''.join([random.choice(string.ascii_letters)
+                                  for j in range(10)]) for i in range(n)})
         n = len(names)
         Big = recordclass('Big', names)
         b = Big(*range(n))
@@ -343,5 +343,5 @@ class RecordClassTest(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(RecordClassTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(RecordClassTest))
     return suite

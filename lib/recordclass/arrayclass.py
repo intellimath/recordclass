@@ -1,5 +1,3 @@
-# coding: utf-8
- 
 # The MIT License (MIT)
 
 # Copyright (c) «2017-2023» «Shibzukhov Zaur, szport at gmail dot com»
@@ -28,7 +26,7 @@ import sys as _sys
 
 _intern = _sys.intern
 
-int_type = type(1)
+int_type = int
     
 def make_arrayclass(typename, n_fields, *, namespace=None, 
              use_weakref=False, hashable=False, readonly=False, gc=False,

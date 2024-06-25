@@ -133,8 +133,7 @@ class litetupleTest(unittest.TestCase):
     def test_litetupleresizebug(self):
         # Check that a specific bug in _PyTuple_Resize() is squashed.
         def f():
-            for i in range(1000):
-                yield i
+            yield from range(1000)
         self.assertEqual(list(litetuple(*f())), list(range(1000)))
  
     def test_repr(self):
@@ -220,6 +219,6 @@ class litetupleTest(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(litetupleTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(litetupleTest))
     return suite
 
