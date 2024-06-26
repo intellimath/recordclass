@@ -9,10 +9,10 @@ sa = STest(a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10,k=11)
 RTest = recordclass("RTEST", "a b c d e f g h i j k")
 ra = RTest(a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10,k=11)
 
-NDTest = make_dataclass("NDTest", "a b c d e f g h i j k", fast_new=True)
+NDTest = make_dataclass("NDTest", "a b c d e f g h i j k")
 nd = NDTest(a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10,k=11)
 
-NDTest2 = make_dataclass("NDTest", "a b c d e f g h i j k", fast_new=True, gc=True)
+NDTest2 = make_dataclass("NDTest", "a b c d e f g h i j k", gc=True)
 nd = NDTest2(a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10,k=11)
 
 class Test(object):
@@ -73,7 +73,7 @@ runner.timeit(
     stmt="R(1,2,3,4,5,6,7,8,9,10,11)",
     setup="""
 from recordclass import make_dataclass
-R = make_dataclass('R', 'a b c d e f g h i j k', fast_new=True)
+R = make_dataclass('R', 'a b c d e f g h i j k')
 """
 )
 
@@ -121,7 +121,7 @@ runner.timeit(
     stmt="r.k",
     setup="""
 from recordclass import make_dataclass
-R = make_dataclass('R', 'a b c d e f g h i j k', fast_new=True)
+R = make_dataclass('R', 'a b c d e f g h i j k')
 r = R(1,2,3,4,5,6,7,8,9,10,11)
 """
 )
@@ -161,7 +161,7 @@ runner.timeit(
     stmt="r.k=1",
     setup="""
 from recordclass import make_dataclass
-R = make_dataclass('R', 'a b c d e f g h i j k', fast_new=True)
+R = make_dataclass('R', 'a b c d e f g h i j k')
 r = R(1,2,3,4,5,6,7,8,9,10,11)
 """
 )
