@@ -1,5 +1,3 @@
-// struct PyLiteListObject;
-
 typedef struct _PyLiteListObject {
   PyObject_HEAD
   Py_ssize_t ob_size;

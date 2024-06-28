@@ -41,22 +41,21 @@
 
 #define pyobject_size(tp) ( (tp)->tp_basicsize )
 
-// #if !defined(Py_SET_TYPE)
-// #define Py_SET_TYPE(ob, type) (((PyObject*)(ob))->ob_type) = (type)
-// #endif
+#if !defined(Py_SET_TYPE)
+#define Py_SET_TYPE(ob, type) (((PyObject*)(ob))->ob_type) = (type)
+#endif
 
-// #if !defined(Py_TYPE)
-// #define Py_TYPE(ob) ((PyObject*)(ob))->ob_type
-// #endif
+#if !defined(Py_TYPE)
+#define Py_TYPE(ob) ((PyObject*)(ob))->ob_type
+#endif
 
 #define py_refcnt(ob) (((PyObject*)(ob))->ob_refcnt)
 
-// #if !defined(Py_SET_SIZE)
-// #define Py_SET_SIZE(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
-// #endif
+#if !defined(Py_SET_SIZE)
+#define Py_SET_SIZE(ob, size) (((PyVarObject*)(ob))->ob_size = (size))
+#endif
 
 static PyTypeObject PyLiteList_Type;
-//typedef PyListObject PyLiteListObject;
 
 static void
 litelist_resize(PyObject *op, Py_ssize_t size) {
@@ -110,8 +109,10 @@ litelist_alloc(PyTypeObject *tp, Py_ssize_t n_items)
     PyLiteList_ITEMS(op) = (PyObject**)PyMem_Malloc(n_items*sizeof(PyObject*));
 
     Py_SET_TYPE(op, tp);
+#if PY_VERSION_HEX < 0x03080000
     if (tp->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_INCREF(tp);
+#endif
 
     PyLiteList_SET_ALLOCATED(op, n_items);
     Py_SET_SIZE(op, n_items);
@@ -129,10 +130,12 @@ litelist_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     int is_tpl = 0;
     PyTupleObject *tpl = NULL;
 
-    if (n_args != 1)
+    if (n_args != 1) {
         PyErr_Format(PyExc_TypeError,
              "%s.__new__ accept only one argument",
                  type->tp_name);
+        return NULL;
+    }
                  
     PyObject *items = PyTuple_GET_ITEM(args, 0);
     
@@ -206,6 +209,7 @@ litelist_init(PyObject *ob, PyObject *args, PyObject *kwds) {
 static void
 litelist_dealloc(PyLiteListObject *op)
 {
+    PyTypeObject *type = Py_TYPE(op);
     Py_ssize_t i = Py_SIZE(op);
 
     while (--i >= 0) {
@@ -218,7 +222,13 @@ litelist_dealloc(PyLiteListObject *op)
     
     PyMem_Free(op->ob_item);
 
-    Py_TYPE(op)->tp_free((PyObject *)op);
+#if PY_VERSION_HEX < 0x03080000
+    if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        Py_DECREF(type);
+#endif
+    
+
+    type->tp_free((PyObject *)op);
 }
 
 // static void litelist_free(void *o) {
