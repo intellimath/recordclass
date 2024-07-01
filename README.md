@@ -1,4 +1,4 @@
-# Recordclass library
+    # Recordclass library
 
 **Recordclass** is [MIT Licensed](http://opensource.org/licenses/MIT) python library.
 It was started as a "proof of concept" for the problem of fast "mutable"
@@ -903,6 +903,10 @@ There is builtin more fast deallocation method using finalization mechanizm when
 For more details see notebook [example_datatypes](https://github.com/intellimath/recordclass/tree/main/examples/example_datatypes.ipynb).
 
 ### Changes:
+
+#### 0.22.1
+
+* Rename `examples\test_*.py` files since they are detected by `pytest` as a tests. 
 
 #### 0.22.0.2
 

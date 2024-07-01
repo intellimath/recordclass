@@ -25,7 +25,7 @@
 #endif
 
 #include "Python.h"
-#include "_litelist.h"
+// #include "_litelist.h"
 
 #define PyLiteList_ITEMS(op) ((PyLiteListObject *)(op))->ob_item
 #define PyLiteList_GET_ITEM(op, i) (((PyLiteListObject *)(op))->ob_item[i])
@@ -56,6 +56,7 @@
 #endif
 
 static PyTypeObject PyLiteList_Type;
+typedef PyListObject PyLiteListObject;
 
 static void
 litelist_resize(PyObject *op, Py_ssize_t size) {
@@ -226,7 +227,6 @@ litelist_dealloc(PyLiteListObject *op)
     if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         Py_DECREF(type);
 #endif
-    
 
     type->tp_free((PyObject *)op);
 }
@@ -257,7 +257,7 @@ litelist_repr(PyObject *dd)
         result = PyUnicode_FromString("litelist([])\0");
         return result;
     }
-
+    
     baserepr = PyList_Type.tp_repr(dd);
     if (baserepr == NULL)
         return NULL;
