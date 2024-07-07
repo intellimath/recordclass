@@ -904,10 +904,11 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 ### Changes:
 
-#### 0.22.1
+#### 0.22.0.3:
 
-* Rename `examples\test_*.py` files since they are detected by `pytest` as a tests. 
-
+* Rename `examples\test_*.py` files since they are detected by `pytest` as a tests.
+* Fix segfault with `litelist` after `0.22.0.2`.
+  
 #### 0.22.0.2
 
 * Make release on github with right tag.
