@@ -2147,6 +2147,8 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         tp->tp_dictoffset = 0;
         tp->tp_weaklistoffset = 0;
         tp->tp_flags &= ~Py_TPFLAGS_BASETYPE;
+        tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
+        
     }
     else {
         tp->tp_dictoffset = tp_base->tp_dictoffset;
