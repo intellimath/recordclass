@@ -26,7 +26,7 @@
 from setuptools import setup, find_packages
 from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
-import sys
+import sys, os, io
 
 _PY310 = sys.version_info[:2] >= (3, 10)
 
@@ -92,11 +92,6 @@ else:
         ),
     ]
 
-description = """Mutable variant of namedtuple -- recordclass, which support assignments, compact dataclasses and other memory saving variants."""
-
-with open('README.md', encoding='utf-8') as f:
-    long_description = f.read()
-
 packages = [ 'recordclass',
              'recordclass.test',
              'recordclass.test.typing',
@@ -104,27 +99,39 @@ packages = [ 'recordclass',
              'recordclass.tools',
            ] + (['recordclass.test.match'] if _PY310 else [])
 
+root = os.path.abspath(os.path.dirname(__file__))
+
+# if len(sys.argv) > 1 and sys.argv[1] == "clean":
+#     return clean(root)
+
+with io.open(os.path.join(root, "lib", "recordclass", "about.py"), encoding="utf8") as f:
+    about = {}
+    exec(f.read(), about)
+
+with io.open(os.path.join(root, "README.md"), encoding="utf8") as f:
+    readme = f.read()
+
+del os, io
+
 setup(
-    name = 'recordclass',
-    version = '0.22.0.3',
-    description = description,
-    author = 'Zaur Shibzukhov',
-    author_email = 'szport@gmail.com',
-    maintainer = 'Zaur Shibzukhov',
-    maintainer_email = 'szport@gmail.com',
-    license = "MIT License",
+    name = about["__title__"],
+    version = about["__version__"],
+    description = about["__summary__"],
+    author = about["__author__"],
+    author_email = about["__email__"],
+    url = about["__uri__"],
+    license = about["__license__"],
     cmdclass = {'build_ext': build_ext},
     ext_modules = ext_modules,
     package_dir = {'': 'lib'},
     packages = packages,
-    url = 'https://github.com/intellimath/recordclass',
     download_url = 'https://pypi.org/project/recordclass/#files',
-    long_description=long_description,
-    long_description_content_type='text/markdown',
-#     description_content_type='text/plain',
-    platforms='Linux, Mac OS X, Windows',
-    keywords=['namedtuple', 'recordclass', 'dataclass', 'dataobject'],
-    classifiers=[
+    long_description = readme,
+    long_description_content_type = "text/markdown",
+    # setup_requires = ["cython>=0.25"],
+    platforms = 'Linux, Mac OS X, Windows',
+    keywords = ['namedtuple', 'recordclass', 'dataclass', 'dataobject'],
+    classifiers = [
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
