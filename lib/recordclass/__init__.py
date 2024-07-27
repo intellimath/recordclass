@@ -21,16 +21,16 @@
 # THE SOFTWARE.
 
 
-from .datatype import datatype, MATCH
-from ._dataobject import dataobject, datastruct, astuple, asdict, clone, update, make, Factory
-from ._litelist import litelist, litelist_fromargs
-from ._litetuple import litetuple, mutabletuple
-from .recordclass import recordclass
-from .typing import RecordClass
-from .dataclass import make_dataclass, make_structclass, make_class, join_dataclasses
-from .dictclass import make_dictclass
-from .arrayclass import make_arrayclass
-from .adapter import as_dataclass, as_record
+from recordclass.datatype import datatype, MATCH
+from recordclass._dataobject import dataobject, datastruct, astuple, asdict, clone, update, make, Factory
+from recordclass._litelist import litelist, litelist_fromargs
+from recordclass._litetuple import litetuple, mutabletuple
+from recordclass.recordclass import recordclass
+from recordclass.typing import RecordClass
+from recordclass.dataclass import make_dataclass, make_structclass, make_class, join_dataclasses
+from recordclass.dictclass import make_dictclass
+from recordclass.arrayclass import make_arrayclass
+from recordclass.adapter import as_dataclass, as_record
 
 structclass = make_structclass
 
