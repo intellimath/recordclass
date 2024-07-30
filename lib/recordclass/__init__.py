@@ -34,4 +34,4 @@ from recordclass.adapter import as_dataclass, as_record
 
 structclass = make_structclass
 
-__version__ = '0.22.0.3'
+from recordclass.about import __version__

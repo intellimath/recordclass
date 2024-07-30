@@ -601,6 +601,11 @@ Run tests:
 
     >>> python3 test_all.py
 
+or using `pytest` from the folder with sources:
+
+    >>> pip3 install -e .
+    >>> pytest
+
 #### Installation from PyPI
 
 Install:
@@ -903,6 +908,11 @@ There is builtin more fast deallocation method using finalization mechanizm when
 For more details see notebook [example_datatypes](https://github.com/intellimath/recordclass/tree/main/examples/example_datatypes.ipynb).
 
 ### Changes:
+
+#### 0.22.1:
+
+* Add `pyproject.toml`.
+* Add `pytest.ini` in order to run `pytest`.
 
 #### 0.22.0.3:
 
