@@ -601,11 +601,6 @@ Run tests:
 
     >>> python3 test_all.py
 
-or using `pytest` from the folder with sources:
-
-    >>> pip3 install -e .
-    >>> pytest
-
 #### Installation from PyPI
 
 Install:
@@ -912,7 +907,10 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 #### 0.22.1:
 
 * Add `pyproject.toml`.
-* Add `pytest.ini` in order to run `pytest`.
+* Add `pytest.ini` in order to run `pytest`:
+
+        >>> pip3 install -e .
+        >>> pytest
 
 #### 0.22.0.3:
 
