@@ -97,12 +97,11 @@ packages = [ 'recordclass',
              'recordclass.test.typing',
              'recordclass.typing',
              'recordclass.tools',
-           ] + (['recordclass.test.match'] if _PY310 else [])
+           ]
+if _PY310:
+    packages.append('recordclass.test.match')
 
 root = os.path.abspath(os.path.dirname(__file__))
-
-# if len(sys.argv) > 1 and sys.argv[1] == "clean":
-#     return clean(root)
 
 with io.open(os.path.join(root, "lib", "recordclass", "about.py"), encoding="utf8") as f:
     about = {}
