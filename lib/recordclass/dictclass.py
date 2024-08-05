@@ -136,6 +136,6 @@ class DictclassStorage:
         key = (name, keys)
         cls = self._storage.get(key, None)
         if cls is None:
-            cls = make_datadict(name, keys, defaults, **kw)
+            cls = make_dictclass(name, keys, defaults, **kw)
             self._storage[key] = cls
         return cls

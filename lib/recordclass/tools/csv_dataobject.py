@@ -11,8 +11,8 @@ _type_conv = {
 class GeneralReader:
     def __init__(self, f, fieldnames=None, dialect="excel", fieldtypes=None, *args, **kwds):
         self._fieldnames = fieldnames   # list of keys for the dict
-        self.restkey = restkey          # key to catch long rows
-        self.restval = restval          # default value for short rows
+        # self.restkey = restkey          # key to catch long rows
+        # self.restval = restval          # default value for short rows
         self.reader = reader(f, dialect, *args, **kwds)
         self.dialect = dialect
         self.factory = None
@@ -81,7 +81,7 @@ class GeneralReader:
 class GeneralWriter:
     def __init__(self, f, fieldnames, dialect="excel", *args, **kwds):
         self.fieldnames = fieldnames
-        self.restval = restval
+        # self.restval = restval
         self.writer = writer(f, dialect, *args, **kwds)
 
     def writeheader(self):
