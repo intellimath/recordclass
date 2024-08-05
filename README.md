@@ -1,5 +1,7 @@
     # Recordclass library
 
+[![Downloads](https://static.pepy.tech/badge/recordclass)](https://pepy.tech/project/recordclass) [![Downloads](https://static.pepy.tech/badge/recordclass/month)](https://pepy.tech/project/recordclass) [![Downloads](https://static.pepy.tech/badge/recordclass/week)](https://pepy.tech/project/recordclass)
+
 **Recordclass** is [MIT Licensed](http://opensource.org/licenses/MIT) python library.
 It was started as a "proof of concept" for the problem of fast "mutable"
 alternative of `namedtuple` (see [question](https://stackoverflow.com/questions/29290359/existence-of-mutable-named-tuple-in-python) on [stackoverflow](https://stackoverflow.com)).
