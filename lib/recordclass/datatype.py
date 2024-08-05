@@ -278,7 +278,7 @@ class datatype(type):
                     ns['__match_args__'] = fields
 
             if '__doc__' not in ns:
-                ns['__doc__'] = _make_cls_doc(typename, fields, annotations, default_vals, use_dict)
+                ns['__doc__'] = _make_cls_doc(typename, fields, annotations, defaults_dict, use_dict)
         
         ns['__options__'] = options
 
@@ -432,7 +432,7 @@ def _type2str(tp):
     else:
         return str(tp)
 
-def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
+def _make_cls_doc(typename, fields, annotations, defaults_dict, use_dict):
 
     fields2 = []
     for i, fn in enumerate(fields):
@@ -441,7 +441,7 @@ def _make_cls_doc(typename, fields, annotations, defaults, use_dict):
             fn_txt = "%s:%s" % (fn, (tp if type(tp) is str else _type2str(tp)))            
         else:
             fn_txt = fn
-        defval = defaults[i]
+        defval = defaults_dict.get(fn, None)
         if defval is not None:
             fn_txt += "=%s" % repr(defval)
         fields2.append(fn_txt)
