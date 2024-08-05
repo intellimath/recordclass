@@ -1,4 +1,4 @@
-    # Recordclass library
+# Recordclass library
 
 [![Downloads](https://static.pepy.tech/badge/recordclass)](https://pepy.tech/project/recordclass) [![Downloads](https://static.pepy.tech/badge/recordclass/month)](https://pepy.tech/project/recordclass) [![Downloads](https://static.pepy.tech/badge/recordclass/week)](https://pepy.tech/project/recordclass)
 
