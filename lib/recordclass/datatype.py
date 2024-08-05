@@ -242,7 +242,7 @@ class datatype(type):
                 __new__ = _make_new_function(typename, fields, defaults_dict, annotations, use_dict)
                 __new__.__qualname__ = typename + '.' + '__new__'
                 if not __new__.__doc__:
-                    __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults, use_dict)
+                    __new__.__doc__ = _make_cls_doc(typename, fields, annotations, defaults_dict, use_dict)
 
                 ns['__new__'] = __new__
 
