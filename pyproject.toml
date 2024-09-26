@@ -1,6 +1,41 @@
+[project]
+name = "recordclass"
+version = "0.22.1"
+authors = [
+    {name = "Zaur Shibzukhov", email = "szport@gmail.com"},
+]
+description = "Mutable variant of namedtuple -- recordclass, which support assignments, compact dataclasses and other memory saving variants."
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Cython",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = [
+    "dataclass",
+    "namedtuple",
+    "recordclass",
+    "dataobject",
+]
+requires-python = ">=3.8"
+dependencies = []
+
+
 [build-system]
 requires = [
     "setuptools",
-    # "cython>=0.25",
+    "wheel",
+    "Cython",
 ]
 build-backend = "setuptools.build_meta"
