@@ -12,8 +12,6 @@ from recordclass import asdict, make
 
 from typing import ClassVar
 
-# _PY36 = _sys.version_info[:2] >= (3, 6)
-# _PY37 = sys.version_info[:2] >= (3, 7)
 _PY311 = sys.version_info[:2] >= (3, 11)
 
 from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
@@ -58,7 +56,7 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
-        # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
         with self.assertRaises(TypeError):     
             weakref.ref(a)
         with self.assertRaises(AttributeError):     
@@ -81,7 +79,7 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         self.assertEqual(A.__fields__, ('x', 'y'))
-        # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
         with self.assertRaises(TypeError):     
             weakref.ref(a)
         with self.assertRaises(AttributeError):     
@@ -156,7 +154,7 @@ class datastructTest3(unittest.TestCase):
         a = A(1,2)
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
-#         self.assertEqual(sys.getsizeof(a), 32)
+        self.assertEqual(sys.getsizeof(a), 32)
         with self.assertRaises(TypeError):     
             weakref.ref(a)
         with self.assertRaises(AttributeError):     
@@ -335,7 +333,6 @@ class datastructTest3(unittest.TestCase):
         class A(datastruct):
             __fields__ = 'x', 'y', 'z'
 
-#         @clsconfig(gc=True)
         class B(datastruct, gc=True):
             __fields__ = 'x', 'y', 'z'
 
@@ -344,7 +341,7 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(a.x, b.x)
         self.assertEqual(a.y, b.y)
         self.assertEqual(a.z, b.z)
-        # self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)        
+        self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)        
 
     def test_datastruct_pickle2_tp(self):
         p = TestPickle2(10, 20, 30)

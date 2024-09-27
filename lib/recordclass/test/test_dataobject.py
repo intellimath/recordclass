@@ -14,6 +14,8 @@ from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
 TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
 
+_PY311 = sys.version_info[:2] >= (3, 11)
+
 ##########################################################################
         
 class DataobjectTest(unittest.TestCase):
@@ -23,15 +25,15 @@ class DataobjectTest(unittest.TestCase):
             A = make_dataclass("A", 'x y', defaults=(0,0,0))
             # a = A(x=1, y=2, z=3)
     
-    # def test_bad_makeclass2(self):
-    #     with self.assertRaises(TypeError):        
-    #         A = make_dataclass("A", 'x y', defaults=(0,0,0), fast_new=False)
-    #         # a = A(x=1, y=2, z=3)
+    def test_bad_makeclass2(self):
+        with self.assertRaises(TypeError):        
+            A = make_dataclass("A", 'x y', defaults=(0,0,0), fast_new=False)
+            # a = A(x=1, y=2, z=3)
 
-    # def test_bad_call(self):
-    #     A = make_dataclass("A", 'x y', defaults=(0,), fast_new=False)
-    #     with self.assertRaises(TypeError):        
-    #         a = A(x=1, y=2, z=3)
+    def test_bad_call(self):
+        A = make_dataclass("A", 'x y', defaults=(0,), fast_new=False)
+        with self.assertRaises(TypeError):        
+            a = A(x=1, y=2, z=3)
 
     def test_bad_call2(self):
         A = make_dataclass("A", 'x y', defaults=(0,))
@@ -97,10 +99,11 @@ class DataobjectTest(unittest.TestCase):
         A = make_dataclass("A", 'x y')
         A.color = 'red'
 
-    # def test_dataobject_immutable_type(self):
-    #     A = make_dataclass("A", 'x y', immutable_type=True)
-    #     # with self.assertRaises(TypeError):     
-    #     A.color = 'red'
+    if _PY311:
+        def test_dataobject_immutable_type(self):
+            A = make_dataclass("A", 'x y', immutable_type=True)
+            with self.assertRaises(TypeError):     
+                A.color = 'red'
     
     def test_dataobject_local_dict(self):
         A = make_dataclass("A", ('x', 'y'), use_dict=True)
@@ -195,22 +198,22 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a['x'], 100)
         a = None
         
-#     def test_datatype_dict(self):
-#         A = make_dataclass("A", ('x', 'y'), use_dict=True, use_weakref=True)
+    def test_datatype_dict(self):
+        A = make_dataclass("A", ('x', 'y'), use_dict=True, use_weakref=True)
 
-#         a = A(1,2)
-#         self.assertEqual(len(a), 2)
-#         self.assertEqual(gc.is_tracked(a), False)
-#         self.assertEqual(repr(a), "A(x=1, y=2)")
-#         self.assertEqual(a.x, 1)
-#         self.assertEqual(a.y, 2)
-#         self.assertEqual(asdict(a), {'x':1, 'y':2})
-#         weakref.ref(a)
-#         self.assertEqual(a.__dict__, {})
+        a = A(1,2)
+        self.assertEqual(len(a), 2)
+        self.assertEqual(gc.is_tracked(a), False)
+        self.assertEqual(repr(a), "A(x=1, y=2)")
+        self.assertEqual(a.x, 1)
+        self.assertEqual(a.y, 2)
+        self.assertEqual(asdict(a), {'x':1, 'y':2})
+        weakref.ref(a)
+        self.assertEqual(a.__dict__, {})
         
-#         a.z = 3
-#         self.assertEqual(a.z, a.__dict__['z'])
-#         a = None
+        a.z = 3
+        self.assertEqual(a.z, a.__dict__['z'])
+        a = None
 
     def test_datatype_dict2(self):
         A = make_dataclass("A", ('x', 'y'), use_dict=True)
@@ -312,7 +315,7 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(c.y, 2)
         self.assertEqual(c.z, 3)
         self.assertEqual(asdict(c), {'x':1, 'y':2, 'z':3})
-        # self.assertEqual(sys.getsizeof(c), pyobject_size + 3*ref_size)
+        self.assertEqual(sys.getsizeof(c), pyobject_size + 3*ref_size)
         with self.assertRaises(TypeError):     
             weakref.ref(c)
         with self.assertRaises(AttributeError):     

@@ -86,7 +86,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
-        # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
         with self.assertRaises(TypeError):     
             weakref.ref(a)
         with self.assertRaises(AttributeError):     
@@ -109,7 +109,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         self.assertEqual(A.__fields__, ('x', 'y'))
-        # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
         with self.assertRaises(TypeError):     
             weakref.ref(a)
         with self.assertRaises(AttributeError):     
@@ -219,7 +219,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
-        # self.assertEqual(sys.getsizeof(a), pyobject_size+(2+2)*ptr_size)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+(2+2)*ptr_size)
         self.assertNotEqual(A.__dictoffset__, 0)
         self.assertNotEqual(A.__weakrefoffset__, 0)
         weakref.ref(a)
@@ -278,7 +278,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(c.z, 3)
         self.assertEqual(asdict(c), {'x':1, 'y':2, 'z':3})
         self.assertEqual(C.__annotations__, {'x':int, 'y':int, 'z':int})
-        # self.assertEqual(sys.getsizeof(c), pyobject_size+3*ptr_size)
+        self.assertEqual(sys.getsizeof(c), pyobject_size+3*ptr_size)
         with self.assertRaises(TypeError):     
             weakref.ref(c)
         with self.assertRaises(AttributeError):     
@@ -338,7 +338,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(c.norm_1(), 6)
         self.assertEqual(asdict(c), {'x':1, 'y':2, 'z':3})
         self.assertEqual(C.__annotations__, {'x':int, 'y':int, 'z':int})
-#         self.assertEqual(sys.getsizeof(c), 40)
+        self.assertEqual(sys.getsizeof(c), 40)
         with self.assertRaises(TypeError):     
             weakref.ref(c)
         with self.assertRaises(AttributeError):     
@@ -497,9 +497,9 @@ class DataObjectTest3(unittest.TestCase):
         a = A(1,2)
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
-#         self.assertEqual(sys.getsizeof(a), 48)
-#         self.assertEqual(A.__dictoffset__, 32)
-#         self.assertEqual(A.__weakrefoffset__, 40)
+        self.assertEqual(sys.getsizeof(a), 48)
+        self.assertEqual(A.__dictoffset__, 32)
+        self.assertEqual(A.__weakrefoffset__, 40)
         weakref.ref(a)
         self.assertEqual(a.__dict__, {})
 
@@ -577,7 +577,6 @@ class DataObjectTest3(unittest.TestCase):
         class A(dataobject):
             __fields__ = 'x', 'y', 'z'
 
-#         @clsconfig(gc=True)
         class B(dataobject, gc=True):
             __fields__ = 'x', 'y', 'z'
 
@@ -586,7 +585,7 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.x, b.x)
         self.assertEqual(a.y, b.y)
         self.assertEqual(a.z, b.z)
-        # self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)        
+        self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)        
 
     def test_pickle2_tp(self):
         p = TestPickle2(10, 20, 30)
@@ -1016,68 +1015,6 @@ class DataObjectTest3(unittest.TestCase):
         # print(a)
         self.assertEqual(a.x, None)
         self.assertEqual(a.y, None)
-
-#     def test_post_init_1(self):
-#         class A(dataobject):
-#             x:int
-#             y:int
-
-#             def __post_init__(self):
-#                 print("__post_init__")
-#                 self.x *= 2
-#                 self.y *= 3
-
-#         a = A(2,3)
-#         self.assertEqual(a.x, 4)
-#         self.assertEqual(a.y, 9)
-
-#     def test_post_init_2(self):
-#         class A(dataobject):
-#             x:int
-#             y:int
-
-#             def __post_init__(self):
-#                 print("__post_init__")
-#                 raise AttributeError("")
-
-#         with self.assertRaises(AttributeError):        
-#             a = A(1,2)
-
-#     def test_post_init_3(self):
-#         class A(dataobject):
-#             x:int
-#             y:int
-
-#             def __init__(self, x, y):
-#                 print("__init__")
-#                 self.x = x
-#                 self.y = y
-#             #
-#             def __post_init__(self):
-#                 print("__post_init__")
-#                 self.x *= 2
-#                 self.y *= 3
-
-#         a = A(2,3)
-#         self.assertEqual(a.x, 4)
-#         self.assertEqual(a.y, 9)
-
-#     def test_post_init_4(self):
-#         class A(dataobject):
-#             x:int
-#             y:int
-
-#             def __init__(self, x, y):
-#                 print("__init__")
-#                 self.x = x
-#                 self.y = y
-#             #
-#             def __post_init__(self):
-#                 print("__post_init__")
-#                 raise AttributeError("")
-
-#         with self.assertRaises(AttributeError):        
-#             a = A(1,2)
 
     if _PY311:
         def test_immutable_type(self):

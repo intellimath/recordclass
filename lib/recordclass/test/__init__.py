@@ -1,4 +1,4 @@
-# {{LICENCE}}
+# {{LICENCE.txt}}
 
 from recordclass.test.test_recordclass import *
 from recordclass.test.test_arrayclass import *
@@ -12,7 +12,7 @@ _PY310 = sys.version_info[:2] >= (3, 10)
 from recordclass.test.typing.test_recordclass import *
 from recordclass.test.typing.test_dataobject import *
 from recordclass.test.typing.test_datastruct import *
-pass
+
 
 if _PY310:
     from recordclass.test.match.test_dataobject_match import *
