@@ -7,11 +7,7 @@ import pickle, copy
 from recordclass import make_arrayclass, datatype
 # from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
-if 'PyPy' in sys.version:
-    is_pypy = True
-else:
-    is_pypy = False
-    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 
 TPickle1 = make_arrayclass("TPickle1", 3)
@@ -93,9 +89,8 @@ class arrayobjectTest(unittest.TestCase):
         self.assertEqual(repr(a), "A()")
         with self.assertRaises(IndexError): 
             a[0]
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         a = None
@@ -111,9 +106,8 @@ class arrayobjectTest(unittest.TestCase):
         self.assertEqual(a[-1], 100)
         with self.assertRaises(IndexError): 
             a[1]
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         a = None
@@ -127,9 +121,8 @@ class arrayobjectTest(unittest.TestCase):
         self.assertEqual(len(a), 0)
         with self.assertRaises(IndexError): 
             a[0]
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         a = None
@@ -145,9 +138,8 @@ class arrayobjectTest(unittest.TestCase):
         self.assertEqual(a[-1], 100)
         with self.assertRaises(IndexError): 
             a[1]
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         a = None
@@ -170,9 +162,8 @@ class arrayobjectTest(unittest.TestCase):
         self.assertEqual(a[1], -200)
         with self.assertRaises(IndexError): 
             a[2]
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         a = None
@@ -228,6 +219,6 @@ class arrayobjectTest(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(arrayobjectTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(arrayobjectTest))
     return suite
         

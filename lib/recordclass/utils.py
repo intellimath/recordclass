@@ -1,5 +1,3 @@
-# coding: utf-8
- 
 # The MIT License (MIT)
 
 # Copyright (c) «2015-2024» «Shibzukhov Zaur, szport at gmail dot com»
@@ -23,38 +21,25 @@
 # THE SOFTWARE.
 
 import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
 
 from keyword import iskeyword
 from recordclass import dataobject, datastruct
 from .datatype import Field
 
 _intern = _sys.intern
-if _PY36:
-    from typing import _type_check
-else:
-    def _type_check(t, msg):
-        if isinstance(t, (type, str)):
-            return t
-        else:
-            raise TypeError('invalid type annotation', t)    
+from typing import _type_check
 
 ### sizes
 
-if 'PyPy' in _sys.version:
-    is_pypy = True
-else:
-    is_pypy = False
-
-    _t = ()
-    _t1 = (1,)
-    _o = object()
-    headgc_size = _sys.getsizeof(_t) - _t.__sizeof__()
-    ref_size = _sys.getsizeof(_t1) - _sys.getsizeof(_t)
-    pyobject_size = _o.__sizeof__()
-    pyvarobject_size = _t.__sizeof__()
-    pyssize = pyvarobject_size - pyobject_size
-    del _t, _t1, _o
+_t = ()
+_t1 = (1,)
+_o = object()
+headgc_size = _sys.getsizeof(_t) - _t.__sizeof__()
+ref_size = _sys.getsizeof(_t1) - _sys.getsizeof(_t)
+pyobject_size = _o.__sizeof__()
+pyvarobject_size = _t.__sizeof__()
+pyssize = pyvarobject_size - pyobject_size
+del _t, _t1, _o
 del _sys
 
 #############
@@ -133,11 +118,11 @@ def check_name(name, rename=False, i=0, invalid_names=()):
             name = "_%s" % (i+1)
     else:
         if name in invalid_names:
-            raise ValueError('Name %s is invalid' % name)
+            raise ValueError(f"Name {name} is invalid")
         if not name.isidentifier():
-            raise ValueError('Name must be valid identifiers: %r' % name)
+            raise ValueError(f'Name must be valid identifiers: {name!r}')
         if iskeyword(name):
-            raise ValueError('Name cannot be a keyword: %r' % name)
+            raise ValueError(f'Name cannot be a keyword: {name!r}')
     
     return name
 
@@ -189,7 +174,7 @@ def collect_info_from_bases(bases, fields, fields_dict, options):
         if type(fs) is tuple and len(fs) == n:
             for i, fn in enumerate(fs):
                 if fn in fields:
-                    raise TypeError('field %s is already defined in the %s' % (fn, base))
+                    raise TypeError(f'field {fn} is already defined in the {base}')
                 else:
                     fields_dict[fn] = f = Field()
                     if _is_readonly_member(base.__dict__[fn]):

@@ -9,11 +9,7 @@ import weakref
 from recordclass import make_dataclass, make_arrayclass, dataobject, make, clone, update
 from recordclass import datatype, asdict, astuple, join_dataclasses
 
-if 'PyPy' in sys.version:
-    is_pypy = True
-else:
-    is_pypy = False
-    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 TPickle2 = make_dataclass("TPickle2", ('x','y','z'))
 TPickle3 = make_dataclass("TPickle3", ('x','y','z'), use_dict=True)
@@ -86,8 +82,7 @@ class DataobjectTest(unittest.TestCase):
     def test_dataobject_assign(self):
         A = make_dataclass("A", ('x', 'y'), sequence=True)
         a = A(1,2)
-        if not is_pypy:
-            self.assertEqual(gc.is_tracked(a), False)
+        self.assertEqual(gc.is_tracked(a), False)
         a[0] = 100
         a[1] = 200
         self.assertEqual(a.x, 100)
@@ -122,8 +117,7 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
-        if not is_pypy:
-            self.assertEqual(sys.getsizeof(a), pyobject_size+2*ref_size)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+2*ref_size)
         # with self.assertRaises(TypeError):     
         #     weakref.ref(a)
         with self.assertRaises(AttributeError):     
@@ -137,8 +131,7 @@ class DataobjectTest(unittest.TestCase):
     def test_datatype_nosq_nomp(self):
         A = make_dataclass("A", ('x', 'y'))
         a = A(1,2)
-        if not is_pypy:
-            self.assertEqual(gc.is_tracked(a), False)
+        self.assertEqual(gc.is_tracked(a), False)
         with self.assertRaises(TypeError):     
             a[0]
         with self.assertRaises(TypeError):     
@@ -148,8 +141,7 @@ class DataobjectTest(unittest.TestCase):
         A = make_dataclass("A", ('x', 'y'), sequence=True)
 
         a = A(1,2)
-        if not is_pypy:
-            self.assertEqual(gc.is_tracked(a), False)
+        self.assertEqual(gc.is_tracked(a), False)
         self.assertEqual(a[0], 1)
         self.assertEqual(a[1], 2)
         with self.assertRaises(TypeError):     
@@ -159,8 +151,7 @@ class DataobjectTest(unittest.TestCase):
         A = make_dataclass("A", ('x', 'y'), mapping=True)
 
         a = A(1,2)
-        if not is_pypy:
-            self.assertEqual(gc.is_tracked(a), False)
+        self.assertEqual(gc.is_tracked(a), False)
         self.assertEqual(a['x'], 1)
         self.assertEqual(a['y'], 2)
         with self.assertRaises(TypeError):     
@@ -170,8 +161,7 @@ class DataobjectTest(unittest.TestCase):
         A = make_dataclass("A", ('x', 'y'), sequence=True, mapping=True)
 
         a = A(1,2)
-        if not is_pypy:
-            self.assertEqual(gc.is_tracked(a), False)
+        self.assertEqual(gc.is_tracked(a), False)
         self.assertEqual(a['x'], 1)
         self.assertEqual(a['y'], 2)
         self.assertEqual(a[0], 1)
@@ -190,11 +180,9 @@ class DataobjectTest(unittest.TestCase):
         A = make_dataclass("A", ('x', 'y'), use_dict=True)
 
         a = A(1,2, z=3,w=4)
-        if not is_pypy:
-            self.assertEqual(gc.is_tracked(a), False)
+        self.assertEqual(gc.is_tracked(a), False)
         b = a.__copy__()
-        if not is_pypy:
-            self.assertEqual(gc.is_tracked(b), False)
+        self.assertEqual(gc.is_tracked(b), False)
         self.assertEqual(a, b)
         del b
 
@@ -212,8 +200,7 @@ class DataobjectTest(unittest.TestCase):
 
 #         a = A(1,2)
 #         self.assertEqual(len(a), 2)
-#         if not is_pypy:
-#             self.assertEqual(gc.is_tracked(a), False)
+#         self.assertEqual(gc.is_tracked(a), False)
 #         self.assertEqual(repr(a), "A(x=1, y=2)")
 #         self.assertEqual(a.x, 1)
 #         self.assertEqual(a.y, 2)
@@ -281,8 +268,7 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, b.x)
         self.assertEqual(a.y, b.y)
         self.assertEqual(a.z, b.z)
-        if not is_pypy:
-            self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
+        self.assertEqual(sys.getsizeof(b)-sys.getsizeof(a), headgc_size)
                            
     def test_subclass(self):
         A = make_dataclass("A", ('x', 'y'))
@@ -291,21 +277,18 @@ class DataobjectTest(unittest.TestCase):
             pass
 
         self.assertEqual(type(A), type(B))
-        if not is_pypy:
-            self.assertEqual(B.__dictoffset__, 0)
-            self.assertEqual(B.__weakrefoffset__, 0)
+        self.assertEqual(B.__dictoffset__, 0)
+        self.assertEqual(B.__weakrefoffset__, 0)
         b = B(1,2)
-        if not is_pypy:
-            self.assertEqual(gc.is_tracked(b), False)
+        self.assertEqual(gc.is_tracked(b), False)
         self.assertEqual(repr(b), "B(x=1, y=2)")
         self.assertEqual(b.x, 1)
         self.assertEqual(b.y, 2)
         self.assertEqual(asdict(b), {'x':1, 'y':2})
         # self.assertEqual(sys.getsizeof(b), pyobject_size + 2*ref_size)
-        if not is_pypy:
-            self.assertEqual(A.__basicsize__, B.__basicsize__)
-            with self.assertRaises(TypeError):     
-                weakref.ref(b)
+        self.assertEqual(A.__basicsize__, B.__basicsize__)
+        with self.assertRaises(TypeError):     
+            weakref.ref(b)
         with self.assertRaises(AttributeError):     
             b.__dict__        
 
@@ -320,21 +303,18 @@ class DataobjectTest(unittest.TestCase):
 
         self.assertEqual(type(A), type(B))
         self.assertEqual(type(C), type(B))
-        if not is_pypy:
-            self.assertEqual(C.__dictoffset__, 0)
-            self.assertEqual(C.__weakrefoffset__, 0)
+        self.assertEqual(C.__dictoffset__, 0)
+        self.assertEqual(C.__weakrefoffset__, 0)
         c = C(1,2,3)
-        if not is_pypy:
-            self.assertEqual(gc.is_tracked(c), False)
+        self.assertEqual(gc.is_tracked(c), False)
         self.assertEqual(repr(c), "C(x=1, y=2, z=3)")
         self.assertEqual(c.x, 1)
         self.assertEqual(c.y, 2)
         self.assertEqual(c.z, 3)
         self.assertEqual(asdict(c), {'x':1, 'y':2, 'z':3})
         # self.assertEqual(sys.getsizeof(c), pyobject_size + 3*ref_size)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(c)
+        with self.assertRaises(TypeError):     
+            weakref.ref(c)
         with self.assertRaises(AttributeError):     
             c.__dict__
         c = None
@@ -565,15 +545,14 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
 
-    if not is_pypy:
-        def test_refleak_on_assignemnt_do(self):
-            Test = make_dataclass("Test", "x")
-            a={}
-            c = sys.getrefcount(a)
-            b=Test(a)
-            self.assertEqual(sys.getrefcount(a), c+1)
-            b.x = None
-            self.assertEqual(sys.getrefcount(a), c)
+    def test_refleak_on_assignemnt_do(self):
+        Test = make_dataclass("Test", "x")
+        a={}
+        c = sys.getrefcount(a)
+        b=Test(a)
+        self.assertEqual(sys.getrefcount(a), c+1)
+        b.x = None
+        self.assertEqual(sys.getrefcount(a), c)
 
     def test_join_dataclasses(self):
         C1 = make_dataclass('C1', 'a b')
@@ -934,5 +913,5 @@ class DataobjectTest(unittest.TestCase):
             
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(DataobjectTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(DataobjectTest))
     return suite

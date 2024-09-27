@@ -13,23 +13,19 @@ from recordclass import asdict, make
 from typing import ClassVar
 
 # _PY36 = _sys.version_info[:2] >= (3, 6)
-_PY37 = sys.version_info[:2] >= (3, 7)
+# _PY37 = sys.version_info[:2] >= (3, 7)
 _PY311 = sys.version_info[:2] >= (3, 11)
 
-if 'PyPy' in sys.version:
-    is_pypy = True
-else:
-    is_pypy = False
-    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
-    _t = ()
-    _t1 = (1,)
-    _o = object()
-    headgc_size = sys.getsizeof(_t) - _t.__sizeof__()
-    ptr_size = sys.getsizeof(_t1) - sys.getsizeof(_t)
-    pyobject_size = _o.__sizeof__()
-    pyvarobject_size = _t.__sizeof__()
-    del _t, _t1, _o
+_t = ()
+_t1 = (1,)
+_o = object()
+headgc_size = sys.getsizeof(_t) - _t.__sizeof__()
+ptr_size = sys.getsizeof(_t1) - sys.getsizeof(_t)
+pyobject_size = _o.__sizeof__()
+pyvarobject_size = _t.__sizeof__()
+del _t, _t1, _o
 
 class TestPickle2(datastruct):
     __fields__ = 'x', 'y', 'z'
@@ -63,9 +59,8 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         with self.assertRaises(AttributeError):     
@@ -87,9 +82,8 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         self.assertEqual(A.__fields__, ('x', 'y'))
         # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         with self.assertRaises(AttributeError):     
@@ -109,11 +103,9 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         self.assertEqual(A.__fields__, ('x', 'y'))
-        if not is_pypy:
-            self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         # print('*')
         with self.assertRaises(AttributeError):     
             a.__dict__
@@ -149,9 +141,8 @@ class datastructTest3(unittest.TestCase):
             y:int
 
         a = A(1,2)
-        if not is_pypy:
-            self.assertEqual(A.__weakrefoffset__, 0)
-            self.assertEqual(A.__dictoffset__, 0)
+        self.assertEqual(A.__weakrefoffset__, 0)
+        self.assertEqual(A.__dictoffset__, 0)
         self.assertEqual(repr(a), "A(x=1, y=2)")
         self.assertEqual(a[0], 1)
         self.assertEqual(a[1], 2)
@@ -166,9 +157,8 @@ class datastructTest3(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
 #         self.assertEqual(sys.getsizeof(a), 32)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         with self.assertRaises(AttributeError):     
@@ -591,5 +581,5 @@ class datastructTest3(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(datastructTest3))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(datastructTest3))
     return suite

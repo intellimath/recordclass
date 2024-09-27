@@ -200,5 +200,5 @@ class XMethBad(RecordClass):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(RecordClassTypingTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(RecordClassTypingTest))
     return suite

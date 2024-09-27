@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # The MIT License (MIT)
 
 # Copyright (c) «2017-2024» «Shibzukhov Zaur, szport at gmail dot com»
@@ -25,20 +23,14 @@
 __all__ = 'datatype',
 
 import sys as _sys
-_PY36 = _sys.version_info[:2] >= (3, 6)
-_PY37 = _sys.version_info[:2] >= (3, 7)
 _PY310 = _sys.version_info[:2] >= (3, 10)
 _PY311 = _sys.version_info[:2] >= (3, 11)
     
 import typing
-if _PY37:
-    def _is_classvar(a_type):
-        return (a_type is typing.ClassVar
-                or (type(a_type) is typing._GenericAlias
-                    and a_type.__origin__ is typing.ClassVar))
-else:
-    def _is_classvar(a_type):
-        return isinstance(a_type, typing._ClassVar) #or issubclass(a_type, typing.ClassVar)
+def _is_classvar(a_type):
+    return (a_type is typing.ClassVar
+            or (type(a_type) is typing._GenericAlias
+                and a_type.__origin__ is typing.ClassVar))
 
 def _matching_annotations_and_defaults(annotations, defaults):
     first_default = False
@@ -128,7 +120,7 @@ class datatype(type):
         classvars = {fn for fn,tp in annotations.items() \
                         if _is_classvar(tp)}
         
-        int_type = type(1)
+        int_type = int
 
         if '__fields__' in ns:
             fields = ns['__fields__']
@@ -389,7 +381,7 @@ def _make_new_function(typename, fields, defaults_dict, annotations, use_dict):
 
     if fields and defaults_dict:
         fields2 = [fn for fn in fields if fn not in defaults_dict] + \
-                  ["%s=%r" % (fn,None) for fn in fields if fn in defaults_dict]
+                  [f"{fn}={None!r}" for fn in fields if fn in defaults_dict]
     else:
         fields2 = fields
 
@@ -443,7 +435,7 @@ def _make_cls_doc(typename, fields, annotations, defaults_dict, use_dict):
     for i, fn in enumerate(fields):
         if fn in annotations:
             tp = annotations[fn]
-            fn_txt = "%s:%s" % (fn, (tp if type(tp) is str else _type2str(tp)))            
+            fn_txt = f"{fn}:{(tp if type(tp) is str else _type2str(tp))}"            
         else:
             fn_txt = fn
         defval = defaults_dict.get(fn, None)

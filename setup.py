@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # The MIT License (MIT)
 #
 # Copyright (c) <2015-2024> <Shibzukhov Zaur, szport at gmail dot com>
@@ -103,11 +101,11 @@ if _PY310:
 
 root = os.path.abspath(os.path.dirname(__file__))
 
-with io.open(os.path.join(root, "lib", "recordclass", "about.py"), encoding="utf8") as f:
+with open(os.path.join(root, "lib", "recordclass", "about.py"), encoding="utf8") as f:
     about = {}
     exec(f.read(), about)
 
-with io.open(os.path.join(root, "README.md"), encoding="utf8") as f:
+with open(os.path.join(root, "README.md"), encoding="utf8") as f:
     readme = f.read()
 
 del os, io

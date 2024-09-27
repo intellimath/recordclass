@@ -13,11 +13,7 @@ import sys
 # except:
 #     from test import test_support as support
 
-if 'PyPy' in sys.version:
-    is_pypy = True
-else:
-    is_pypy = False
-    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
 
 TestNT = recordclass('TestNT', 'x y z')    # type used for pickle tests
@@ -189,8 +185,8 @@ class RecordClassTest(unittest.TestCase):
         # n = 5000
         n = 254 # SyntaxError: more than 255 arguments:
         import string, random
-        names = list(set(''.join([random.choice(string.ascii_letters)
-                                  for j in range(10)]) for i in range(n)))
+        names = list({''.join([random.choice(string.ascii_letters)
+                                  for j in range(10)]) for i in range(n)})
         n = len(names)
         Big = recordclass('Big', names)
         b = Big(*range(n))
@@ -343,5 +339,5 @@ class RecordClassTest(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(RecordClassTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(RecordClassTest))
     return suite

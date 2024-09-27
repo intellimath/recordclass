@@ -12,24 +12,18 @@ from recordclass import asdict, make
 
 from typing import ClassVar
 
-# _PY36 = _sys.version_info[:2] >= (3, 6)
-_PY37 = sys.version_info[:2] >= (3, 7)
 _PY311 = sys.version_info[:2] >= (3, 11)
 
-if 'PyPy' in sys.version:
-    is_pypy = True
-else:
-    is_pypy = False
-    from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
+from recordclass.utils import headgc_size, ref_size, pyobject_size, pyvarobject_size, pyssize
 
-    _t = ()
-    _t1 = (1,)
-    _o = object()
-    headgc_size = sys.getsizeof(_t) - _t.__sizeof__()
-    ptr_size = sys.getsizeof(_t1) - sys.getsizeof(_t)
-    pyobject_size = _o.__sizeof__()
-    pyvarobject_size = _t.__sizeof__()
-    del _t, _t1, _o
+_t = ()
+_t1 = (1,)
+_o = object()
+headgc_size = sys.getsizeof(_t) - _t.__sizeof__()
+ptr_size = sys.getsizeof(_t1) - sys.getsizeof(_t)
+pyobject_size = _o.__sizeof__()
+pyvarobject_size = _t.__sizeof__()
+del _t, _t1, _o
 
 class TestPickle2(dataobject):
     __fields__ = 'x', 'y', 'z'
@@ -93,9 +87,8 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         with self.assertRaises(AttributeError):     
@@ -117,9 +110,8 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         self.assertEqual(A.__fields__, ('x', 'y'))
         # self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         with self.assertRaises(AttributeError):     
@@ -141,11 +133,9 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         self.assertEqual(A.__fields__, ('x', 'y'))
-        if not is_pypy:
-            self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        self.assertEqual(sys.getsizeof(a), pyobject_size+2*ptr_size)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         # print('*')
         with self.assertRaises(TypeError):     
             a.__dict__
@@ -191,9 +181,8 @@ class DataObjectTest3(unittest.TestCase):
             y:int
 
         a = A(1,2)
-        if not is_pypy:
-            self.assertEqual(A.__weakrefoffset__, 0)
-            self.assertEqual(A.__dictoffset__, 0)
+        self.assertEqual(A.__weakrefoffset__, 0)
+        self.assertEqual(A.__dictoffset__, 0)
         self.assertEqual(repr(a), "A(x=1, y=2)")
         self.assertEqual(a[0], 1)
         self.assertEqual(a[1], 2)
@@ -208,9 +197,8 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.x, 1)
         self.assertEqual(a.y, 2)
 #         self.assertEqual(sys.getsizeof(a), 32)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(a)
+        with self.assertRaises(TypeError):     
+            weakref.ref(a)
         with self.assertRaises(AttributeError):     
             a.__dict__
         with self.assertRaises(AttributeError):     
@@ -232,10 +220,9 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(A.__annotations__, {'x':int, 'y':int})
         # self.assertEqual(sys.getsizeof(a), pyobject_size+(2+2)*ptr_size)
-        if not is_pypy:
-            self.assertNotEqual(A.__dictoffset__, 0)
-            self.assertNotEqual(A.__weakrefoffset__, 0)
-            weakref.ref(a)
+        self.assertNotEqual(A.__dictoffset__, 0)
+        self.assertNotEqual(A.__weakrefoffset__, 0)
+        weakref.ref(a)
         self.assertEqual(a.__dict__, {})
 
         a.z = 3
@@ -263,9 +250,8 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(B.__annotations__, {'x':int, 'y':int})
 #         self.assertEqual(sys.getsizeof(a), 32)
         self.assertEqual(A.__basicsize__, B.__basicsize__)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(b)
+        with self.assertRaises(TypeError):     
+            weakref.ref(b)
         with self.assertRaises(AttributeError):     
             b.__dict__        
         #a = None
@@ -320,9 +306,8 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(c.norm_1(), 3)
         self.assertEqual(asdict(c), {'x':1, 'y':2})
         self.assertEqual(C.__annotations__, {'x':int, 'y':int})
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(c)
+        with self.assertRaises(TypeError):     
+            weakref.ref(c)
         with self.assertRaises(AttributeError):     
             c.__dict__
 
@@ -354,9 +339,8 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(asdict(c), {'x':1, 'y':2, 'z':3})
         self.assertEqual(C.__annotations__, {'x':int, 'y':int, 'z':int})
 #         self.assertEqual(sys.getsizeof(c), 40)
-        if not is_pypy:
-            with self.assertRaises(TypeError):     
-                weakref.ref(c)
+        with self.assertRaises(TypeError):     
+            weakref.ref(c)
         with self.assertRaises(AttributeError):     
             c.__dict__
 
@@ -818,47 +802,46 @@ class DataObjectTest3(unittest.TestCase):
         self.assertEqual(a.b, 2)
         self.assertEqual(a.c, 3)
 
-    if not is_pypy:
-        def test_do_finalizer_tp(self):
-            count = 0
-            class A(dataobject):
-                x:int
-                y:int
+    def test_do_finalizer_tp(self):
+        count = 0
+        class A(dataobject):
+            x:int
+            y:int
 
-                def __del__(self):
-                    nonlocal count
-                    count += 1
+            def __del__(self):
+                nonlocal count
+                count += 1
 
-            for i in range(100):
-                a = A(1,2)
-                del a
+        for i in range(100):
+            a = A(1,2)
+            del a
 
-            self.assertEqual(count, 100)
+        self.assertEqual(count, 100)
 
-        def test_deep_dealloc(self):
-            class LinkedItem(dataobject):
-                val: object
-                next: 'LinkedItem'
+    def test_deep_dealloc(self):
+        class LinkedItem(dataobject):
+            val: object
+            next: 'LinkedItem'
 
-            class LinkedList(dataobject, deep_dealloc=True):
-                start: LinkedItem = None
-                end: LinkedItem = None
+        class LinkedList(dataobject, deep_dealloc=True):
+            start: LinkedItem = None
+            end: LinkedItem = None
 
-                def append(self, val):
-                    link = LinkedItem(val, None)
-                    if self.start is None:
-                        self.start = link
-                    else:
-                        self.end.next = link
-                    self.end = link
+            def append(self, val):
+                link = LinkedItem(val, None)
+                if self.start is None:
+                    self.start = link
+                else:
+                    self.end.next = link
+                self.end = link
 
-            self.assertEqual(LinkedItem.__base__, dataobject)
+        self.assertEqual(LinkedItem.__base__, dataobject)
 
-            ll = LinkedList()
-            for i in range(10):
-                ll.append(i)
+        ll = LinkedList()
+        for i in range(10):
+            ll.append(i)
 
-            del ll
+        del ll
 
     def test_readonly(self):
         class A(dataobject, readonly=True):
@@ -906,52 +889,51 @@ class DataObjectTest3(unittest.TestCase):
         pt = Point(1,2)
         self.assertEqual(pt.color, Color.RED)
 
-    if _PY37:
-        def test_classvar_1(self):
-            from typing import ClassVar
-            class Point(dataobject):
-                color:ClassVar[int]
-                x: float
-                y: float
+    def test_classvar_1(self):
+        from typing import ClassVar
+        class Point(dataobject):
+            color:ClassVar[int]
+            x: float
+            y: float
 
-            self.assertTrue('color' not in Point.__dict__)
-            self.assertEqual(Point.__fields__, ('x','y'))
-            self.assertEqual(Point.__annotations__, {'x':float,'y':float})   
-            pt = Point(1,2)
-            self.assertEqual((pt.x, pt.y), (1, 2))
+        self.assertTrue('color' not in Point.__dict__)
+        self.assertEqual(Point.__fields__, ('x','y'))
+        self.assertEqual(Point.__annotations__, {'x':float,'y':float})   
+        pt = Point(1,2)
+        self.assertEqual((pt.x, pt.y), (1, 2))
 
-        def test_classvar_2(self):
-            from typing import ClassVar
-            class Point(dataobject):
-                x: float
-                y: float
-                color:ClassVar[int] = 1
+    def test_classvar_2(self):
+        from typing import ClassVar
+        class Point(dataobject):
+            x: float
+            y: float
+            color:ClassVar[int] = 1
 
-            self.assertEqual(Point.color, 1)
-            self.assertEqual(Point.__fields__, ('x','y'))
-            self.assertEqual(Point.__annotations__, {'x':float,'y':float})            
-            pt = Point(1,2)
-            self.assertEqual((pt.x, pt.y), (1, 2))
-            
-        def test_classvar_3(self):
-            from typing import ClassVar
-            class Example_State(dataobject):
-                x: float=1.0
-                y: float=2.0
+        self.assertEqual(Point.color, 1)
+        self.assertEqual(Point.__fields__, ('x','y'))
+        self.assertEqual(Point.__annotations__, {'x':float,'y':float})            
+        pt = Point(1,2)
+        self.assertEqual((pt.x, pt.y), (1, 2))
+        
+    def test_classvar_3(self):
+        from typing import ClassVar
+        class Example_State(dataobject):
+            x: float=1.0
+            y: float=2.0
 
-            with self.assertRaises(TypeError):                        
-                class Example_Derived_State(Example_State):
-                    x:ClassVar[int] = 10
+        with self.assertRaises(TypeError):                        
+            class Example_Derived_State(Example_State):
+                x:ClassVar[int] = 10
 
-        def test_classvar_4(self):
-            from typing import ClassVar
-            class Example_State(dataobject):
-                x: float=1.0
-                y: float=2.0
+    def test_classvar_4(self):
+        from typing import ClassVar
+        class Example_State(dataobject):
+            x: float=1.0
+            y: float=2.0
 
-            with self.assertRaises(TypeError):                        
-                class Example_Derived_State(Example_State):
-                    x:ClassVar[int]
+        with self.assertRaises(TypeError):                        
+            class Example_Derived_State(Example_State):
+                x:ClassVar[int]
 
     def test_initialize_in_init(self):
         class A(dataobject):
@@ -1241,5 +1223,5 @@ class DataObjectTest3(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(DataObjectTest3))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(DataObjectTest3))
     return suite

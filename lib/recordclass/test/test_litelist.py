@@ -176,6 +176,6 @@ class litelistTest(unittest.TestCase):
         
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(litelistTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(litelistTest))
     return suite
 
