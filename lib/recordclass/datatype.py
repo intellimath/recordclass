@@ -332,8 +332,13 @@ class datatype(type):
         if not is_pynew:
             is_pynew = _have_pynew(cls.__bases__)
 
+        if issubclass(cls, _dataobject.datastruct):
+            is_datastruct = True
+        else:
+            is_datastruct = False
+
         if is_pynew or is_pyinit:
-            if issubclass(cls, _dataobject.datastruct):
+            if is_datastruct:
                 raise TypeError('datastruct subclasses can not have __new__ and __init__')
             elif immutable_type:
                 raise TypeError('if immutable_type=True then __init__ or __new__ are not allowed')
@@ -343,11 +348,11 @@ class datatype(type):
         _dataobject._datatype_collection_mapping(cls, sequence, mapping, readonly)
         if hashable:
             _dataobject._datatype_hashable(cls)
-        else:
+        elif not is_datastruct:
             _dataobject._datatype_from_basetype_hashable(cls)
         if iterable:
             _dataobject._datatype_iterable(cls)
-        else:
+        elif not is_datastruct:
             _dataobject._datatype_from_basetype_iterable(cls)
         if use_dict:
             _dataobject._datatype_use_dict(cls)
