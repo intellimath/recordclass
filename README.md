@@ -906,6 +906,10 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 ### Changes:
 
+#### 0.23:
+
+* `recordclass` requires python >= 3.8
+
 #### 0.22.1:
 
 * Add `pyproject.toml`.

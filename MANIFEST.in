@@ -4,6 +4,7 @@ include LICENSE.txt
 include test_all.py
 include test_performance.py
 include lib/recordclass/__init__.py
+include lib/recordclass/about.py
 include lib/recordclass/recordclass.py
 include lib/recordclass/dataclass.py
 include lib/recordclass/dictclass.py
