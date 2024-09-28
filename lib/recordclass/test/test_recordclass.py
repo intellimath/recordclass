@@ -65,7 +65,7 @@ class RecordClassTest(unittest.TestCase):
 #         ]:
 #             self.assertEqual(recordclass('NT', spec, rename=True).__fields__, renamed)
 
-            
+
     def test_defaults(self):
         Point = recordclass('Point', 'x y', defaults=(10, 20))              # 2 defaults
         self.assertEqual(Point(1, 2), Point(1, 2))
@@ -80,7 +80,7 @@ class RecordClassTest(unittest.TestCase):
         self.assertEqual(Point(1, 2), Point(1, 2))
         # with self.assertRaises(TypeError):
         #     Point(1)
-            
+
         # with self.assertRaises(TypeError):                                  # catch too few args
         #     Point()
         with self.assertRaises(TypeError):                                  # catch too many args
@@ -103,7 +103,7 @@ class RecordClassTest(unittest.TestCase):
         self.assertEqual(Point(1, 2), Point(1, 2))
         self.assertEqual(Point(1), Point(1, 20))
         self.assertEqual(Point(), Point(10, 20))
-            
+
     def test_instance(self):
         Point = recordclass('Point', 'x y')
         p = Point(11, 22)
@@ -135,12 +135,12 @@ class RecordClassTest(unittest.TestCase):
         Point = recordclass('Point', ('x', 'y'))
         p = Point(x=11, y=22)
         self.assertEqual(repr(p), 'Point(x=11, y=22)')
-        
+
     def test_readonly_instance(self):
         Point = recordclass('Point', ('x', 'y'), readonly=True)
         p = Point(11, 22)
         self.assertRaises(AttributeError, eval, 'p._replace(z=1)', locals())          # inval keyword argument
-        
+
     def test_gc(self):
         Point = recordclass('Point', 'x y')
         Point_gc = recordclass('Point_gc', 'x y', gc=True)
@@ -204,7 +204,7 @@ class RecordClassTest(unittest.TestCase):
         b2_expected[-5] = 42
         self.assertEqual(b2, Big(*tuple(b2_expected)))
         self.assertEqual(b.__fields__, tuple(names))
-        
+
     # def test_annotations(self):
     #     C = recordclass('C', [('x',int),('y',int)])
     #     self.assertEqual(C.__new__.__annotations__, {'x':int, 'y':int})
@@ -278,7 +278,7 @@ class RecordClassTest(unittest.TestCase):
         class B(A):
             pass
         self.assertEqual(repr(B(1)), 'B(x=1)')
-        
+
     def test_hash(self):
         A = recordclass('A', 'x y', readonly=True)
         # print(A.__options__)
@@ -329,13 +329,13 @@ class RecordClassTest(unittest.TestCase):
 #         print(dir(B))
         b = B(1,2)
         hash(b)
-        
+
     def test_caching(self):
         rs = RecordclassStorage()
         A = rs.recordclass('A', ('x', 'y'))
         B = rs.recordclass('A', ['x', 'y'])
         self.assertEqual(A, B)
-        
+
 
 def main():
     suite = unittest.TestSuite()

@@ -21,7 +21,7 @@ typedef struct {
 
 #define PyDataObject_LEN(o) (Py_TYPE(o)->tp_itemsize)
 #define PyDataObject_GET_ITEM(op, i) (((PyDataStruct*)(op))->ob_items[(i)])
-#define PyDataObject_SET_ITEM(op, i, v) (((PyDataStruct*)(op))->ob_items[(i)]=(v)) 
+#define PyDataObject_SET_ITEM(op, i, v) (((PyDataStruct*)(op))->ob_items[(i)]=(v))
 
 #define PyDataObject_DICTPTR(type, op) ((PyObject**)((char*)(op) + (type)->tp_dictoffset))
 #define PyDataObject_WEAKLISTPTR(type, op) ((PyObject**)((char*)op + type->tp_weaklistoffset))

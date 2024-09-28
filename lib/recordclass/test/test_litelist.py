@@ -12,7 +12,7 @@ class litelistTest(unittest.TestCase):
         self.assertEqual(len(a), 0)
         a = litelist([1])
         self.assertEqual(len(a), 1)
-        
+
     def test_items(self):
         a = litelist([1,2,3])
         self.assertEqual(a[0], 1)
@@ -33,7 +33,7 @@ class litelistTest(unittest.TestCase):
         a.remove(3)
         self.assertEqual(a[0], 1)
         self.assertEqual(a[-1], 2)
-        
+
     def test_gc(self):
         a = litelist([1,2,3])
         # self.assertEqual(sys.getsizeof(a), a.__sizeof__())
@@ -60,7 +60,7 @@ class litelistTest(unittest.TestCase):
         self.assertEqual(a[3], 4)
         self.assertEqual(a[4], 5)
         self.assertEqual(a[5], 6)
-        
+
     def test_repr(self):
         a = litelist([])
         self.assertEqual(repr(a), "litelist([])")
@@ -77,7 +77,7 @@ class litelistTest(unittest.TestCase):
     def test_iter2(self):
         from recordclass._litelist import litelistiter
         a = litelist([1,2,3])
-        self.assertTrue(isinstance(iter(a), litelistiter))        
+        self.assertTrue(isinstance(iter(a), litelistiter))
 
     def test_getslice1(self):
         a = litelist([1,2,3])
@@ -111,7 +111,7 @@ class litelistTest(unittest.TestCase):
         a = litelist([1,2,3])
         a[:] = [100,200,300]
         self.assertEqual(repr(a), "litelist([100, 200, 300])")
-        
+
     def test_delitem1(self):
         a = litelist([1,2,3,4,5])
         del a[1]
@@ -131,7 +131,7 @@ class litelistTest(unittest.TestCase):
         a = litelist([1,2,3,4,5])
         del a[-1]
         self.assertEqual(repr(a), "litelist([1, 2, 3, 4])")
-        
+
     def test_iterator_pickle(self):
         # Userlist iterators don't support pickling yet since
         # they are based on generators.
@@ -155,9 +155,9 @@ class litelistTest(unittest.TestCase):
         self.assertEqual(sys.getrefcount(a), c+1)
         b = ll[0]
         self.assertEqual(sys.getrefcount(a), c+2)
-        ll[0] = None        
+        ll[0] = None
         self.assertEqual(sys.getrefcount(a), c+1)
-        
+
     def test_litelist_fromargs1(self):
         a = litelist_fromargs()
         self.assertEqual(len(a), 0)
@@ -167,13 +167,13 @@ class litelistTest(unittest.TestCase):
         a = litelist_fromargs(1,2,3,4,5)
         self.assertEqual(len(a), 5)
         self.assertEqual(repr(a), "litelist([1, 2, 3, 4, 5])")
-        
+
     def test_incremental_add(self):
         ll = litelist([])
         for i in range(10000):
             ll.append(i)
-        
-        
+
+
 def main():
     suite = unittest.TestSuite()
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(litelistTest))

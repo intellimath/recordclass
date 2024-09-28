@@ -13,23 +13,23 @@ class dataobjectmatchTest(unittest.TestCase):
                 pass
             case _:
                 raise TypeError(f"{p} does not match {x}")
-            
+
     def test_match_2(self):
         Point = make_dataclass("Point", "x y")
         x = Point(1,2)
-        with self.assertRaises(TypeError): 
+        with self.assertRaises(TypeError):
             match x:
                 case Point(1, 3):
                     pass
                 case _:
                     raise TypeError(f"(1, 2) does not match {x}")
-                    
+
     def test_match_3(self):
         Point = make_dataclass("Point", "x y")
         Point2 = make_dataclass("Point2", "x y")
         x = Point(1,2)
         p = Point2(1, 2)
-        with self.assertRaises(TypeError): 
+        with self.assertRaises(TypeError):
             match x:
                 case Point2(1, 2):
                     pass
@@ -41,7 +41,7 @@ class dataobjectmatchTest(unittest.TestCase):
         Point2 = make_dataclass("Point2", "x y")
         x = Point(1,2)
         p = Point2(1, 2)
-        with self.assertRaises(TypeError): 
+        with self.assertRaises(TypeError):
             match x:
                 case Point2(1, 2):
                     pass
@@ -53,7 +53,7 @@ class dataobjectmatchTest(unittest.TestCase):
         Point2 = make_dataclass("Point2", "x y z", match=('x','y'))
         x = Point(1,2)
         p = Point2(1, 2)
-        with self.assertRaises(TypeError): 
+        with self.assertRaises(TypeError):
             match x:
                 case Point2(1, 2, 3):
                     pass
@@ -65,7 +65,7 @@ class dataobjectmatchTest(unittest.TestCase):
         Point2 = make_dataclass("Point2", "x y * z")
         x = Point(1,2)
         p = Point2(1, 2)
-        with self.assertRaises(TypeError): 
+        with self.assertRaises(TypeError):
             match x:
                 case Point2(1, 2, 3):
                     pass
@@ -84,10 +84,10 @@ class dataobjectmatchTest(unittest.TestCase):
             y: int
             _: MATCH
             z: int
-        
+
         x = Point(1,2)
         p = Point2(1, 2)
-        with self.assertRaises(TypeError): 
+        with self.assertRaises(TypeError):
             match x:
                 case Point2(1, 2, 3):
                     pass

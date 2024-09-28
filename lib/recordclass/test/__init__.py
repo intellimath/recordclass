@@ -21,10 +21,10 @@ try:
     import sqlite3 as sql
 except:
     sql = None
-    
+
 if sql is not None:
     from recordclass.test.test_sqlite import *
-    
+
 def test_all():
     import unittest
     unittest.main(verbosity=3)

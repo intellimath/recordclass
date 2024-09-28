@@ -251,27 +251,27 @@ dataobject_alloc_gc(PyTypeObject *type, Py_ssize_t unused)
     return op;
 }
 
-static void 
+static void
 _fill_items(PyObject **items, PyObject * const*args, const Py_ssize_t n_args) {
     Py_ssize_t i;
     for (i = 0; i < n_args; i++) {
         PyObject *v = args[i];
         Py_INCREF(v);
         items[i] = v;
-    } 
+    }
 }
 
-static void 
+static void
 _fill_items_none(PyObject **items, const Py_ssize_t start, const Py_ssize_t n_args) {
     Py_ssize_t i;
     for (i = start; i < n_args; i++) {
         Py_INCREF(Py_None);
         items[i] = Py_None;
-    } 
+    }
 }
 
 static int
-_fill_items_defaults(PyObject **items, const PyObject *default_vals, 
+_fill_items_defaults(PyObject **items, const PyObject *default_vals,
                     const Py_ssize_t n_args, const Py_ssize_t n_items) {
     Py_ssize_t i;
     for(i = n_args; i < n_items; i++) {
@@ -284,7 +284,7 @@ _fill_items_defaults(PyObject **items, const PyObject *default_vals,
             items[i] = val;
         } else {
             Py_INCREF(value);
-            items[i] = value;                    
+            items[i] = value;
         }
     }
     return 1;
@@ -340,7 +340,7 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
             for(i=0; i<n_kwnames; i++) {
                 name = PyTuple_GET_ITEM(kwnames, i);
                 val = args[n_args + i];
-    
+
                 Py_ssize_t index = _tuple_index((PyTupleObject*)fields, name);
                 if (index >= 0) {
                     dataobject_ass_item(op, index, val);
@@ -352,12 +352,12 @@ dataobject_vectorcall(PyObject *type0, PyObject * const*args,
                         return NULL;
                     }
                 }
-    
+
                 Py_INCREF(val);
                 PyObject_SetAttr(op, name, val);
             }
-            Py_DECREF(fields);            
-        } 
+            Py_DECREF(fields);
+        }
     }
 
     return op;
@@ -476,15 +476,15 @@ dataobject_new_copy_default(PyTypeObject *type, PyObject *args, PyObject *kwds)
                 PyObject *value = PyTuple_GET_ITEM(default_vals, i);
                 if (value == Py_None) {
                     Py_INCREF(Py_None);
-                    items[i] = Py_None;                    
-                } 
+                    items[i] = Py_None;
+                }
                 else {
                     PyObject *val;
                     PyTypeObject *tp = Py_TYPE(value);
 
                     if (tp == &PyList_Type)
                         val = PyList_GetSlice(value, 0, Py_SIZE(value));
-                    else if (tp == &PyDict_Type || tp == &PySet_Type) 
+                    else if (tp == &PyDict_Type || tp == &PySet_Type)
                         val = PyObject_CallMethod(value, "copy", NULL);
                     else if (tp == &PyFactory_Type) {
                         val = call_factory(value);
@@ -498,8 +498,8 @@ dataobject_new_copy_default(PyTypeObject *type, PyObject *args, PyObject *kwds)
                     else {
                         val = value;
                         Py_INCREF(val);
-                    }                        
-                    items[i] = val;    
+                    }
+                    items[i] = val;
                 }
             }
             Py_DECREF(default_vals);
@@ -542,14 +542,14 @@ dataobject_init(PyObject *op, PyObject *args0, PyObject *kwds)
         PyObject *v = *(args++);
         Py_DECREF(*items);
         Py_INCREF(v);
-        *(items++) = v;            
+        *(items++) = v;
     }
 
     if (kwds) {
         int retval = _dataobject_update(op, kwds, 1);
         if (retval < 0)
             return retval;
-    }    
+    }
 
     return 0;
 }
@@ -584,7 +584,7 @@ _dataobject_update(PyObject *op, PyObject *kwds, int flag)
     while ((key = PyIter_Next(iter))) {
         val = PyObject_GetItem(kwds, key);
 
-        if (flag) {            
+        if (flag) {
             Py_ssize_t index = _tuple_index((PyTupleObject*)fields, key);
             if (index >= 0) {
                 dataobject_ass_item(op, index, val);
@@ -608,7 +608,7 @@ _dataobject_update(PyObject *op, PyObject *kwds, int flag)
 
         if (PyObject_SetAttr(op, key, val) < 0) {
             PyErr_Format(
-                PyExc_TypeError, 
+                PyExc_TypeError,
                 "Invalid kwarg: %U not in __fields__", key);
             Py_DECREF(val);
             Py_DECREF(key);
@@ -1258,7 +1258,7 @@ dataobject_repr(PyObject *self)
         Py_DECREF(tp_name);
         return text;
     }
-    
+
     i = Py_ReprEnter((PyObject *)self);
     if (i != 0) {
         Py_DECREF(tp_name);
@@ -1280,7 +1280,7 @@ dataobject_repr(PyObject *self)
         PyList_Append(items, fn);
 
         PyList_Append(items, eq);
-        
+
         PyObject *ob = dataobject_item(self, i);
         if (ob == NULL)
             goto error;
@@ -1979,16 +1979,16 @@ static PyObject *Factory_new(PyTypeObject *tp, PyObject *args, PyObject *kw) {
     struct PyFactoryObject *p;
     Py_ssize_t n_args = Py_SIZE(args);
     PyObject *o;
-    
+
     o = (*tp->tp_alloc)(tp, 0);
     if (!o) return NULL;
-    
+
     p = ((struct PyFactoryObject *)o);
     if (n_args != 1) {
         PyErr_SetString(PyExc_TypeError, "number of arguments != 1");
-        return NULL;        
+        return NULL;
     }
-    
+
     PyObject *f = PyTuple_GET_ITEM(args, 0);
     p->factory = f; Py_INCREF(f);
 
@@ -1998,7 +1998,7 @@ static PyObject *Factory_new(PyTypeObject *tp, PyObject *args, PyObject *kw) {
 static void Factory_dealloc(PyObject *o) {
     struct PyFactoryObject *p = (struct PyFactoryObject *)o;
     PyTypeObject *t = Py_TYPE(o);
-    
+
     Py_CLEAR(p->factory);
     t->tp_free(o);
 }
@@ -2148,11 +2148,11 @@ _dataobject_type_init(PyObject *module, PyObject *args) {
         tp->tp_weaklistoffset = 0;
         tp->tp_flags &= ~Py_TPFLAGS_BASETYPE;
         tp->tp_flags &= ~Py_TPFLAGS_HAVE_GC;
-        
+
     }
     else {
         tp->tp_dictoffset = tp_base->tp_dictoffset;
-        tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;        
+        tp->tp_weaklistoffset = tp_base->tp_weaklistoffset;
     }
 
 
@@ -2530,7 +2530,7 @@ _astuple(PyObject *op)
 //                 val = PyObject_GetItem(dict, key);
 //                 PyTuple_SetItem(tpl, i, val);
 //                 i++;
-//                 Py_DECREF(key);                
+//                 Py_DECREF(key);
 //             }
 //         }
 //     }
@@ -2905,7 +2905,7 @@ PyInit__dataobject(void)
 
     if (PyType_Ready(&PyDataStruct_Type) < 0)
         Py_FatalError("Can't initialize datastruct type");
-    
+
     if (PyType_Ready(&PyDataObjectIter_Type) < 0)
         Py_FatalError("Can't initialize dataobjectiter type");
 
@@ -2914,13 +2914,13 @@ PyInit__dataobject(void)
 
     if (PyType_Ready(&PyFactory_Type) < 0)
         Py_FatalError("Can't initialize Factory type");
-    
+
     Py_INCREF(&PyDataObject_Type);
     PyModule_AddObject(m, "dataobject", (PyObject *)&PyDataObject_Type);
 
     Py_INCREF(&PyDataStruct_Type);
     PyModule_AddObject(m, "datastruct", (PyObject *)&PyDataStruct_Type);
-    
+
     Py_INCREF(&PyDataObjectIter_Type);
     PyModule_AddObject(m, "dataobjectiter", (PyObject *)&PyDataObjectIter_Type);
 
@@ -2929,7 +2929,7 @@ PyInit__dataobject(void)
 
     Py_INCREF(&PyFactory_Type);
     PyModule_AddObject(m, "Factory", (PyObject *)&PyFactory_Type);
-    
+
     // pydataobject_make = PyObject_GetAttrString(m, "make");
     // Py_INCREF(pydataobject_make);
 

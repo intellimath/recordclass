@@ -3,10 +3,10 @@
 // Copyright (c) «2021-2024» «Shibzukhov Zaur, szport at gmail dot com»
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software - recordclass library - and associated documentation files 
-// (the "Software"), to deal in the Software without restriction, including 
-// without limitation the rights to use, copy, modify, merge, publish, distribute, 
-// sublicense, and/or sell copies of the Software, and to permit persons to whom 
+// of this software - recordclass library - and associated documentation files
+// (the "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom
 // the Software is furnished to do so, subject to the following conditions:
 
 // The above copyright notice and this permission notice shall be included in
@@ -67,7 +67,7 @@ pyobject_get_builtin(const char *attrname_c)
         return NULL;
     mod = PyImport_Import(modname);
     if (mod == NULL) {
-        Py_DECREF(modname);    
+        Py_DECREF(modname);
         return NULL;
     }
     ob = PyObject_GetAttrString(mod, attrname_c);
@@ -75,7 +75,7 @@ pyobject_get_builtin(const char *attrname_c)
         Py_DECREF(mod);
         return NULL;
     }
-    Py_DECREF(modname);    
+    Py_DECREF(modname);
     Py_DECREF(mod);
     return ob;
 }
@@ -108,7 +108,7 @@ litetuple_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     PyObject *newobj = (PyObject*)_PyObject_NewVar(type, n);
 
-    PyTupleObject *tmp = (PyTupleObject*)args; 
+    PyTupleObject *tmp = (PyTupleObject*)args;
     PyObject **dest = ((PyLiteTupleObject*)newobj)->ob_item;
     PyObject **src = tmp->ob_item;
 
@@ -189,7 +189,7 @@ litetuple_repr(PyObject *dd)
     PyObject *baserepr;
     PyObject *v, *result;
     const Py_ssize_t n = Py_SIZE(dd);
-        
+
     if (n == 0) {
         result = PyUnicode_FromString("litetuple()\0");
         return result;
@@ -200,8 +200,8 @@ litetuple_repr(PyObject *dd)
         baserepr = PyObject_Repr(v);
         result = PyUnicode_FromFormat("litetuple(%U)", baserepr);
         return result;
-    }    
-    
+    }
+
     baserepr = PyTuple_Type.tp_repr(dd);
     if (baserepr == NULL)
         return NULL;
@@ -222,7 +222,7 @@ litetuple_concat(PyLiteTupleObject *a, PyObject *bb)
     Py_ssize_t i, n;
     PyObject **src, **dest;
     PyLiteTupleObject *np;
-    
+
     if (!PyLiteTuple_Check(bb)) {
         PyErr_Format(PyExc_TypeError,
              "can only concatenate tuple (not \"%.200s\") to tuple",
@@ -238,7 +238,7 @@ litetuple_concat(PyLiteTupleObject *a, PyObject *bb)
     if (np == NULL) {
         return NULL;
     }
-    
+
     src = a->ob_item;
     dest = np->ob_item;
 
@@ -250,7 +250,7 @@ litetuple_concat(PyLiteTupleObject *a, PyObject *bb)
             dest[i] = v;
         }
     }
-    
+
     src = b->ob_item;
     dest = np->ob_item + Py_SIZE(a);
     n = Py_SIZE(b);
@@ -284,7 +284,7 @@ litetuple_slice(PyLiteTupleObject *a, Py_ssize_t ilow, Py_ssize_t ihigh)
     np = (PyLiteTupleObject*)litetuple_alloc(Py_TYPE(a), len);
     if (np == NULL)
         return NULL;
-        
+
     src = a->ob_item + ilow;
     dest = np->ob_item;
     if (len > 0) {
@@ -306,7 +306,7 @@ litetuple_ass_slice(PyLiteTupleObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyO
     Py_ssize_t n;
     Py_ssize_t k;
     int result = -1;
-    
+
     if (v == NULL)
         return result;
     else {
@@ -314,7 +314,7 @@ litetuple_ass_slice(PyLiteTupleObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyO
             v = litetuple_slice((PyLiteTupleObject*)v, 0, Py_SIZE(v));
             if (v == NULL)
                 return result;
-                
+
             result = litetuple_ass_slice(a, ilow, ihigh, v);
             Py_DECREF(v);
             return result;
@@ -326,7 +326,7 @@ litetuple_ass_slice(PyLiteTupleObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyO
         n = PySequence_Fast_GET_SIZE(v_as_SF);
         vitem = PySequence_Fast_ITEMS(v_as_SF);
     }
-    
+
     if (ilow < 0)
         ilow = 0;
     else if (ilow > Py_SIZE(a))
@@ -338,10 +338,10 @@ litetuple_ass_slice(PyLiteTupleObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyO
         ihigh = Py_SIZE(a);
 
     if (n != ihigh - ilow) {
-        Py_XDECREF(v_as_SF);    
+        Py_XDECREF(v_as_SF);
         return -1;
     }
-    
+
     item = ((PyLiteTupleObject*)a)->ob_item;
     if (n > 0) {
         for (k = 0; k < n; k++, ilow++) {
@@ -352,7 +352,7 @@ litetuple_ass_slice(PyLiteTupleObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyO
             Py_XINCREF(w);
         }
     }
-    Py_XDECREF(v_as_SF);    
+    Py_XDECREF(v_as_SF);
     return 0;
 }
 
@@ -360,7 +360,7 @@ static int
 litetuple_ass_item(PyLiteTupleObject *a, Py_ssize_t i, PyObject *v)
 {
     const Py_ssize_t n = Py_SIZE(a);
-    
+
     if (i < 0)
         i += n;
     if (i < 0 || i >= Py_SIZE(a)) {
@@ -368,10 +368,10 @@ litetuple_ass_item(PyLiteTupleObject *a, Py_ssize_t i, PyObject *v)
                         "assignment index out of range");
         return -1;
     }
-    
+
     if (v == NULL)
         return -1;
-    
+
     PyObject **ptr = a->ob_item + i;
     PyObject *old_value = *ptr;
     *ptr = v;
@@ -385,7 +385,7 @@ static PyObject *
 litetuple_item(PyLiteTupleObject *a, Py_ssize_t i)
 {
     const Py_ssize_t n = Py_SIZE(a);
-    
+
     if (i < 0)
         i += n;
     if (i < 0 || i >= n) {
@@ -408,7 +408,7 @@ _PyIndex_Check(PyObject *obj)
 static PyObject*
 litetuple_subscript(PyLiteTupleObject* self, PyObject* item)
 {
-    if (_PyIndex_Check(item)) {        
+    if (_PyIndex_Check(item)) {
         Py_ssize_t i = PyLong_AsSsize_t(item);
         if (i == -1 && PyErr_Occurred())
             return NULL;
@@ -442,7 +442,7 @@ litetuple_ass_subscript(PyLiteTupleObject* self, PyObject* item, PyObject* value
         Py_ssize_t start, stop, step, slicelength;
 
         if (PySlice_GetIndicesEx(item, (Py_SIZE(self)), &start, &stop, &step, &slicelength) < 0)
-            return -1; 
+            return -1;
         return litetuple_ass_slice(self, start, stop, value);
     }
     else {
@@ -471,10 +471,10 @@ litetuple_repeat(PyLiteTupleObject *a, Py_ssize_t n)
     np = (PyLiteTupleObject *) litetuple_alloc(Py_TYPE(a), Py_SIZE(a) * n);
     if (np == NULL)
         return NULL;
-    
+
     if (size == 0)
         return (PyObject *)np;
-        
+
     p = np->ob_item;
     items = a->ob_item;
     for (i = 0; i < n; i++) {
@@ -523,7 +523,7 @@ litetuple_richcompare(PyObject *v, PyObject *w, int op)
 
     vlen = Py_SIZE(vt);
     wlen = Py_SIZE(wt);
-    
+
     if ((vlen != wlen) && (op == Py_EQ || op == Py_NE)) {
         PyObject *res;
         if (op == Py_EQ)
@@ -532,8 +532,8 @@ litetuple_richcompare(PyObject *v, PyObject *w, int op)
             res = Py_True;
         Py_INCREF(res);
         return res;
-    }    
-    
+    }
+
     for (i = 0; i < vlen && i < wlen; i++) {
         int k = PyObject_RichCompareBool(vt->ob_item[i],
                                          wt->ob_item[i], Py_EQ);
@@ -624,7 +624,7 @@ litetuple_copy(PyLiteTupleObject *ob)
     PyLiteTupleObject *np = (PyLiteTupleObject*)litetuple_alloc(Py_TYPE(ob), len);
     if (np == NULL)
         return NULL;
-        
+
     PyObject **src = ob->ob_item;
     PyObject **dest = np->ob_item;
     if (len > 0) {
@@ -662,7 +662,7 @@ litetuple_reduce(PyObject *ob)
 PyDoc_STRVAR(litetuple_bool_doc, "t.__nonzero__ -> bool");
 
 static PyObject*
-litetuple_bool(PyLiteTupleObject *o) 
+litetuple_bool(PyLiteTupleObject *o)
 {
     if (Py_SIZE(o) > 0)
         Py_RETURN_TRUE;
@@ -700,12 +700,12 @@ static PyMethodDef litetuple_methods[] = {
     {"__copy__", (PyCFunction)litetuple_copy, METH_NOARGS, litetuple_copy_doc},
     {"__len__", (PyCFunction)litetuple_len, METH_NOARGS, litetuple_len_doc},
     {"__nonzero__", (PyCFunction)litetuple_bool, METH_NOARGS, litetuple_bool_doc},
-    {"__sizeof__",      (PyCFunction)litetuple_sizeof, METH_NOARGS, litetuple_sizeof_doc},     
+    {"__sizeof__",      (PyCFunction)litetuple_sizeof, METH_NOARGS, litetuple_sizeof_doc},
     {"__reduce__", (PyCFunction)litetuple_reduce, METH_NOARGS, litetuple_reduce_doc},
     {NULL}
 };
 
-static PyObject* 
+static PyObject*
 litetuple_iter(PyObject *seq);
 
 static PyTypeObject PyLiteTuple_Type = {
@@ -730,7 +730,7 @@ static PyTypeObject PyLiteTuple_Type = {
     0,                                     /* tp_setattro */
     0,                                      /* tp_as_buffer */
 #if PY_VERSION_HEX >= 0x030A0000
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | 
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE |
     Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_SEQUENCE,
 #else
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
@@ -784,7 +784,7 @@ static PyTypeObject PyMLiteTuple_Type = {
     0,                                      /* tp_setattro */
     0,                                      /* tp_as_buffer */
 #if PY_VERSION_HEX >= 0x030A0000
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | 
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE |
     Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_SEQUENCE,
 #else
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
@@ -993,15 +993,15 @@ PyMODINIT_FUNC
 PyInit__litetuple(void)
 {
     PyObject *m;
-    
+
 #ifndef PYPY_VERSION
     m = PyState_FindModule(&litetuplemodule);
     if (m) {
         Py_INCREF(m);
         return m;
-    }    
+    }
 #endif
-    
+
     m = PyModule_Create(&litetuplemodule);
     if (m == NULL)
         return NULL;
@@ -1014,7 +1014,7 @@ PyInit__litetuple(void)
 
     if (PyType_Ready(&PyLiteTupleIter_Type) < 0)
         Py_FatalError("Can't initialize litetuple iter type");
-    
+
 // #if PY_VERSION_HEX >= 0x03080000
 //     if (PyLiteTuple_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
 //         PyLiteTuple_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
@@ -1023,14 +1023,14 @@ PyInit__litetuple(void)
 //     if (PyLiteTupleIter_Type.tp_flags & Py_TPFLAGS_METHOD_DESCRIPTOR)
 //         PyLiteTupleIter_Type.tp_flags &= ~Py_TPFLAGS_METHOD_DESCRIPTOR;
 // #endif
-    
+
     Py_INCREF(&PyLiteTuple_Type);
     PyModule_AddObject(m, "litetuple", (PyObject *)&PyLiteTuple_Type);
 
     Py_INCREF(&PyMLiteTuple_Type);
     PyModule_AddObject(m, "mutabletuple", (PyObject *)&PyMLiteTuple_Type);
 
-    Py_INCREF(&PyLiteTupleIter_Type);    
+    Py_INCREF(&PyLiteTupleIter_Type);
     PyModule_AddObject(m, "litetupleiter", (PyObject *)&PyLiteTupleIter_Type);
 
     return m;

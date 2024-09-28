@@ -3,10 +3,10 @@
 # Copyright (c) «2015-2024» «Shibzukhov Zaur, szport at gmail dot com»
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software - recordclass library - and associated documentation files 
-# (the "Software"), to deal in the Software without restriction, including 
-# without limitation the rights to use, copy, modify, merge, publish, distribute, 
-# sublicense, and/or sell copies of the Software, and to permit persons to whom 
+# of this software - recordclass library - and associated documentation files
+# (the "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom
 # the Software is furnished to do so, subject to the following conditions:
 
 # The above copyright notice and this permission notice shall be included in
@@ -54,19 +54,19 @@ def _add_namedtuple_api(typename, readonly):
         return asdict(self)
 
     for method in (_make, _replace, _asdict,):
-        method.__qualname__ = typename + "." + method.__name__        
+        method.__qualname__ = typename + "." + method.__name__
 
     _make = classmethod(_make)
 
-    ns = { '_make': _make, 
-           '_replace': _replace, 
+    ns = { '_make': _make,
+           '_replace': _replace,
            '_asdict': _asdict
          }
     return ns
 
 def recordclass(typename, fields, defaults=None, *,
                 rename=False, readonly=False, hashable=False, gc=False,
-                use_dict=False, use_weakref=False, fast_new=True, mapping=False, 
+                use_dict=False, use_weakref=False, fast_new=True, mapping=False,
                 immutable_type=False, copy_default=False, module=None):
     """Returns a new class with named fields, small memory footprint and namedtuple-lie API.
 
@@ -90,11 +90,11 @@ def recordclass(typename, fields, defaults=None, *,
     """
     from .dataclass import make_dataclass
     import sys as _sys
-    
+
     ns = _add_namedtuple_api(typename, readonly)
     if readonly:
         hashable = True
-    
+
     if module is None:
         try:
             _module = _sys._getframe(1).f_globals.get('__name__', '__main__')
@@ -106,8 +106,8 @@ def recordclass(typename, fields, defaults=None, *,
     invalid_names = ('_make', '_replace', '_asdict')
 
     return make_dataclass(typename, fields, defaults=defaults, namespace=ns,
-                use_dict=use_dict, use_weakref=use_weakref, hashable=hashable, 
-                sequence=True, mapping=mapping, iterable=True, rename=rename, 
+                use_dict=use_dict, use_weakref=use_weakref, hashable=hashable,
+                sequence=True, mapping=mapping, iterable=True, rename=rename,
                 readonly=readonly, module=_module, invalid_names = invalid_names,
                 fast_new=fast_new, gc=False, immutable_type=immutable_type,
                 copy_default=copy_default)

@@ -3,10 +3,10 @@
 # Copyright (c) «2015-2024» «Shibzukhov Zaur, szport at gmail dot com»
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software - recordclass library - and associated documentation files 
-# (the "Software"), to deal in the Software without restriction, including 
-# without limitation the rights to use, copy, modify, merge, publish, distribute, 
-# sublicense, and/or sell copies of the Software, and to permit persons to whom 
+# of this software - recordclass library - and associated documentation files
+# (the "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom
 # the Software is furnished to do so, subject to the following conditions:
 
 # The above copyright notice and this permission notice shall be included in
@@ -88,7 +88,7 @@ def process_fields(fields, defaults, rename, invalid_names):
             fn = _intern(fn)
             field_names.append(fn)
     fields = field_names
-        
+
     seen = set()
     for fn in fields:
         if fn in seen:
@@ -123,7 +123,7 @@ def check_name(name, rename=False, i=0, invalid_names=()):
             raise ValueError(f'Name must be valid identifiers: {name!r}')
         if iskeyword(name):
             raise ValueError(f'Name cannot be a keyword: {name!r}')
-    
+
     return name
 
 def number_of_dataitems(cls):
@@ -194,7 +194,7 @@ def collect_info_from_bases(bases, fields, fields_dict, options):
         #         others[name] = getattr(base, name)
         # if others:
         #     options['others'] = others
-        
+
     return _fields + fields
 
 def _have_pyinit(bases):
@@ -205,7 +205,7 @@ def _have_pyinit(bases):
             return True
         elif _have_pyinit(base.__bases__):
             return True
-        
+
     return False
 
 def _have_pynew(bases):
@@ -216,5 +216,5 @@ def _have_pynew(bases):
             return True
         elif _have_pynew(base.__bases__):
             return True
-        
+
     return False

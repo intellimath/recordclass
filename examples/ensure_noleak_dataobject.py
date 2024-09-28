@@ -26,4 +26,4 @@ for i in range(1000):
     print(memory_usage_psutil())
     del lst
     time.sleep(1.)
-  
+

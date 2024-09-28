@@ -42,12 +42,12 @@ def make_dictclass(typename, keys, defaults=None, *, bases=None, namespace=None,
 
     keys, annotations, defaults = process_fields(keys, defaults, False, ())
     typename = check_name(typename)
-    
+
     if namespace is None:
         ns = {}
     else:
         ns = namespace.copy()
-        
+
     n_keys = len(keys)
     n_defaults = len(defaults) if defaults else 0
 
@@ -59,7 +59,7 @@ def make_dictclass(typename, keys, defaults=None, *, bases=None, namespace=None,
     ns['__fields__'] = keys
     ns['__annotations__'] = annotations
     ns['__defaults__'] = defaults
-    
+
     if readonly:
         raise TypeError('Immutable type can not support dict-like interface')
 
@@ -86,9 +86,9 @@ def make_dictclass(typename, keys, defaults=None, *, bases=None, namespace=None,
         return (key in self.__fields__)
 
     ns.update({
-        'keys': keys, 
-        'items': items, 
-        'values': values, 
+        'keys': keys,
+        'items': items,
+        'values': values,
         'get': get,
         'update': update,
     })
@@ -108,7 +108,7 @@ def make_dictclass(typename, keys, defaults=None, *, bases=None, namespace=None,
 
     ns['__module__'] = module
 
-    cls = datatype(typename, bases, ns, 
+    cls = datatype(typename, bases, ns,
                    gc=False, fast_new=fast_new,
                    readonly=readonly, iterable=True,
                    mapping=True, sequence=False,
