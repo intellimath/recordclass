@@ -484,13 +484,13 @@ litelist_subscript(PyLiteListObject* self, PyObject* item)
     if (PySlice_Check(item)) {
         Py_ssize_t start, stop, step, slicelength;
 
-        if (PySlice_GetIndicesEx(item, (PyTuple_GET_SIZE(self)), &start, &stop, &step, &slicelength) < 0)
+        if (PySlice_GetIndicesEx(item, (Py_SIZE(self)), &start, &stop, &step, &slicelength) < 0)
             return NULL;
         return litelist_slice(self, start, stop);
     }
     else {
         PyErr_Format(PyExc_TypeError,
-                     "subscript must be integer, slice or string, but not %.200s",
+                     "subscript must be integer or slice, but not %.200s",
                      Py_TYPE(item)->tp_name);
         return NULL;
     }

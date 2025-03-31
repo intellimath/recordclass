@@ -32,7 +32,7 @@ static PyTypeObject PyMLiteTuple_Type;
 
 #define PyLiteTuple_GET_ITEM(op, i) (((PyLiteTupleObject *)(op))->ob_item[i])
 #define PyLiteTuple_SET_ITEM(op, i, v) (((PyLiteTupleObject *)(op))->ob_item[i] = v)
-#define PyLiteTuple_GET_SIZE(seq) PyTuple_GET_SIZE(seq)
+#define PyLiteTuple_GET_SIZE(seq) Py_SIZE(seq)
 
 #define PyLiteTuple_CheckExact(op) (Py_TYPE(op) == &PyLiteTuple_Type || Py_TYPE(op) == &PyMLiteTuple_Type)
 #define PyLiteTuple_Check(op) (PyLiteTuple_CheckExact(op) || PyObject_IsInstance(op, (PyObject*)&PyLiteTuple_Type) || PyObject_IsInstance(op, (PyObject*)&PyMLiteTuple_Type))
@@ -417,7 +417,7 @@ litetuple_subscript(PyLiteTupleObject* self, PyObject* item)
     if (PySlice_Check(item)) {
         Py_ssize_t start, stop, step, slicelength;
 
-        if (PySlice_GetIndicesEx(item, (PyTuple_GET_SIZE(self)), &start, &stop, &step, &slicelength) < 0)
+        if (PySlice_GetIndicesEx(item, (Py_SIZE(self)), &start, &stop, &step, &slicelength) < 0)
             return NULL;
         return litetuple_slice(self, start, stop);
     }
