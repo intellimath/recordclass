@@ -906,6 +906,11 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 ### Changes:
 
+#### 0.23.1:
+
+* Fix the bug with PyTuple_GET_SIZE (#13)
+* Drop appveyor
+
 #### 0.23:
 
 * `recordclass` requires python >= 3.8
