@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 
-# Copyright (c) «2017-2024» «Shibzukhov Zaur, szport at gmail dot com»
+# Copyright (c) «2017-2025» «Shibzukhov Zaur, szport at gmail dot com»
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software - recordclass library - and associated documentation files

@@ -1,5 +1,5 @@
 __title__ = "recordclass"
-__version__ = "0.22.1"
+__version__ = "0.23.1"
 __summary__ = "Mutable variant of namedtuple -- recordclass, which support assignments, compact dataclasses and other memory saving variants."
 __uri__ = "https://github.com/intellimath/recordclass"
 __author__ = "Zaur Shibzukhov"
