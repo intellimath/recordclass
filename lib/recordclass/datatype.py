@@ -196,6 +196,17 @@ class datatype(type):
                 defaults_dict = ns['__defaults__']
             else:
                 defaults_dict = {f:ns[f] for f in fields if f in ns}
+                for name in defaults_dict:
+                    val = defaults_dict[name]
+                    if type(val) is Field:
+                        fd = fields_dict[name]
+                        for a,v in val.items():
+                            if a == 'default':
+                                continue
+                            fd[a] = v
+                        if 'default' in val:
+                            defaults_dict[name] = val['default']
+                        
             _matching_annotations_and_defaults(annotations, defaults_dict)
 
             for fn,val in defaults_dict.items():

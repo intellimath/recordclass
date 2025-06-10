@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 
-from recordclass.datatype import datatype, MATCH
+from recordclass.datatype import datatype, Field, MATCH
 from recordclass._dataobject import dataobject, datastruct, astuple, asdict, clone, update, make, Factory
 from recordclass._litelist import litelist, litelist_fromargs
 from recordclass._litetuple import litetuple, mutabletuple
