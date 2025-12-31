@@ -102,7 +102,7 @@ else:
                 x:int
                 y:int
         """
-        def _adapter(cls, use_dict=use_dict, use_weakref=use_weakref, hashable=hashable,
+        def _adapter(_cls_, use_dict=use_dict, use_weakref=use_weakref, hashable=hashable,
                           sequence=sequence, mapping=mapping, iterable=iterable, readonly=readonly,
                           fast_new=fast_new, rename=rename, gc=gc):
             from ._dataobject import dataobject
@@ -110,7 +110,7 @@ else:
             from sys import intern as _intern
 
             ns = {}
-            if '__fields__' not in cls.__dict__:
+            if '__fields__' not in _cls_.__dict__:
                 annotations = _cls_.__dict__.get('__annotations__', {})
                 if len(annotations) == 0:
                     annotate_func = _cls_.__dict__.get("__annotate_func__", None)
@@ -130,11 +130,11 @@ else:
             if readonly:
                 hashable = True
 
-            for k,v in cls.__dict__.items():
+            for k,v in _cls_.__dict__.items():
                 if not k.startswith("___"):
                     ns[k] = v
 
-            typename = cls.__name__
+            typename = _cls_.__name__
 
             new_cls = datatype(typename, (dataobject,), ns,
                            gc=gc, fast_new=fast_new, readonly=readonly, iterable=iterable,
