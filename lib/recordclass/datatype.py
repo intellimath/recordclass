@@ -116,7 +116,12 @@ class datatype(type):
         else:
             bases = (dataobject,)
 
+        # print(ns)
         annotations = ns.get('__annotations__', {})
+        if len(annotations) == 0:
+            annotate_func = ns.get("__annotate_func__", None)
+            if annotate_func is not None:
+                annotations = annotate_func(0)
         classvars = {fn for fn,tp in annotations.items() \
                         if _is_classvar(tp)}
 
@@ -206,7 +211,7 @@ class datatype(type):
                             fd[a] = v
                         if 'default' in val:
                             defaults_dict[name] = val['default']
-                        
+
             _matching_annotations_and_defaults(annotations, defaults_dict)
 
             for fn,val in defaults_dict.items():

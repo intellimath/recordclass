@@ -53,9 +53,15 @@ if _PY311:
 
             ns = {}
             if '__fields__' not in _cls_.__dict__:
-                ns['__fields__'] = tuple(_cls_.__dict__.get('__annotations__', ()))
+                annotations = _cls_.__dict__.get('__annotations__', {})
+                if len(annotations) == 0:
+                    annotate_func = _cls_.__dict__.get("__annotate_func__", None)
+                    if annotate_func is not None:
+                        annotations = annotate_func(0)
 
-            ns['__annotations__'] = _cls_.__dict__.get('__annotations__', {})
+                ns['__fields__'] = tuple(annotations)
+
+            ns['__annotations__'] = annotations
 
             if sequence or mapping:
                 iterable = True
@@ -105,9 +111,15 @@ else:
 
             ns = {}
             if '__fields__' not in cls.__dict__:
-                ns['__fields__'] = tuple(cls.__dict__.get('__annotations__', ()))
+                annotations = _cls_.__dict__.get('__annotations__', {})
+                if len(annotations) == 0:
+                    annotate_func = _cls_.__dict__.get("__annotate_func__", None)
+                    if annotate_func is not None:
+                        annotations = annotate_func(0)
 
-            ns['__annotations__'] = cls.__dict__.get('__annotations__', {})
+                ns['__fields__'] = tuple(annotations)
+
+            ns['__annotations__'] = annotations
 
             if sequence or mapping:
                 iterable = True
