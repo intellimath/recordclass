@@ -116,7 +116,6 @@ class datatype(type):
         else:
             bases = (dataobject,)
 
-        # print(ns)
         annotations = ns.get('__annotations__', {})
         if len(annotations) == 0:
             annotate_func = ns.get("__annotate_func__", None)
