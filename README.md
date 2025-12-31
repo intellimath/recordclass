@@ -906,6 +906,11 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 ### Changes:
 
+#### 0.24:
+
+* Fix `__annotations__` for python 3.14
+* Start support of python 3.14
+
 #### 0.23.1:
 
 * Fix the bug with PyTuple_GET_SIZE (#13)
