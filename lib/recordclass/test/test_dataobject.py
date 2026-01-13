@@ -121,7 +121,7 @@ class DataobjectTest(unittest.TestCase):
         self.assertEqual(a.y, 2)
         self.assertEqual(asdict(a), {'x':1, 'y':2})
         self.assertEqual(sys.getsizeof(a), pyobject_size+2*ref_size)
-        self.assertEquel(a.__sizeof__(), pyobject_size+2*ref_size)
+        self.assertEqual(a.__sizeof__(), pyobject_size+2*ref_size)
         # with self.assertRaises(TypeError):
         #     weakref.ref(a)
         with self.assertRaises(AttributeError):
