@@ -2358,7 +2358,6 @@ _datatype_use_dict(PyObject *module, PyObject *cls) {
     //     return NULL;
     // }
 
-    if (!tp->tp_dictoffset) {
         if (!tp->tp_weaklistoffset) {
             tp->tp_dictoffset = tp->tp_basicsize;
             tp->tp_basicsize += sizeof(PyObject*);
@@ -2367,7 +2366,6 @@ _datatype_use_dict(PyObject *module, PyObject *cls) {
             tp->tp_weaklistoffset = tp->tp_basicsize;
             tp->tp_basicsize += sizeof(PyObject*);
         }
-    }
 
     Py_RETURN_NONE;
 }
@@ -2383,7 +2381,6 @@ _datatype_use_weakref(PyObject *module, PyObject *cls) {
     //     return NULL;
     // }
 
-    if (!tp->tp_weaklistoffset) {
         if (!tp->tp_dictoffset) {
             tp->tp_weaklistoffset = tp->tp_basicsize;
             tp->tp_basicsize += sizeof(PyObject*);
@@ -2391,7 +2388,6 @@ _datatype_use_weakref(PyObject *module, PyObject *cls) {
             tp->tp_weaklistoffset = tp->tp_basicsize;
             tp->tp_basicsize += sizeof(PyObject*);
         }
-    }
 
     Py_RETURN_NONE;
 }

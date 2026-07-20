@@ -350,6 +350,12 @@ class datatype(type):
             elif immutable_type:
                 raise TypeError('if immutable_type=True then __init__ or __new__ are not allowed')
 
+        if is_datastruct:
+            if use_dict:
+                raise TypeError('datastruct subclasses can not have __dict__')
+            if use_weakref:
+                raise TypeError('datastruct subclasses can not have __weakref__')
+
         _dataobject._dataobject_type_init(cls)
 
         _dataobject._datatype_collection_mapping(cls, sequence, mapping, readonly)
