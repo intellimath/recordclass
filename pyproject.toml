@@ -1,6 +1,6 @@
 [project]
 name = "recordclass"
-version = "0.24"
+version = "0.24.1"
 authors = [
     {name = "Zaur Shibzukhov", email = "szport@gmail.com"},
 ]
