@@ -906,6 +906,10 @@ For more details see notebook [example_datatypes](https://github.com/intellimath
 
 ## Changes:
 
+#### 0.24.1:
+
+* Resolve issue with use_dict=True (#21)
+
 #### 0.24:
 
 * Fix `__annotations__` for python 3.14
