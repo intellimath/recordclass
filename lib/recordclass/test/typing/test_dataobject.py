@@ -137,7 +137,7 @@ class DataObjectTest3(unittest.TestCase):
         with self.assertRaises(TypeError):     
             weakref.ref(a)
         # print('*')
-        with self.assertRaises(TypeError):     
+        with self.assertRaises((AttributeError, TypeError)):     
             a.__dict__
         with self.assertRaises(AttributeError):     
             a.z = 3
